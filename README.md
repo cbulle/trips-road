@@ -65,13 +65,6 @@ Ces diagrammes permettent de mieux comprendre la logique interne et le fonctionn
 
 ## 📂 Organisation du projet  
 
-├── Code/ # code du projet
-    ├── backend/ # API et logique serveur
-    ├── frontend/ # Interfaces et pages web
-├── Documents/ # Dossier d'analyse
-├── tests/ # Tests 
-├── README.md # Présentation du projet
-
 
 
 
