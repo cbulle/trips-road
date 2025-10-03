@@ -22,7 +22,7 @@ L’application repose sur **OpenStreetMap** pour la cartographie et une archite
 
 ✅ **Authentification & gestion des utilisateurs**  
 - Connexion, inscription et gestion des comptes.  
-- Amis et réseau social intégré.  
+- Amis et réseau social intégré (si possible).  
 
 ✅ **Gestion de Road Trips**  
 - Création et modification d’itinéraires.  
@@ -49,15 +49,13 @@ L’application repose sur **OpenStreetMap** pour la cartographie et une archite
 - **Diagramme de classes** (structure globale du système).  
 - **Diagramme d’états** (définition et transitions des états du système).  
 
-Ces diagrammes permettent de mieux comprendre la logique interne et le fonctionnement global de la plateforme.  
-
 ---
 
 ## ⚙️ Technologies utilisées  
 
-- **Frontend** : HTML5, CSS3,  
+- **Frontend** : HTML5, CSS3, PHP8.4
 - **Backend** : 
-- **Base de données** : MySQL  
+- **Base de données** :   
 - **Cartographie** : OpenStreetMap  
 - **Gestion de projet** : UML, GitLab
 
