@@ -1,10 +1,12 @@
-<?php
-require_once __DIR__ . '/modules/init.php' ;
-if (!isset($_SESSION['user_id'])) {
-    header('Location: connexion.php');
-    exit();
-}
-?>
+
+//<?php
+//require_once __DIR__ . '/modules/init.php' ;
+//if (!isset($_SESSION['user_id'])) {
+    //header('Location: connexion.php');
+   // exit();
+//}
+//?>
+*/
 <!DOCTYPE html>
 <html lang="fr">
 <head>
