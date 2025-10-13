@@ -3,11 +3,11 @@
 -- Projet : Site de création et partage de Road Trips
 -- ===========================================
 
--- 1️⃣ Création de la base
+-- Création de la base
 CREATE DATABASE IF NOT EXISTS roadtrip_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE roadtrip_db;
 
--- 2️⃣ Table des utilisateurs
+-- 2Table des utilisateurs
 CREATE TABLE utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE utilisateurs (
     date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3️⃣ Table des road trips
+-- Table des road trips
 CREATE TABLE roadtrip (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(255) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE roadtrip (
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
 
--- 4️⃣ Table des points d’intérêt (POI)
+-- Table des points d’intérêt (POI)
 CREATE TABLE points_interet (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE points_interet (
     FOREIGN KEY (id_createur) REFERENCES utilisateurs(id) ON DELETE SET NULL
 );
 
--- 5️⃣ Table d’association entre road trip et points d’intérêt
+-- Table d’association entre road trip et points d’intérêt
 CREATE TABLE roadtrip_points_interet (
     id_roadtrip INT,
     id_poi INT,
@@ -52,7 +52,7 @@ CREATE TABLE roadtrip_points_interet (
     FOREIGN KEY (id_poi) REFERENCES points_interet(id) ON DELETE CASCADE
 );
 
--- 6️⃣ Table des amis (relation entre utilisateurs)
+--Table des amis (relation entre utilisateurs)
 CREATE TABLE amis (
     id_utilisateur INT,
     id_ami INT,
@@ -63,7 +63,7 @@ CREATE TABLE amis (
     FOREIGN KEY (id_ami) REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
 
--- 7️⃣ Table de messagerie
+--Table de messagerie
 CREATE TABLE messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_expediteur INT NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE messages (
     FOREIGN KEY (id_destinataire) REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
 
--- 8️⃣ Table des commentaires et avis
+--Table des commentaires et avis
 CREATE TABLE commentaires (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_utilisateur INT NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE commentaires (
     FOREIGN KEY (id_poi) REFERENCES points_interet(id) ON DELETE CASCADE
 );
 
--- 9️⃣ Table des notifications
+--Table des notifications
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_utilisateur INT NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE notifications (
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
 
--- 🔟 Table des signalements (pour modération)
+--Table des signalements (pour modération)
 CREATE TABLE signalements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_signaleur INT NOT NULL,
@@ -110,18 +110,3 @@ CREATE TABLE signalements (
     FOREIGN KEY (id_signaleur) REFERENCES utilisateurs(id) ON DELETE CASCADE
 );
 
--- ✅ Données de test (facultatif)
-INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, bio)
-VALUES 
-('Dupont', 'Julie', 'julie@example.com', 'test1234', 'Étudiante passionnée de voyage'),
-('Martin', 'Jean', 'jean@example.com', 'test1234', 'Aventurier curieux');
-
-INSERT INTO roadtrip (titre, description, etapes, visibilite, id_utilisateur)
-VALUES
-('Road Trip dans le Sud', 'Découverte de la Provence et de la Côte d’Azur', 'Marseille,Nice,Cannes', 'public', 1);
-
-INSERT INTO points_interet (nom, description, latitude, longitude, categorie)
-VALUES
-('Tour Eiffel', 'Monument emblématique de Paris', 48.8584, 2.2945, 'Culture');
-
-INSERT INTO roadtrip_points_interet (id_roadtrip, id_poi) VALUES (1, 1);

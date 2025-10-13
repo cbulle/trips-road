@@ -6,13 +6,9 @@
     <link rel="stylesheet" href="css/style.css"> 
 </head>
 <body>
-    <header>
-        <h1>Road Trip Planner</h1>
-        <nav>
-            <a href="creerRoad.php">Créer un Road Trip</a>
-            
-        </nav>
-    </header>
+<?php     
+include_once __DIR__ . "/modules/header.php"
+?>
 
     <div class="container">
         <h2>Bienvenue sur Road Trip Planner !</h2>
