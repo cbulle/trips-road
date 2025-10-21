@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Connexion</title>
     <link rel="stylesheet" href= "/css/style.css">
+    
 
 </head>
 
@@ -12,7 +13,7 @@
 <body>
 <main>
 
-<form action ="log.php" method="post">
+<form action ="formulaire/log.php" method="post">
     <label for="login"> Email ou identifiant :</label>
     <input type= "text" name="login" id="login" required>
 

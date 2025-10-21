@@ -1,10 +1,20 @@
+/*======================================
+bleu clair : 39B2A5
+bleu foncé : 0B667D
+beige : F2E9D6
+orange : FF7F50
+vert : 2E8B57 
+font : 
+=========================================*/
+ 
+
 /* ==============================
    STYLE GLOBAL
 ============================== */
 
 body {
   font-family: 'Poppins', Arial, sans-serif;
-  background-color: #f4f7fb;
+  background-color: #f2e9d6 ;
   color: #333;
   margin: 0;
   padding: 0;
@@ -32,7 +42,6 @@ header nav ul ul {
 
 header nav ul li:hover > ul{
     display : inherit ;
-    background-color: rgba(31, 216, 139, 0.438);
     padding-left: 1%;
     padding-right: 1%;
     
@@ -62,7 +71,7 @@ header nav ul li:hover > ul{
 .container {
   max-width: 900px;
   margin: 30px auto;
-  background: white;
+  background: #f2e9d6 ;
   border-radius: 15px;
   padding: 30px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -70,7 +79,7 @@ header nav ul li:hover > ul{
 
 h2 {
   text-align: center;
-  color: #1f3c88;
+  color: #2e8b57 ;
 }
 
 /* ==============================
@@ -85,7 +94,7 @@ input, textarea, button {
 }
 
 button {
-  background-color: #1f3c88;
+  background-color: #0b667d;
   color: white;
   border: none;
   cursor: pointer;
@@ -93,7 +102,7 @@ button {
 }
 
 button:hover {
-  background-color: #162e63;
+  background-color: #2e8b57;
 }
 
 /* ==============================
@@ -130,21 +139,94 @@ button:hover {
 /* ==============================
    Burger
 ============================== */
-header nav input :checked ~ ul{ 
-  transition : left 1s ease ;
-  left : 0 ;
-}
-header nav input{
-  opacity :0;
+
+#burger {
+    opacity: 1;
+    position: relative;
+    top : -70px ;
+    left : -605px ;
 }
 
-nav ul span {
-  position: relative;
-  display : inline-block;
-  width : 30px ;
-  height: 2px;
 
+#burger:checked ~ .ul_burger {
+  transition: left 0.5s ease-out;
+  left: 0;
 }
+
+
+  .ul_burger {
+        font-size: 17px;
+        list-style: none;
+        left:-1210px;
+        position: relative;
+        background-color: rgba(255, 255, 255, 0.7); 
+        border-radius: 13px;
+        width: 19%;  
+        display: flex;
+    flex-direction: column;
+  }
+  
+  
+  .ul_burger a{
+    color: black;
+    text-decoration: none;
+  }
+
+
+  .burger span {
+    display: block;
+    height: 4px;
+    width: 100%;
+    background: #f2e9d6;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+      #label_burger{
+        position: absolute;
+        left: 20%;
+        top: 20%;
+    }
+ 
+ 
+ 
+    #label_burger>span,
+    #label_burger>span::after,
+    #label_burger>span::before{    
+        content: "";
+        width: 20px;
+        height: 3px;
+        background-color: rgb(255, 255, 255);
+        border-radius: 3px;
+        position: absolute;      
+        transition: 1s;   
+    }
+ 
+    #label_burger>span::after {
+        margin-top: -5px;
+ 
+    }
+    #label_burger>span::before {
+        margin-top: 5px;
+    }  
+ 
+    #burger:checked ~ label>span::before{
+        transform: rotate(45deg) translateX(32px) translateY(-38px);
+        transition: 1s;
+    }
+ 
+    #burger:checked ~ label>span{
+        transform: translateX(-50px);
+        transition: 1s;
+ 
+    }
+ 
+    header>nav>input:checked ~ label>span::after{
+        transform: rotate(-45deg) translateX(31px) translateY(39px);;
+        transition: 1s;
+    }
+
+
 
 
 

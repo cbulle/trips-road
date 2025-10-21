@@ -1,36 +1,53 @@
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+  
+</body>
+</html>
     <header>
     <nav>
-        <h1>Trips & Roads</h1>
-        <input type="checkbox" id="burger">
-    <label for="burger"></label>
-    <span></span>
-    <span></span>
-    <span></span>
+        
 
     <ul>
-      <li><a href="/index.php" >Accueil</a></li>
+      <i class="material-icons">search</i>
+      <i class="material-icons">settings_accessibility</i>
+      <li><a href="/index.php" >Trips & Roads</a></li>
+      <i class="material-icons">chat_bubble</i>
+      <li><a href="" >Messagerie</a></li>
+      <i class="material-icons">group</i>
+      <li><a href="" >Amis</a></li>
+      <i class="material-icons">add_box</i>
       <li><a href="/creerRoad.php" >Créer un Road-Trrip</a></li>
-      <li><a href="/profil.php" ></a>Profi</li>
-      <li><a href="" ></a>Amis</li>
-      <li><a href="" ></a>Messagerie</li>
-      <li><a href="" ></a>Recherche</li>
-      <li><a href="/accessibilite.php" ></a>Accessibilité</li>
+
+      <div class = "i_profil">
+      <i class="material-icons">man</i>
+      <li><a href="/profil.php" ></a>Profil</li>
+      </div>
+    </ul>
+      
+      
+      
       
     
-      <li>
-        <a href="/blog.php" ></a>
-        <ul>
-          <li><a href=""></a>Mes Roads-Trips</li>
-          <li><a href=""></a>Historique</li>
-          <li><a href=""></a>Favoris</li>
-          <li><a href=""></a>Paramètre de compte</li>
-          <li><a href=""></a>Aide / FAQ</li>
-          <li><a href=""></a>A propos / connexion </li>
-          <li><a href=""></a>Déconnexion</li>
+      
+    <input type="checkbox" id="burger">
+    <label for="burger" id="label_burger"></label>
+    <span> </span>
+</label>
+        <ul class = "ul_burger">
+          <li><a href="" >Mes Roads-Trips</a> </li>
+          <li><a href="" >Historique</a></li>
+          <li><a href="" >Favoris</a></li>
+          <li><a href="" >Paramètre de compte</a></li>
+          <li><a href="" >Aide / FAQ</a></li>
+          <li><a href="" >A propos / Contact</a></li>
+          <li><a href="" >Déconnexion</a></li>
         </ul>
-      </li>
-
+      
     </nav>
     </header>
 
