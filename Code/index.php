@@ -18,6 +18,8 @@ include_once __DIR__ . "/modules/header.php"
         </a>
     </div>
 
-   
+<?php     
+include_once __DIR__ . "/modules/footer.php"
+?>
 </body>
 </html>

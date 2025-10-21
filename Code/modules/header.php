@@ -36,7 +36,12 @@
       
     <input type="checkbox" id="burger">
     <label for="burger" id="label_burger"></label>
-    <span> </span>
+    <div class="burger-icon" id="burger-icon">
+      <span> </span>
+      <span> </span>
+      <span> </span>
+</div>
+
 </label>
         <ul class = "ul_burger">
           <li><a href="" >Mes Roads-Trips</a> </li>

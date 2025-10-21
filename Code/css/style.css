@@ -140,94 +140,100 @@ button:hover {
    Burger
 ============================== */
 
-#burger {
-    opacity: 1;
-    position: relative;
-    top : -70px ;
-    left : -605px ;
+.ul_burger {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 240px;
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding-right: 30px;
+  transition: left 0.4s ease;
 }
 
-
 #burger:checked ~ .ul_burger {
-  transition: left 0.5s ease-out;
   left: 0;
 }
 
+.ul_burger li {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.3s ease-out;
+}
 
-  .ul_burger {
-        font-size: 17px;
-        list-style: none;
-        left:-1210px;
-        position: relative;
-        background-color: rgba(255, 255, 255, 0.7); 
-        border-radius: 13px;
-        width: 19%;  
-        display: flex;
-    flex-direction: column;
-  }
-  
-  
-  .ul_burger a{
-    color: black;
-    text-decoration: none;
-  }
+#burger:checked ~ .ul_burger li {
+  opacity: 1;
+  transform: translateX(0);
+}
 
+#burger:checked ~ .ul_burger li:nth-child(1) { transition-delay: 0.1s; }
+#burger:checked ~ .ul_burger li:nth-child(2) { transition-delay: 0.2s; }
+#burger:checked ~ .ul_burger li:nth-child(3) { transition-delay: 0.3s; }
+#burger:checked ~ .ul_burger li:nth-child(4) { transition-delay: 0.4s; }
+#burger:checked ~ .ul_burger li:nth-child(5) { transition-delay: 0.5s; }
+#burger:checked ~ .ul_burger li:nth-child(6) { transition-delay: 0.6s; }
+#burger:checked ~ .ul_burger li:nth-child(7) { transition-delay: 0.7s; }
 
-  .burger span {
-    display: block;
-    height: 4px;
-    width: 100%;
-    background: #f2e9d6;
-    border-radius: 2px;
-    transition: all 0.3s ease;
-  }
+.burger-icon {
+  width: 35px;
+  height: 25px;
+  position: fixed;
+  top: 20px;
+  left: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  z-index: 1001;
+  transition: transform 0.3s ease;
+}
 
-      #label_burger{
-        position: absolute;
-        left: 20%;
-        top: 20%;
-    }
- 
- 
- 
-    #label_burger>span,
-    #label_burger>span::after,
-    #label_burger>span::before{    
-        content: "";
-        width: 20px;
-        height: 3px;
-        background-color: rgb(255, 255, 255);
-        border-radius: 3px;
-        position: absolute;      
-        transition: 1s;   
-    }
- 
-    #label_burger>span::after {
-        margin-top: -5px;
- 
-    }
-    #label_burger>span::before {
-        margin-top: 5px;
-    }  
- 
-    #burger:checked ~ label>span::before{
-        transform: rotate(45deg) translateX(32px) translateY(-38px);
-        transition: 1s;
-    }
- 
-    #burger:checked ~ label>span{
-        transform: translateX(-50px);
-        transition: 1s;
- 
-    }
- 
-    header>nav>input:checked ~ label>span::after{
-        transform: rotate(-45deg) translateX(31px) translateY(39px);;
-        transition: 1s;
-    }
+.burger-icon span {
+  height: 4px;
+  background-color: #222;
+  border-radius: 4px;
+  transition: all 0.4s ease;
+}
+
+.burger-icon.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.burger-icon.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-icon.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
 
 
+/*=====================
+        FOOTER
+======================*/
 
+footer{
+  background-color: #0b667d ;
+}
+footer a{
+  text-decoration: none;
+  color:#000;
+}
 
+footer ul{
+  display : grid ;
+  grid-gap: 10 px;
+  grid-template-areas: 
+  "a b c"
+  "d e f";
+}
 
+footer ul li{
+  list-style: none ;
+}
 
