@@ -7,7 +7,7 @@
 <body>
   
 </body>
-</html>
+
     <header>
     <nav>
         
@@ -21,12 +21,9 @@
       <i class="material-icons">group</i>
       <li><a href="" >Amis</a></li>
       <i class="material-icons">add_box</i>
-      <li><a href="/creerRoad.php" >Créer un Road-Trrip</a></li>
-
-      <div class = "i_profil">
-      <i class="material-icons">man</i>
-      <li><a href="/profil.php">Profil</a></li>
-      </div>
+      <li><a href="/creerRoad.php" >Créer un Road-Trip</a></li>
+      <li><a href="/profil.php" ><img src="../img/User.png" alt="Photo de profil" ></a></li>
+      
     </ul>
       
       
@@ -52,3 +49,4 @@
     </nav>
     </header>
 
+</html>
