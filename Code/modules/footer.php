@@ -10,23 +10,31 @@
 </body>
 </html>
 <footer>
-     <div class="social-media">
-         <a href="https://www.instagram.com" class="social-icon" target="_blank">
-            <i class="fab fa-instagram"></i>
-         </a>
-         <a href="https://www.facebook.com" class="social-icon" target="_blank">
-            <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="https://www.x.com" class="social-icon" target="_blank">
-            <i class="fa-brands fa-x-twitter"></i>
-        </a>
+  <div class="footer-container">
+    <div class="image-container">
+      <img src="image_path.jpg" alt="Image" />
     </div>
-    <ul>
-        <li><a href="" class = "un" >Général</a></li> 
-        <li><a href="" class = "deux">CGU</a></li> 
-        <li><a href="" class = "trois">Politique de confidentialité</a></li> 
-        <li><a href="" class = "quatre">FAQ</a></li> 
-        <li><a href="" class = "cinq">Copyright</a></li> 
-        <li><a href="" class = "six">Gestion des cookies</a></li> 
 
+    <div class="social-media">
+      <a href="https://www.instagram.com" class="social-icon" target="_blank">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://www.facebook.com" class="social-icon" target="_blank">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="https://www.x.com" class="social-icon" target="_blank">
+        <i class="fa-brands fa-x-twitter"></i>
+      </a>
+    </div>
+
+    <ul class="footer-links">
+      <li><a href="" class="un">Général</a></li>
+      <li><a href="" class="deux">CGU</a></li>
+      <li><a href="" class="trois">Politique de confidentialité</a></li>
+      <li><a href="" class="quatre">FAQ</a></li>
+      <li><a href="" class="cinq">Copyright</a></li>
+      <li><a href="" class="six">Gestion des cookies</a></li>
+    </ul>
+  </div>
 </footer>
+
