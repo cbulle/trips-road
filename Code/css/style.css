@@ -2,6 +2,7 @@
 bleu clair : 39B2A5
 bleu foncé : 0B667D
 beige : F2E9D6
+beige foncé : E0C58B
 orange : FF7F50
 vert : 2E8B57 
 font : 
@@ -13,10 +14,10 @@ font :
 ============================== */
 *{
   text-decoration: none ;
-  color : #f2e9d6 ;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+
 
 html {
   height: 100%;
@@ -43,7 +44,39 @@ header nav>ul {
 	display : flex ;
 	justify-content : space-around ;
 	list-style : none ;
+  color : #f2e9d6;
 }
+
+header nav>ul>li>a{
+	list-style : none ;
+  color : #f2e9d6;
+  font-size: x-large;
+  position: relative;
+  top:10px;
+}
+
+header nav>ul>li{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 10%;
+  white-space: nowrap; 
+}
+header nav>ul>i{
+  position: relative;
+  top: 39px;
+  left: 60px;
+}
+
+header nav>ul>li>a>img {
+  width: 100%;  
+  max-width: 75px;  
+  height: auto;
+  border-radius: 50%;
+  position: relative;
+  right: -50px;
+}
+
 
 header nav ul ul {
     display : none ; 
@@ -65,9 +98,9 @@ header nav ul li:hover > ul{
 
   #burger {
     opacity: 0;
-    top: -74px;
-    left: -436px;
+    top: -57px;
     position: relative;
+    right: 1155px;
   }
 
   .burger {
@@ -86,7 +119,7 @@ header nav ul li:hover > ul{
   position: fixed;
   top: 100px;
   left: -100%;
-  width: 290px;
+  width: 350px;
   height: 50vh;
   background-color: #0b667d;
   display: flex;
@@ -142,19 +175,19 @@ header nav ul li:hover > ul{
         position: absolute;      
         transition: 1s; 
         z-index: 2;
-        top : 30px;
+        top : 75px;
     }
  
     header>nav>label>span::after {
-        margin-top: -24px;
+        margin-top: -68px;
  
     }
     header>nav>label>span::before {
-        margin-top: -18px;
+        margin-top: -61px;
     }  
  
     header>nav>input:checked ~ label>span::before{
-        transform: rotate(45deg) translateX(35px) translateY(-38px);
+        transform: rotate(45deg) translateX(45px) translateY(-55px);
         transition: 1s;
     }
  
@@ -165,7 +198,7 @@ header nav ul li:hover > ul{
     }
  
     header>nav>input:checked ~ label>span::after{
-        transform: rotate(-45deg) translateX(33px) translateY(40px);;
+        transform: rotate(-45deg) translateX(50px) translateY(50px);;
         transition: 1s;
     }
 
@@ -280,6 +313,7 @@ footer {
   right: 0;
 }
 
+
 .footer-container {
   display: flex;
   justify-content: space-between; 
@@ -290,19 +324,20 @@ footer .image-container {
   display: flex;
   justify-content: flex-start; 
   align-items: center;
-  width: 33%; 
+  width: 10%; 
 }
 
 footer .image-container img {
   width: 100px; 
   height: auto;
+  background-color: #f2e9d6;
 }
 
 footer .social-media {
   display: flex;
   justify-content: center; 
   align-items: center;
-  width: 33%; 
+  width: 45%; 
   gap: 15px;
 }
 
@@ -320,6 +355,7 @@ footer .social-icon {
 }
 
 footer .social-icon:hover {
+  color: #f2e9d6;
   background-color: #2e8b57;
   transform: translateY(-5px);
 }
@@ -328,7 +364,7 @@ footer .footer-links {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 
   grid-gap: 20px;
-  width: 33%; 
+  width: 45%; 
 }
 
 footer .footer-links li {
