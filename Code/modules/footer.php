@@ -8,11 +8,10 @@
 <body>
     
 </body>
-</html>
 <footer>
   <div class="footer-container">
     <div class="image-container">
-      <img src="image_path.jpg" alt="Image" />
+      <img src="../img/logoProjet.png" alt="Logo du site web" >
     </div>
 
     <div class="social-media">
@@ -37,4 +36,6 @@
     </ul>
   </div>
 </footer>
+
+</html>
 
