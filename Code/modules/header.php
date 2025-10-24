@@ -34,13 +34,9 @@
       
     
       
-    <input type="checkbox" id="burger">
-    <label for="burger" id="label_burger"></label>
-    <div class="burger-icon" id="burger-icon">
+     <input type="checkbox" id="burger">
+    <label for="burger" class="burger">
       <span> </span>
-      <span> </span>
-      <span> </span>
-</div>
 
 </label>
         <ul class = "ul_burger">

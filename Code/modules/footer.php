@@ -1,4 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+<body>
+    
+</body>
+</html>
 <footer>
+     <div class="social-media">
+         <a href="https://www.instagram.com" class="social-icon" target="_blank">
+            <i class="fab fa-instagram"></i>
+         </a>
+         <a href="https://www.facebook.com" class="social-icon" target="_blank">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://www.x.com" class="social-icon" target="_blank">
+            <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </div>
     <ul>
         <li><a href="" class = "un" >Général</a></li> 
         <li><a href="" class = "deux">CGU</a></li> 
