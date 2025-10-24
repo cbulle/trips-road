@@ -25,7 +25,7 @@
 
       <div class = "i_profil">
       <i class="material-icons">man</i>
-      <li><a href="/profil.php" ></a>Profil</li>
+      <li><a href="/profil.php">Profil</a></li>
       </div>
     </ul>
       

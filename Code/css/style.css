@@ -50,6 +50,11 @@ header nav ul li:hover > ul{
     
 }
 
+h1{
+  color :#ffb703 ;
+  text-align: center;
+}
+
 /* ==============================
    Burger
 ============================== */
@@ -193,6 +198,10 @@ h2 {
 /* ==============================
    FORMULAIRE
 ============================== */
+label{
+  color: black ;
+}
+
 input, textarea, button {
   width: 100%;
   padding: 10px;
@@ -295,3 +304,4 @@ footer ul li{
     transform: translateY(-5px);
   }
 
+ 
