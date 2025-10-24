@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Road Trip Planner</title>
     <link rel="stylesheet" href="css/style.css"> 
+    <script src = "js/profil.js"></script>
 </head>
 <body>
 <?php     
@@ -13,8 +14,10 @@ include_once __DIR__ . "/modules/header.php"
 <main>
 
 
-<form action = "formulaire/form_profil.php" method = "post">
-    <label for="name">Nom</label>
+<form id="login-form" class="active" action = "formulaire/form_register.php" method = "post">
+    <h2 id="login-title">Inscription </h2>
+    <a id="show-register">Inscris-toi </a>
+        <label for="name">Nom</label>
         <input type="text" id="name" name="name" required>
 
         <label for="firstname">Prénom</label>
@@ -46,6 +49,19 @@ include_once __DIR__ . "/modules/header.php"
 
         <button type="submit">S'inscrire</button>
       </form>
+
+
+<form id="register-form" action = "formulaire/form_connect.php" method = "post">
+    <h2 id="register-title">Connexion</h2>
+    <a id="show-login">Connecte-toi ici</a>
+        <label for="email">Adresse email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Se connecter</button>
+</form>
 
 
 
