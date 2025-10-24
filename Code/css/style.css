@@ -242,24 +242,71 @@ h2 {
 /* ==============================
    FORMULAIRE
 ============================== */
-input, textarea, button {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+form {
+  width: 90%;
+  max-width: 1500px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  color : black ;
+  background: #e0c58b;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-button {
-  background-color: #0b667d;
-  color: white;
+form h2 {
+  text-align: center;
+  color: #39b2a5;
+  margin-bottom: 10px;
+  font-size: 1.8em;
+}
+
+form label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+form input{
+  height  : 50px ;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  border-color: #39b2a5;
+  box-shadow: 0 0 5px rgba(95, 158, 160, 0.5);
+  outline: none;
+}
+
+form button,
+form .btn {
+  background-color: #39b2a5;
+  color: black;
   border: none;
+  border-radius: 8px;
+  padding: 12px;
   cursor: pointer;
-  transition: 0.3s;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 
-button:hover {
+form button:hover, form .btn:hover {
   background-color: #2e8b57;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+form button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#message-container{
+  display: none;
 }
 
 /* ==============================
