@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const segmentColors = ['blue', 'green', 'orange', 'red', 'purple', 'brown', 'pink'];
-  const europeViewbox = [-10.0, 35.0, 30.0, 71.0];
+  const europeViewbox = [-25.0, 35.0, 30.0, 71.0]; //Defini la zone possible de recherche (Islande à Europe de l'est)
+
 
   // --- Fonction de géocodage ---
   async function getCoordonnees(ville) {
