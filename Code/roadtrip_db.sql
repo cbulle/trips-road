@@ -7,7 +7,7 @@
 CREATE DATABASE IF NOT EXISTS roadtrip_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE roadtrip_db;
 
--- 2Table des utilisateurs
+-- Table des utilisateurs
 CREATE TABLE utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE roadtrip (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(255) NOT NULL,
     description TEXT,
-    etapes TEXT, -- Liste des étapes sous forme de texte (JSON ou séparées par des virgules)
+    etapes TEXT, 
     visibilite ENUM('public', 'amis', 'prive') DEFAULT 'public',
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_utilisateur INT NOT NULL,

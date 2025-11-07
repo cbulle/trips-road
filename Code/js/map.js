@@ -335,14 +335,32 @@ document.addEventListener('DOMContentLoaded', () => {
 Elements de gestion du formulaire d'inscription et de connexion
 =======================================*/
 
-document.getElementById('show-register').addEventListener('click', function() {
-    document.getElementById('login-form').classList.remove('active');
-    document.getElementById('register-form').classList.add('active');
-    document.getElementById('login-title').textContent = 'Inscription';
-});
+function showLogin() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('btnLogin').classList.add('active');
+    document.getElementById('btnRegister').classList.remove('active');
+}
 
-document.getElementById('show-login').addEventListener('click', function() {
-    document.getElementById('register-form').classList.remove('active');
-    document.getElementById('login-form').classList.add('active');
-    document.getElementById('register-title').textContent = 'Connexion';
+function showRegister() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('btnLogin').classList.remove('active');
+    document.getElementById('btnRegister').classList.add('active');
+}
+
+// Fonction à appeler pour afficher ta modale (si tu as un conteneur modale, sinon adapter)
+function openModal() {
+    // Par exemple, si tu as un div modale, tu peux le passer en display:flex ou block
+    const modal = document.querySelector('.formulaire'); // adapte selon ta structure
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+// Appel automatique de la modale au chargement de la page profil
+document.addEventListener('DOMContentLoaded', function() {
+    openModal();
+    // Initialisation sur le formulaire que tu veux afficher par défaut :
+    showRegister(); // ou showLogin() selon souhait
 });
