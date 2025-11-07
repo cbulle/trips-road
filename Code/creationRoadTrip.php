@@ -22,9 +22,9 @@
       <button type="button" id="addEtape">+ Ajouter une étape</button>
 
       <select id="mode">
-        <option value="Voiture">Voiture</option>
-        <option value="Velo">Velo</option>
-        <option value="Marche">Marche</option>
+        <option class="choix" value="Voiture">Voiture</option>
+        <option class="choix" value="Velo">Velo</option>
+        <option class="choix" value="Marche">Marche</option>
       </select>
       <button type="button" id="btnCalculer">Calculer</button>
 
@@ -37,12 +37,12 @@
 
     <div class="segment-form-container" id="segmentFormContainer" style="display:none;">
         <h3 id="segmentTitle">Planifier le segment</h3>
-
         <label>Date du segment : <input type="date" id="segmentDate"></label>
-
         <div id="subEtapesContainer"></div>
-        <button type="button" id="addSubEtape">+ Ajouter une sous-étape</button>
-        <button type="button" id="saveSegment">Enregistrer le segment</button>
+        <div class="subEtape-buttons">
+          <button id="addSubEtape">+ Ajouter une sous-étape</button>
+          <button id="saveSegment">Enregistrer</button>
+        </div>
     </div>
 
 

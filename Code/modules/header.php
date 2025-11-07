@@ -21,7 +21,7 @@
       <i class="material-icons">group</i>
       <li><a href="" >Amis</a></li>
       <i class="material-icons">add_box</i>
-      <li><a href="/creerRoad.php" >Créer un Road-Trip</a></li>
+      <li><a href="/creationRoadTrip.php" >Créer un Road-Trip</a></li>
       <li><a href="/profil.php" ><img src="../img/User.png" alt="Photo de profil" ></a></li>
       
     </ul>

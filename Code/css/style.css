@@ -247,22 +247,6 @@ header>nav>input:checked ~ label>span::after{
 /* ==============================
    CONTENU PRINCIPAL
 ============================== */
-.main-container {
-  display: flex;
-  gap: 20px;
-  padding: 0 20px 20px 20px;
-}
-
-.sidebar {
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px;
-  background: #E0C58B;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
 
 .container {
   flex: 1;
@@ -337,10 +321,57 @@ button:hover {
 }
 
 /* ==============================
+   STYLE DANS DES INPUTS DANS LA SIDE-BAR
+============================== */
+.main-container {
+  display: flex;
+  gap: 20px;
+  padding: 0 20px 20px 20px;
+}
+
+.sidebar {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: #E0C58B;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.sidebar #depart, .sidebar #arrivee{
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.sidebar #addEtape, .sidebar #btnCalculer{
+  padding: 10px;
+  border-radius: 15px;
+  background-color: #39b2a5;
+}
+
+.sidebar #addEtape:hover,
+.sidebar #btnCalculer:hover {
+  background-color: #2E8B57;
+  cursor: pointer;
+}
+
+.sidebar #mode{
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.sidebar #mode:hover{
+  background-color: #2E8B57;
+  cursor: pointer;
+}
+
+/* ==============================
    SOUS-ETAPES
 ============================== */
 .segment-form-container, .subEtape {
-  background: #E0C58B;
+  background: #f2e9d6;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -348,6 +379,13 @@ button:hover {
 
 .subEtape input {
   padding: 6px 10px;
+}
+
+.sidebar .etape {
+   width: 260px;
+   margin-bottom: 10px;
+   padding : 10px;
+   border-radius: 15px;
 }
 
 /* ==============================
@@ -478,3 +516,133 @@ footer .footer-links li a {
   color: #f2e9d6;
   font-weight: bold;
 }
+
+/* ==============================
+   AJOUT : STYLE POUR ÉLÉMENTS DYNAMIQUES (légende, sous-étapes, formulaires)
+============================== */
+.sidebar #legend {
+  margin-top: 20px;
+  background: #E0C58B;
+  border-radius: 15px;
+  padding: 10px 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.sidebar #legend h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #FF7F50;
+}
+
+.sidebar #legendList li {
+  background-color: #f2e9d6;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: background-color 0.3s;
+}
+
+.sidebar #legendList li:hover {
+  background-color: #2E8B57;
+}
+
+.segment-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.segment-header button.toggleSousEtapes {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #39b2a5;
+}
+
+.sousEtapesList {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.sousetape-item {
+  background: #E0C58B;
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.sousetape-photo {
+  width: 100%;
+  max-width: 150px;
+  margin-top: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.sousetape-photo:hover {
+  transform: scale(1.05);
+}
+
+#segmentFormContainer {
+  display: none;
+  background: #E0C58B;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  margin-top: 15px;
+  width: 90%;       
+  max-width: 450px;
+}
+
+#segmentFormContainer h3 {
+  color: #FF7F50;
+  margin-bottom: 10px;
+}
+
+.subEtape input[type="text"],
+.subEtape textarea,
+.subEtape input[type="time"],
+.subEtape input[type="file"] {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+.subEtape textarea {
+  resize: vertical;
+  height: 60px;
+}
+
+
+#segmentFormContainer .subEtape-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#addSubEtape,
+#saveSegment {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: #39b2a5;
+  border: none;
+  color: white;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#addSubEtape:hover,
+#saveSegment:hover {
+  background-color: #2E8B57;
+  cursor: pointer;
+  transform: scale(1.03);
+}
+
