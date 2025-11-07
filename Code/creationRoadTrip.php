@@ -5,7 +5,7 @@
   <title>Calcul d'itinéraire OpenStreetMap</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <?php     
