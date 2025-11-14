@@ -340,19 +340,20 @@ button:hover {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.sidebar #depart, .sidebar #arrivee{
+.sidebar .villesInput{
   padding: 10px;
   border-radius: 15px;
 }
 
-.sidebar #addEtape, .sidebar #btnCalculer{
+.sidebar #addEtape, .sidebar #btnCalculer, .sidebar #btnModifier{
   padding: 10px;
   border-radius: 15px;
   background-color: #39b2a5;
 }
 
 .sidebar #addEtape:hover,
-.sidebar #btnCalculer:hover {
+.sidebar #btnCalculer:hover,
+.sidebar #btnModifier:hover {
   background-color: #2E8B57;
   cursor: pointer;
 }
@@ -543,10 +544,6 @@ footer .footer-links li a {
   transition: background-color 0.3s;
 }
 
-.sidebar #legendList li:hover {
-  background-color: #2E8B57;
-}
-
 .segment-header {
   display: flex;
   align-items: center;
@@ -646,3 +643,14 @@ footer .footer-links li a {
   transform: scale(1.03);
 }
 
+#legendList .modifierSousEtapes {
+  width: 150px;
+  border-radius: 15px;
+  padding: 5px;
+  background-color: #FF7F50;
+}
+
+#legendList .modifierSousEtapes:hover {
+  cursor: pointer;
+  background-color: #2E8B57;
+}

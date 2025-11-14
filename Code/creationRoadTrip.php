@@ -16,20 +16,15 @@
   <div class="main-container">
     <!-- Sidebar gauche -->
     <div class="sidebar">
-      <input type="text" id="depart" placeholder="Ville de départ">
-      <input type="text" id="arrivee" placeholder="Ville d'arrivée">
-      <div id="etapesContainer"></div>
+      <div id="etapesContainer">
+        <input type="text" class="etape" placeholder="Choisir une ville">
+      </div>
+      
       <button type="button" id="addEtape">+ Ajouter une étape</button>
-
-      <select id="mode">
-        <option class="choix" value="Voiture">Voiture</option>
-        <option class="choix" value="Velo">Velo</option>
-        <option class="choix" value="Marche">Marche</option>
-      </select>
       <button type="button" id="btnCalculer">Calculer</button>
+      <button type="button" id="btnModifier" style="display: none;">Modifier l'itinéraire</button>
 
-      <!-- Légende interactive -->
-      <div id="legend" style="margin-top:20px;">
+      <div id="legend" style="display: none;">
         <h3>Légende des étapes :</h3>
         <ul id="legendList" style="list-style:none; padding:0;"></ul>
       </div>
