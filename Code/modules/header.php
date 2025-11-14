@@ -3,39 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link rel="stylesheet" href="style.css"> 
+  <link rel="stylesheet" href="style.css">
+  <script scr="https://kit.fontawesome.com/d76759a8b0.js" crossorigin="anonymous"></script>
 </head>
 <body>
   
-  <header>
-    <nav>
-      <ul>
-        <div class="nav-item">
-          <a href="/index.php"><i class="material-icons">search</i></a>
+<header>
+  <nav>
+    <ul>
+      <div class="nav-item">
+        <div class="bar_rech">
+          <input type="text" placeholder="Search" />
+          <div class="btn">
+            <i class="fas fa-search"></i>
+          </div>
         </div>
-        <div class="nav-item">
-          <a href="/index.php"><i class="material-icons">settings_accessibility</i></a>
-        </div>
-        <div class="title">
-          <li><a href="/index.php">Trips & Roads</a></li>
-        </div>
-        <div class="nav-item">
-          <a href="/index.php"><i class="material-icons">chat_bubble</i>
-          <span>Messagerie</span> </a>
-        </div>
-        <div class="nav-item">
-          <a href="/index.php"><i class="material-icons">group</i>
-          <span>Amis</span> </a>
-        </div>
-        <div class="nav-item">
-          <a href="/creationRoadTrip.php"><i class="material-icons">add_box</i>
-          <span>Créer un Road-Trip</span> </a>
-        </div>
-        <div class="nav-item">
-          <a href="/index.php"><i class="material-icons">account_circle</i>
-          <span>Se connecter</span> </a>
-        </div>
-      </ul>
+      </div>
+      <div class="nav-item">
+        <a href="/index.php">
+          <i class="material-icons">settings_accessibility</i>
+          <span>Paramètres</span>
+        </a>
+      </div>
+      <div class="title">
+        <a href="/index.php">Trips & Roads</a>
+      </div>
+      <div class="nav-item">
+        <a href="/index.php">
+          <i class="material-icons">chat_bubble</i>
+          <span>Messagerie</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/index.php">
+          <i class="material-icons">group</i>
+          <span>Amis</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/creationRoadTrip.php">
+          <i class="material-icons">add_box</i>
+          <span>Créer un Road-Trip</span>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a href="/index.php">
+          <i class="material-icons">account_circle</i>
+          <span>Se connecter</span>
+        </a>
+      </div>
+    </ul>
+ 
+
+
       
       <input type="checkbox" id="burger">
       <label for="burger" class="burger">
