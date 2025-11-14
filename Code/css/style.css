@@ -226,6 +226,116 @@ header>nav>input:checked ~ label>span::after{
   transform: rotate(-45deg) translateX(50px) translateY(50px);
   transition: 1s;
 }
+/*============================
+    Profil
+============================*/
+
+main.profil {
+    padding: 20px;
+    border-radius: 10px;
+    display : flex ;
+}
+
+.profil div {
+    margin-bottom: 20px;
+}
+
+.info_profil{
+  background-color: #E0C58B;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-right: 200px;
+  
+}
+
+.form_modif {
+    background-color: #E0C58B;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
+}
+#login-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2E8B57; 
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form_modif label {
+    display: block;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form_modif input[type="text"],
+.form_modif input[type="email"],
+.form_modif input[type="password"],
+.form_modif input[type="tel"],
+.form_modif input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+
+.form_modif input[type="password"],
+.form_modif input[type="text"],
+.form_modif input[type="email"],
+.form_modif input[type="tel"],
+.form_modif input[type="date"] {
+    width: 100%;
+    max-width: 350px;
+    margin-bottom: 15px;
+}
+
+.form_modif button {
+    background-color: #0B667D; 
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    display: block;
+    margin: 0 auto;
+    transition: background-color 0.3s;
+}
+
+.form_modif button:hover {
+    background-color: #2E8B57; 
+}
+.form_modif input[type="file"] {
+    margin-top: 10px;
+}
+
+.profil ul {
+    list-style: none;
+    padding-left: 30;
+}
+
+.profil ul li {
+    margin-bottom: 15px;
+}
+
+.profil ul li a {
+    font-size: 16px;
+    color: #0B667D;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.profil ul li a:hover {
+    color: #2e8b57;
+}
+
+.profil a {
+    text-decoration: none;
+}
+
 
 /* ==============================
    BOUTON ACCESSIBILITÉ
