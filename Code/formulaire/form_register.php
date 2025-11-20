@@ -15,8 +15,21 @@ if (!empty($_POST['email']) && !empty($_POST['name']) && !empty($_POST['password
     $town     = trim($_POST['town'] );
     $phone    = trim($_POST['phone']);
     $birthdate = trim($_POST['birthdate']);
+    $image_nom   = null;
 
-    
+    if (!empty($_FILES['image']['name'])) {
+        $dossier = __DIR__ . '/uploads/';
+        if (!is_dir($dossier)) {
+            mkdir($dossier, 0777, true);
+        }
+
+        $image_nom = basename($_FILES['image']['name']);
+        $chemin = $dossier . $image_nom;
+
+        if (!move_uploaded_file($_FILES['image']['tmp_name'], $chemin)) {
+            $image_nom = null; 
+        }
+    }
 
 
 
@@ -25,8 +38,8 @@ if (!empty($_POST['email']) && !empty($_POST['name']) && !empty($_POST['password
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
 
-    $sql = "INSERT INTO users (email, name, lastname, password, town, postal, address, active, updated)
-            VALUES (:email, :name, :lastname, :password, :town, :postal, :address, :active, :updated)";
+    $sql = "INSERT INTO users (email, name, lastname, password, town, postal, address , image ,  active, updated)
+            VALUES (:email, :name, :lastname, :password, :town, :postal, :address, :image , :active, :updated)";
 
     $stmt = $pdo->prepare($sql);
 
@@ -38,7 +51,7 @@ if (!empty($_POST['email']) && !empty($_POST['name']) && !empty($_POST['password
         ':town'     => $town,
         ':postal'   => $postal,
         ':address'  => $address,
-        
+         
         
     ]);
 
