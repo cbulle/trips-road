@@ -157,7 +157,7 @@ header nav > ul > div span {
   } 
 
 
-input {
+.bar_rech  input {
   box-sizing: border-box;
   height: 30px;
   width: 0px;
