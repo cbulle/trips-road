@@ -157,7 +157,7 @@ header nav > ul > div span {
   } 
 
 
-.bar_rech  input {
+.bar_rech>input {
   box-sizing: border-box;
   height: 30px;
   width: 0px;
@@ -166,12 +166,13 @@ header nav > ul > div span {
   color: black;
   font-size: 20px;
   border : 1px solid #f2e9d6;
-  border-radius: 50px;
-  transition: all .7s ease;
+  border-radius: 60px;
   position: absolute;
-  left: 6px;
-  top: -10px;
+  left: 11px;
+  top: -8px;
 }
+
+
 
 ::placeholder {
   color: grey;
@@ -199,14 +200,12 @@ header nav > ul > div span {
   top: -21px;
 }
 .bar_rech:hover input{
+  transition: all .7s ease;
   width: 200px;
   transform: translateX(42px);
 }
 
 
-.bar_rech:hover input>i{
-  transform: rotate(.35deg);
-}
 /* ==============================
    BURGER
 ============================== */
@@ -306,7 +305,7 @@ header nav > ul > div span {
     }  
  
     header>nav>input:checked ~ label>span::before{
-        transform: rotate(45deg) translateX(41px) translateY(-58px);
+        transform: rotate(45deg) translateX(40px) translateY(-59px);
         transition: 1s;
     }
  
@@ -317,14 +316,10 @@ header nav > ul > div span {
     }
  
     header>nav>input:checked ~ label>span::after{
-        transform: rotate(-45deg) translateX(43px) translateY(57px);;
+        transform: rotate(-45deg) translateX(43px) translateY(56px);;
         transition: 1s;
     }
 
-header>nav>input:checked ~ label>span::after{
-  transform: rotate(-45deg) translateX(50px) translateY(50px);
-  transition: 1s;
-}
 /*============================
     Profil
 ============================*/
@@ -774,12 +769,18 @@ footer .footer-links li {
   list-style: none;
 }
 
-footer .footer-links li a {
+footer .footer-links>li>a {
   color: #f2e9d6;
   font-weight: bold;
   position: absolute;
   transition: 0.5s;
 }
+
+footer .footer-links>li>a:hover {
+  color: #FF7F50;
+  font-size: 1.5em;
+}
+
 
 /* ==============================
    AJOUT : STYLE POUR ÉLÉMENTS DYNAMIQUES (légende, sous-étapes, formulaires)

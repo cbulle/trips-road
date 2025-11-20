@@ -430,3 +430,5 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialisation sur le formulaire que tu veux afficher par défaut :
     showRegister(); // ou showLogin() selon souhait
 });
+
+

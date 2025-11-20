@@ -12,8 +12,7 @@
   <nav>
     <ul>
       <div class="nav-item">
-        <div class="bar_rech">
-          
+        <div class="bar_rech"> 
           <input type="text" placeholder="Search" />
           <div class="btn">
             <i class="fas fa-search"></i>
