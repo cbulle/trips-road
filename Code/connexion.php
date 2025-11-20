@@ -23,12 +23,6 @@
     <button type="submit"> Se connecter</button>
 </form>
 
-
-
-
-
-
-
 </main>    
 </body>
 </html>
