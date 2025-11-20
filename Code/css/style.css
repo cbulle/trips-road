@@ -151,10 +151,10 @@ header nav > ul > div span {
 ============================== */
 .bar_rech {
   position: absolute;
-  left: 150px;
-  top: 90px;
+  left: 10px;
+  top: 110px;
   transform: translate(-50%, -50%);
-} 
+  } 
 
 
 input {
@@ -169,7 +169,7 @@ input {
   border-radius: 50px;
   transition: all .7s ease;
   position: absolute;
-  left: 10px;
+  left: 6px;
   top: -10px;
 }
 
@@ -200,8 +200,11 @@ input {
 }
 .bar_rech:hover input{
   width: 200px;
+  transform: translateX(42px);
 }
-.bar_rech:hover input>i{
+
+
+.bar_rech:hover i{
   transform: rotate(.35deg);
 }
 /* ==============================
