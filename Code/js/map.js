@@ -140,28 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
         li.innerHTML = `
           <div class="segment-header" style="display:flex;align-items:center;gap:5px;cursor:pointer;"> 
           <span style="display:inline-block;width:15px;height:15px;background:${color};border-radius:3px;"></span> 
-          <span>${villes[i]} → ${villes[i + 1]}</span> 
-          <button class="toggleSousEtapes" data-index="${i}" style="margin-left:auto;">▼</button> </div>
+          <button class="toggleSousEtapes" data-index="${i}" style="margin-left:auto;">${villes[i]} → ${villes[i + 1]}</button> </div>
           <button class="modifierSousEtapes" data-index="${i}">Modifier</button>
           <ul class="sousEtapesList" data-index="${i}" style="display:none;list-style:none;padding-left:20px;"></ul>
         `;
         li.dataset.index = i;
         document.getElementById('legendList').appendChild(li);
-
-        // Gestion du clic sur le titre ou le triangle pour afficher/masquer les sous-étapes
-        const header = li.querySelector('.segment-header');
-        header.addEventListener('click', () => {
-          const sousEtapesList = li.querySelector('.sousEtapesList');
-          // Afficher ou masquer les sous-étapes
-          console.log(`Clic sur le bouton pour le segment ${i}`);
-          console.log(sousEtapesList.style.display );
-          if (sousEtapesList.style.display === 'none') {
-            sousEtapesList.style.display = 'block';
-          } else {
-            sousEtapesList.style.display = 'none';
-          }
-          console.log(sousEtapesList.style.display );
-        });
 
       } catch (e) {
         console.error("Erreur segment :", e);
@@ -338,36 +322,43 @@ document.getElementById('btnModifier').addEventListener('click', () => {
 
   // --- Menu déroulant des sous-étapes ---
   document.getElementById('legendList').addEventListener('click', e => {
-    if (e.target.classList.contains('toggleSousEtapes')) {
-      const index = e.target.dataset.index;
-      const ul = document.querySelector(`.sousEtapesList[data-index="${index}"]`);
-      if (!ul) return;
+      if (e.target.classList.contains('toggleSousEtapes')) {
+        console.log("Bouton cliqué");
+        const index = e.target.dataset.index;
+        const ul = document.querySelector(`.sousEtapesList[data-index="${index}"]`);
+        if (!ul) return;
+        console.log(ul.style.display);
+        if(ul.style.display === 'none'){
+          console.log("Jentre dans le ul.style.display !== block");
+        const seg = segments[index];
+        ul.innerHTML = '';
+        if (seg.sousEtapes.length > 0) {
+          seg.sousEtapes.forEach(se => {
+            const li = document.createElement('li');
+            let photoHTML = '';
+            if (se.photo) {
+              const photoURL = URL.createObjectURL(se.photo);
+              photoHTML = `<img src="${photoURL}" class="sousetape-photo" alt="photo">`;
+            }
 
-      const seg = segments[index];
-      ul.innerHTML = '';
-      if (seg.sousEtapes.length > 0) {
-        seg.sousEtapes.forEach(se => {
-          const li = document.createElement('li');
-          let photoHTML = '';
-          if (se.photo) {
-            const photoURL = URL.createObjectURL(se.photo);
-            photoHTML = `<img src="${photoURL}" class="sousetape-photo" alt="photo">`;
-          }
+            li.innerHTML = `
+              <div class="sousetape-item">
+                <strong>${se.nom}</strong>${se.heure ? ` <span class="sousetape-heure">(${se.heure})</span>` : ''}<br>
+                ${se.remarque ? `<em>${se.remarque}</em><br>` : ''}
+                ${photoHTML}
+              </div>
+            `;
+            ul.appendChild(li);
+          });
+        } else {
+          ul.innerHTML = '<li><em>Aucune sous-étape enregistrée</em></li>';
+        }
 
-          li.innerHTML = `
-            <div class="sousetape-item">
-              <strong>${se.nom}</strong>${se.heure ? ` <span class="sousetape-heure">(${se.heure})</span>` : ''}<br>
-              ${se.remarque ? `<em>${se.remarque}</em><br>` : ''}
-              ${photoHTML}
-            </div>
-          `;
-          ul.appendChild(li);
-        });
-      } else {
-        ul.innerHTML = '<li><em>Aucune sous-étape enregistrée</em></li>';
+        ul.style.display = 'block';
+      }else{
+        console.log("Je rentre direcement dedans le none");
+        ul.style.display = 'none';
       }
-
-      ul.style.display = 'block';
     }
   });
 
