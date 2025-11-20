@@ -204,7 +204,7 @@ input {
 }
 
 
-.bar_rech:hover i{
+.bar_rech:hover input>i{
   transform: rotate(.35deg);
 }
 /* ==============================
