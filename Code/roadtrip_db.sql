@@ -1,12 +1,3 @@
--- ===========================================
--- Base de données : roadtrip_db
--- Projet : Site de création et partage de Road Trips
--- ===========================================
-
--- Création de la base
-CREATE DATABASE IF NOT EXISTS roadtrip_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE roadtrip_db;
-
 -- Table des utilisateurs
 CREATE TABLE utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,19 +8,19 @@ CREATE TABLE utilisateurs (
     photo_profil VARCHAR(255) DEFAULT NULL,
     bio TEXT,
     date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table des road trips
 CREATE TABLE roadtrip (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(255) NOT NULL,
     description TEXT,
-    etapes TEXT, 
+    etapes TEXT,
     visibilite ENUM('public', 'amis', 'prive') DEFAULT 'public',
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_utilisateur INT NOT NULL,
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table des points d’intérêt (POI)
 CREATE TABLE points_interet (
@@ -41,7 +32,7 @@ CREATE TABLE points_interet (
     categorie VARCHAR(100),
     id_createur INT,
     FOREIGN KEY (id_createur) REFERENCES utilisateurs(id) ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Table d’association entre road trip et points d’intérêt
 CREATE TABLE roadtrip_points_interet (
@@ -50,9 +41,9 @@ CREATE TABLE roadtrip_points_interet (
     PRIMARY KEY (id_roadtrip, id_poi),
     FOREIGN KEY (id_roadtrip) REFERENCES roadtrip(id) ON DELETE CASCADE,
     FOREIGN KEY (id_poi) REFERENCES points_interet(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---Table des amis (relation entre utilisateurs)
+-- Table des amis
 CREATE TABLE amis (
     id_utilisateur INT,
     id_ami INT,
@@ -61,9 +52,9 @@ CREATE TABLE amis (
     PRIMARY KEY (id_utilisateur, id_ami),
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     FOREIGN KEY (id_ami) REFERENCES utilisateurs(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---Table de messagerie
+-- Table de messagerie
 CREATE TABLE messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_expediteur INT NOT NULL,
@@ -73,9 +64,9 @@ CREATE TABLE messages (
     lu BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_expediteur) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     FOREIGN KEY (id_destinataire) REFERENCES utilisateurs(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---Table des commentaires et avis
+-- Table des commentaires
 CREATE TABLE commentaires (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_utilisateur INT NOT NULL,
@@ -87,9 +78,9 @@ CREATE TABLE commentaires (
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE,
     FOREIGN KEY (id_roadtrip) REFERENCES roadtrip(id) ON DELETE CASCADE,
     FOREIGN KEY (id_poi) REFERENCES points_interet(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---Table des notifications
+-- Table des notifications
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_utilisateur INT NOT NULL,
@@ -97,9 +88,9 @@ CREATE TABLE notifications (
     lu BOOLEAN DEFAULT FALSE,
     date_notification TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---Table des signalements (pour modération)
+-- Table des signalements
 CREATE TABLE signalements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_signaleur INT NOT NULL,
@@ -108,5 +99,4 @@ CREATE TABLE signalements (
     motif TEXT,
     date_signalement TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_signaleur) REFERENCES utilisateurs(id) ON DELETE CASCADE
-);
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
