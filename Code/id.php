@@ -32,27 +32,26 @@ include_once __DIR__ . "/modules/header.php"
         <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" required>
 
-        <label for= "confirm_password">Confirmation du mot de passe</label>
-        <input type= "password" id= "password" name="password" required>
+        <label for="confirm_password">Confirmation du mot de passe *</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
 
-        <label for="address">Adresse</label>
-        <input type="text" id="address" name="address">
+        <label for="address">Adresse *</label>
+        <input type="text" id="address" name="address" required>
 
-        <label for="postal">Code postal</label>
-        <input type="text" id="postal" name="postal">
+        <label for="postal">Code postal *</label>
+        <input type="text" id="postal" name="postal" required>
 
-        <label for="town">Ville</label>
-        <input type="text" id="town" name="town">
+        <label for="town">Ville *</label>
+        <input type="text" id="town" name="town" required>
 
-        <label for="phone">Votre numéro de téléphone</label>
-        <input type="tel"  id="phone"  name="phone" required />
+        <label for="phone">Votre numéro de téléphone *</label>
+        <input type="tel" id="phone" name="phone" required>
 
-        <label for="birthdate">Date de naissance</label>
-        <input type="date" id="birthdate" name="birthdate" min="1900-01-01"  />
+        <label for="birthdate">Date de naissance *</label>
+        <input type="date" id="birthdate" name="birthdate" min="1900-01-01" required>
 
         <label for="image">Photo de profil</label>
         <input type="file" id="image" name="image" accept="image/*">
-
 
         <button type="submit">S'inscrire</button>
 
