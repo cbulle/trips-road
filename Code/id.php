@@ -74,6 +74,10 @@ Les informations avec astérisque sont nécessaires à la création et à la ges
         <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" required>
 
+         <input type="checkbox" name= "remember" id="remember">
+      <label for="remember"> Se souvenir de moi</label>
+
+
         <button type="submit">Se connecter</button>
 </form>
 </div>

@@ -47,7 +47,7 @@
         </a>
       </div>
       <div class="nav-item">
-        <a href="/index.php">
+        <a href="/../id.php">
           <i class="material-icons">account_circle</i>
           <span>Se connecter</span>
         </a>
