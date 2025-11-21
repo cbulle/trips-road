@@ -50,6 +50,10 @@ include_once __DIR__ . "/modules/header.php"
         <label for="birthdate">Date de naissance</label>
         <input type="date" id="birthdate" name="birthdate" min="1900-01-01"  />
 
+        <label for="image">Photo de profil</label>
+        <input type="file" id="image" name="image" accept="image/*">
+
+
         <button type="submit">S'inscrire</button>
 
         <p>
@@ -69,6 +73,10 @@ Les informations avec astérisque sont nécessaires à la création et à la ges
 
         <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" required>
+
+         <input type="checkbox" name= "remember" id="remember">
+      <label for="remember"> Se souvenir de moi</label>
+
 
         <button type="submit">Se connecter</button>
 </form>

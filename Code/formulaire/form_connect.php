@@ -1,0 +1,68 @@
+<?php
+require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../bd/lec_bd.php';
+
+$error = null; 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if (!empty($_POST['email']) && !empty($_POST['password'])) {
+
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $remember = isset($_POST['remember']);  
+
+        $sql = "SELECT * FROM utilisateurs WHERE email = :email";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && $password === $user['mot_de_passe']) {  //password_verify($password, $user['mot_de_passe']  quand mot de passe seront hash
+
+            $_SESSION['utilisateur'] = [
+                'id' => $user['id'],
+                'nom' => $user['nom'],
+                'prenom' => $user['prenom'],
+                'email' => $user['email']
+            ];
+
+            if ($remember) {
+                setcookie('remember_login', $email, time() + (7 * 24 * 60 * 60), '/');
+            }
+
+            header("Location: ../index.php");
+            exit;
+        } else {
+            $error = "Email ou mot de passe incorrect.";
+        }
+
+    } else {
+        $error = "Veuillez remplir tous les champs.";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Connexion</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<?php include __DIR__ . '/../modules/header.php'; ?>
+
+<main>
+    <h2>Connexion</h2>
+
+    <?php if ($error): ?>
+        <p class="error"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
+
+    <p><a href="../id.php">Réessayer</a></p>
+</main>
+
+<?php include __DIR__ . '/../modules/footer.php'; ?>
+
+</body>
+</html>
