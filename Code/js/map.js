@@ -785,6 +785,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+/*=======================================
+          Changement de thème
+=======================================*/
+const checkbox = document.getElementById("checkboxSombre");
+checkbox.addEventListener("change", () => {
+  document.documentElement.classList.toggle("dark", checkbox.checked);
+});
 
 
 
