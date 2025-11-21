@@ -22,7 +22,7 @@
             </li>
 
             <li class="nav-item">
-                <a href="/parametres.php">
+                <a href="/accessibilite.php">
                     <i class="material-icons">settings_accessibility</i>
                     <span>Paramètres</span>
                 </a>
