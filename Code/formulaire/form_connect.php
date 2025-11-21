@@ -22,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'id' => $user['id'],
                 'nom' => $user['nom'],
                 'prenom' => $user['prenom'],
-                'email' => $user['email']
+                'email' => $user['email'],
+                'photo_profil' => $user['photo_profil']
             ];
 
             if ($remember) {

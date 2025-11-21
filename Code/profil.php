@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/modules/init.php';
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

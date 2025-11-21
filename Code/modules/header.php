@@ -68,6 +68,8 @@
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
                         (<a href="/logout.php">Déconnexion</a>)
+                         <img src="/img/<?= htmlspecialchars($_SESSION['utilisateur']['photo_profil']) ?>" alt="Photo de profil"  >
+                        <a href= "/profil.php"> Profil</a>
                     </span>
 
                 <?php else: ?>
