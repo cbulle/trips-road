@@ -48,6 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     input.classList.add('etape');
     
     etapesContainer.appendChild(input);
+
+    if(document.getElementById('btnCalculer').style.display === 'none'){
+      document.getElementById('btnRecalculer').style.display = 'inline-block';
+      document.getElementById('btnLegende').style.display = 'none';
+      console.log("Entre dans le if de addEtape");
+    }
   });
 
 
@@ -108,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Construction des segments entre les villes
-    // Construction des segments entre les villes
     for (let i = 0; i < coordsVilles.length - 1; i++) {
       const start = coordsVilles[i];
       const end = coordsVilles[i + 1];
@@ -157,6 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
     map.fitBounds(coordsVilles.map(c => [c[0], c[1]]));
   }
 
+  // Sauvegarder les étapes existantes avant de cacher
+function saveEtapes() {
+  const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
+    .map(input => input.value.trim())
+    .filter(ville => ville.length > 0);
+  return villes;
+}
+
+
 // Fonction pour revenir en arrière et permettre l'ajout d'étapes
 document.getElementById('btnModifier').addEventListener('click', () => {
   // Réafficher les éléments de création
@@ -169,16 +183,202 @@ document.getElementById('btnModifier').addEventListener('click', () => {
 
   // Cacher le bouton "Modifier l'itinéraire"
   document.getElementById('btnModifier').style.display = 'none';
+  document.getElementById('btnCalculer').style.display = 'none';
+  document.getElementById('btnLegende').style.display = 'inline-block';
 
   // Réinitialiser la carte et les segments
-  segments.forEach(s => map.removeLayer(s.line));
-  segments = [];
-  sousEtapesMarkers.forEach(m => map.removeLayer(m));
-  sousEtapesMarkers = [];
-  markerDepart && map.removeLayer(markerDepart);
-  markerArrivee && map.removeLayer(markerArrivee);
+  //segments.forEach(s => map.removeLayer(s.line));
+  //segments = [];
+  //sousEtapesMarkers.forEach(m => map.removeLayer(m));
+  //sousEtapesMarkers = [];
+  //markerDepart && map.removeLayer(markerDepart);
+  //markerArrivee && map.removeLayer(markerArrivee);
+  // Sauvegarder les étapes existantes avant de tout cacher
+  const savedEtapes = saveEtapes();
+  console.log(savedEtapes);
+  
+
+  // Réafficher les étapes sauvegardées
+  const etapesContainer = document.getElementById('etapesContainer');
+  etapesContainer.innerHTML = ''; // Réinitialise les étapes pour éviter les doublons
+  savedEtapes.forEach(ville => {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Étape supplémentaire';
+    input.classList.add('etape');
+    input.value = ville; // Remplir avec la ville sauvegardée
+    etapesContainer.appendChild(input);
+  });
 });
 
+document.getElementById('btnLegende').addEventListener('click', () => {
+  document.getElementById('etapesContainer').style.display = 'none';
+  document.getElementById('addEtape').style.display = 'none';
+  document.getElementById('btnCalculer').style.display = 'none';
+
+  document.getElementById('legend').style.display = 'block';
+
+  document.getElementById('btnModifier').style.display = 'inline-block';
+  document.getElementById('btnLegende').style.display = 'none';
+  document.getElementById('btnRecalculer').style.display = 'none';
+});
+
+async function recalculerDerniersSegmentsMultiples() {
+  const inputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
+    .map(i => i.value.trim())
+    .filter(v => v.length > 0);
+
+  if (inputs.length < 2) {
+    alert("Veuillez saisir au moins deux villes.");
+    return;
+  }
+
+  // --- Construire la séquence de villes déjà connues à partir de `segments` ---
+  let existingSequence = [];
+  if (segments.length > 0) {
+    existingSequence.push(segments[0].startName);
+    for (const s of segments) existingSequence.push(s.endName);
+  }
+
+  // Si on n'a aucun segment existant -> on crée tous les segments entre inputs
+  if (existingSequence.length === 0) {
+    // fallback : construire segments séquentiels pour tous les inputs
+    // (équivalent à calculer tout mais sans écraser l'état existant)
+    let startIdx = 0;
+    try {
+      for (let i = 0; i < inputs.length - 1; i++) {
+        const startName = inputs[i];
+        const endName = inputs[i + 1];
+        // calcule et ajoute le segment startName -> endName
+        await _ajouterSegmentEntre(startName, endName);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la création des segments initiaux.");
+    }
+    // Ajuster la vue finale (tous les coords des segments)
+    const allCoords = segments.flatMap(s => [s.startCoord, s.endCoord]);
+    if (allCoords.length) map.fitBounds(allCoords);
+    return;
+  }
+
+  // --- Trouver la dernière ville connue dans les inputs ---
+  const lastKnownCity = existingSequence[existingSequence.length - 1];
+  const lastKnownIndexInInputs = inputs.lastIndexOf(lastKnownCity);
+
+  if (lastKnownIndexInInputs === -1) {
+    // On n'a pas retrouvé la dernière ville connue : fallback sûr -> recalcul global
+    console.warn("Dernière ville connue introuvable dans les inputs. Recalcul global.");
+    await calculItineraire();
+    return;
+  }
+
+  // Si aucune nouvelle ville n'a été ajoutée
+  if (lastKnownIndexInInputs === inputs.length - 1) {
+    alert("Aucune nouvelle ville à ajouter.");
+    return;
+  }
+
+  // --- Liste des nouvelles villes à ajouter, dans l'ordre ---
+  const nouvelles = inputs.slice(lastKnownIndexInInputs + 1);
+  let depart = lastKnownCity;
+
+  try {
+    for (const villeArr of nouvelles) {
+      await _ajouterSegmentEntre(depart, villeArr);
+      depart = villeArr; // avancer la tête
+    }
+
+    // Mettre à jour markerArrivee pour la toute dernière ville
+    const derniereSeg = segments[segments.length - 1];
+    if (markerArrivee) map.removeLayer(markerArrivee);
+    markerArrivee = L.marker(derniereSeg.endCoord)
+      .addTo(map)
+      .bindPopup(`Arrivée : ${derniereSeg.endName}`);
+
+    // Ajuster la vue : étendre pour inclure le nouveau(s) segment(s)
+    const allCoords = segments.flatMap(s => [s.startCoord, s.endCoord]);
+    if (allCoords.length) map.fitBounds(allCoords);
+
+    alert(`${nouvelles.length} segment(s) ajoutés.`);
+  } catch (err) {
+    console.error("Erreur lors de l'ajout des nouveaux segments :", err);
+    alert("Erreur lors de l'ajout des nouveaux segments. Voir console.");
+  }
+}
+
+async function _ajouterSegmentEntre(startName, endName) {
+  const startCoords = await getCoordonnees(startName);
+  const endCoords = await getCoordonnees(endName);
+  if (!startCoords || !endCoords) {
+    throw new Error(`Ville introuvable : ${!startCoords ? startName : endName}`);
+  }
+
+  const mode = 'Voiture';
+  const strategy = strategies[mode] || strategies['Voiture'];
+  const coordString = `${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}`;
+  const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordString}?overview=full&geometries=geojson`;
+
+  const resp = await fetch(url);
+  const data = await resp.json();
+  if (!data || data.code !== 'Ok') {
+    throw new Error('Erreur OSRM pour ' + startName + ' → ' + endName);
+  }
+
+  const route = data.routes[0];
+  const color = segmentColors[segments.length % segmentColors.length];
+
+  // Créer la polyline et l'ajouter
+  const line = L.geoJSON(route.geometry, { color: color, weight: 5, opacity: 0.8 }).addTo(map);
+
+  // Créer l'objet segment
+  const newSegment = {
+    line,
+    startCoord: startCoords,
+    endCoord: endCoords,
+    startName: startName,
+    endName: endName,
+    distance: (route.distance / 1000).toFixed(1),
+    duration: Math.floor(route.duration / 60),
+    sousEtapes: []
+  };
+
+  // Ajouter au tableau segments
+  segments.push(newSegment);
+
+  // Ajouter à la légende (comme dans ton calcul principal)
+  const i = segments.length - 1;
+  const li = document.createElement('li');
+  li.dataset.index = i;
+  li.innerHTML = `
+    <div class="segment-header" style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+      <span style="display:inline-block;width:15px;height:15px;background:${color};border-radius:3px;"></span>
+      <button class="toggleSousEtapes" data-index="${i}" style="margin-left:auto;">
+        ${startName} → ${endName}
+      </button>
+    </div>
+    <button class="modifierSousEtapes" data-index="${i}">Modifier</button>
+    <ul class="sousEtapesList" data-index="${i}" style="display:none;list-style:none;padding-left:20px;"></ul>
+  `;
+  document.getElementById('legendList').appendChild(li);
+
+  // remplacer le marqueur d'arrivée (on ne supprime pas l'ancien départ)
+  if (markerArrivee) map.removeLayer(markerArrivee);
+  markerArrivee = L.marker(endCoords).addTo(map).bindPopup(`Arrivée : ${endName}`);
+}
+
+
+document.getElementById('btnRecalculer').addEventListener('click', recalculerDerniersSegmentsMultiples);
+document.getElementById('btnRecalculer').addEventListener('click', () =>{
+  document.getElementById('etapesContainer').style.display = 'none';
+  document.getElementById('addEtape').style.display = 'none';
+  document.getElementById('btnCalculer').style.display = 'none';
+  // Afficher la légende
+  document.getElementById('legend').style.display = 'block';
+  // Afficher le bouton pour revenir en arrière
+  document.getElementById('btnModifier').style.display = 'inline-block';
+  document.getElementById('btnRecalculer').style.display = 'none';
+});
 
 
   // --- Gestion du formulaire de sous-étapes ---
@@ -394,6 +594,159 @@ document.getElementById('btnModifier').addEventListener('click', () => {
     }
   });
 
+  /*=========================================================================================
+  COLLECTE DES ELEMENTS DU ROAD TRIP A SAUVEGARDER EN FICHIER JSON EN VUE DE LA SAUVEGARDE BD
+  =========================================================================================*/
+
+  function collectEtapes() {
+    return Array.from(document.querySelectorAll('#etapesContainer input.etape'))
+      .map(i => i.value.trim())
+      .filter(v => v.length > 0);
+  }
+
+
+  function buildRoadtripPayload() {
+    const title = document.getElementById('roadtripTitle').value.trim();
+    const description = document.getElementById('roadtripDescription').value.trim();
+    const visibilite = document.getElementById('roadtripVisibilite').value || 'public';
+
+    const etapes = collectEtapes();
+    const payload = {
+      roadtrip: {
+        titre: title,
+        description: description,
+        visibilite: visibilite
+        // id_utilisateur: id_utilisateur
+      },
+      trajets: []
+    };
+
+    const filesToUpload = {};
+
+    segments.forEach((seg, iSeg) => {
+      const trajetObj = {
+        numero: iSeg + 1,
+        titre: seg.startName + ' → ' + seg.endName,
+        depart: seg.startName,
+        arrivee: seg.endName,
+        date_trajet: seg.date || null,
+        mode_transport: seg.mode_transport || 'Voiture',
+        distance: seg.distance || null,
+        duree: seg.duration || null,
+        sous_etapes: []
+      };
+
+      if (Array.isArray(seg.sousEtapes)) {
+        seg.sousEtapes.forEach((se, iSe) => {
+          const sousObj = {
+            numero: iSe + 1,
+            ville: se.nom || se.ville || '',
+            description: se.remarque || se.description || '',
+            heure: se.heure || null,
+            transport: se.transport || trajetObj.mode_transport || 'Voiture',
+            photos_keys: []
+          };
+
+          if (se.photo) {
+            if (se.photo instanceof FileList || Array.isArray(se.photo)) {
+              const fileList = Array.from(se.photo);
+              fileList.forEach((file, idxFile) => {
+                const key = `file_s_${iSeg}_${iSe}_${idxFile}`;
+                filesToUpload[key] = file;
+                sousObj.photos_keys.push(key);
+              });
+            } else if (se.photo instanceof File) {
+              const key = `file_s_${iSeg}_${iSe}_0`;
+              filesToUpload[key] = se.photo;
+              sousObj.photos_keys.push(key);
+            }
+          } else {
+            const selector = `#subEtapesContainer .subEtape:nth-child(${iSe + 1})`;
+            const subDiv = document.querySelector(selector);
+            if (subDiv) {
+              const inputFile = subDiv.querySelector('input[type="file"]');
+              if (inputFile && inputFile.files && inputFile.files.length > 0) {
+                const fileList = Array.from(inputFile.files);
+                fileList.forEach((file, idxFile) => {
+                  const key = `file_s_${iSeg}_${iSe}_${idxFile}`;
+                  filesToUpload[key] = file;
+                  sousObj.photos_keys.push(key);
+                });
+              }
+            }
+          }
+          trajetObj.sous_etapes.push ? trajetObj.sous_etapes.push(sousObj) : trajetObj.sous_etapes = [sousObj];
+        });
+      }
+      payload.trajets.push(trajetObj);
+    });
+
+    return { payload, filesToUpload };
+  }
+
+  function validateBeforeSave(payload) {
+    const errors = [];
+    if (!payload.roadtrip.titre || payload.roadtrip.titre.trim().length === 0) {
+      errors.push('Le titre du RoadTrip est requis.');
+    }
+    const etapesCount = collectEtapes().length;
+    if (etapesCount < 2) {
+      errors.push('Veuillez saisir au moins deux étapes (départ et arrivée).');
+    }
+    return errors;
+  }
+
+  async function sendRoadtripToServer() {
+    const { payload, filesToUpload } = buildRoadtripPayload();
+
+    const validationErrors = validateBeforeSave(payload);
+    if (validationErrors.length > 0) {
+      alert('Erreur :\n' + validationErrors.join('\n'));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('roadtrip', JSON.stringify(payload));
+
+    Object.entries(filesToUpload).forEach(([key, file]) => {
+      formData.append(key, file, file.name);
+    });
+
+    try {
+      const resp = await fetch('../formulaire/saveRoadtrip.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error('Erreur serveur: ' + resp.status + ' — ' + text);
+      }
+
+      const json = await resp.json();
+      if (json.success) {
+        alert('RoadTrip sauvegardé avec succès !');
+        console.log('Server response:', json);
+      } else {
+        alert('Erreur lors de la sauvegarde :\n' + (json.message || 'Erreur inconnue'));
+        console.error('Erreur save:', json);
+      }
+    } catch (err) {
+      console.error('Erreur fetch/save:', err);
+      alert('Erreur lors de la sauvegarde : ' + err.message);
+    }
+  }
+
+  document.getElementById('saveRoadtrip').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('saveRoadtrip').disabled = true;
+    document.getElementById('saveRoadtrip').textContent = 'Enregistrement...';
+    sendRoadtripToServer().finally(() => {
+      document.getElementById('saveRoadtrip').disabled = false;
+      document.getElementById('saveRoadtrip').textContent = 'Sauvegarder le RoadTrip';
+    });
+  });
+
 
 });
 
@@ -430,5 +783,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialisation sur le formulaire que tu veux afficher par défaut :
     showRegister(); // ou showLogin() selon souhait
 });
+
+
+
 
 

@@ -23,10 +23,22 @@
       <button type="button" id="addEtape">+ Ajouter une étape</button>
       <button type="button" id="btnCalculer">Calculer</button>
       <button type="button" id="btnModifier" style="display: none;">Modifier l'itinéraire</button>
+      <button type="button" id="btnLegende" style="display: none;">Afficher la légende</button>
+      <button type="button" id="btnRecalculer" style="display: none;">Recalculer</button>
 
       <div id="legend" style="display: none;">
         <h3>Légende des étapes :</h3>
         <ul id="legendList" style="list-style:none; padding:0;"></ul>
+      </div>
+      <div id="saveContainer">
+        <input type="text" id="roadtripTitle" placeholder="Titre du RoadTrip" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
+        <textarea id="roadtripDescription" placeholder="Description (optionnelle)" style="width:100%;box-sizing:border-box;margin-bottom:6px;"></textarea>
+        <select id="roadtripVisibilite" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
+          <option value="public">Public</option>
+          <option value="amis">Amis</option>
+          <option value="prive">Privé</option>
+        </select>
+        <button id="saveRoadtrip" type="button">Sauvegarder le RoadTrip</button>
       </div>
     </div>
 

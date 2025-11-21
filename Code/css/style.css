@@ -600,15 +600,35 @@ a#show-register, a#show-login {
   border-radius: 15px;
 }
 
-.sidebar #addEtape, .sidebar #btnCalculer, .sidebar #btnModifier{
+.sidebar #addEtape, .sidebar #btnCalculer, .sidebar #btnModifier, .sidebar #saveRoadtrip, .sidebar #btnLegende, .sidebar #btnRecalculer{
   padding: 10px;
   border-radius: 15px;
   background-color: #39b2a5;
+  width: 260px;
+}
+
+.sidebar #roadtripDescription {
+  border-radius: 15px;
+  margin-top: 7px;
+}
+
+.sidebar #roadtripVisibilite {
+  padding: 10px;
+  border-radius: 15px;
+  background-color: #39b2a5;
+  width: 260px;
+}
+
+.sidebar #saveContainer {
+  margin-top: 480px;
 }
 
 .sidebar #addEtape:hover,
 .sidebar #btnCalculer:hover,
-.sidebar #btnModifier:hover {
+.sidebar #btnModifier:hover,
+.sidebar #saveRoadtrip:hover,
+.sidebar #btnLegende:hover,
+.sidebar #btnRecalculer:hover {
   background-color: #2E8B57;
   cursor: pointer;
 }
@@ -637,7 +657,7 @@ a#show-register, a#show-login {
   padding: 6px 10px;
 }
 
-.sidebar .etape {
+.sidebar .etape, .sidebar #roadtripTitle {
    width: 260px;
    margin-bottom: 10px;
    padding : 10px;
