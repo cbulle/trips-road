@@ -748,6 +748,25 @@ a#show-register, a#show-login {
 }
 
 /* ==============================
+   ANIMATION FORMULAIRE SOUS-ETAPES
+============================== */
+
+.segment-form-container {
+  transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease;
+  opacity: 1;
+  max-height: 1000px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.segment-form-container.hidden {
+  opacity: 0;
+  max-height: 0;
+  padding: 0 10px;
+}
+
+
+/* ==============================
    CARTE LEAFLET
 ============================== */
 .map-container, #map {
