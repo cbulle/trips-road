@@ -1,76 +1,66 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/../bd/lec_bd.php';
+require_once __DIR__ . '/../modules/init.php';
+header('Content-Type: application/json');
+include __DIR__ . '/../bd/lec_bd.php';
 
 try {
-    session_start();
-    if (!isset($pdo) || !$pdo instanceof PDO) throw new Exception("Connexion PDO introuvable.");
+    // Décodage JSON reçu
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!$data) throw new Exception('Requête JSON invalide');
 
-    if (!isset($_POST['roadtrip'])) throw new Exception("Aucune donnée 'roadtrip' reçue.");
-
-    $data = json_decode($_POST['roadtrip'], true);
-    if ($data === null) throw new Exception("JSON invalide.");
-
-    $roadtripData = $data['roadtrip'] ?? null;
+    // Extraction des données attendues
+    $titre = $data['titre'] ?? '';
+    $description = $data['description'] ?? '';
+    $visibilite = $data['visibilite'] ?? '';
+    $villes = $data['villes'] ?? [];
     $trajets = $data['trajets'] ?? [];
 
-    $id_utilisateur = $roadtripData['id_utilisateur'] ?? $_SESSION['user_id'] ?? null;
-    if (!$id_utilisateur) throw new Exception("Utilisateur non identifié.");
-    if (empty($roadtripData['titre'])) throw new Exception("Le titre du roadtrip est requis.");
-    if (count($trajets) < 1) throw new Exception("Au moins un trajet est requis.");
+    // Activation du mode exception pour PDO
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $pdo->beginTransaction();
-
-    $stmt = $pdo->prepare("INSERT INTO roadtrip (titre, description, visibilite, id_utilisateur) VALUES (?, ?, ?, ?)");
-    $stmt->execute([$roadtripData['titre'], $roadtripData['description'] ?? '', $roadtripData['visibilite'] ?? 'public', $id_utilisateur]);
-    $roadtripId = $pdo->lastInsertId();
-
-    foreach ($trajets as $trajet) {
-        $stmt = $pdo->prepare("INSERT INTO trajet (numero, titre, depart, arrivee, date_trajet, mode_transport, road_trip_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([
-            $trajet['numero'],
-            $trajet['titre'],
-            $trajet['depart'],
-            $trajet['arrivee'],
-            $trajet['date_trajet'] ?? date('Y-m-d H:i:s'),
-            $trajet['mode_transport'] ?? 'Voiture',
-            $roadtripId
-        ]);
-        $trajetId = $pdo->lastInsertId();
-
-        foreach ($trajet['sousEtapes'] as $se) {
-            $photos = [];
-            if (!empty($se['photos'])) {
-                foreach ($se['photos'] as $index => $file) {
-                    if (isset($_FILES[$file])) {
-                        $tmpName = $_FILES[$file]['tmp_name'];
-                        $ext = pathinfo($_FILES[$file]['name'], PATHINFO_EXTENSION);
-                        $filename = uniqid('photo_') . '.' . $ext;
-                        $destination = __DIR__ . '/uploads/' . $filename;
-                        move_uploaded_file($tmpName, $destination);
-                        $photos[] = $filename;
-                    }
-                }
-            }
-            $photosJson = json_encode($photos);
-
-            $stmt = $pdo->prepare("INSERT INTO sous_etape (numero, ville, description, photos, mode_transport, trajet_id) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([
-                $se['numero'],
-                $se['ville'],
-                $se['description'] ?? '',
-                $photosJson,
-                $se['mode_transport'] ?? $trajet['mode_transport'] ?? 'Voiture',
-                $trajetId
-            ]);
-        }
+    // Vérification utilisateur connecté dans session
+    if (isset($_SESSION['utilisateur']) && isset($_SESSION['utilisateur']['id'])) {
+        $id_utilisateur = $_SESSION['utilisateur']['id'];
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Utilisateur non connecté']);
+        exit;
     }
 
-    $pdo->commit();
-    echo json_encode(['success' => true, 'message' => 'Roadtrip sauvegardé.', 'roadtripId' => $roadtripId]);
+    // Insertion roadtrip
+    $stmt = $pdo->prepare("INSERT INTO roadtrip (titre, description, visibilite, id_utilisateur) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$titre, $description, $visibilite, $id_utilisateur]);
+    $roadTripId = $pdo->lastInsertId();
 
-} catch (Exception $ex) {
-    if (isset($pdo) && $pdo->inTransaction()) $pdo->rollBack();
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => $ex->getMessage()]);
+    $i = 0;
+    foreach ($trajets as $trajet) {
+        $depart = $trajet['depart'] ?? '???';
+        $arrivee = $trajet['arrivee'] ?? '???';
+        $mode = $trajet['mode'] ?? 'Voiture';
+
+        // Insertion trajet
+        $stmt = $pdo->prepare("INSERT INTO trajet (numero, titre, depart, arrivee, mode_transport, road_trip_id) VALUES (?, ?, ?, ?, ?, ?)");
+        $titreTrajet = "$depart → $arrivee";
+        $stmt->execute([$i, $titreTrajet, $depart, $arrivee, $mode, $roadTripId]);
+        $trajetId = $pdo->lastInsertId();
+
+        $j = 0;
+        foreach ($trajet['sousEtapes'] ?? [] as $sousEtape) {
+            $nom = $sousEtape['nom'] ?? '???';
+            $remarque = $sousEtape['remarque'] ?? '';
+            $heure = $sousEtape['heure'] ?? '';
+            $typeTransport = $sousEtape['type_transport'] ?? 'par défaut'; // Valeur par défaut si non définie
+
+            $stmt = $pdo->prepare("INSERT INTO sous_etape (numero, ville, description,trajet_id, type_transport) VALUES (?, ?, ?, ?, ?)");
+            if (!$stmt->execute([$j, $nom, $remarque, $trajetId, $typeTransport])) {
+                $errorInfo = $stmt->errorInfo();
+                throw new Exception("Erreur lors de l'insertion de la sous-étape $j du trajet $i : " . implode(' ', $errorInfo));
+            }
+            $j++;
+        }
+        $i++;
+    }
+
+    echo json_encode(['success' => true]);
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }

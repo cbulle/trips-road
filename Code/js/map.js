@@ -17,7 +17,28 @@ document.addEventListener('DOMContentLoaded', () => {
     Marche: { profile: 'foot' }
   };
 
-  const segmentColors = ['blue', 'green', 'orange', 'red', 'purple', 'brown', 'pink'];
+  const segmentColors = [
+    'blue',
+    'green',
+    'orange',
+    'red',
+    'purple',
+    'brown',
+    'pink',
+    'yellow',
+    'cyan',
+    'magenta',
+    'lime',
+    'teal',
+    'indigo',
+    'violet',
+    'gold',
+    'silver',
+    'maroon',
+    'navy',
+    'olive',
+    'coral'
+  ];
   const europeViewbox = [-25.0, 35.0, 30.0, 71.0]; // Zone Europe
 
   // --- Fonction de géocodage ---
@@ -218,7 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.code !== 'Ok') return;
 
       const route = data.routes[0];
-      const line = L.geoJSON(route.geometry, { color: segmentColors[index % segmentColors.length], weight: 5, opacity: 0.8 }).addTo(map);
+      const couleurSegment = segmentColors[index % segmentColors.length];
+      const line = L.geoJSON(route.geometry, { color: couleurSegment, weight: 5, opacity: 0.8 }).addTo(map);
 
       segments.push({
         line,
@@ -228,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         endCoord: endCoords,
         distance: (route.distance / 1000).toFixed(1),
         duration: Math.floor(route.duration / 60),
+        couleurSegment,
         sousEtapes: []
       });
 
@@ -379,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // --- Mise à jour de la ligne du segment ---
       if (seg.line) map.removeLayer(seg.line);
       const route = data.routes[0];
-      seg.line = L.geoJSON(route.geometry, { color: 'blue', weight: 5, opacity: 0.8 }).addTo(map);
+      seg.line = L.geoJSON(route.geometry, { color: seg.couleurSegment, weight: 5, opacity: 0.8 }).addTo(map);
       seg.distance = (route.distance / 1000).toFixed(1);
       seg.duration = Math.floor(route.duration / 60);
 
@@ -508,159 +531,67 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /*=========================================================================================
-  COLLECTE DES ELEMENTS DU ROAD TRIP A SAUVEGARDER EN FICHIER JSON EN VUE DE LA SAUVEGARDE BD
-  =========================================================================================*/
-
-  function collectEtapes() {
-    return Array.from(document.querySelectorAll('#etapesContainer input.etape'))
-      .map(i => i.value.trim())
-      .filter(v => v.length > 0);
-  }
-
-
-  function buildRoadtripPayload() {
-    const title = document.getElementById('roadtripTitle').value.trim();
+  /*========================================================================
+  SAUVEGARDE D'UN ROAD POUR LA BD
+  ========================================================================*/
+  document.getElementById('saveRoadtrip').addEventListener('click', async () => {
+    const titre = document.getElementById('roadtripTitle').value.trim();
     const description = document.getElementById('roadtripDescription').value.trim();
-    const visibilite = document.getElementById('roadtripVisibilite').value || 'public';
+    const visibilite = document.getElementById('roadtripVisibilite').value;
+    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
+      .map(input => input.value.trim())
+      .filter(ville => ville.length > 0);
 
-    const etapes = collectEtapes();
-    const payload = {
-      roadtrip: {
-        titre: title,
-        description: description,
-        visibilite: visibilite
-        // id_utilisateur: id_utilisateur
-      },
-      trajets: []
-    };
+    const trajets = segments.map(seg => ({
+      depart: seg.startName,
+      arrivee: seg.endName,
+      mode: 'Voiture',
+      distance: seg.distance,
+      duree: seg.duration,
+      sousEtapes: seg.sousEtapes.map(se => ({
+        nom: se.nom,
+        remarque: se.remarque,
+        heure: se.heure,
+        photo: se.photo && se.photo.name ? se.photo.name : null
+      }))
+    }));
 
-    const filesToUpload = {};
+    const roadTripData = { titre, description, visibilite, villes, trajets };
 
-    segments.forEach((seg, iSeg) => {
-      const trajetObj = {
-        numero: iSeg + 1,
-        titre: seg.startName + ' → ' + seg.endName,
-        depart: seg.startName,
-        arrivee: seg.endName,
-        date_trajet: seg.date || null,
-        mode_transport: seg.mode_transport || 'Voiture',
-        distance: seg.distance || null,
-        duree: seg.duration || null,
-        sous_etapes: []
-      };
-
-      if (Array.isArray(seg.sousEtapes)) {
-        seg.sousEtapes.forEach((se, iSe) => {
-          const sousObj = {
-            numero: iSe + 1,
-            ville: se.nom || se.ville || '',
-            description: se.remarque || se.description || '',
-            heure: se.heure || null,
-            transport: se.transport || trajetObj.mode_transport || 'Voiture',
-            photos_keys: []
-          };
-
-          if (se.photo) {
-            if (se.photo instanceof FileList || Array.isArray(se.photo)) {
-              const fileList = Array.from(se.photo);
-              fileList.forEach((file, idxFile) => {
-                const key = `file_s_${iSeg}_${iSe}_${idxFile}`;
-                filesToUpload[key] = file;
-                sousObj.photos_keys.push(key);
-              });
-            } else if (se.photo instanceof File) {
-              const key = `file_s_${iSeg}_${iSe}_0`;
-              filesToUpload[key] = se.photo;
-              sousObj.photos_keys.push(key);
-            }
-          } else {
-            const selector = `#subEtapesContainer .subEtape:nth-child(${iSe + 1})`;
-            const subDiv = document.querySelector(selector);
-            if (subDiv) {
-              const inputFile = subDiv.querySelector('input[type="file"]');
-              if (inputFile && inputFile.files && inputFile.files.length > 0) {
-                const fileList = Array.from(inputFile.files);
-                fileList.forEach((file, idxFile) => {
-                  const key = `file_s_${iSeg}_${iSe}_${idxFile}`;
-                  filesToUpload[key] = file;
-                  sousObj.photos_keys.push(key);
-                });
-              }
-            }
-          }
-          trajetObj.sous_etapes.push ? trajetObj.sous_etapes.push(sousObj) : trajetObj.sous_etapes = [sousObj];
-        });
-      }
-      payload.trajets.push(trajetObj);
-    });
-
-    return { payload, filesToUpload };
-  }
-
-  function validateBeforeSave(payload) {
-    const errors = [];
-    if (!payload.roadtrip.titre || payload.roadtrip.titre.trim().length === 0) {
-      errors.push('Le titre du RoadTrip est requis.');
-    }
-    const etapesCount = collectEtapes().length;
-    if (etapesCount < 2) {
-      errors.push('Veuillez saisir au moins deux étapes (départ et arrivée).');
-    }
-    return errors;
-  }
-
-  async function sendRoadtripToServer() {
-    const { payload, filesToUpload } = buildRoadtripPayload();
-
-    const validationErrors = validateBeforeSave(payload);
-    if (validationErrors.length > 0) {
-      alert('Erreur :\n' + validationErrors.join('\n'));
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('roadtrip', JSON.stringify(payload));
-
-    Object.entries(filesToUpload).forEach(([key, file]) => {
-      formData.append(key, file, file.name);
-    });
+    // Pour déboguer avant l’envoi
+    console.log('RoadTrip prêt à l\'envoi:', roadTripData);
 
     try {
-      const resp = await fetch('../formulaire/saveRoadtrip.php', {
+      const response = await fetch('/../formulaire/saveRoadtrip.php', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(roadTripData)
       });
+      
+      const text = await response.text();
+      console.log('Réponse brute:', text);
 
-      if (!resp.ok) {
-        const text = await resp.text();
-        throw new Error('Erreur serveur: ' + resp.status + ' — ' + text);
+      let result; // déclaration en scope englobant
+      try {
+        result = JSON.parse(text);
+        console.log('JSON parsé:', result);
+      } catch (e) {
+        console.error('Erreur de parsing JSON:', e);
+        alert("Erreur lors de la lecture de la réponse du serveur.");
+        return; // arrêter ici en cas d’erreur de parsing
       }
 
-      const json = await resp.json();
-      if (json.success) {
-        alert('RoadTrip sauvegardé avec succès !');
-        console.log('Server response:', json);
+      // utilisation dans la même portée que la déclaration
+      if (result.success) {
+        alert("RoadTrip sauvegardé avec succès !");
       } else {
-        alert('Erreur lors de la sauvegarde :\n' + (json.message || 'Erreur inconnue'));
-        console.error('Erreur save:', json);
+        alert(result.message || "Erreur lors de la sauvegarde du RoadTrip.");
       }
-    } catch (err) {
-      console.error('Erreur fetch/save:', err);
-      alert('Erreur lors de la sauvegarde : ' + err.message);
+    } catch (error) {
+      console.error('Erreur réseau :', error);
+      alert("Erreur lors de la sauvegarde.");
     }
-  }
-
-  document.getElementById('saveRoadtrip').addEventListener('click', (e) => {
-    e.preventDefault();
-    document.getElementById('saveRoadtrip').disabled = true;
-    document.getElementById('saveRoadtrip').textContent = 'Enregistrement...';
-    sendRoadtripToServer().finally(() => {
-      document.getElementById('saveRoadtrip').disabled = false;
-      document.getElementById('saveRoadtrip').textContent = 'Sauvegarder le RoadTrip';
-    });
   });
-
 
 });
 
