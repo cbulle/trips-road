@@ -1,26 +1,35 @@
-
 :root {
   --bleu_clair : #39B2A5;
   --bleu_foncé : #0B667D;
   --beige : #F2E9D6;
   --beige_foncé : #E0C58B;
   --orange : #FF7F50;
+  --orange_btn: #FF7F50;
+  --vert_btn: #2E8B57;
   --vert : #2E8B57 ;
   --gris_foncé: #22292b;
   --gris_clair: #9b9b9b;
   --noir: #000000;
+  --rouge: #BF092F ;
 }
 
 html.dark {
-  background-color: var(--gris_foncé);
-  --orange: #2E8B57;
-  --vert: #FF7F50;
-  --bleu_foncé: #0d0645;
-  --beige: #E0C58B;
-  transition: all 0.5s ease;
+  background-color: #132440;
+  --orange: #2E8B57; 
+  --vert: #BF092F;
+  --bleu_foncé: #16476A;
+  --beige: #F5EEDC;
+  --beige_foncé: #C8A96D;
   color: white;
   }
 
+
+
+
+
+html.malvoyant {
+  font-size: 20px;
+}
 
 
 /* ==============================
@@ -40,14 +49,20 @@ html {
   font-family: 'Poppins', Arial, sans-serif;
   background-color: var(--beige);
   margin: 0;
-  padding: 0;
+  padding: 0; 
+  font-size: 16px;
+  transition: all 0.5s ease;
 }
 
 body {
   margin: 0;
   padding: 0;
+  
 }
 
+footer {
+  transition: all 0.5s ease;
+}
 
 
 /* ==============================
@@ -56,15 +71,18 @@ body {
 
 header {
   background-color: var(--bleu_foncé);
+  transition: all 0.5s ease;
 }
 
+header>nav {
+  padding-bottom: 10px;
+}
 header nav > ul {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   padding-top: 50px;
   list-style: none;
-  margin :0;
 }
 
 header nav > ul > li > a > img {
@@ -79,7 +97,7 @@ header nav > ul > li > a > img {
 .title>a{
   color: var(--beige);
   list-style: none;
-  font-size: 40px;
+  font-size: 3rem;
 }
 
 header nav > ul > div > li > a {
@@ -101,7 +119,7 @@ header nav > ul > div {
 
 header nav > ul > div span {
   margin-top: 5px;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 
 .nav-item {
@@ -112,13 +130,13 @@ header nav > ul > div span {
 }
 
 .nav-item i {
-  font-size: 30px;
+  font-size: 2rem;
   margin-bottom: 5px;
 }
 
 .nav-item span {
   display: block;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 
 .nav-item a {
@@ -127,12 +145,16 @@ header nav > ul > div span {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: color 0.3s, transform 0.3s;
+  transition: all 0.5s ease;
+  position: absolute;
+  top: 82px;
 }
 
 .nav-item a > i {
   color: var(--beige); 
-  transition: transform 0.3s; 
+  transition: all 0.5s ease;
+  position: absolute;
+  bottom: 15px;
 }
 
 .nav-item a:hover {
@@ -140,13 +162,17 @@ header nav > ul > div span {
 }
 
 .nav-item a:hover > i {
-  transform: scale(1.2);
+  font-size: 2.5rem;
   color: var(--orange);
+  transition: all 0.5s ease;
 }
 
 .nav-item a:hover > span {
-  font-weight: bold; 
-  color: var(--orange); 
+  font-weight: bold;
+  font-size: 1.2rem; 
+  color: var(--orange);
+  transition: all 0.5s ease;
+ 
 }
 
 .nav-item {
@@ -159,7 +185,7 @@ header nav > ul > div span {
 
 .nav-item span {
   margin-top: 5px;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 
 /* ==============================
@@ -180,7 +206,7 @@ header nav > ul > div span {
   outline: none;
   padding: 0 20px;
   color: var(--noir);
-  font-size: 20px;
+  font-size: 1rem;
   border : 1px solid var(--beige);
   border-radius: 60px;
   position: absolute;
@@ -207,13 +233,12 @@ header nav > ul > div span {
 }
 
 .btn>i {
-  font-size: 25px;
+  font-size: 30px;
   line-height: 80px;
   color: var(--noir);
-  transition: all 0.7s ease;
   position: absolute;
   left: 4px;
-  top: -21px;
+  top: -19px;
 }
 .bar_rech:hover input{
   transition: all .7s ease;
@@ -227,9 +252,9 @@ header nav > ul > div span {
 ============================== */
 #burger {
   opacity: 1;
-  bottom: 60px;
-  position: relative;
-  left: 26px;
+  top: 52px;
+  position: absolute;
+  left: 30px;
 }
 
 
@@ -267,7 +292,7 @@ header nav > ul > div span {
 
 .ul_burger>li>a:hover{
   color: var(--orange);
-  font-size:27px;
+  font-size:1.7rem;
 }
 
 #burger:checked ~ .ul_burger {
@@ -276,7 +301,7 @@ header nav > ul > div span {
 
 .ul_burger li {
   opacity: 0;
-  font-size: 25px;
+  font-size: 1.5rem;
   transform: translateX(20px);
   transition: all 0.3s ease-out;
 }
@@ -342,13 +367,16 @@ header nav > ul > div span {
     Accessibilité
 ============================*/
 
+/* ==============================
+   BOUTON Mode Nuit
+============================== */
+
   .btnSombre>h2 {
     text-align: center;
 
   }
-  #btnLabel {
-    position: relative;
-    left: 44.5%;
+  #btnSombreLabel {
+    text-align: center;
   }
   .btnSombre{
     position:relative;
@@ -366,7 +394,7 @@ header nav > ul > div span {
   }
 
   .btnSombre .slider {
-    background-color: var(--orange);
+    background-color: var(--orange_btn);
     bottom: 0;
     cursor: pointer;
     left: 0;
@@ -374,6 +402,10 @@ header nav > ul > div span {
     right: 0;
     top: 0;
     transition: .4s;
+  }
+
+   .btnSombre>.slider.SombreBtn {
+    background-color: var(--vert_btn);
   }
 
   .btnSombre .slider:before {
@@ -401,8 +433,70 @@ header nav > ul > div span {
     border-radius: 50%;
   }
 
+/* ==============================
+   BOUTON Mode Malvoyant
+============================== */
+
+ .btnMalvoyant>h2 {
+    text-align: center;
+
+  }
+  #btnMalvoyantLabel {
+    text-align: center;
+  }
+  .btnMalvoyant{
+    position:relative;
+    left:47%;
+  }
+  .btnMalvoyant .switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+  }
+
+  .btnMalvoyant .switch input {
+    display:none;
+  }
+
+  .btnMalvoyant .slider {
+    background-color: var(--orange_malvoyant);
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+  }
+  .btnMalvoyant>.slider.MalvoyantBtn {
+    background-color: var(--vert_btn);
+  }
+
+  .btnMalvoyant .slider:before {
+    background-color: var(--beige);
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+  }
 
 
+
+  .btnMalvoyant input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+
+  .btnMalvoyant .slider.round {
+    border-radius: 34px;
+  }
+
+  .btnMalvoyant .slider.round:before {
+    border-radius: 50%;
+  }
 
 /*============================
     Profil
@@ -436,7 +530,7 @@ main.profil {
 }
 
 #login-title {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: bold;
     color: var(--vert); 
     text-align: center;
@@ -445,7 +539,7 @@ main.profil {
 
 .form_modif label {
     display: block;
-    font-size: 16px;
+    font-size: 1rem;
     color: var(--gris_foncé);
     margin-bottom: 8px;
 }
@@ -460,7 +554,7 @@ main.profil {
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 1rem;
     color: var(--gris_foncé);
 }
 
@@ -502,7 +596,7 @@ main.profil {
 }
 
 .profil ul li a {
-    font-size: 16px;
+    font-size: 1rem;
     color: var(--bleu_foncé);
     text-decoration: none;
     transition: color 0.3s;
@@ -517,22 +611,6 @@ main.profil {
 }
 
 
-/* ==============================
-   BOUTON ACCESSIBILITÉ
-============================== */
-#accessBtn {
-  background-color: var(--orange);
-  border: none;
-  color: var(--gris_foncé);
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-#accessBtn:hover {
-  background-color: var(--orange);
-}
 
 /* ==============================
    CONTENU PRINCIPAL
@@ -574,7 +652,7 @@ h1, h2 {
     border: none;
     padding: 14px 0;
     cursor: pointer;
-    font-size: 1.1em;
+    font-size: 1rem;
     font-weight: bold;
     color: var(--bleu_foncé);
     border-radius: 12px 12px 0 0;
@@ -603,7 +681,7 @@ label {
     display: block;
     margin: 12px 0 6px 0;
     font-weight: 600;
-    font-size: 20px ;
+    font-size: 1.3rem ;
     color: var(--bleu_foncé);
 }
 
@@ -616,7 +694,7 @@ input[type="date"] {
     padding: 10px 14px;
     border: 1px solid #ddd;
     border-radius: 6px;
-    font-size: 1em;
+    font-size: 1rem;
     transition: border-color 0.3s ease;
 }
 
@@ -636,7 +714,7 @@ button[type="submit"] {
     color: white;
     border: none;
     padding: 14px 0;
-    font-size: 1.1em;
+    font-size: 1.1rem;
     font-weight: 700;
     border-radius: 8px;
     margin-top: 20px;
@@ -903,7 +981,7 @@ footer .footer-links>li>a {
 
 footer .footer-links>li>a:hover {
   color: var(--orange);
-  font-size: 1.5em;
+  font-size: 1.4rem;
 }
 
 
@@ -920,7 +998,7 @@ footer .footer-links>li>a:hover {
 
 .sidebar #legend h3 {
   margin: 0 0 10px 0;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--orange);
 }
 
@@ -943,7 +1021,7 @@ footer .footer-links>li>a:hover {
 .segment-header button.toggleSousEtapes {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
   color: var(--orange);
 }

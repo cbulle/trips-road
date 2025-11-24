@@ -15,14 +15,22 @@ require_once __DIR__ . '/modules/init.php';
     <div class="cont_access">
         <form id="AccessForm" class="AccessForm" action = " " method = "post">
         <h2 id="login-title">Accessibilité </h2>
-        <label for="btnSombre" id="btnLabel">Mode sombre :</label>
+        <!-- Bouton Mode nuit    -->   
+        <label for="btnSombre" id="btnSombreLabel">Mode sombre :</label>
         <div class="btnSombre">
-        <label class="switch" for="checkboxSombre">
-            <input type="checkbox" id="checkboxSombre" />
-            <div class="slider round"></div>
-            
-        </label>
-</div>
+            <label class="switch" for="checkboxSombre">
+                <input type="checkbox" id="checkboxSombre" />
+                <div class="slider round"></div>
+            </label>
+        </div>
+        <!-- Bouton Malvoyant -->
+        <label for="btnMalvoyant" id="btnMalvoyantLabel">Mode malvoyant :</label>
+        <div class="btnMalvoyant">
+            <label class="switch" for="checkboxMalvoyant">
+                <input type="checkbox" id="checkboxMalvoyant" />
+                <div class="slider round"></div>
+            </label>
+        </div>
 
 
 

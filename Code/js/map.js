@@ -712,27 +712,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 const savedTheme = localStorage.getItem("theme");
-const toggle = document.getElementById("checkboxSombre");
+const toggleSombre = document.getElementById("checkboxSombre");
+
+const savedMalvoyant = localStorage.getItem("Police");
+const toggleMalvoyant = document.getElementById("checkboxMalvoyant");
 
 
 if (savedTheme === "dark") {
     document.documentElement.classList.add("dark");
+    document.documentElement.classList.add("SombreBtn");
 }
 
-if (toggle) {
-    toggle.checked = savedTheme === "dark";
+if (toggleSombre) {
+    toggleSombre.checked = savedTheme === "dark";
 
-    toggle.addEventListener("change", () => {
-        if (toggle.checked) {
+    toggleSombre.addEventListener("change", () => {
+        if (toggleSombre.checked) {
             document.documentElement.classList.add("dark");
+            document.documentElement.classList.add("SombreBtn");
             localStorage.setItem("theme", "dark");
+
         } else {
             document.documentElement.classList.remove("dark");
+            document.documentElement.classList.remove("SombreBtn");
             localStorage.setItem("theme", "light");
         }
     });
 }
 
 
+if (savedMalvoyant === "malvoyant") {
+    document.documentElement.classList.add("malvoyant");
+    document.documentElement.classList.add("MalvoyantBtn");
+}
+
+if (toggleMalvoyant) {
+    toggleMalvoyant.checked = savedMalvoyant === "malvoyant";
+
+    toggleMalvoyant.addEventListener("change", () => {
+        if (toggleMalvoyant.checked) {
+            document.documentElement.classList.add("malvoyant");
+            document.documentElement.classList.add("MalvoyantBtn");
+            localStorage.setItem("Police", "malvoyant");
+
+        } else {
+            document.documentElement.classList.remove("malvoyant");
+            document.documentElement.classList.remove("MalvoyantBtn");
+            localStorage.setItem("Police", "voyant");
+        }
+    });
+}
 
 
