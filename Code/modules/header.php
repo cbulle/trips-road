@@ -7,7 +7,7 @@
     <script src="https://kit.fontawesome.com/d76759a8b0.js" crossorigin="anonymous"></script>
 </head>
 
-<body>
+
 <header>
     <nav>
         <ul>
@@ -110,5 +110,4 @@
 
     </nav>
 </header>
-</body>
 </html>

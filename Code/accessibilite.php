@@ -23,7 +23,7 @@ require_once __DIR__ . '/modules/init.php';
             
         </label>
 </div>
-<script src="js/map.js"></script>  
+
 
 
     <?php include __DIR__ . "/modules/footer.php" ?>

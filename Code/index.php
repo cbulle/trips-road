@@ -16,7 +16,7 @@ require_once __DIR__ . '/modules/init.php';
 <?php     
 include_once __DIR__ . "/modules/header.php"
 ?>
-        <div class="container">
+        <div class="index_container">
             <h2>Bienvenue sur Road Trip Planner !</h2>
             <p>Planifiez et partagez vos road trips facilement.</p>
             <a href="creationRoadTrip.php">

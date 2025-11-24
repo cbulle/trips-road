@@ -6,10 +6,21 @@
   --beige_foncé : #E0C58B;
   --orange : #FF7F50;
   --vert : #2E8B57 ;
-  --gris_foncé: #3a4649;
+  --gris_foncé: #22292b;
   --gris_clair: #9b9b9b;
   --noir: #000000;
 }
+
+html.dark {
+  background-color: var(--gris_foncé);
+  --orange: #2E8B57;
+  --vert: #FF7F50;
+  --bleu_foncé: #0d0645;
+  --beige: #E0C58B;
+  transition: all 0.5s ease;
+  color: white;
+  }
+
 
 
 /* ==============================
@@ -28,7 +39,6 @@ html {
   height: 100%;
   font-family: 'Poppins', Arial, sans-serif;
   background-color: var(--beige);
-  color: var(--gris_foncé);
   margin: 0;
   padding: 0;
 }
@@ -377,13 +387,6 @@ header nav > ul > div span {
     width: 26px;
   }
 
-  .btnSombre input:checked + .slider {
-    background-color: var(--vert);
-  }
-
-  html.dark {
-  background-color: var(--gris_foncé);
-  }
 
 
   .btnSombre input:checked + .slider:before {
@@ -535,9 +538,8 @@ main.profil {
    CONTENU PRINCIPAL
 ============================== */
 
-.container {
+.index_container {
   flex: 1;
-  background: var(--beige);
   border-radius: 15px;
   padding: 30px;
   box-shadow: 0 4px 15px var(--noir);
@@ -850,7 +852,8 @@ footer .image-container {
 footer .image-container img {
   width: 100px; 
   height: auto;
-  background-color: var(--beige);
+  background-color: #F2E9D6;
+  border-radius: 13px;
 }
 
 footer .social-media {
