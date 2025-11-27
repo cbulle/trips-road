@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom" value="${data.nom || ''}">
       <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
       <input type="time" class="subEtapeHeure" value="${data.heure || ''}">
-      <input type="file" class="subEtapePhoto" accept="image/*">
+      <input type="file" class="subEtapePhoto" multiple accept="image/*">
     `;
     subEtapesContainer.appendChild(div);
   }
@@ -347,7 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('addSubEtape').addEventListener('click', () => addSousEtapeForm());
 
   // --- Sauvegarder sous-étapes + ajout markers ---
-  document.getElementById('saveSegment').addEventListener('click', async () => {
+  // --- Sauvegarder sous-étapes + ajout markers ---
+document.getElementById('saveSegment').addEventListener('click', async () => {
     if (currentSegmentIndex === null) return;
 
     const seg = segments[currentSegmentIndex];
@@ -358,33 +359,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const sousEtapeNoms = [];
     const subDivs = Array.from(document.querySelectorAll('.subEtape'));
     for (const div of subDivs) {
-      const nom = div.querySelector('.subEtapeNom').value.trim();
-      const remarque = div.querySelector('.subEtapeRemarque').value.trim();
-      const heure = div.querySelector('.subEtapeHeure').value.trim();
-      const photo = div.querySelector('.subEtapePhoto').files[0] || null;
-      if (!nom) continue;
+        const nom = div.querySelector('.subEtapeNom').value.trim();
+        const remarque = div.querySelector('.subEtapeRemarque').value.trim();
+        const heure = div.querySelector('.subEtapeHeure').value.trim();
+        const photos = Array.from(div.querySelector('.subEtapePhoto').files); // <-- Tous les fichiers
+        if (!nom) continue;
 
-      const se = { nom, remarque, heure, photo };
-      seg.sousEtapes.push(se);
-      sousEtapeNoms.push(nom);
+        const se = { nom, remarque, heure, photos };
+        seg.sousEtapes.push(se);
+        sousEtapeNoms.push(nom);
     }
 
     if (sousEtapeNoms.length === 0) {
-      alert("Aucune sous-étape renseignée. Enregistrement simple.");
-      segmentFormContainer.style.display = 'none';
-      return;
+        alert("Aucune sous-étape renseignée. Enregistrement simple.");
+        segmentFormContainer.style.display = 'none';
+        return;
     }
 
     // --- Calcul de l'itinéraire passant par les sous-étapes ---
     const allPlaces = [seg.startName, ...sousEtapeNoms, seg.endName];
     const coordsList = [];
     for (const place of allPlaces) {
-      const coords = await getCoordonnees(place);
-      if (!coords) {
-        alert(`Lieu introuvable : ${place}`);
-        return;
-      }
-      coordsList.push(coords);
+        const coords = await getCoordonnees(place);
+        if (!coords) {
+            alert(`Lieu introuvable : ${place}`);
+            return;
+        }
+        coordsList.push(coords);
     }
 
     const coordPairs = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
@@ -392,43 +393,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordPairs}?overview=full&geometries=geojson`;
 
     try {
-      const resp = await fetch(url);
-      const data = await resp.json();
-      if (data.code !== 'Ok') {
-        alert("Erreur lors du recalcul du trajet.");
-        return;
-      }
-
-      // --- Mise à jour de la ligne du segment ---
-      if (seg.line) map.removeLayer(seg.line);
-      const route = data.routes[0];
-      seg.line = L.geoJSON(route.geometry, { color: seg.couleurSegment, weight: 5, opacity: 0.8 }).addTo(map);
-      seg.distance = (route.distance / 1000).toFixed(1);
-      seg.duration = Math.floor(route.duration / 60);
-
-      // --- Ajout des marqueurs pour chaque sous-étape ---
-      for (const se of seg.sousEtapes) {
-        const coords = await getCoordonnees(se.nom);
-        if (!coords) continue;
-
-        let popupText = `<b>${se.nom}</b>`;
-        if (se.remarque) popupText += `<br><em>${se.remarque}</em>`;
-        if (se.heure) popupText += `<br>Heure : ${se.heure}`;
-        if (se.photo) {
-          const url = URL.createObjectURL(se.photo);
-          popupText += `<br><img src="${url}" class="popup-photo">`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+        if (data.code !== 'Ok') {
+            alert("Erreur lors du recalcul du trajet.");
+            return;
         }
 
-        addMarker(se.nom, coords, "sous_etape", popupText);
-      }
+        // --- Mise à jour de la ligne du segment ---
+        if (seg.line) map.removeLayer(seg.line);
+        const route = data.routes[0];
+        seg.line = L.geoJSON(route.geometry, { color: seg.couleurSegment, weight: 5, opacity: 0.8 }).addTo(map);
+        seg.distance = (route.distance / 1000).toFixed(1);
+        seg.duration = Math.floor(route.duration / 60);
 
-      alert(`Segment "${seg.startName} → ${seg.endName}" recalculé (${seg.distance} km, ${seg.duration} min).`);
-      segmentFormContainer.style.display = 'none';
-    } catch (err) {
-      console.error(err);
-      alert("Erreur lors du recalcul d’itinéraire.");
-    }
+        // --- Ajout des marqueurs pour chaque sous-étape ---
+        for (const se of seg.sousEtapes) {
+            const coords = await getCoordonnees(se.nom);
+            if (!coords) continue;
+
+            let popupText = `<b>${se.nom}</b>`;
+            if (se.remarque) popupText += `<br><em>${se.remarque}</em>`;
+            if (se.heure) popupText += `<br>Heure : ${se.heure}`;
+
+            // Gestion de plusieurs photos
+            if (se.photos && se.photos.length > 0) {
+                se.photos.forEach(f => {
+                    const url = URL.createObjectURL(f);
+                    popupText += `<br><img src="${url}" class="popup-photo">`;
+                });
+            }
+
+            addMarker(se.nom, coords, "sous_etape", popupText);
+        }
+
+        alert(`Segment "${seg.startName} → ${seg.endName}" recalculé (${seg.distance} km, ${seg.duration} min).`);
+        segmentFormContainer.style.display = 'none';
+      } catch (err) {
+          console.error(err);
+          alert("Erreur lors du recalcul d’itinéraire.");
+      }
   });
+
 
   // --- Toggle sous-étapes dans la légende ---
   document.getElementById('legendList').addEventListener('click', e => {
@@ -538,62 +544,78 @@ document.addEventListener('DOMContentLoaded', () => {
     const titre = document.getElementById('roadtripTitle').value.trim();
     const description = document.getElementById('roadtripDescription').value.trim();
     const visibilite = document.getElementById('roadtripVisibilite').value;
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
-      .map(input => input.value.trim())
-      .filter(ville => ville.length > 0);
+    const photoCover = document.getElementById('roadtripPhoto').files[0]; // photo cover
 
-    const trajets = segments.map(seg => ({
-      depart: seg.startName,
-      arrivee: seg.endName,
-      mode: 'Voiture',
-      distance: seg.distance,
-      duree: seg.duration,
-      sousEtapes: seg.sousEtapes.map(se => ({
-        nom: se.nom,
-        remarque: se.remarque,
-        heure: se.heure,
-        photo: se.photo && se.photo.name ? se.photo.name : null
-      }))
+    if (!titre || !description) {
+        alert("Veuillez remplir le titre et la description.");
+        return;
+    }
+
+    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
+        .map(input => input.value.trim())
+        .filter(v => v.length > 0);
+
+    // Construction des trajets et sous-étapes
+    const trajets = segments.map((seg, sIdx) => ({
+        depart: seg.startName,
+        arrivee: seg.endName,
+        mode: 'Voiture',
+        sousEtapes: seg.sousEtapes.map((se, seIdx) => ({
+            nom: se.nom,
+            remarque: se.remarque,
+            heure: se.heure,
+            photos: se.photos ? se.photos.map((f, i) => `file_s${sIdx}_se${seIdx}_${i}`) : []
+        }))
     }));
 
-    const roadTripData = { titre, description, visibilite, villes, trajets };
+    const formData = new FormData();
+    formData.append('titre', titre);
+    formData.append('description', description);
+    formData.append('visibilite', visibilite);
+    formData.append('villes', JSON.stringify(villes));
+    formData.append('trajets', JSON.stringify(trajets));
 
-    // Pour déboguer avant l’envoi
-    console.log('RoadTrip prêt à l\'envoi:', roadTripData);
+    // Photo cover roadtrip
+    if (photoCover) formData.append('photo_cover', photoCover);
+
+    // Photos sous-étapes
+    segments.forEach((seg, sIdx) => {
+        seg.sousEtapes.forEach((se, seIdx) => {
+            if (se.photos && se.photos.length) {
+                se.photos.forEach((f, i) => {
+                    formData.append(`file_s${sIdx}_se${seIdx}_${i}`, f);
+                });
+            }
+        });
+    });
 
     try {
-      const response = await fetch('/../formulaire/saveRoadtrip.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(roadTripData)
-      });
-      
-      const text = await response.text();
-      console.log('Réponse brute:', text);
+        const response = await fetch('/formulaire/saveRoadtrip.php', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (result.success) {
+            alert('RoadTrip sauvegardé avec succès !');
 
-      let result; // déclaration en scope englobant
-      try {
-        result = JSON.parse(text);
-        console.log('JSON parsé:', result);
-      } catch (e) {
-        console.error('Erreur de parsing JSON:', e);
-        alert("Erreur lors de la lecture de la réponse du serveur.");
-        return; // arrêter ici en cas d’erreur de parsing
+            // Reset
+            document.getElementById('roadtripTitle').value = '';
+            document.getElementById('roadtripDescription').value = '';
+            document.getElementById('roadtripVisibilite').selectedIndex = 0;
+            document.getElementById('roadtripPhoto').value = '';
+            document.getElementById('etapesContainer').innerHTML = '';
+            segments.length = 0;
+            location.reload();
+        } else {
+            alert(result.message || 'Erreur lors de la sauvegarde.');
+        }
+      } catch (err) {
+          console.error(err);
+          alert('Erreur réseau.');
       }
-
-      // utilisation dans la même portée que la déclaration
-      if (result.success) {
-        alert("RoadTrip sauvegardé avec succès !");
-      } else {
-        alert(result.message || "Erreur lors de la sauvegarde du RoadTrip.");
-      }
-    } catch (error) {
-      console.error('Erreur réseau :', error);
-      alert("Erreur lors de la sauvegarde.");
-    }
   });
-
 });
+
 
 /*=======================================
 Elements de gestion du formulaire d'inscription et de connexion

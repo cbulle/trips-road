@@ -92,12 +92,12 @@
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
 
-                <li><a href="/mesRoadTrips.php">Mes Roads-Trips</a></li>
-                <li><a href="/historique.php">Historique</a></li>
-                <li><a href="/favoris.php">Favoris</a></li>
-                <li><a href="/compte.php">Paramètres de compte</a></li>
-                <li><a href="/aide.php">Aide / FAQ</a></li>
-                <li><a href="/contact.php">À propos / Contact</a></li>
+                <li><a href="../mesRoadTrips.php">Mes Roads-Trips</a></li>
+                <li><a href="../historique.php">Historique</a></li>
+                <li><a href="../favoris.php">Favoris</a></li>
+                <li><a href="../compte.php">Paramètres de compte</a></li>
+                <li><a href="../aide.php">Aide / FAQ</a></li>
+                <li><a href="../contact.php">À propos / Contact</a></li>
                 <li><a href="/logout.php">Déconnexion</a></li>
 
             <?php else: ?>

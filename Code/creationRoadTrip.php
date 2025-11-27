@@ -43,6 +43,8 @@ require_once __DIR__ . '/modules/init.php';
           <option value="amis">Amis</option>
           <option value="prive">Privé</option>
         </select>
+        <label>Couverture du Road Trip (Optionnelle) :</label>
+        <input type="file" id="roadtripPhoto" accept="image/*">
         <button id="saveRoadtrip" type="button">Sauvegarder le RoadTrip</button>
       </div>
     </div>
