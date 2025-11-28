@@ -64,6 +64,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Ajout dynamique d'étapes ---
+  function initSelect2(element) {
+    $(element).select2({
+      placeholder: 'Choisir une ville...',
+      allowClear: true, // Affiche une petite croix pour vider le champ
+      language: "fr",
+      width: '100%', // Force la largeur à 100% du conteneur
+      ajax: {
+        url: '/fonctions/recherche_villes.php', 
+        dataType: 'json',
+        delay: 250,
+        data: function(params) {
+          return { q: params.term };
+        },
+        processResults: function(data) {
+          return {
+            results: data.map(item => ({
+              id: item.nom_ville, 
+              text: item.nom_ville 
+            }))
+          };
+        },
+        cache: true
+      },
+      minimumInputLength: 2
+    });
+    // Plus besoin du .on('select2:select'...) manuel ici !
+  }
+
+  // --- 1. Initialisation au chargement de la page ---
+  document.querySelectorAll('.etape').forEach(initSelect2);
+
+
+  // --- 2. Ajout dynamique d'étapes (MODIFIÉE) ---
   const etapesContainer = document.getElementById('etapesContainer');
   document.getElementById('addEtape').addEventListener('click', () => {
     const container = document.createElement('div');
@@ -71,26 +104,29 @@ document.addEventListener('DOMContentLoaded', () => {
     container.style.alignItems = 'center';
     container.style.marginBottom = '5px';
 
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Étape supplémentaire';
-    input.classList.add('etape');
-    input.style.flex = '1';
+    // CORRECTION : On crée un SELECT au lieu d'un INPUT
+    const select = document.createElement('select'); 
+    select.classList.add('etape');
+    select.style.flex = '1';
+    // Le style width:100% sera géré par Select2, mais on peut le mettre par sécu
+    select.style.width = '100%'; 
 
     const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.textContent = '✖';
-    removeBtn.style.marginLeft = '5px';
-    removeBtn.style.cursor = 'pointer';
-    removeBtn.title = 'Supprimer cette étape';
+    removeBtn.textContent = '✖'; // J'ai rajouté le texte du bouton qui manquait dans ton extrait
+    // ... (style bouton suppression) ...
 
     removeBtn.addEventListener('click', () => {
+      // Important : détruire l'instance Select2 avant de supprimer le DOM
+      $(select).select2('destroy'); 
       container.remove();
     });
 
-    container.appendChild(input);
+    container.appendChild(select);
     container.appendChild(removeBtn);
     etapesContainer.appendChild(container);
+
+    // Initialiser Select2 sur le nouveau select
+    initSelect2(select); 
 
     if (document.getElementById('btnCalculer').style.display === 'none') {
       document.getElementById('btnRecalculer').style.display = 'inline-block';
@@ -99,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
+  
   // --- Calcul de l'itinéraire principal ---
   async function calculItineraire() {
     document.getElementById('etapesContainer').style.display = 'none';
@@ -107,9 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('legend').style.display = 'block';
     document.getElementById('btnModifier').style.display = 'inline-block';
 
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
-      .map(input => input.value.trim())
-      .filter(ville => ville.length > 0);
+    const villes = [];
+    $('.etape').each(function() {
+        const val = $(this).val();
+        if (val && val.trim() !== '') {
+            villes.push(val.trim());
+        }
+    });
 
     if (villes.length < 2) { alert("Veuillez renseigner au moins deux villes."); return; }
 
