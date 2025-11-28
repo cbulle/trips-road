@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // --- Initialisation de la carte ---
-  let map = L.map('map').setView([46.5, 2.5], 6);
+  let map = L.map('map-vu').setView([46.5, 2.5], 6);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
@@ -658,50 +658,6 @@ function compresserImage(file, quality = 0.6, maxWidth = 1200) {
         console.log("Fin de compresion");
     });
 }
-
-
-/*=======================================
-Elements de gestion du formulaire d'inscription et de connexion
-=======================================*/
-
-function showLogin() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('btnLogin').classList.add('active');
-    document.getElementById('btnRegister').classList.remove('active');
-}
-
-function showRegister() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-    document.getElementById('btnLogin').classList.remove('active');
-    document.getElementById('btnRegister').classList.add('active');
-}
-
-// Fonction à appeler pour afficher ta modale (si tu as un conteneur modale, sinon adapter)
-function openModal() {
-    // Par exemple, si tu as un div modale, tu peux le passer en display:flex ou block
-    const modal = document.querySelector('.formulaire'); // adapte selon ta structure
-    if (modal) {
-        modal.style.display = 'block';
-    }
-}
-
-// Appel automatique de la modale au chargement de la page profil
-document.addEventListener('DOMContentLoaded', function() {
-    openModal();
-    // Initialisation sur le formulaire que tu veux afficher par défaut :
-    showRegister(); // ou showLogin() selon souhait
-});
-
-
-/*=======================================
-          Changement de thème
-=======================================*/
-const checkbox = document.getElementById("checkboxSombre");
-checkbox.addEventListener("change", () => {
-  document.documentElement.classList.toggle("dark", checkbox.checked);
-});
 
 
 
