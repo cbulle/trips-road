@@ -1,37 +1,52 @@
 :root {
   --bleu_clair : #39B2A5;
   --bleu_foncé : #0B667D;
+  --bleu_foncé_ecriture : #0b0b0b;
   --beige : #F2E9D6;
   --beige_foncé : #E0C58B;
   --orange : #FF7F50;
-  --orange_btn: #FF7F50;
+  --orange_sombre: #FF7F50;
+  --orange_malvoyant: #FF7F50;
   --vert_btn: #2E8B57;
   --vert : #2E8B57 ;
   --gris_foncé: #22292b;
-  --gris_clair: #9b9b9b;
+  --gris_clair: #363535;
   --noir: #000000;
   --rouge: #BF092F ;
 }
 
+/* ==============================
+   React Access
+============================== */
+
 html.dark {
   background-color: #132440;
   --orange: #2E8B57; 
-  --vert: #BF092F;
+  --vert_btn: #BF092F;
   --bleu_foncé: #16476A;
-  --beige: #F5EEDC;
-  --beige_foncé: #C8A96D;
-  color: white;
+  --beige: #E0C58B;
+  --beige_foncé: #16476A;
+  --bleu_foncé_ecriture: rgb(212, 212, 212);
+  color: black;
   }
-
-
-
 
 
 html.malvoyant {
   font-size: 20px;
 }
 
+html.SombreBtn {
+  --orange_sombre: #2E8B57; 
+}
 
+html.MalvoyantBtn {
+  --orange_malvoyant: #2E8B57; 
+}
+
+h1{
+  color: var(--orange);
+  text-align: center;
+}
 /* ==============================
    STYLE GLOBAL
 ============================== */
@@ -215,7 +230,6 @@ header nav > ul > div span {
 }
 
 
-
 ::placeholder {
   color: var(--gris_clair);
 }
@@ -240,6 +254,8 @@ header nav > ul > div span {
   left: 4px;
   top: -19px;
 }
+
+
 .bar_rech:hover input{
   transition: all .7s ease;
   width: 250px;
@@ -272,18 +288,19 @@ header nav > ul > div span {
 
 .ul_burger {
   position: fixed;
-  top: 100px;
+  top:0px;
   left: -100%;
-  width: 350px;
-  height: 50vh;
+  width: 385px;
+  height: 100%;
   background-color: var(--bleu_foncé);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 20px;
   padding-right: 30px;
+  padding-left: 10px;
   transition: left 0.4s ease;
-  border-radius: 20px;
+ 
 }
 
 .ul_burger>li>a {
@@ -364,11 +381,9 @@ header nav > ul > div span {
 
 
 /*============================
-    Accessibilité
-============================*/
+    Accessibilité :
 
-/* ==============================
-   BOUTON Mode Nuit
+   Bouton Mode Nuit
 ============================== */
 
   .btnSombre>h2 {
@@ -394,7 +409,7 @@ header nav > ul > div span {
   }
 
   .btnSombre .slider {
-    background-color: var(--orange_btn);
+    background-color: var(--orange_sombre);
     bottom: 0;
     cursor: pointer;
     left: 0;
@@ -434,7 +449,7 @@ header nav > ul > div span {
   }
 
 /* ==============================
-   BOUTON Mode Malvoyant
+   Bouton Mode Malvoyant
 ============================== */
 
  .btnMalvoyant>h2 {
@@ -483,8 +498,6 @@ header nav > ul > div span {
     transition: .4s;
     width: 26px;
   }
-
-
 
   .btnMalvoyant input:checked + .slider:before {
     transform: translateX(26px);
@@ -597,7 +610,7 @@ main.profil {
 
 .profil ul li a {
     font-size: 1rem;
-    color: var(--bleu_foncé);
+    color: var(--bleu_foncé_ecriture);
     text-decoration: none;
     transition: color 0.3s;
 }
@@ -617,13 +630,11 @@ main.profil {
 ============================== */
 
 .index_container {
-  flex: 1;
-  border-radius: 15px;
   padding: 30px;
-  box-shadow: 0 4px 15px var(--noir);
+  background-color: var(--beige_foncé);
 }
 
-h1, h2 {
+.index_container>h1,.index_container> h2 {
   text-align: center;
   color: var(--orange);
 }
@@ -654,7 +665,7 @@ h1, h2 {
     cursor: pointer;
     font-size: 1rem;
     font-weight: bold;
-    color: var(--bleu_foncé);
+    color: var(--bleu_foncé_ecriture);
     border-radius: 12px 12px 0 0;
     transition:  0.3s ease, color 0.3s ease;
 }
@@ -682,7 +693,7 @@ label {
     margin: 12px 0 6px 0;
     font-weight: 600;
     font-size: 1.3rem ;
-    color: var(--bleu_foncé);
+    color: var(--bleu_foncé_ecriture);
 }
 
 input[type="text"],
@@ -710,7 +721,7 @@ input[type="date"]:focus {
 
 button[type="submit"] {
     width: 100%;
-    background-color: var(--bleu_clair);
+    background-color: var(--orange);
     color: white;
     border: none;
     padding: 14px 0;
@@ -723,7 +734,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: var(--bleu_clair);
+    background-color: var(--vert_btn);
 }
 
 
@@ -753,7 +764,7 @@ a#show-register, a#show-login {
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  background: #E0C58B;
+  background: var(--beige_foncé);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
@@ -957,7 +968,7 @@ footer .social-icon {
 
 footer .social-icon:hover {
   color: var(--beige);
-  background-color: var(--vert);
+  background-color: var(--vert_btn);
   transform: translateY(-5px);
 }
 
