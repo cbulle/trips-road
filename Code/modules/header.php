@@ -63,12 +63,11 @@
             <li class="nav-item">
                 <?php if (isset($_SESSION['utilisateur'])): ?>
 
-                    <span>
-                        Bienvenue 
+                    <span> 
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
-                        (<a href="/logout.php">Déconnexion</a>)
-                         <img src="/img/<?= htmlspecialchars($_SESSION['utilisateur']['photo_profil']) ?>" alt="Photo de profil"  >
+                        <img src="/uploads/pp/<?= htmlspecialchars($_SESSION['utilisateur']['photo_profil']) ?>" alt="Photo de profil">
+                        <a href="/logout.php">Déconnexion</a>                        
                         <a href= "/profil.php"> Profil</a>
                     </span>
 

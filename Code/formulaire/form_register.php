@@ -44,24 +44,36 @@ if ($check->fetch()) {
 $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
 
-$image_name = null;
+$image_nom = null; 
+$dossier_upload = __DIR__ . '/../uploads/pp/';
+
+if (!is_dir($dossier_upload)) {
+    mkdir($dossier_upload, 0777, true);
+}
 
 if (!empty($_FILES['image']['name'])) {
 
-    $upload_dir = __DIR__ . '/../img/';
+    $fichier_tmp = $_FILES['image']['tmp_name'];
+    $fichier_nom = basename($_FILES['image']['name']);
 
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+    $check = getimagesize($fichier_tmp);
+    if ($check === false) {
+        die("Le fichier n'est pas une image valide.");
     }
 
-    $tmp_name = $_FILES['image']['tmp_name'];
-    $original_name = basename($_FILES['image']['name']);
+    $extension = strtolower(pathinfo($fichier_nom, PATHINFO_EXTENSION));
+    $extensions_autorisees = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-    $image_name = time() . "_" . $original_name;
-    $path = $upload_dir . $image_name;
+    if (!in_array($extension, $extensions_autorisees)) {
+        die("Format d'image non autorisé.");
+    }
 
-    if (!move_uploaded_file($tmp_name, $path)) {
-        $image_name = null; 
+    $image_nom = uniqid('pp_') . "." . $extension;
+
+    $chemin_final = $dossier_upload . $image_nom;
+
+    if (!move_uploaded_file($fichier_tmp, $chemin_final)) {
+        die("Erreur lors de l'upload de l'image.");
     }
 }
 
@@ -83,7 +95,7 @@ $stmt->execute([
     ':ville'          => $town,
     ':tel'            => $phone,
     ':date_naissance' => $birthdate,
-    ':photo_profil'   => $image_name
+    ':photo_profil'   => $image_nom
 ]);
 
 
