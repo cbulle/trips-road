@@ -19,7 +19,6 @@ require_once __DIR__ . '/modules/init.php';
   <h1>Calcul d'itinéraire OpenStreetMap</h1>
 
   <div class="main-container">
-    <!-- Sidebar gauche -->
     <div class="sidebar">
       <div id="etapesContainer">
         <input type="text" class="etape" placeholder="Choisir une ville">

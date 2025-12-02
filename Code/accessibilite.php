@@ -33,7 +33,9 @@ require_once __DIR__ . '/modules/init.php';
         </div>
 
 
-
+ <?php     
+include_once __DIR__ . "/modules/aside.php"
+?>  
     <?php include __DIR__ . "/modules/footer.php" ?>
 </body>
 </html>
