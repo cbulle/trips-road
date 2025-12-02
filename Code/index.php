@@ -56,12 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const userCity = "<?php echo isset($_SESSION['utilisateur']['ville']) ? $_SESSION['utilisateur']['ville'] : ''; ?>";
     
     if (userCity) {
-        // Si l'utilisateur est connecté et a une ville, on l'utilise pour géocoder
-        const cityCoords = {
-            "Lyon": [45.75, 4.85],
-            "Paris": [48.8566, 2.3522],
-            "Marseille": [43.2965, 5.3698]
-        };
+        
 
         // Vérifier si la ville de l'utilisateur est dans notre base de données de villes
         userCoords = cityCoords[userCity] || defaultCoords; // Sinon, on garde Lyon par défaut
