@@ -769,6 +769,8 @@ a#show-register, a#show-login {
    STYLE AFFICHAGE ROAD TRIP D'UN USER
 ============================== */
 
+
+
 .roadtrip-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -873,19 +875,210 @@ a#show-register, a#show-login {
     margin-bottom: 10px;
 }
 
+.roadtrip-vu{
+  padding : 50px;
+}
+
+.roadtrip-header {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--beige_foncé);
+            border-radius: 8px;
+        }
+        
+        .roadtrip-header h1 {
+            margin: 0 0 10px 0;
+            color: var(--orange);
+        }
+        
+        .roadtrip-header p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .card-vu {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+        
+        .card-vu:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .trajet-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: var(--beige_foncé);
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s;
+        }
+        
+        .trajet-header:hover {
+            background: var(--bleu_clair)
+        }
+        
+        .trajet-info {
+            flex: 1;
+        }
+
+        .trajet-info h2{
+            text-align: left;
+        }
+        
+        .trajet-titre {
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .trajet-details {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 0.95em;
+        }
+        
+        .trajet-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .transport-icon {
+            font-size: 1.5em;
+        }
+        
+        .toggle-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+        
+        .card-vu.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .sous-etapes-container {
+            display: none;
+            padding: 20px;
+            background-color: var(--beige_foncé);
+        }
+        
+        .sous-etapes-container.active {
+            display: block;
+        }
+        
+        .sous-etape-card {
+            background: var(--beige);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--orange);
+        }
+        
+        .sous-etape-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .sous-etape-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .numero-etape {
+            background: var(--orange);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .sous-etape-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .sous-etape-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .photos-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .photos-container img {
+            height: 150px;
+            border-radius: 5px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .photos-container img:hover {
+            transform: scale(1.05);
+        }
+        
+        #imageModal {
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .no-sous-etapes {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+
 
 
 
 /* ==============================
    CARTE LEAFLET
 ============================== */
-.map-container, #map {
+.map-container, #map{
   flex: 1;
   width: 100%;
   height: calc(100vh - 16px - 40px);
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+
+.map-container-vu, #map-vu{
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 16px - 40px);
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);;
+}
+
+
+
+
 
 /* ==============================
    IMAGES / POPUPS / LIGHTBOX
