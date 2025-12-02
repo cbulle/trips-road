@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
-<body>
-    
-</body>
+<script src="js/map.js"></script>  
 <footer>
   <div class="footer-container">
     <div class="image-container">
