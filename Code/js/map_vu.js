@@ -659,5 +659,63 @@ function compresserImage(file, quality = 0.6, maxWidth = 1200) {
     });
 }
 
+function toggleSousEtapes(trajetId) {
+    const container = document.getElementById('sous-etapes-' + trajetId);
+    const card = document.querySelector('[data-trajet-id="' + trajetId + '"]');
+    
+    container.classList.toggle('active');
+    card.classList.toggle('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.getElementById('imageModal')) {
+        const modal = document.createElement('div');
+        modal.id = 'imageModal';
+        modal.className = 'image-modal';
+        modal.style.cssText = `
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        `;
+        
+        const img = document.createElement('img');
+        img.id = 'imageModalContent';
+        img.style.cssText = `
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        `;
+        
+        modal.appendChild(img);
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', function() {
+            this.style.display = 'none';
+        });
+    }
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG' && e.target.closest('.photos-container')) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('imageModalContent');
+            modal.style.display = 'block';
+            modalImg.src = e.target.src;
+        }
+        
+        if (e.target.classList.contains('image-modal')) {
+            e.target.style.display = 'none';
+        }
+    });
+});
 
 
