@@ -13,6 +13,7 @@
   --gris_clair: #363535;
   --noir: #000000;
   --rouge: #BF092F ;
+  --beige_visu: #F2E9D6;
 }
 
 /* ==============================
@@ -27,6 +28,7 @@ html.dark {
   --beige: #E0C58B;
   --beige_foncé: #16476A;
   --bleu_foncé_ecriture: rgb(212, 212, 212);
+  --beige_visu: #40a79c;
   color: black;
   }
 
@@ -1007,7 +1009,7 @@ a#show-register, a#show-login {
             align-items: center;
             padding: 20px;
             background: var(--beige_foncé);
-            color: white;
+            color: var(--orange);
             cursor: pointer;
             user-select: none;
             transition: background 0.3s;
@@ -1068,7 +1070,7 @@ a#show-register, a#show-login {
         }
         
         .sous-etape-card {
-            background: var(--beige);
+            background: var(--beige_visu);
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 5px;
