@@ -66,8 +66,22 @@
                     <span> 
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
-                        <img src="/uploads/pp/<?= htmlspecialchars($_SESSION['utilisateur']['photo_profil']) ?>" alt="Photo de profil">
-                        <a href="/logout.php">Déconnexion</a>                        
+                            <?php
+                            if (isset($_SESSION['utilisateur']['photo_profil']) && !empty($_SESSION['utilisateur']['photo_profil'])) {
+                                $photoProfil = htmlspecialchars($_SESSION['utilisateur']['photo_profil']);
+                            
+                            } else {
+                                $photoProfil = "User.png"; 
+                                
+                            }
+                            $photoPath = __DIR__ . "/../uploads/pp/$photoProfil";
+                            if (!file_exists($photoPath)) {
+                                $photoPath = __DIR__ . "/../img/$photoProfil"; 
+                                
+                            }
+                            ?>
+                        <img src= "<?= $photoPath ?>" alt="Photo de profil">                       
+                         <a href="/logout.php">Déconnexion</a>                        
                         <a href= "/profil.php"> Profil</a>
                     </span>
 

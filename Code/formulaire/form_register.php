@@ -44,7 +44,7 @@ if ($check->fetch()) {
 $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
 
-$image_nom = null; 
+$photo_profil = null; 
 $dossier_upload = __DIR__ . '/../uploads/pp/';
 
 if (!is_dir($dossier_upload)) {
@@ -68,9 +68,9 @@ if (!empty($_FILES['image']['name'])) {
         die("Format d'image non autorisé.");
     }
 
-    $image_nom = uniqid('pp_') . "." . $extension;
+    $photo_profil = uniqid('pp_') . "." . $extension;
 
-    $chemin_final = $dossier_upload . $image_nom;
+    $chemin_final = $dossier_upload . $photo_profil;
 
     if (!move_uploaded_file($fichier_tmp, $chemin_final)) {
         die("Erreur lors de l'upload de l'image.");
@@ -95,7 +95,7 @@ $stmt->execute([
     ':ville'          => $town,
     ':tel'            => $phone,
     ':date_naissance' => $birthdate,
-    ':photo_profil'   => $image_nom
+    ':photo_profil'   => $photo_profil
 ]);
 
 
@@ -103,7 +103,8 @@ $_SESSION['utilisateur'] = [
     'id'       => $pdo->lastInsertId(),
     'nom'      => $name,
     'prenom'   => $firstname,
-    'email'    => $email
+    'email'    => $email,
+    'photo_profil' => $photo_profil
 ];
 
 header('Location: /index.php');

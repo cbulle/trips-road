@@ -45,52 +45,36 @@ include_once __DIR__ . "/modules/footer.php"
 ?>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Coordonnée par défaut (Lyon) si l'utilisateur n'est ni connecté, ni géolocalisé
-    const defaultCoords = [45.75, 4.85]; // Lyon par défaut
-    let userCoords = defaultCoords;  // Coordonnée initiale par défaut
+    const defaultCoords = [45.75, 4.85]; 
+    let userCoords = defaultCoords;  
 
-    // Vérifier si l'utilisateur est connecté et a une ville
     const userCity = "<?php echo isset($_SESSION['utilisateur']['ville']) ? $_SESSION['utilisateur']['ville'] : ''; ?>";
     
     if (userCity) {
-        // Vérifier si la ville de l'utilisateur est dans notre base de données de villes
-        const cityCoords = {
-            // Exemple de coordonnées pour certaines villes (ajoute les villes de ta base de données ici)
-            "Paris": [48.8566, 2.3522],
-            "Marseille": [43.2965, 5.3698],
-            // Ajoute d'autres villes au besoin...
-        };
-
-        userCoords = cityCoords[userCity] || defaultCoords; // Sinon, on garde Lyon par défaut
+        
+        // pas de solution encore 
     }
 
-    // Si la géolocalisation est possible, utiliser la position actuelle de l'utilisateur
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            userCoords = [lat, lon]; // Mettre à jour la position de la carte avec la géolocalisation
+            userCoords = [lat, lon]; 
             updateMap(userCoords);
         }, function() {
-            // Si l'utilisateur refuse la géolocalisation ou s'il y a une erreur, on utilise les coordonnées par défaut
             updateMap(userCoords);
         });
     } else {
-        // Si la géolocalisation n'est pas supportée, utiliser les coordonnées par défaut
         updateMap(userCoords);
     }
 
-    // Fonction pour initialiser la carte avec les coordonnées données
     function updateMap(coords) {
-        // Création de la carte
         const map = L.map('userMap').setView(coords, 10);
 
-        // Ajouter le fond OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Ajouter un marqueur pour la position de l'utilisateur
         L.marker(coords).addTo(map)
         .bindPopup(`Ville : ${userCity || 'Non définie'}`)
         .openPopup();
