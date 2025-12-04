@@ -11,10 +11,13 @@
 <header>
     <nav>
         <ul>
-
             <li class="nav-item">
                 <div class="bar_rech">
-                    <input type="text" placeholder="Search" />
+                    <input type="search" id="searchInput" class="search-input" placeholder="Recherche..." autocomplete="off">
+                    <table class="search-results" id="results-table">
+                        <tbody>
+                        </tbody>
+                    </table>
                     <div class="btn">
                         <i class="fas fa-search"></i>
                     </div>

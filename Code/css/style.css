@@ -264,6 +264,41 @@ header nav > ul > div span {
   transform: translateX(42px);
 }
 
+.bar_rech:focus-within input{
+  transition: all .7s ease;
+  width: 250px;
+  transform: translateX(42px);
+}
+.search-results {
+    width: 80%;
+    position: fixed;
+    left: 61px;
+    top: 25px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.search-results td:first-child {
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-results td {
+    
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.search-results th {
+    background-color: #f4f4f4;
+}
+
+.search-results tr:hover {
+    background-color: #f1f1f1;
+}
 
 /* ==============================
    BURGER
@@ -1439,45 +1474,3 @@ footer .footer-links>li>a:hover {
   background-color: var(--vert);
 }
 
-
-
-
-
-
-
-
-.search-container {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.search-box {
-    width: 50%;
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #7b61ff;
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-
-.search-results {
-    width: 80%;
-    border-collapse: collapse;
-}
-
-.search-results th,
-.search-results td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.search-results th {
-    background-color: #f4f4f4;
-}
-
-.search-results tr:hover {
-    background-color: #f1f1f1;
-}

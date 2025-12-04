@@ -763,3 +763,46 @@ if (toggleMalvoyant) {
           bar  de recherche
 =======================================*/
 
+let data = [];
+
+fetch("../bd/lec_bd.php")
+    .then(response => response.json())
+    .then(json => {
+        data = json;
+        console.log("Données chargées :", data);
+    })
+    .catch(error => console.error("Erreur fetch :", error));
+
+
+const searchBox = document.getElementById('searchInput');
+const resultsTableBody = document.querySelector('#results-table tbody');
+
+searchBox.addEventListener('input', function(event) {
+
+    const query = event.target.value.trim().toLowerCase();
+    resultsTableBody.innerHTML = '';
+
+    if (query.length < 2) return;
+
+    const filteredData = data.filter(item =>
+        item.titre.toLowerCase().includes(query)
+    );
+
+    if (filteredData.length > 0) {
+        filteredData.forEach(item => {
+            const row = document.createElement('tr');
+
+            const nomCell = document.createElement('td');
+            nomCell.textContent = item.titre;
+            row.appendChild(nomCell);
+
+            resultsTableBody.appendChild(row);
+        });
+    } else {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.textContent = 'Aucun résultat trouvé.';
+        row.appendChild(cell);
+        resultsTableBody.appendChild(row);
+    }
+});
