@@ -11,3 +11,9 @@ echo 'Connexion échouée : ' . $e->getMessage();
 die();
 }
 ;
+
+$sql = 'SELECT  titre FROM roadtrip WHERE visibilite="public"';
+$stmt = $pdo->query($sql);
+$resultats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+echo json_encode($resultats);
