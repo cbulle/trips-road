@@ -20,6 +20,7 @@ require_once __DIR__ . '/modules/init.php';
 <?php     
 include_once __DIR__ . "/modules/header.php"
 ?>
+<main class = "main-index" >
         <div class="index_container">
             <h2>Bienvenue sur Trips & Roads !</h2>
             <p>Planifiez et partagez vos road trips facilement.</p>
@@ -52,9 +53,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const userCity = "<?php echo isset($_SESSION['utilisateur']['ville']) ? $_SESSION['utilisateur']['ville'] : ''; ?>";
     
     if (userCity) {
-        
-
         // Vérifier si la ville de l'utilisateur est dans notre base de données de villes
+        const cityCoords = {
+            // Exemple de coordonnées pour certaines villes (ajoute les villes de ta base de données ici)
+            "Paris": [48.8566, 2.3522],
+            "Marseille": [43.2965, 5.3698],
+            // Ajoute d'autres villes au besoin...
+        };
+
         userCoords = cityCoords[userCity] || defaultCoords; // Sinon, on garde Lyon par défaut
     }
 
@@ -66,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
             userCoords = [lat, lon]; // Mettre à jour la position de la carte avec la géolocalisation
             updateMap(userCoords);
         }, function() {
-            // Si l'utilisateur refuse la géolocalisation, on utilise les coordonnées par défaut
+            // Si l'utilisateur refuse la géolocalisation ou s'il y a une erreur, on utilise les coordonnées par défaut
             updateMap(userCoords);
         });
     } else {
@@ -85,12 +91,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }).addTo(map);
 
         // Ajouter un marqueur pour la position de l'utilisateur
-         L.marker(defaultCoords).addTo(map)
-        .bindPopup(`Ville : ${userCity}`)
+        L.marker(coords).addTo(map)
+        .bindPopup(`Ville : ${userCity || 'Non définie'}`)
         .openPopup();
     }
 });
 </script>
+
 
 
 </body>
