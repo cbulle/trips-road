@@ -1438,3 +1438,112 @@ footer .footer-links>li>a:hover {
   cursor: pointer;
   background-color: var(--vert);
 }
+
+
+/*==========================================
+STYLE DE LA TIME LINE POUR AFFICHAGE DES ROAD TRIPS
+==========================================*/
+
+.timeline {
+            position: relative;
+            padding: 20px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .timeline ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+
+        /* Flèche verticale */
+        .timeline ul::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--vert);
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+
+        /* Pointe de la flèche en bas */
+        .timeline ul::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -15px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid var(--vert);
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .timeline li {
+            position: relative;
+            background: var(--beige);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 40px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .timeline li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline li:first-child {
+            margin-top: 0;
+        }
+
+        .timeline li:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline li::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background: var(--beige);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+        }
+
+        .transport-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        strong {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .timeline li:nth-child(1) {
+            background: var(--beige);
+        }
+
+        .timeline li:nth-child(2) {
+            background: var(--beige);
+        }
+
+        .timeline li:nth-child(3) {
+            background: var(--beige);
+        }
+
+

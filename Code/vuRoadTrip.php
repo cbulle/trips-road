@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/modules/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
+include_once __DIR__ . '/fonctions/InfoItineraire.php';
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /id.php');
     exit;
@@ -56,6 +57,7 @@ function getTransportIcon($type) {
             return '🚗';
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -75,6 +77,9 @@ function getTransportIcon($type) {
     </div>
     
     <?php foreach ($trajets as $t) : ?>
+        <?php $depart = $t['depart'];
+        $arrive = $t['arrivee']; ?>
+
         <div class="card-vu" data-trajet-id="<?php echo $t['id']; ?>">
             <div class="trajet-header" onclick="toggleSousEtapes(<?php echo $t['id']; ?>)">
                 <div class="trajet-info">
@@ -86,11 +91,10 @@ function getTransportIcon($type) {
                                 <span><?php echo date('d/m/Y', strtotime($t['date_trajet'])); ?></span>
                             </div>
                         <?php endif; ?>
-                        
-                        <?php if (!empty($t['type_transport'])) : ?>
+                        <?php if (!empty($t['mode_transport'])) : ?>
                             <div class="trajet-detail-item">
-                                <span class="transport-icon"><?php echo getTransportIcon($t['type_transport']); ?></span>
-                                <span><?php echo htmlspecialchars(ucfirst($t['type_transport'])); ?></span>
+                                <span class="transport-icon"><?php echo getTransportIcon($t['mode_transport']); ?></span>
+                                <strong><?php echo htmlspecialchars(ucfirst($t['mode_transport'])); ?></strong>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -100,21 +104,28 @@ function getTransportIcon($type) {
             
             <div class="sous-etapes-container" id="sous-etapes-<?php echo $t['id']; ?>">
                 <?php if (isset($etapes[$t['id']]) && count($etapes[$t['id']]) > 0) : ?>
+                    <div class="sous-etape-card">
+                        <div class="sous-etape-header">
+                            <h3><?php echo htmlspecialchars($depart) ?></h3>
+                        </div>
+                    </div>
                     <?php foreach ($etapes[$t['id']] as $sousEtape) : ?>
+                        <section class="timeline">
+                            <ul>
+                                <li><span class="transport-icon"><?php echo getTransportIcon($sousEtape['type_transport']); ?></span>
+                                    <strong><?php echo htmlspecialchars(ucfirst($sousEtape['type_transport'])); ?></strong></li>
+                                <li><?php $disance = calculerDistance($depart, $sousEtape['ville'], $sousEtape['type_transport']); echo $distance;?></li>
+                                <li><?php $temps = calculerTempsTrajet($depart, $sousEtape['ville'], $sousEtape['type_transport']); echo $temps['texte'];?></li>
+                            </ul>
+                        </section>
+                        <?php $depart = $sousEtape['ville'];?>
                         <div class="sous-etape-card">
                             <div class="sous-etape-header">
                                 <h3><?php echo htmlspecialchars($sousEtape['ville']); ?></h3>
                                 <span class="numero-etape">Étape <?php echo $sousEtape['numero']; ?></span>
                             </div>
                             
-                            <div class="sous-etape-info">
-                                <?php if (!empty($sousEtape['type_transport'])) : ?>
-                                    <span>
-                                        <span class="transport-icon"><?php echo getTransportIcon($sousEtape['type_transport']); ?></span>
-                                        <strong><?php echo htmlspecialchars(ucfirst($sousEtape['type_transport'])); ?></strong>
-                                    </span>
-                                <?php endif; ?>
-                                
+                            <div class="sous-etape-info">    
                                 <?php if (!empty($sousEtape['heure'])) : ?>
                                     <span>
                                         <strong>🕐</strong>
@@ -137,6 +148,19 @@ function getTransportIcon($type) {
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
+                    <section class="timeline">
+                            <ul>
+                                <li><span class="transport-icon"><?php echo getTransportIcon($t['mode_transport']); ?></span>
+                                    <strong><?php echo htmlspecialchars(ucfirst($t['mode_transport'])); ?></strong></li>
+                                <li><?="Distance"?></li>
+                                <li><?="Temps"?></li>
+                            </ul>
+                        </section>
+                    <div class="sous-etape-card">
+                        <div class="sous-etape-header">
+                            <h3><?php echo htmlspecialchars($arrive) ?></h3>
+                        </div>
+                    </div>
                 <?php else : ?>
                     <p class="no-sous-etapes">Aucune sous-étape pour ce trajet.</p>
                 <?php endif; ?>

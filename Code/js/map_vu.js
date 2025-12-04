@@ -43,17 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Fonction de géocodage ---
   async function getCoordonnees(ville) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&viewbox=${europeViewbox.join(',')}&bounded=1&limit=1&accept-language=fr`;
-    try {
-      const resp = await fetch(url);
-      const data = await resp.json();
-      if (data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      return null;
-    } catch (e) {
-      console.error(e);
-      return null;
+    const url = `/../include/geocode.php?q=${encodeURIComponent(ville)}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.error) {
+        console.error("Erreur géocodage :", data.error);
+        return null;
     }
-  }
+
+    return { lat: data.lat, lon: data.lon };
+}
+
 
   // --- Fonction générique pour créer un marker et le stocker ---
   function addMarker(lieu, coords, type, popupContent) {
