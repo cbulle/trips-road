@@ -49,8 +49,8 @@ try {
         foreach ($trajet['sousEtapes'] ?? [] as $j => $se) {
             $nom = $se['nom'] ?? '';
             $remarque = $se['remarque'] ?? '';
-            $heure = $se['heure'] ?? '';
             $type_transport = $se['type_transport'] ?? 'Voiture';
+            $heure = !empty($se['heure']) ? $se['heure'] : null;
 
             $stmt = $pdo->prepare("INSERT INTO sous_etape (numero, ville, description, trajet_id, type_transport, heure) 
                                    VALUES (?, ?, ?, ?, ?, ?)");

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/modules/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
+// Inclure le fichier InfoItineraire.php qui contient les fonctions de calcul (et le correctif PHP pour les décimales)
 include_once __DIR__ . '/fonctions/InfoItineraire.php';
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /id.php');
@@ -77,8 +78,14 @@ function getTransportIcon($type) {
     </div>
     
     <?php foreach ($trajets as $t) : ?>
-        <?php $depart = $t['depart'];
-        $arrive = $t['arrivee']; ?>
+        <?php 
+        $depart = $t['depart'];
+        $arrive = $t['arrivee']; 
+        
+        // Initialiser les coordonnées de départ pour le premier point de calcul
+        $currentDepartCity = $depart;
+        $currentDepartCoords = getCoordonneesDepuisCache($currentDepartCity, $pdo);
+        ?>
 
         <div class="card-vu" data-trajet-id="<?php echo $t['id']; ?>">
             <div class="trajet-header" onclick="toggleSousEtapes(<?php echo $t['id']; ?>)">
@@ -109,16 +116,39 @@ function getTransportIcon($type) {
                             <h3><?php echo htmlspecialchars($depart) ?></h3>
                         </div>
                     </div>
-                    <?php foreach ($etapes[$t['id']] as $sousEtape) : ?>
+                    <?php foreach ($etapes[$t['id']] as $sousEtape) : 
+                        // Calcul des infos pour le tronçon : currentDepartCity -> $sousEtape['ville']
+                        $currentArriveeCity = $sousEtape['ville'];
+                        $currentArriveeCoords = getCoordonneesDepuisCache($currentArriveeCity, $pdo);
+                        $mode = strtolower($sousEtape['type_transport']);
+
+                        $distance = "N/A";
+                        $tempsTexte = "N/A";
+
+                        if ($currentDepartCoords && $currentArriveeCoords) {
+                            $distanceResult = calculerDistanceOSRM($currentDepartCoords, $currentArriveeCoords, $mode);
+                            if ($distanceResult !== false) {
+                                $distance = number_format($distanceResult, 1, ',', '') . " km";
+                            }
+                            $tempsResult = calculerTempsOSRM($currentDepartCoords, $currentArriveeCoords, $mode);
+                            if ($tempsResult !== false) {
+                                $tempsTexte = $tempsResult['texte'];
+                            }
+                        }
+                    ?>
                         <section class="timeline">
                             <ul>
                                 <li><span class="transport-icon"><?php echo getTransportIcon($sousEtape['type_transport']); ?></span>
                                     <strong><?php echo htmlspecialchars(ucfirst($sousEtape['type_transport'])); ?></strong></li>
-                                <li><?php $disance = calculerDistance($depart, $sousEtape['ville'], $sousEtape['type_transport']); echo $distance;?></li>
-                                <li><?php $temps = calculerTempsTrajet($depart, $sousEtape['ville'], $sousEtape['type_transport']); echo $temps['texte'];?></li>
+                                <li><?php echo $distance; ?></li>
+                                <li><?php echo $tempsTexte; ?></li>
                             </ul>
                         </section>
-                        <?php $depart = $sousEtape['ville'];?>
+                        <?php 
+                        // Préparer pour l'étape suivante
+                        $currentDepartCity = $currentArriveeCity;
+                        $currentDepartCoords = $currentArriveeCoords;
+                        ?>
                         <div class="sous-etape-card">
                             <div class="sous-etape-header">
                                 <h3><?php echo htmlspecialchars($sousEtape['ville']); ?></h3>
@@ -148,12 +178,34 @@ function getTransportIcon($type) {
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
+                    
+                    <?php 
+                    // Calcul pour le dernier tronçon : dernière Sous-Etape -> Arrivée
+                    $finalArriveeCity = $arrive;
+                    $finalArriveeCoords = getCoordonneesDepuisCache($finalArriveeCity, $pdo);
+                    $mode = strtolower($t['mode_transport']);
+                    
+                    $distance = "N/A";
+                    $tempsTexte = "N/A";
+
+                    if ($currentDepartCoords && $finalArriveeCoords) {
+                        $distanceResult = calculerDistanceOSRM($currentDepartCoords, $finalArriveeCoords, $mode);
+                        if ($distanceResult !== false) {
+                            $distance = number_format($distanceResult, 1, ',', '') . " km";
+                        }
+                        $tempsResult = calculerTempsOSRM($currentDepartCoords, $finalArriveeCoords, $mode);
+                        if ($tempsResult !== false) {
+                            $tempsTexte = $tempsResult['texte'];
+                        }
+                    }
+                    ?>
+                    
                     <section class="timeline">
                             <ul>
                                 <li><span class="transport-icon"><?php echo getTransportIcon($t['mode_transport']); ?></span>
                                     <strong><?php echo htmlspecialchars(ucfirst($t['mode_transport'])); ?></strong></li>
-                                <li><?="Distance"?></li>
-                                <li><?="Temps"?></li>
+                                <li><?php echo $distance; ?></li>
+                                <li><?php echo $tempsTexte; ?></li>
                             </ul>
                         </section>
                     <div class="sous-etape-card">
@@ -161,14 +213,53 @@ function getTransportIcon($type) {
                             <h3><?php echo htmlspecialchars($arrive) ?></h3>
                         </div>
                     </div>
-                <?php else : ?>
-                    <p class="no-sous-etapes">Aucune sous-étape pour ce trajet.</p>
+                <?php else : 
+                    // Cas sans sous-étapes : Afficher uniquement le segment de A à B
+                    
+                    // Réinitialiser les variables de calcul
+                    $distance = "N/A";
+                    $tempsTexte = "N/A";
+                    
+                    // Récupérer les coordonnées de départ et d'arrivée du trajet principal
+                    $finalArriveeCoords = getCoordonneesDepuisCache($arrive, $pdo);
+                    $mode = strtolower($t['mode_transport']);
+
+                    // Effectuer le calcul pour le trajet complet (depart -> arrivee)
+                    if ($currentDepartCoords && $finalArriveeCoords) {
+                        $distanceResult = calculerDistanceOSRM($currentDepartCoords, $finalArriveeCoords, $mode);
+                        if ($distanceResult !== false) {
+                            $distance = number_format($distanceResult, 1, ',', '') . " km";
+                        }
+                        $tempsResult = calculerTempsOSRM($currentDepartCoords, $finalArriveeCoords, $mode);
+                        if ($tempsResult !== false) {
+                            $tempsTexte = $tempsResult['texte'];
+                        }
+                    }
+                ?>
+                    <div class="sous-etape-card">
+                        <div class="sous-etape-header">
+                            <h3><?php echo htmlspecialchars($depart) ?></h3>
+                        </div>
+                    </div>
+                    <section class="timeline">
+                        <ul>
+                            <li><span class="transport-icon"><?php echo getTransportIcon($t['mode_transport']); ?></span>
+                                <strong><?php echo htmlspecialchars(ucfirst($t['mode_transport'])); ?></strong></li>
+                            <li><?php echo $distance; ?></li>
+                            <li><?php echo $tempsTexte; ?></li>
+                        </ul>
+                    </section>
+                    <div class="sous-etape-card">
+                        <div class="sous-etape-header">
+                            <h3><?php echo htmlspecialchars($arrive) ?></h3>
+                        </div>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
     <?php endforeach; ?>    
 </div>
-<script src="js/map_vu.js"></script>
+<script src="js/map.js"></script>
 <?php include_once __DIR__ . "/modules/footer.php"; ?>
 </body>
 </html>
