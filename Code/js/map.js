@@ -473,16 +473,46 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
       if (ul.style.display === 'none') {
         const seg = segments[index];
         ul.innerHTML = '';
+        
+        // --- 1. Ajouter la ville de départ ---
+        let liDepart = document.createElement('li');
+        liDepart.innerHTML = `<div><span style="font-weight: bold;">Départ: ${seg.startName}</span></div>`;
+        ul.appendChild(liDepart);
+        
+        // --- 2. Ajouter les sous-étapes ---
         if (seg.sousEtapes.length > 0) {
           seg.sousEtapes.forEach(se => {
-            let photoHTML = se.photo ? `<img src="${URL.createObjectURL(se.photo)}" class="sousetape-photo">` : '';
+            // Note: Le code original utilise se.photo (singulier) mais le code de sauvegarde utilise se.photos (pluriel, qui est un tableau)
+            // Pour être compatible avec la sauvegarde :
+            let photoHTML = '';
+            if (se.photos && se.photos.length > 0) {
+                // Afficher la première photo s'il y en a
+                const url = URL.createObjectURL(se.photos[0]);
+                photoHTML = `<img src="${url}" class="sousetape-photo" style="max-width: 50px; max-height: 50px; margin-left: 5px;">`;
+            }
+            
             const li = document.createElement('li');
-            li.innerHTML = `<div><strong>${se.nom}</strong>${se.heure ? ` (${se.heure})` : ''}<br>${se.remarque || ''}${photoHTML}</div>`;
+            li.innerHTML = `<div style="display: flex; align-items: center;">
+                              <span style="flex-grow: 1;">
+                                <strong>${se.nom}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
+                                ${se.remarque || ''}
+                              </span>
+                              ${photoHTML}
+                            </div>`;
             ul.appendChild(li);
           });
         } else {
-          ul.innerHTML = '<li><em>Aucune sous-étape</em></li>';
+          // Afficher une ligne d'information si aucune sous-étape n'est définie
+          let liAucune = document.createElement('li');
+          liAucune.innerHTML = '<li><em>Aucune sous-étape</em></li>';
+          ul.appendChild(liAucune);
         }
+
+        // --- 3. Ajouter la ville d'arrivée ---
+        let liArrivee = document.createElement('li');
+        liArrivee.innerHTML = `<div><span style="font-weight: bold;">Arrivée: ${seg.endName}</span></div>`;
+        ul.appendChild(liArrivee);
+        
         ul.style.display = 'block';
       } else ul.style.display = 'none';
     }
@@ -722,7 +752,7 @@ document.getElementById('saveRoadtrip').addEventListener('click', async () => {
             Object.values(markers).flat().forEach(m => map.removeLayer(m.marker));
             segments.length = 0;
             
-            window.location.href = `/roadtrip.php?id=${result.roadtrip_id}`;
+            window.location.href = `../mesRoadTrips.php`;
             
         } else {
             alert(result.message || 'Erreur lors de la sauvegarde.');
