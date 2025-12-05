@@ -37,6 +37,31 @@ include_once __DIR__ . "/../modules/header.php";
                 <h3>3. Comment puis-je accéder à la carte des points d'intérêt ?</h3>
                 <p>Vous pouvez accéder à la carte des points d'intérêt en cliquant sur l'onglet "Carte" dans le menu principal. Vous y trouverez tous les lieux recommandés pour vos road trips.</p>
             </div>
+             <section class="ask-question">
+            <h2>Posez votre propre question</h2>
+
+            <?php if (isset($message)): ?>
+                <p class="confirmation-message"><?= $message ?></p>
+            <?php endif; ?>
+
+            <form action="/../formulaire/form_faq.php" method="POST">
+
+                 <label for="nom">Nom :</label>
+                <input type="text" name="nom" id="nom" value="<?= isset($nom) ? $nom : '' ?>" required>
+
+                <label for="email">Email :</label>
+                <input type="email" name="email" id="email" value="<?= isset($email) ? $email : '' ?>" required>
+
+                <label for="sujet">Sujet :</label>
+                <input type="text" name="sujet" id="sujet" value="<?= isset($sujet) ? $sujet : '' ?>" required>
+
+                <label for="question">Votre question :</label>
+                <textarea name="question" id="question" rows="4" required><?= isset($question) ? $question : '' ?></textarea>
+
+                <button type="submit">Poser la question</button>
+            </form>
+        </section>
+    </div>
 
             
 </main>

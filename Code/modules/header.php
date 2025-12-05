@@ -81,7 +81,7 @@
                             }
                             ?>
                         <img src= "<?= $photoPath ?>" alt="Photo de profil">                       
-                         <a href="/logout.php">Déconnexion</a>                        
+                        <a href="/logout.php">Déconnexion</a>                        
                         <a href= "/profil.php"> Profil</a>
                     </span>
 
