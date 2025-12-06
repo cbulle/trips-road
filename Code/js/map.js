@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       language: "fr",
       width: '100%', // Force la largeur à 100% du conteneur
       ajax: {
-        url: '/fonctions/recherche_villes.php', 
+        url: './fonctions/recherche_villes.php', // Chemin corrigé pour la fiabilité
         dataType: 'json',
         delay: 250,
         data: function(params) {
@@ -94,9 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         cache: true
       },
-      minimumInputLength: 2
+      minimumInputLength: 1
     });
-    // Plus besoin du .on('select2:select'...) manuel ici !
+    $(element).on('select2:open', function() {
+      // Cibler le champ de recherche textuel qui est affiché par Select2
+      const searchInput = $('.select2-container--open').find('.select2-search__field');
+      if (searchInput.length) {
+        searchInput.focus(); // Placer le curseur dans le champ
+      }
+    });
   }
 
   // --- 1. Initialisation au chargement de la page ---
@@ -111,16 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
     container.style.alignItems = 'center';
     container.style.marginBottom = '5px';
 
-    // CORRECTION : On crée un SELECT au lieu d'un INPUT
     const select = document.createElement('select'); 
     select.classList.add('etape');
     select.style.flex = '1';
-    // Le style width:100% sera géré par Select2, mais on peut le mettre par sécu
     select.style.width = '100%'; 
 
     const removeBtn = document.createElement('button');
-    removeBtn.textContent = '✖'; // J'ai rajouté le texte du bouton qui manquait dans ton extrait
-    // ... (style bouton suppression) ...
+    removeBtn.textContent = '✖'; 
+    removeBtn.style.cssText = 'background:none; border:none; color:red; cursor:pointer; margin-left:5px; font-weight:bold;';
+
 
     removeBtn.addEventListener('click', () => {
       // Important : détruire l'instance Select2 avant de supprimer le DOM
@@ -152,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnModifier').style.display = 'inline-block';
 
     const villes = [];
+    // CORRECTION : Cible les SELECT (.etape) pour récupérer les valeurs
     $('.etape').each(function() {
         const val = $(this).val();
         if (val && val.trim() !== '') {
@@ -160,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (villes.length < 2) { alert("Veuillez renseigner au moins deux villes."); return; }
-
+    // ... (le reste du calcul de l'itinéraire est conservé)
     const mode = 'Voiture';
     const strategy = strategies[mode] || strategies['Voiture'];
 
@@ -194,15 +200,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function recalculerDerniersSegmentsMultiples() {
-    const inputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
-      .map(i => i.value.trim())
+    const inputs = Array.from(document.querySelectorAll('#etapesContainer select.etape'))
+      .map(select => select.value.trim())
       .filter(v => v.length > 0);
 
     if (inputs.length < 2) {
       alert("Veuillez saisir au moins deux villes.");
       return;
     }
-
+    // ... (le reste du recalcul est conservé)
+    
     // Séquence de villes existantes
     let existingSequence = [];
     if (segments.length > 0) {
@@ -366,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
     div.style.marginBottom = '10px';
     div.innerHTML = `
       <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom" value="${data.nom || ''}">
-      <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
+      <textarea type="text" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
       <input type="time" class="subEtapeHeure" value="${data.heure || ''}">
       <input type="file" class="subEtapePhoto" multiple accept="image/*">
     `;
@@ -560,40 +567,27 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
   });
 
   function saveEtapes() {
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
-      .map(input => input.value.trim())
+    // CORRECTION : Cibler les SELECT, pas les INPUT
+    const villes = Array.from(document.querySelectorAll('#etapesContainer select.etape'))
+      .map(select => select.value.trim())
       .filter(ville => ville.length > 0);
     return villes;
   }
 
   document.getElementById('btnModifier').addEventListener('click', () => {
-    // Réafficher les éléments de création
+    // 1. Rendre visibles les éléments de création
     document.getElementById('etapesContainer').style.display = 'block';
     document.getElementById('addEtape').style.display = 'inline-block';
-    document.getElementById('btnCalculer').style.display = 'inline-block';
-
-    // Cacher la légende
-    document.getElementById('legend').style.display = 'none';
-
-    // Cacher le bouton "Modifier l'itinéraire"
-    document.getElementById('btnModifier').style.display = 'none';
     document.getElementById('btnCalculer').style.display = 'none';
+
+    // 2. Cacher la légende et les boutons de navigation
+    document.getElementById('legend').style.display = 'none';
+    document.getElementById('btnModifier').style.display = 'none';
     document.getElementById('btnLegende').style.display = 'inline-block';
 
-    const savedEtapes = saveEtapes();
-    console.log(savedEtapes);
-    
-    // Réafficher les étapes sauvegardées
-    const etapesContainer = document.getElementById('etapesContainer');
-    etapesContainer.innerHTML = ''; // Réinitialise les étapes pour éviter les doublons
-    savedEtapes.forEach(ville => {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Étape supplémentaire';
-      input.classList.add('etape');
-      input.value = ville; // Remplir avec la ville sauvegardée
-      etapesContainer.appendChild(input);
-    });
+    // 3. RETRAIT DE LA LOGIQUE DE RECONSTRUCTION DES ÉTAPES !
+    // Si nous ne détruisons pas le DOM, il n'y a pas besoin de le reconstruire.
+    // L'état des Select2 est conservé.
   });
 
   document.getElementById('btnLegende').addEventListener('click', () => {
@@ -609,6 +603,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
   });
 
   document.getElementById('btnCalculer').addEventListener('click', calculItineraire);
+  // ... (le reste du code est conservé)
 
   // --- Recalculer l'itinéraire ---
   document.getElementById('btnRecalculer').addEventListener('click', recalculerDerniersSegmentsMultiples);
@@ -679,7 +674,7 @@ document.getElementById('saveRoadtrip').addEventListener('click', async () => {
     }
 
     // Récupérer toutes les villes des étapes
-    const villesInputs = Array.from(document.querySelectorAll('#etapesContainer input'))
+    const villesInputs = Array.from(document.querySelectorAll('#etapesContainer select.etape'))
         .map(input => input.value.trim())
         .filter(v => v.length > 0);
 
