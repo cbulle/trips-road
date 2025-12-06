@@ -70,43 +70,42 @@ document.addEventListener('DOMContentLoaded', () => {
     return marker;
   }
 
-  // --- Ajout dynamique d'étapes ---
-  function initSelect2(element) {
-    $(element).select2({
-      placeholder: 'Choisir une ville...',
-      allowClear: true, // Affiche une petite croix pour vider le champ
-      language: "fr",
-      width: '100%', // Force la largeur à 100% du conteneur
-      ajax: {
-        url: './fonctions/recherche_villes.php', // Chemin corrigé pour la fiabilité
-        dataType: 'json',
-        delay: 250,
-        data: function(params) {
-          return { q: params.term };
-        },
-        processResults: function(data) {
-          return {
-            results: data.map(item => ({
-              id: item.nom_ville, 
-              text: item.nom_ville 
-            }))
-          };
-        },
-        cache: true
-      },
-      minimumInputLength: 1
-    });
-    $(element).on('select2:open', function() {
-      // Cibler le champ de recherche textuel qui est affiché par Select2
-      const searchInput = $('.select2-container--open').find('.select2-search__field');
-      if (searchInput.length) {
-        searchInput.focus(); // Placer le curseur dans le champ
-      }
-    });
+  // --- Remplacement de initSelect2 par initAutocomplete ---
+  function initAutocomplete(element) {
+      $(element).autocomplete({
+          source: function(request, response) {
+              // Appel AJAX à votre script PHP (recherche_villes.php)
+              $.ajax({
+                  url: './fonctions/recherche_villes.php',
+                  dataType: "json",
+                  data: {
+                      q: request.term // Le terme tapé par l'utilisateur
+                  },
+                  success: function(data) {
+                      // Mappe les résultats au format attendu par jQuery UI Autocomplete
+                      response($.map(data, function(item) {
+                          return {
+                              label: item.nom_ville, // Ce qui est affiché dans le menu
+                              value: item.nom_ville  // Ce qui est placé dans le champ après sélection
+                          }
+                      }));
+                  }
+              });
+          },
+          minLength: 1, // Autorise la recherche dès le premier caractère
+          delay: 250,
+          
+          // Option pour s'assurer que le champ garde sa valeur si l'utilisateur ne clique pas sur le menu
+          select: function(event, ui) {
+               $(element).val(ui.item.value);
+          }
+      });
   }
 
+
   // --- 1. Initialisation au chargement de la page ---
-  document.querySelectorAll('.etape').forEach(initSelect2);
+  // Cible les INPUTs de classe .etape (assurez-vous que le HTML utilise bien <input> initialement)
+  document.querySelectorAll('.etape').forEach(initAutocomplete);
 
 
   // --- 2. Ajout dynamique d'étapes (MODIFIÉE) ---
@@ -117,10 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
     container.style.alignItems = 'center';
     container.style.marginBottom = '5px';
 
-    const select = document.createElement('select'); 
-    select.classList.add('etape');
-    select.style.flex = '1';
-    select.style.width = '100%'; 
+    // MODIFICATION : On crée un INPUT type text
+    const input = document.createElement('input'); 
+    input.type = 'text';
+    input.classList.add('etape');
+    input.placeholder = 'Choisir une ville...';
+    input.style.flex = '1';
+    input.style.width = '100%'; 
+    input.style.padding = '10px';
+    input.style.borderRadius = '15px'; // Pour correspondre au CSS de la sidebar
 
     const removeBtn = document.createElement('button');
     removeBtn.textContent = '✖'; 
@@ -128,17 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     removeBtn.addEventListener('click', () => {
-      // Important : détruire l'instance Select2 avant de supprimer le DOM
-      $(select).select2('destroy'); 
+      // IMPORTANT : Détruire l'instance Autocomplete avant de supprimer le DOM
+      $(input).autocomplete('destroy'); 
       container.remove();
     });
 
-    container.appendChild(select);
+    container.appendChild(input);
     container.appendChild(removeBtn);
     etapesContainer.appendChild(container);
 
-    // Initialiser Select2 sur le nouveau select
-    initSelect2(select); 
+    // Initialiser Autocomplete sur le nouvel input
+    initAutocomplete(input); 
 
     if (document.getElementById('btnCalculer').style.display === 'none') {
       document.getElementById('btnRecalculer').style.display = 'inline-block';
@@ -157,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnModifier').style.display = 'inline-block';
 
     const villes = [];
-    // CORRECTION : Cible les SELECT (.etape) pour récupérer les valeurs
+    // CORRECTION : Cible les INPUT (.etape) pour récupérer les valeurs
     $('.etape').each(function() {
         const val = $(this).val();
         if (val && val.trim() !== '') {
@@ -166,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (villes.length < 2) { alert("Veuillez renseigner au moins deux villes."); return; }
-    // ... (le reste du calcul de l'itinéraire est conservé)
+    
     const mode = 'Voiture';
     const strategy = strategies[mode] || strategies['Voiture'];
 
@@ -200,16 +204,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function recalculerDerniersSegmentsMultiples() {
-    const inputs = Array.from(document.querySelectorAll('#etapesContainer select.etape'))
-      .map(select => select.value.trim())
+    // CORRECTION : Cible les INPUT (.etape)
+    const inputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
+      .map(input => input.value.trim())
       .filter(v => v.length > 0);
 
     if (inputs.length < 2) {
       alert("Veuillez saisir au moins deux villes.");
       return;
     }
-    // ... (le reste du recalcul est conservé)
-    
+
     // Séquence de villes existantes
     let existingSequence = [];
     if (segments.length > 0) {
@@ -373,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     div.style.marginBottom = '10px';
     div.innerHTML = `
       <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom" value="${data.nom || ''}">
-      <textarea type="text" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
+      <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
       <input type="time" class="subEtapeHeure" value="${data.heure || ''}">
       <input type="file" class="subEtapePhoto" multiple accept="image/*">
     `;
@@ -567,9 +571,9 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
   });
 
   function saveEtapes() {
-    // CORRECTION : Cibler les SELECT, pas les INPUT
-    const villes = Array.from(document.querySelectorAll('#etapesContainer select.etape'))
-      .map(select => select.value.trim())
+    // CORRECTION : Cible les INPUT, pas les SELECT
+    const villes = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
+      .map(input => input.value.trim())
       .filter(ville => ville.length > 0);
     return villes;
   }
@@ -585,9 +589,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     document.getElementById('btnModifier').style.display = 'none';
     document.getElementById('btnLegende').style.display = 'inline-block';
 
-    // 3. RETRAIT DE LA LOGIQUE DE RECONSTRUCTION DES ÉTAPES !
-    // Si nous ne détruisons pas le DOM, il n'y a pas besoin de le reconstruire.
-    // L'état des Select2 est conservé.
+    // *** Aucune reconstruction n'est nécessaire, les INPUTs sont déjà là ***
   });
 
   document.getElementById('btnLegende').addEventListener('click', () => {
@@ -603,7 +605,6 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
   });
 
   document.getElementById('btnCalculer').addEventListener('click', calculItineraire);
-  // ... (le reste du code est conservé)
 
   // --- Recalculer l'itinéraire ---
   document.getElementById('btnRecalculer').addEventListener('click', recalculerDerniersSegmentsMultiples);
@@ -674,7 +675,8 @@ document.getElementById('saveRoadtrip').addEventListener('click', async () => {
     }
 
     // Récupérer toutes les villes des étapes
-    const villesInputs = Array.from(document.querySelectorAll('#etapesContainer select.etape'))
+    // CORRECTION : Cible les INPUTs
+    const villesInputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
         .map(input => input.value.trim())
         .filter(v => v.length > 0);
 
@@ -1007,4 +1009,3 @@ if (toggleMalvoyant) {
         }
     });
 }
-

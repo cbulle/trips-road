@@ -12,10 +12,11 @@ require_once __DIR__ . '/modules/init.php';
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <link rel="stylesheet" href="/css/style.css">
   
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/fr.js"></script>
+  
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+
   </head>
 <body>
   <?php     
@@ -26,7 +27,7 @@ require_once __DIR__ . '/modules/init.php';
   <div class="main-container">
     <div class="sidebar">
       <div id="etapesContainer">
-      <select class="etape" style="width: 100%;"></select>
+          <input type="text" class="etape" placeholder="Choisir une ville..." style="width: 100%;">
       </div>
       
       <button type="button" id="addEtape">+ Ajouter une étape</button>

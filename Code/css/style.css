@@ -751,6 +751,87 @@ a#show-register, a#show-login {
 }
 
 
+/* ==============================================================================================================================================================================
+STYLE DE LA RECHERCHE DES VILLES DANS LA CREATION DE ROADTRIP
+=================================================================================================================================================================================*/
+
+.select2-container--default .select2-selection--single {
+  background-color: white;
+  border: 1px solid #ccc; 
+  height: 40px; 
+  padding: 5px 10px; 
+  border-radius: 15px; 
+  width: 260px; 
+  box-sizing: border-box;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border: 1px solid #ccc !important; 
+  outline: none;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--bleu_clair);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 38px;
+  width: 20px;
+  position: absolute;
+  top: 1px; 
+  right: 5px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 30px; 
+  color: var(--bleu_foncé_ecriture);
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: var(--bleu_clair); 
+  color: var(--beige);
+}
+.select2-container--default .select2-results__option {
+  padding: 10px;
+}
+
+.sidebar .select2-container {
+    width: 260px !important;
+    margin-bottom: 10px;
+}
+
+/* 1. Masque l'input de recherche interne qui est affiché dans le menu déroulant */
+.select2-container--default .select2-dropdown .select2-search--dropdown {
+    /* Cache toute la section du champ de recherche dans la liste déroulante */
+    display: none !important;
+}
+
+/* 2. S'assure que le champ de recherche principal prend toute la place */
+.select2-container--open .select2-dropdown {
+    /* Ajuste le padding pour qu'il n'y ait pas d'espace vide là où l'input était */
+    padding: 0 !important;
+}
+
+/* 3. Masque la flèche du menu déroulant sur le champ principal */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    display: none !important;
+}
+
+/* 4. Cache le petit "x" pour effacer le champ */
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    display: none !important;
+}
+
+/* 5. Rend le champ principal saisissable */
+/* Ceci est géré par l'auto-focus JS, mais on s'assure que rien ne bloque l'interaction */
+.select2-container--default .select2-selection--single {
+    cursor: text;
+}
+
 /* ==============================
    STYLE DANS DES INPUTS DANS LA SIDE-BAR
 ============================== */
