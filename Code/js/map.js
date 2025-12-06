@@ -48,6 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   const europeViewbox = [-25.0, 35.0, 30.0, 71.0]; // Zone Europe
 
+  // --- FONCTION UTILITAIRE : Extrait le nom simple de la ville ---
+  function getNomSimple(nomComplet) {
+      if (!nomComplet) return '';
+      // Prend tout ce qui est avant la première virgule (ex: "Lyon, Rhône, France" -> "Lyon")
+      return nomComplet.split(',')[0].trim(); 
+  }
+
   // --- Fonction de géocodage (Utilise Nominatim) ---
   async function getCoordonnees(ville) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&viewbox=${europeViewbox.join(',')}&bounded=1&limit=1&accept-language=fr`;
@@ -104,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // --- 1. Initialisation au chargement de la page ---
-  // Cible les INPUTs de classe .etape (assurez-vous que le HTML utilise bien <input> initialement)
+  // Cible les INPUTs de classe .etape 
   document.querySelectorAll('.etape').forEach(initAutocomplete);
 
 
@@ -116,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     container.style.alignItems = 'center';
     container.style.marginBottom = '5px';
 
-    // MODIFICATION : On crée un INPUT type text
+    // On crée un INPUT type text
     const input = document.createElement('input'); 
     input.type = 'text';
     input.classList.add('etape');
@@ -161,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnModifier').style.display = 'inline-block';
 
     const villes = [];
-    // CORRECTION : Cible les INPUT (.etape) pour récupérer les valeurs
     $('.etape').each(function() {
         const val = $(this).val();
         if (val && val.trim() !== '') {
@@ -204,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function recalculerDerniersSegmentsMultiples() {
-    // CORRECTION : Cible les INPUT (.etape)
     const inputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
       .map(input => input.value.trim())
       .filter(v => v.length > 0);
@@ -287,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // --- Fonction pour ajouter un segment ---
+  // --- Fonction pour ajouter un segment (CORRIGÉE pour nom simple) ---
   async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy) {
     const coordString = `${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}`;
     const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordString}?overview=full&geometries=geojson`;
@@ -301,26 +306,32 @@ document.addEventListener('DOMContentLoaded', () => {
       const couleurSegment = segmentColors[index % segmentColors.length];
       const line = L.geoJSON(route.geometry, { color: couleurSegment, weight: 5, opacity: 0.8 }).addTo(map);
 
+      // NOUVEAU : Calculer les noms simples pour la légende
+      const startNameSimple = getNomSimple(startName);
+      const endNameSimple = getNomSimple(endName);
+
       segments.push({
         line,
-        startName,
+        startName: startName, // CONSERVE LE NOM COMPLET
         startCoord: startCoords,
-        endName,
+        endName: endName,     // CONSERVE LE NOM COMPLET
         endCoord: endCoords,
         distance: (route.distance / 1000).toFixed(1),
         duration: Math.floor(route.duration / 60),
         couleurSegment,
-        sousEtapes: []
+        sousEtapes: [],
+        startNameSimple: startNameSimple, // Ajout des noms simples
+        endNameSimple: endNameSimple
       });
 
-      // Ajouter au DOM légende
+      // Ajouter au DOM légende (utilise les NOMS SIMPLES)
       const li = document.createElement('li');
       li.dataset.index = index;
       li.innerHTML = `
         <div class="segment-header" style="display:flex;align-items:center;gap:5px;cursor:pointer;">
           <span style="display:inline-block;width:15px;height:15px;background:${segmentColors[index % segmentColors.length]};border-radius:3px;"></span>
           <button class="toggleSousEtapes" data-index="${index}" style="margin-left:auto;">
-            ${startName} → ${endName}
+            ${startNameSimple} → ${endNameSimple} 
           </button>
         </div>
         <button class="modifierSousEtapes" data-index="${index}">Modifier</button>
@@ -365,26 +376,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Gestion des sous-étapes ---
+  // --- Gestion des sous-étapes (MODIFIÉE POUR TINYMCE) ---
   const segmentFormContainer = document.getElementById('segmentFormContainer');
   const subEtapesContainer = document.getElementById('subEtapesContainer');
   const segmentDateInput = document.getElementById('segmentDate');
   let currentSegmentIndex = null;
 
   function addSousEtapeForm(data = {}) {
+    // ID unique est CRITIQUE pour TinyMCE
+    const uniqueId = 'editor-' + Date.now() + Math.random().toString(36).substring(2, 9);
+    
     const div = document.createElement('div');
     div.classList.add('subEtape');
-    div.style.marginBottom = '10px';
+    div.style.display = 'flex'; 
+    div.style.flexDirection = 'column';
+    div.style.marginBottom = '20px'; 
+    div.style.position = 'relative';
+
     div.innerHTML = `
       <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom" value="${data.nom || ''}">
-      <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
+      
+      <textarea id="${uniqueId}" class="subEtapeRemarque" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
+      
       <input type="time" class="subEtapeHeure" value="${data.heure || ''}">
       <input type="file" class="subEtapePhoto" multiple accept="image/*">
+      
+      <button class="removeSubEtapeBtn" 
+              style="position: absolute; top: 0px; right: 0px; background: none; border: none; color: var(--rouge); cursor: pointer; font-size: 1.2rem; line-height: 1; padding: 5px;">
+        ✖
+      </button>
     `;
     subEtapesContainer.appendChild(div);
+
+    // Initialiser Autocomplete sur l'input de nom
+    const subEtapeInput = div.querySelector('.subEtapeNom');
+    initAutocomplete(subEtapeInput);
+
+    // NOUVEAU : INITIALISATION DE TINYMCE
+    tinymce.init({
+        selector: `#${uniqueId}`,
+        plugins: 'table lists link code visualblocks autoresize fullscreen textcolor colorpicker',
+        toolbar: 'bold italic underline | forecolor backcolor | bullist numlist | indent outdent | alignleft aligncenter alignright alignjustify | table | code | visualblocks | fullscreen',
+        menubar: false,
+        height: 1500, // Hauteur de l'éditeur
+        branding: false, // Cache le logo TinyMCE
+        statusbar: false
+    });
+
+    // Ajouter l'écouteur d'événement pour la suppression
+    const removeBtn = div.querySelector('.removeSubEtapeBtn');
+    removeBtn.addEventListener('click', () => {
+        // DÉTRUIRE L'ÉDITEUR AVANT DE SUPPRIMER LE DIV
+        const editor = tinymce.get(uniqueId);
+        if (editor) editor.remove();
+        div.remove(); 
+    });
   }
 
-  // --- Clic sur un segment pour modifier sous-étapes ---
+  // --- Clic sur un segment pour modifier sous-étapes (MODIFIÉ) ---
   document.getElementById('legendList').addEventListener('click', e => {
     const li = e.target.closest('li');
     if (!li) return;
@@ -395,9 +444,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (e.target.classList.contains('modifierSousEtapes')) {
       const seg = segments[index];
-      document.getElementById('segmentTitle').textContent = `Modifier le segment : ${seg.startName} → ${seg.endName}`;
+      
+      // Utilisation des noms simples stockés pour le titre
+      const start = seg.startNameSimple || getNomSimple(seg.startName); 
+      const end = seg.endNameSimple || getNomSimple(seg.endName); 
+      
+      document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} → ${end}`;
       showSegmentForm();
-      subEtapesContainer.innerHTML = '';
+      // Le contenu du subEtapesContainer est vidé ici avant d'être reconstruit
+      subEtapesContainer.innerHTML = ''; 
       seg.sousEtapes.forEach(se => addSousEtapeForm(se));
       segmentDateInput.value = seg.date || '';
     }
@@ -405,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('addSubEtape').addEventListener('click', () => addSousEtapeForm());
 
-  // --- Sauvegarder sous-étapes + ajout markers ---
+  // --- Sauvegarder sous-étapes + ajout markers (MODIFIÉ POUR TINYMCE) ---
 document.getElementById('saveSegment').addEventListener('click', async () => {
     if (currentSegmentIndex === null) return;
 
@@ -418,19 +473,23 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     const subDivs = Array.from(document.querySelectorAll('.subEtape'));
     for (const div of subDivs) {
         const nom = div.querySelector('.subEtapeNom').value.trim();
-        const remarque = div.querySelector('.subEtapeRemarque').value.trim();
         const heure = div.querySelector('.subEtapeHeure').value.trim();
-       const rawPhotos = Array.from(div.querySelector('.subEtapePhoto').files);
-      const photos = [];
-      console.log("Avant la compression des images de Sous Etapes");
-      for (const f of rawPhotos) {
-        console.log("Avant l'appel de fonction compression");
+        // Récupération de l'ID du textarea (maintenant TinyMCE)
+        const textareaElement = div.querySelector('textarea.subEtapeRemarque');
+        
+        // CORRECTION CRITIQUE : Récupération du contenu HTML de l'éditeur TinyMCE
+        // Si l'éditeur existe, on prend son contenu; sinon, on prend la valeur du textarea (utile pour les cas non initialisés)
+        const remarque = tinymce.get(textareaElement.id) ? tinymce.get(textareaElement.id).getContent() : textareaElement.value;
+        
+        const rawPhotos = Array.from(div.querySelector('.subEtapePhoto').files);
+        const photos = [];
+      
+        for (const f of rawPhotos) {
           const compressed = await compresserImage(f, 0.6, 1200);
           photos.push(compressed);
-          console.log("Fin de compression, photos mise dans la liste de photos");
-      }
+        }
 
-      const se = { nom, remarque, heure, photos };
+        const se = { nom, remarque, heure, photos };
         if (!nom) continue;
         seg.sousEtapes.push(se);
         sousEtapeNoms.push(nom);
@@ -450,7 +509,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     for (const place of allPlaces) {
         const coords = await getCoordonnees(place);
         if (!coords) {
-            alert(`Lieu introuvable : ${place}. Annulation du segment.`);
+            alert(`Lieu introuvable ou hors Europe : ${place}. Annulation du segment.`);
             return;
         }
 
@@ -487,12 +546,14 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
 
         // --- Ajout des marqueurs pour chaque sous-étape ---
         for (const se of seg.sousEtapes) {
-            // Note: Les coordonnées sont déjà dans coordsList, mais on refait un getCoordonnees pour la simplicité ici
             const coords = await getCoordonnees(se.nom); 
             if (!coords) continue;
 
             let popupText = `<b>${se.nom}</b>`;
+            
+            // Le HTML stocké dans 'remarque' doit être affiché ici
             if (se.remarque) popupText += `<br><em>${se.remarque}</em>`;
+
             if (se.heure) popupText += `<br>Heure : ${se.heure}`;
 
             // Gestion de plusieurs photos
@@ -515,7 +576,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
   });
 
 
-  // --- Toggle sous-étapes dans la légende ---
+  // --- Toggle sous-étapes dans la légende (MODIFIÉ) ---
   document.getElementById('legendList').addEventListener('click', e => {
     if (e.target.classList.contains('toggleSousEtapes')) {
       const index = e.target.dataset.index;
@@ -528,33 +589,30 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
         
         // --- 1. Ajouter la ville de départ ---
         let liDepart = document.createElement('li');
-        liDepart.innerHTML = `<div><span style="font-weight: bold;">Départ: ${seg.startName}</span></div>`;
+        const startSimple = seg.startNameSimple || getNomSimple(seg.startName);
+        liDepart.innerHTML = `<div><span style="font-weight: bold;">Départ: ${startSimple}</span></div>`; 
         ul.appendChild(liDepart);
         
         // --- 2. Ajouter les sous-étapes ---
         if (seg.sousEtapes.length > 0) {
           seg.sousEtapes.forEach(se => {
-            // Note: Le code original utilise se.photo (singulier) mais le code de sauvegarde utilise se.photos (pluriel, qui est un tableau)
-            // Pour être compatible avec la sauvegarde :
             let photoHTML = '';
             if (se.photos && se.photos.length > 0) {
-                // Afficher la première photo s'il y en a
-                const url = URL.createObjectURL(se.photos[0]);
-                photoHTML = `<img src="${url}" class="sousetape-photo" style="max-width: 50px; max-height: 50px; margin-left: 5px;">`;
+              const url = URL.createObjectURL(se.photos[0]);
+              photoHTML = `<img src="${url}" class="sousetape-photo" style="max-width: 50px; max-height: 50px; margin-left: 5px;">`;
             }
             
             const li = document.createElement('li');
             li.innerHTML = `<div style="display: flex; align-items: center;">
                               <span style="flex-grow: 1;">
                                 <strong>${se.nom}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
-                                ${se.remarque || ''}
+                                ${se.remarque || ''} 
                               </span>
                               ${photoHTML}
                             </div>`;
             ul.appendChild(li);
           });
         } else {
-          // Afficher une ligne d'information si aucune sous-étape n'est définie
           let liAucune = document.createElement('li');
           liAucune.innerHTML = '<li><em>Aucune sous-étape</em></li>';
           ul.appendChild(liAucune);
@@ -562,7 +620,8 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
 
         // --- 3. Ajouter la ville d'arrivée ---
         let liArrivee = document.createElement('li');
-        liArrivee.innerHTML = `<div><span style="font-weight: bold;">Arrivée: ${seg.endName}</span></div>`;
+        const endSimple = seg.endNameSimple || getNomSimple(seg.endName);
+        liArrivee.innerHTML = `<div><span style="font-weight: bold;">Arrivée: ${endSimple}</span></div>`;
         ul.appendChild(liArrivee);
         
         ul.style.display = 'block';
@@ -571,7 +630,6 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
   });
 
   function saveEtapes() {
-    // CORRECTION : Cible les INPUT, pas les SELECT
     const villes = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
       .map(input => input.value.trim())
       .filter(ville => ville.length > 0);
@@ -582,14 +640,12 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     // 1. Rendre visibles les éléments de création
     document.getElementById('etapesContainer').style.display = 'block';
     document.getElementById('addEtape').style.display = 'inline-block';
-    document.getElementById('btnCalculer').style.display = 'none';
+    document.getElementById('btnCalculer').style.display = 'inline-block';
 
     // 2. Cacher la légende et les boutons de navigation
     document.getElementById('legend').style.display = 'none';
     document.getElementById('btnModifier').style.display = 'none';
     document.getElementById('btnLegende').style.display = 'inline-block';
-
-    // *** Aucune reconstruction n'est nécessaire, les INPUTs sont déjà là ***
   });
 
   document.getElementById('btnLegende').addEventListener('click', () => {
@@ -675,7 +731,6 @@ document.getElementById('saveRoadtrip').addEventListener('click', async () => {
     }
 
     // Récupérer toutes les villes des étapes
-    // CORRECTION : Cible les INPUTs
     const villesInputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
         .map(input => input.value.trim())
         .filter(v => v.length > 0);
@@ -990,7 +1045,7 @@ if (toggleSombre) {
 
 if (savedMalvoyant === "malvoyant") {
     document.documentElement.classList.add("malvoyant");
-    document.documentElement.classList.add("MalvoyantBtn");
+    document.documentElement.classList.add("SombreBtn");
 }
 
 if (toggleMalvoyant) {
@@ -999,12 +1054,12 @@ if (toggleMalvoyant) {
     toggleMalvoyant.addEventListener("change", () => {
         if (toggleMalvoyant.checked) {
             document.documentElement.classList.add("malvoyant");
-            document.documentElement.classList.add("MalvoyantBtn");
+            document.documentElement.classList.add("SombreBtn");
             localStorage.setItem("Police", "malvoyant");
 
         } else {
             document.documentElement.classList.remove("malvoyant");
-            document.documentElement.classList.remove("MalvoyantBtn");
+            document.documentElement.classList.remove("SombreBtn");
             localStorage.setItem("Police", "voyant");
         }
     });

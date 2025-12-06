@@ -13,6 +13,7 @@ require_once __DIR__ . '/modules/init.php';
   <link rel="stylesheet" href="/css/style.css">
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.tiny.cloud/1/3zxeqmyft1tkl3r8uell7b17xff2iqfx6kmw6nsx9rix4ut4/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
   
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>

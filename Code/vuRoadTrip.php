@@ -163,10 +163,10 @@ function getTransportIcon($type) {
                                     </span>
                                 <?php endif; ?>
                             </div>
-                            
-                            <?php if (!empty($sousEtape['description'])) : ?>
-                                <p><?php echo nl2br(htmlspecialchars($sousEtape['description'])); ?></p>
-                            <?php endif; ?>
+                            <!-- Ici j'ai une balise p vide qui se mets et egalement une tonne de balises br que je ne veux pas voir mais que s'ajoute je ne sais pas pk -->
+                                <?php if (!empty($sousEtape['description'])) : ?>
+                                    <p><?php echo $sousEtape['description']; ?></p> 
+                                <?php endif; ?>
                             
                             <?php if (isset($sousEtape['photos']) && count($sousEtape['photos']) > 0) : ?>
                                 <div class="photos-container">
