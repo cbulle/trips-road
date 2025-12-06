@@ -18,13 +18,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($password, $user['mot_de_passe'])) {   
 
-            $_SESSION['utilisateur'] = [
-                'id' => $user['id'],
-                'nom' => $user['nom'],
-                'prenom' => $user['prenom'],
-                'email' => $user['email'],
-                'photo_profil' => $user['photo_profil']
-            ];
+           $_SESSION['utilisateur'] = [
+            'id' => $user['id'],
+            'nom' => $user['nom'],
+            'prenom' => $user['prenom'],
+            'email' => $user['email'],
+            'adresse' => $user['adresse'],
+            'postal' => $user['postal'],
+            'ville' => $user['ville'],
+            'tel' => $user['tel'],
+            'date_naissance' => $user['date_naissance']
+        ];
+
 
             if ($remember) {
                 setcookie('remember_login', $email, time() + (7 * 24 * 60 * 60), '/');

@@ -1,12 +1,19 @@
 // --- map.js ---
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- Initialisation de la carte ---
+  // --- Initialisation de la carte en mode clair ---
   let map = L.map('map').setView([46.5, 2.5], 6);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  var lightLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
   }).addTo(map);
+  
+  // --- Initialisation de la carte en mode sombre
+  var darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap & © CartoDB'
+});
+
 
   let segments = [];
   const markers = {}; // Stockage centralisé de tous les markers
@@ -41,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   const europeViewbox = [-25.0, 35.0, 30.0, 71.0]; // Zone Europe
 
-  // --- Fonction de géocodage ---
+  // --- Fonction de géocodage (Utilise Nominatim) ---
   async function getCoordonnees(ville) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&viewbox=${europeViewbox.join(',')}&bounded=1&limit=1&accept-language=fr`;
     try {
@@ -388,7 +395,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('addSubEtape').addEventListener('click', () => addSousEtapeForm());
 
   // --- Sauvegarder sous-étapes + ajout markers ---
-  // --- Sauvegarder sous-étapes + ajout markers ---
 document.getElementById('saveSegment').addEventListener('click', async () => {
     if (currentSegmentIndex === null) return;
 
@@ -403,10 +409,18 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
         const nom = div.querySelector('.subEtapeNom').value.trim();
         const remarque = div.querySelector('.subEtapeRemarque').value.trim();
         const heure = div.querySelector('.subEtapeHeure').value.trim();
-        const photos = Array.from(div.querySelector('.subEtapePhoto').files); // <-- Tous les fichiers
-        if (!nom) continue;
+       const rawPhotos = Array.from(div.querySelector('.subEtapePhoto').files);
+      const photos = [];
+      console.log("Avant la compression des images de Sous Etapes");
+      for (const f of rawPhotos) {
+        console.log("Avant l'appel de fonction compression");
+          const compressed = await compresserImage(f, 0.6, 1200);
+          photos.push(compressed);
+          console.log("Fin de compression, photos mise dans la liste de photos");
+      }
 
-        const se = { nom, remarque, heure, photos };
+      const se = { nom, remarque, heure, photos };
+        if (!nom) continue;
         seg.sousEtapes.push(se);
         sousEtapeNoms.push(nom);
     }
@@ -420,14 +434,26 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     // --- Calcul de l'itinéraire passant par les sous-étapes ---
     const allPlaces = [seg.startName, ...sousEtapeNoms, seg.endName];
     const coordsList = [];
+    
+    // VÉRIFICATION/SAUVEGARDE DE TOUTES LES VILLES (ÉTAPE ET SOUS-ÉTAPE) DANS lieux_geocodes
     for (const place of allPlaces) {
         const coords = await getCoordonnees(place);
         if (!coords) {
-            alert(`Lieu introuvable : ${place}`);
+            alert(`Lieu introuvable : ${place}. Annulation du segment.`);
             return;
         }
+
+        // Sauvegarde/Vérification de la ville et de ses coordonnées dans la table lieux_geocodes
+        const [lat, lon] = coords;
+        const saved = await saveCoordsToDB(place, lat, lon);
+        if (!saved) {
+            alert(`Erreur lors de la sauvegarde/vérification des coordonnées de la ville ${place} en base de données. Annulation de la sauvegarde du segment.`);
+            return;
+        }
+
         coordsList.push(coords);
     }
+    // FIN VÉRIFICATION/SAUVEGARDE
 
     const coordPairs = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
     const strategy = strategies['Voiture']; // ou récupérer le mode existant
@@ -450,7 +476,8 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
 
         // --- Ajout des marqueurs pour chaque sous-étape ---
         for (const se of seg.sousEtapes) {
-            const coords = await getCoordonnees(se.nom);
+            // Note: Les coordonnées sont déjà dans coordsList, mais on refait un getCoordonnees pour la simplicité ici
+            const coords = await getCoordonnees(se.nom); 
             if (!coords) continue;
 
             let popupText = `<b>${se.nom}</b>`;
@@ -487,16 +514,46 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
       if (ul.style.display === 'none') {
         const seg = segments[index];
         ul.innerHTML = '';
+        
+        // --- 1. Ajouter la ville de départ ---
+        let liDepart = document.createElement('li');
+        liDepart.innerHTML = `<div><span style="font-weight: bold;">Départ: ${seg.startName}</span></div>`;
+        ul.appendChild(liDepart);
+        
+        // --- 2. Ajouter les sous-étapes ---
         if (seg.sousEtapes.length > 0) {
           seg.sousEtapes.forEach(se => {
-            let photoHTML = se.photo ? `<img src="${URL.createObjectURL(se.photo)}" class="sousetape-photo">` : '';
+            // Note: Le code original utilise se.photo (singulier) mais le code de sauvegarde utilise se.photos (pluriel, qui est un tableau)
+            // Pour être compatible avec la sauvegarde :
+            let photoHTML = '';
+            if (se.photos && se.photos.length > 0) {
+                // Afficher la première photo s'il y en a
+                const url = URL.createObjectURL(se.photos[0]);
+                photoHTML = `<img src="${url}" class="sousetape-photo" style="max-width: 50px; max-height: 50px; margin-left: 5px;">`;
+            }
+            
             const li = document.createElement('li');
-            li.innerHTML = `<div><strong>${se.nom}</strong>${se.heure ? ` (${se.heure})` : ''}<br>${se.remarque || ''}${photoHTML}</div>`;
+            li.innerHTML = `<div style="display: flex; align-items: center;">
+                              <span style="flex-grow: 1;">
+                                <strong>${se.nom}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
+                                ${se.remarque || ''}
+                              </span>
+                              ${photoHTML}
+                            </div>`;
             ul.appendChild(li);
           });
         } else {
-          ul.innerHTML = '<li><em>Aucune sous-étape</em></li>';
+          // Afficher une ligne d'information si aucune sous-étape n'est définie
+          let liAucune = document.createElement('li');
+          liAucune.innerHTML = '<li><em>Aucune sous-étape</em></li>';
+          ul.appendChild(liAucune);
         }
+
+        // --- 3. Ajouter la ville d'arrivée ---
+        let liArrivee = document.createElement('li');
+        liArrivee.innerHTML = `<div><span style="font-weight: bold;">Arrivée: ${seg.endName}</span></div>`;
+        ul.appendChild(liArrivee);
+        
         ul.style.display = 'block';
       } else ul.style.display = 'none';
     }
@@ -578,25 +635,87 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     }
   });
 
-  /*========================================================================
-  SAUVEGARDE D'UN ROAD POUR LA BD
-  ========================================================================*/
-  document.getElementById('saveRoadtrip').addEventListener('click', async () => {
+/*========================================================================
+  FONCTION DE SAUVEGARDE/VÉRIFICATION DES COORDONNÉES EN BASE DE DONNÉES
+========================================================================*/
+async function saveCoordsToDB(ville, lat, lon) {
+    try {
+        const response = await fetch('../include/geocode.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // On envoie le nom, la latitude et la longitude trouvées par Nominatim (via getCoordonnees)
+            body: JSON.stringify({ nom: ville, lat: lat, lon: lon })
+        });
+        const result = await response.json();
+        
+        if (!result.success) {
+            console.error(`Erreur DB pour ${ville}:`, result.message);
+            // Si le PHP échoue à insérer ou vérifier, on le signale.
+            return false;
+        }
+        // Si successful, cela signifie que la ville est maintenant dans lieux_geocodes.
+        return true;
+    } catch (e) {
+        console.error("Erreur réseau ou serveur lors de la sauvegarde/vérification des coordonnées:", e);
+        return false;
+    }
+}
+
+
+/*========================================================================
+SAUVEGARDE D'UN ROADTRIP DANS LA BASE DE DONNÉES
+========================================================================*/
+document.getElementById('saveRoadtrip').addEventListener('click', async () => {
     const titre = document.getElementById('roadtripTitle').value.trim();
     const description = document.getElementById('roadtripDescription').value.trim();
     const visibilite = document.getElementById('roadtripVisibilite').value;
-    const photoCover = document.getElementById('roadtripPhoto').files[0]; // photo cover
-
+    let photoCover = document.getElementById('roadtripPhoto').files[0];
+    
     if (!titre || !description) {
         alert("Veuillez remplir le titre et la description.");
         return;
     }
 
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
+    // Récupérer toutes les villes des étapes
+    const villesInputs = Array.from(document.querySelectorAll('#etapesContainer input'))
         .map(input => input.value.trim())
         .filter(v => v.length > 0);
 
-    // Construction des trajets et sous-étapes
+    if (villesInputs.length < 2) {
+        alert("Veuillez saisir au moins deux villes.");
+        return;
+    }
+
+    // Préparer les données des villes avec leurs coordonnées ET s'assurer qu'elles sont dans lieux_geocodes
+    const villesGeo = [];
+    for (const ville of villesInputs) {
+        // 1. Obtenir les coordonnées via Nominatim (si elles n'étaient pas connues)
+        const coords = await getCoordonnees(ville);
+        if (!coords) {
+            alert(`Ville introuvable ou hors Europe : ${ville}`);
+            return;
+        }
+        
+        const [lat, lon] = coords;
+        
+        // 2. Vérifier/Sauvegarder la ville et ses coordonnées dans la table lieux_geocodes
+        const saved = await saveCoordsToDB(ville, lat, lon);
+        if (!saved) {
+            alert(`Erreur lors de la sauvegarde/vérification des coordonnées de la ville ${ville} en base de données. Annulation de la sauvegarde du RoadTrip.`);
+            return;
+        }
+        
+        // Ajouter la ville pour la sauvegarde du RoadTrip principal
+        villesGeo.push({ 
+            nom: ville, 
+            lat: lat, 
+            lon: lon 
+        });
+    }
+
+    // Préparer les trajets avec leurs sous-étapes
     const trajets = segments.map((seg, sIdx) => ({
         depart: seg.startName,
         arrivee: seg.endName,
@@ -609,17 +728,21 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
         }))
     }));
 
+    // Créer le FormData pour l'envoi
     const formData = new FormData();
     formData.append('titre', titre);
     formData.append('description', description);
     formData.append('visibilite', visibilite);
-    formData.append('villes', JSON.stringify(villes));
+    formData.append('villes', JSON.stringify(villesGeo));
     formData.append('trajets', JSON.stringify(trajets));
 
-    // Photo cover roadtrip
-    if (photoCover) formData.append('photo_cover', photoCover);
+    // Ajouter la photo de couverture (compressée)
+    if (photoCover) {
+        photoCover = await compresserImage(photoCover, 0.6, 1200);
+        formData.append('photo_cover', photoCover);
+    }
 
-    // Photos sous-étapes
+    // Ajouter toutes les photos des sous-étapes
     segments.forEach((seg, sIdx) => {
         seg.sousEtapes.forEach((se, seIdx) => {
             if (se.photos && se.photos.length) {
@@ -630,32 +753,172 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
         });
     });
 
+    // Afficher un indicateur de chargement
+    const saveBtn = document.getElementById('saveRoadtrip');
+    const originalText = saveBtn.textContent;
+    saveBtn.textContent = 'Sauvegarde en cours...';
+    saveBtn.disabled = true;
+
     try {
-        const response = await fetch('/formulaire/saveRoadtrip.php', {
+        const response = await fetch('../formulaire/saveRoadtrip.php', {
             method: 'POST',
             body: formData
         });
-        const result = await response.json();
+
+        const text = await response.text();
+        console.log("Réponse brute du serveur :", text);
+
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            console.error("Erreur de parsing JSON:", e);
+            throw new Error("Réponse invalide du serveur");
+        }
+
         if (result.success) {
             alert('RoadTrip sauvegardé avec succès !');
-
-            // Reset
+            
+            // Réinitialiser le formulaire
             document.getElementById('roadtripTitle').value = '';
             document.getElementById('roadtripDescription').value = '';
             document.getElementById('roadtripVisibilite').selectedIndex = 0;
             document.getElementById('roadtripPhoto').value = '';
             document.getElementById('etapesContainer').innerHTML = '';
+            
+            // Nettoyer la carte
+            segments.forEach(seg => {
+                if (seg.line) map.removeLayer(seg.line);
+            });
+            Object.values(markers).flat().forEach(m => map.removeLayer(m.marker));
             segments.length = 0;
-            location.reload();
+            
+            window.location.href = `../mesRoadTrips.php`;
+            
         } else {
             alert(result.message || 'Erreur lors de la sauvegarde.');
         }
-      } catch (err) {
-          console.error(err);
-          alert('Erreur réseau.');
-      }
-  });
+        
+    } catch (err) {
+        console.error("Erreur lors de la sauvegarde:", err);
+        alert('Erreur réseau ou serveur. Consultez la console pour plus de détails.');
+    } finally {
+        // Réactiver le bouton
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+    }
 });
+});
+
+/*========================================================================
+  FONCTION DE COMPRESSION D'IMAGE
+========================================================================*/
+function compresserImage(file, quality = 0.6, maxWidth = 1200) {
+    console.log("Compression de l'image:", file.name);
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onerror = () => reject(new Error("Erreur de lecture du fichier"));
+
+        reader.onload = e => {
+            const img = new Image();
+            img.src = e.target.result;
+
+            img.onerror = () => reject(new Error("Erreur de chargement de l'image"));
+
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ratio = img.width / img.height;
+
+                // Redimensionner si trop large
+                if (img.width > maxWidth) {
+                    canvas.width = maxWidth;
+                    canvas.height = maxWidth / ratio;
+                } else {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                }
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        const compressedFile = new File([blob], file.name, { 
+                            type: "image/jpeg",
+                            lastModified: Date.now()
+                        });
+                        console.log(`Image compressée: ${(file.size / 1024).toFixed(2)}KB → ${(blob.size / 1024).toFixed(2)}KB`);
+                        resolve(compressedFile);
+                    } else {
+                        reject(new Error("Erreur de compression"));
+                    }
+                }, "image/jpeg", quality);
+            };
+        };
+    });
+}
+
+function toggleSousEtapes(trajetId) {
+    const container = document.getElementById('sous-etapes-' + trajetId);
+    const card = document.querySelector('[data-trajet-id="' + trajetId + '"]');
+    
+    container.classList.toggle('active');
+    card.classList.toggle('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.getElementById('imageModal')) {
+        const modal = document.createElement('div');
+        modal.id = 'imageModal';
+        modal.className = 'image-modal';
+        modal.style.cssText = `
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        `;
+        
+        const img = document.createElement('img');
+        img.id = 'imageModalContent';
+        img.style.cssText = `
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        `;
+        
+        modal.appendChild(img);
+        document.body.appendChild(modal);
+        
+        modal.addEventListener('click', function() {
+            this.style.display = 'none';
+        });
+    }
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG' && e.target.closest('.photos-container')) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('imageModalContent');
+            modal.style.display = 'block';
+            modalImg.src = e.target.src;
+        }
+        
+        if (e.target.classList.contains('image-modal')) {
+            e.target.style.display = 'none';
+        }
+    });
+})();
+
 
 
 /*=======================================
@@ -696,10 +959,57 @@ document.addEventListener('DOMContentLoaded', function() {
 /*=======================================
           Changement de thème
 =======================================*/
-const checkbox = document.getElementById("checkboxSombre");
-checkbox.addEventListener("change", () => {
-  document.documentElement.classList.toggle("dark", checkbox.checked);
-});
 
 
+const savedTheme = localStorage.getItem("theme");
+const toggleSombre = document.getElementById("checkboxSombre");
+
+const savedMalvoyant = localStorage.getItem("Police");
+const toggleMalvoyant = document.getElementById("checkboxMalvoyant");
+
+
+if (savedTheme === "dark") {
+    document.documentElement.classList.add("dark");
+    document.documentElement.classList.add("SombreBtn");
+}
+
+if (toggleSombre) {
+    toggleSombre.checked = savedTheme === "dark";
+
+    toggleSombre.addEventListener("change", () => {
+        if (toggleSombre.checked) {
+            document.documentElement.classList.add("dark");
+            document.documentElement.classList.add("SombreBtn");
+            localStorage.setItem("theme", "dark");
+
+        } else {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.classList.remove("SombreBtn");
+            localStorage.setItem("theme", "light");
+        }
+    });
+}
+
+
+if (savedMalvoyant === "malvoyant") {
+    document.documentElement.classList.add("malvoyant");
+    document.documentElement.classList.add("MalvoyantBtn");
+}
+
+if (toggleMalvoyant) {
+    toggleMalvoyant.checked = savedMalvoyant === "malvoyant";
+
+    toggleMalvoyant.addEventListener("change", () => {
+        if (toggleMalvoyant.checked) {
+            document.documentElement.classList.add("malvoyant");
+            document.documentElement.classList.add("MalvoyantBtn");
+            localStorage.setItem("Police", "malvoyant");
+
+        } else {
+            document.documentElement.classList.remove("malvoyant");
+            document.documentElement.classList.remove("MalvoyantBtn");
+            localStorage.setItem("Police", "voyant");
+        }
+    });
+}
 

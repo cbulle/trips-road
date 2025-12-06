@@ -1,17 +1,54 @@
-
 :root {
   --bleu_clair : #39B2A5;
   --bleu_foncé : #0B667D;
+  --bleu_foncé_ecriture : #0b0b0b;
   --beige : #F2E9D6;
   --beige_foncé : #E0C58B;
   --orange : #FF7F50;
+  --orange_sombre: #FF7F50;
+  --orange_malvoyant: #FF7F50;
+  --vert_btn: #2E8B57;
   --vert : #2E8B57 ;
-  --gris_foncé: #3a4649;
-  --gris_clair: #9b9b9b;
+  --gris_foncé: #22292b;
+  --gris_clair: #363535;
   --noir: #000000;
+  --rouge: #BF092F ;
+  --beige_visu: #F2E9D6;
 }
 
+/* ==============================
+   React Access
+============================== */
 
+html.dark {
+  background-color: #132440;
+  --orange: #2E8B57; 
+  --vert_btn: #BF092F;
+  --bleu_foncé: #16476A;
+  --beige: #E0C58B;
+  --beige_foncé: #16476A;
+  --bleu_foncé_ecriture: rgb(212, 212, 212);
+  --beige_visu: #40a79c;
+  color: black;
+  }
+
+
+html.malvoyant {
+  font-size: 20px;
+}
+
+html.SombreBtn {
+  --orange_sombre: #2E8B57; 
+}
+
+html.MalvoyantBtn {
+  --orange_malvoyant: #2E8B57; 
+}
+
+h1{
+  color: var(--orange);
+  text-align: center;
+}
 /* ==============================
    STYLE GLOBAL
 ============================== */
@@ -28,16 +65,21 @@ html {
   height: 100%;
   font-family: 'Poppins', Arial, sans-serif;
   background-color: var(--beige);
-  color: var(--gris_foncé);
   margin: 0;
-  padding: 0;
+  padding: 0; 
+  font-size: 16px;
+  transition: all 0.5s ease;
 }
 
 body {
   margin: 0;
   padding: 0;
+  
 }
 
+footer {
+  transition: all 0.5s ease;
+}
 
 
 /* ==============================
@@ -46,15 +88,18 @@ body {
 
 header {
   background-color: var(--bleu_foncé);
+  transition: all 0.5s ease;
 }
 
+header>nav {
+  padding-bottom: 10px;
+}
 header nav > ul {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   padding-top: 50px;
   list-style: none;
-  margin :0;
 }
 
 header nav > ul > li > a > img {
@@ -69,7 +114,7 @@ header nav > ul > li > a > img {
 .title>a{
   color: var(--beige);
   list-style: none;
-  font-size: 40px;
+  font-size: 3rem;
 }
 
 header nav > ul > div > li > a {
@@ -91,7 +136,7 @@ header nav > ul > div {
 
 header nav > ul > div span {
   margin-top: 5px;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 
 .nav-item {
@@ -102,13 +147,13 @@ header nav > ul > div span {
 }
 
 .nav-item i {
-  font-size: 30px;
+  font-size: 2rem;
   margin-bottom: 5px;
 }
 
 .nav-item span {
   display: block;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 
 .nav-item a {
@@ -117,12 +162,16 @@ header nav > ul > div span {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: color 0.3s, transform 0.3s;
+  transition: all 0.5s ease;
+  position: absolute;
+  top: 82px;
 }
 
 .nav-item a > i {
   color: var(--beige); 
-  transition: transform 0.3s; 
+  transition: all 0.5s ease;
+  position: absolute;
+  bottom: 15px;
 }
 
 .nav-item a:hover {
@@ -130,13 +179,17 @@ header nav > ul > div span {
 }
 
 .nav-item a:hover > i {
-  transform: scale(1.2);
+  font-size: 2.5rem;
   color: var(--orange);
+  transition: all 0.5s ease;
 }
 
 .nav-item a:hover > span {
-  font-weight: bold; 
-  color: var(--orange); 
+  font-weight: bold;
+  font-size: 1.2rem; 
+  color: var(--orange);
+  transition: all 0.5s ease;
+ 
 }
 
 .nav-item {
@@ -149,7 +202,7 @@ header nav > ul > div span {
 
 .nav-item span {
   margin-top: 5px;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 
 /* ==============================
@@ -170,14 +223,13 @@ header nav > ul > div span {
   outline: none;
   padding: 0 20px;
   color: var(--noir);
-  font-size: 20px;
+  font-size: 1rem;
   border : 1px solid var(--beige);
   border-radius: 60px;
   position: absolute;
   left: 11px;
   top: -8px;
 }
-
 
 
 ::placeholder {
@@ -197,14 +249,15 @@ header nav > ul > div span {
 }
 
 .btn>i {
-  font-size: 25px;
+  font-size: 30px;
   line-height: 80px;
   color: var(--noir);
-  transition: all 0.7s ease;
   position: absolute;
   left: 4px;
-  top: -21px;
+  top: -19px;
 }
+
+
 .bar_rech:hover input{
   transition: all .7s ease;
   width: 250px;
@@ -217,9 +270,9 @@ header nav > ul > div span {
 ============================== */
 #burger {
   opacity: 1;
-  bottom: 60px;
-  position: relative;
-  left: 26px;
+  top: 52px;
+  position: absolute;
+  left: 30px;
 }
 
 
@@ -237,18 +290,19 @@ header nav > ul > div span {
 
 .ul_burger {
   position: fixed;
-  top: 100px;
+  top:0px;
   left: -100%;
-  width: 350px;
-  height: 50vh;
+  width: 385px;
+  height: 100%;
   background-color: var(--bleu_foncé);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 20px;
   padding-right: 30px;
+  padding-left: 10px;
   transition: left 0.4s ease;
-  border-radius: 20px;
+ 
 }
 
 .ul_burger>li>a {
@@ -257,7 +311,7 @@ header nav > ul > div span {
 
 .ul_burger>li>a:hover{
   color: var(--orange);
-  font-size:27px;
+  font-size:1.7rem;
 }
 
 #burger:checked ~ .ul_burger {
@@ -266,7 +320,7 @@ header nav > ul > div span {
 
 .ul_burger li {
   opacity: 0;
-  font-size: 25px;
+  font-size: 1.5rem;
   transform: translateX(20px);
   transition: all 0.3s ease-out;
 }
@@ -329,16 +383,17 @@ header nav > ul > div span {
 
 
 /*============================
-    Accessibilité
-============================*/
+    Accessibilité :
+
+   Bouton Mode Nuit
+============================== */
 
   .btnSombre>h2 {
     text-align: center;
 
   }
-  #btnLabel {
-    position: relative;
-    left: 44.5%;
+  #btnSombreLabel {
+    text-align: center;
   }
   .btnSombre{
     position:relative;
@@ -356,7 +411,7 @@ header nav > ul > div span {
   }
 
   .btnSombre .slider {
-    background-color: var(--orange);
+    background-color: var(--orange_sombre);
     bottom: 0;
     cursor: pointer;
     left: 0;
@@ -364,6 +419,10 @@ header nav > ul > div span {
     right: 0;
     top: 0;
     transition: .4s;
+  }
+
+   .btnSombre>.slider.SombreBtn {
+    background-color: var(--vert_btn);
   }
 
   .btnSombre .slider:before {
@@ -377,13 +436,6 @@ header nav > ul > div span {
     width: 26px;
   }
 
-  .btnSombre input:checked + .slider {
-    background-color: var(--vert);
-  }
-
-  html.dark {
-  background-color: var(--gris_foncé);
-  }
 
 
   .btnSombre input:checked + .slider:before {
@@ -398,8 +450,68 @@ header nav > ul > div span {
     border-radius: 50%;
   }
 
+/* ==============================
+   Bouton Mode Malvoyant
+============================== */
 
+ .btnMalvoyant>h2 {
+    text-align: center;
 
+  }
+  #btnMalvoyantLabel {
+    text-align: center;
+  }
+  .btnMalvoyant{
+    position:relative;
+    left:47%;
+  }
+  .btnMalvoyant .switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+  }
+
+  .btnMalvoyant .switch input {
+    display:none;
+  }
+
+  .btnMalvoyant .slider {
+    background-color: var(--orange_malvoyant);
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+  }
+  .btnMalvoyant>.slider.MalvoyantBtn {
+    background-color: var(--vert_btn);
+  }
+
+  .btnMalvoyant .slider:before {
+    background-color: var(--beige);
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+  }
+
+  .btnMalvoyant input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+
+  .btnMalvoyant .slider.round {
+    border-radius: 34px;
+  }
+
+  .btnMalvoyant .slider.round:before {
+    border-radius: 50%;
+  }
 
 /*============================
     Profil
@@ -433,7 +545,7 @@ main.profil {
 }
 
 #login-title {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: bold;
     color: var(--vert); 
     text-align: center;
@@ -442,7 +554,7 @@ main.profil {
 
 .form_modif label {
     display: block;
-    font-size: 16px;
+    font-size: 1rem;
     color: var(--gris_foncé);
     margin-bottom: 8px;
 }
@@ -457,7 +569,7 @@ main.profil {
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 1rem;
     color: var(--gris_foncé);
 }
 
@@ -499,8 +611,8 @@ main.profil {
 }
 
 .profil ul li a {
-    font-size: 16px;
-    color: var(--bleu_foncé);
+    font-size: 1rem;
+    color: var(--bleu_foncé_ecriture);
     text-decoration: none;
     transition: color 0.3s;
 }
@@ -514,36 +626,17 @@ main.profil {
 }
 
 
-/* ==============================
-   BOUTON ACCESSIBILITÉ
-============================== */
-#accessBtn {
-  background-color: var(--orange);
-  border: none;
-  color: var(--gris_foncé);
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-#accessBtn:hover {
-  background-color: var(--orange);
-}
 
 /* ==============================
    CONTENU PRINCIPAL
 ============================== */
 
-.container {
-  flex: 1;
-  background: var(--beige);
-  border-radius: 15px;
+.index_container {
   padding: 30px;
-  box-shadow: 0 4px 15px var(--noir);
+  background-color: var(--beige_foncé);
 }
 
-h1, h2 {
+.index_container>h1,.index_container> h2 {
   text-align: center;
   color: var(--orange);
 }
@@ -572,9 +665,9 @@ h1, h2 {
     border: none;
     padding: 14px 0;
     cursor: pointer;
-    font-size: 1.1em;
+    font-size: 1rem;
     font-weight: bold;
-    color: var(--bleu_foncé);
+    color: var(--bleu_foncé_ecriture);
     border-radius: 12px 12px 0 0;
     transition:  0.3s ease, color 0.3s ease;
 }
@@ -601,8 +694,8 @@ label {
     display: block;
     margin: 12px 0 6px 0;
     font-weight: 600;
-    font-size: 20px ;
-    color: var(--bleu_foncé);
+    font-size: 1.3rem ;
+    color: var(--bleu_foncé_ecriture);
 }
 
 input[type="text"],
@@ -614,7 +707,7 @@ input[type="date"] {
     padding: 10px 14px;
     border: 1px solid #ddd;
     border-radius: 6px;
-    font-size: 1em;
+    font-size: 1rem;
     transition: border-color 0.3s ease;
 }
 
@@ -630,11 +723,11 @@ input[type="date"]:focus {
 
 button[type="submit"] {
     width: 100%;
-    background-color: var(--bleu_clair);
+    background-color: var(--orange);
     color: white;
     border: none;
     padding: 14px 0;
-    font-size: 1.1em;
+    font-size: 1.1rem;
     font-weight: 700;
     border-radius: 8px;
     margin-top: 20px;
@@ -643,7 +736,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: var(--bleu_clair);
+    background-color: var(--vert_btn);
 }
 
 
@@ -673,7 +766,7 @@ a#show-register, a#show-login {
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  background: #E0C58B;
+  background: var(--beige_foncé);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
@@ -726,6 +819,7 @@ a#show-register, a#show-login {
   cursor: pointer;
 }
 
+
 /* ==============================
    SOUS-ETAPES
 ============================== */
@@ -768,6 +862,8 @@ a#show-register, a#show-login {
 /* ==============================
    STYLE AFFICHAGE ROAD TRIP D'UN USER
 ============================== */
+
+
 
 .roadtrip-grid {
     display: grid;
@@ -873,19 +969,207 @@ a#show-register, a#show-login {
     margin-bottom: 10px;
 }
 
+.roadtrip-vu{
+  padding : 50px;
+}
+
+.roadtrip-header {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--beige_foncé);
+            border-radius: 8px;
+        }
+        
+        .roadtrip-header h1 {
+            margin: 0 0 10px 0;
+            color: var(--orange);
+        }
+        
+        .roadtrip-header p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .card-vu {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+        
+        .card-vu:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .trajet-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: var(--beige_foncé);
+            color: var(--orange);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s;
+        }
+        
+        .trajet-header:hover {
+            background: var(--bleu_clair)
+        }
+        
+        .trajet-info {
+            flex: 1;
+        }
+
+        .trajet-info h2{
+            text-align: left;
+        }
+        
+        .trajet-titre {
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .trajet-details {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 0.95em;
+        }
+        
+        .trajet-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .transport-icon {
+            font-size: 1.5em;
+        }
+        
+        .toggle-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+        
+        .card-vu.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .sous-etapes-container {
+            display: none;
+            padding: 20px;
+            background-color: var(--beige_foncé);
+        }
+        
+        .sous-etapes-container.active {
+            display: block;
+        }
+        
+        .sous-etape-card {
+            background: var(--beige_visu);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--orange);
+        }
+        
+        .sous-etape-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .sous-etape-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .numero-etape {
+            background: var(--orange);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .sous-etape-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .sous-etape-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .photos-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .photos-container img {
+            height: 150px;
+            border-radius: 5px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .photos-container img:hover {
+            transform: scale(1.05);
+        }
+        
+        #imageModal {
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .no-sous-etapes {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+
 
 
 
 /* ==============================
    CARTE LEAFLET
 ============================== */
-.map-container, #map {
+.map-container, #map{
   flex: 1;
   width: 100%;
-  height: calc(100vh - 16px - 40px);
+  height: 710px;
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+
+.map-container {
+    position: sticky;
+    top: 20px;       
+}
+
+
+
+
 
 /* ==============================
    IMAGES / POPUPS / LIGHTBOX
@@ -960,7 +1244,8 @@ footer .image-container {
 footer .image-container img {
   width: 100px; 
   height: auto;
-  background-color: var(--beige);
+  background-color: #F2E9D6;
+  border-radius: 13px;
 }
 
 footer .social-media {
@@ -986,7 +1271,7 @@ footer .social-icon {
 
 footer .social-icon:hover {
   color: var(--beige);
-  background-color: var(--vert);
+  background-color: var(--vert_btn);
   transform: translateY(-5px);
 }
 
@@ -1010,7 +1295,7 @@ footer .footer-links>li>a {
 
 footer .footer-links>li>a:hover {
   color: var(--orange);
-  font-size: 1.5em;
+  font-size: 1.4rem;
 }
 
 
@@ -1027,7 +1312,7 @@ footer .footer-links>li>a:hover {
 
 .sidebar #legend h3 {
   margin: 0 0 10px 0;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--orange);
 }
 
@@ -1050,7 +1335,7 @@ footer .footer-links>li>a:hover {
 .segment-header button.toggleSousEtapes {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
   color: var(--orange);
 }
@@ -1150,3 +1435,112 @@ footer .footer-links>li>a:hover {
   cursor: pointer;
   background-color: var(--vert);
 }
+
+
+/*==========================================
+STYLE DE LA TIME LINE POUR AFFICHAGE DES ROAD TRIPS
+==========================================*/
+
+.timeline {
+            position: relative;
+            padding: 20px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .timeline ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+
+        /* Flèche verticale */
+        .timeline ul::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--vert);
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+
+        /* Pointe de la flèche en bas */
+        .timeline ul::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -15px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid var(--vert);
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .timeline li {
+            position: relative;
+            background: var(--beige);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 40px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .timeline li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline li:first-child {
+            margin-top: 0;
+        }
+
+        .timeline li:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline li::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            background: var(--beige);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+        }
+
+        .transport-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        strong {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .timeline li:nth-child(1) {
+            background: var(--beige);
+        }
+
+        .timeline li:nth-child(2) {
+            background: var(--beige);
+        }
+
+        .timeline li:nth-child(3) {
+            background: var(--beige);
+        }
+
+
