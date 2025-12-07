@@ -116,38 +116,24 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.etape').forEach(initAutocomplete);
 
 
-  // --- 2. Ajout dynamique d'étapes (MODIFIÉE) ---
+  // --- 2. Ajout dynamique d'étapes (REFATO AVEC TEMPLATE) ---
   const etapesContainer = document.getElementById('etapesContainer');
+  const templateEtape = document.getElementById('template-etape');
+
   document.getElementById('addEtape').addEventListener('click', () => {
-    const container = document.createElement('div');
-    container.style.display = 'flex';
-    container.style.alignItems = 'center';
-    container.style.marginBottom = '5px';
-
-    // On crée un INPUT type text
-    const input = document.createElement('input'); 
-    input.type = 'text';
-    input.classList.add('etape');
-    input.placeholder = 'Choisir une ville...';
-    input.style.flex = '1';
-    input.style.width = '100%'; 
-    input.style.padding = '10px';
-    input.style.borderRadius = '15px'; // Pour correspondre au CSS de la sidebar
-
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = '✖'; 
-    removeBtn.style.cssText = 'background:none; border:none; color:red; cursor:pointer; margin-left:5px; font-weight:bold;';
-
+    // Cloner le template
+    const clone = templateEtape.content.cloneNode(true);
+    const containerRow = clone.querySelector('.etape-row'); // Le div conteneur dans le template
+    const input = clone.querySelector('input.etape');
+    const removeBtn = clone.querySelector('.btn-remove-etape');
 
     removeBtn.addEventListener('click', () => {
       // IMPORTANT : Détruire l'instance Autocomplete avant de supprimer le DOM
       $(input).autocomplete('destroy'); 
-      container.remove();
+      containerRow.remove();
     });
 
-    container.appendChild(input);
-    container.appendChild(removeBtn);
-    etapesContainer.appendChild(container);
+    etapesContainer.appendChild(clone);
 
     // Initialiser Autocomplete sur le nouvel input
     initAutocomplete(input); 
@@ -293,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // --- Fonction pour ajouter un segment (CORRIGÉE pour nom simple) ---
+  // --- Fonction pour ajouter un segment (REFATO AVEC TEMPLATE) ---
   async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy) {
     const coordString = `${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}`;
     const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordString}?overview=full&geometries=geojson`;
@@ -325,93 +311,99 @@ document.addEventListener('DOMContentLoaded', () => {
         endNameSimple: endNameSimple
       });
 
-      // Ajouter au DOM légende (utilise les NOMS SIMPLES)
-      const li = document.createElement('li');
+      // --- UTILISATION DU TEMPLATE POUR LA LÉGENDE ---
+      const templateLegend = document.getElementById('template-legend-item');
+      const clone = templateLegend.content.cloneNode(true);
+      const li = clone.querySelector('li');
+      
       li.dataset.index = index;
-      li.innerHTML = `
-        <div class="segment-header" style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-          <span style="display:inline-block;width:15px;height:15px;background:${segmentColors[index % segmentColors.length]};border-radius:3px;"></span>
-          <button class="toggleSousEtapes" data-index="${index}" style="margin-left:auto;">
-            ${startNameSimple} → ${endNameSimple} 
-          </button>
-        </div>
-        <button class="modifierSousEtapes" data-index="${index}">Modifier</button>
-        <ul class="sousEtapesList" data-index="${index}" style="display:none;list-style:none;padding-left:20px;"></ul>
-      `;
-      document.getElementById('legendList').appendChild(li);
+
+      // Configuration de la couleur
+      const colorBox = clone.querySelector('.legend-color-indicator');
+      colorBox.style.background = couleurSegment; // Seul style dynamique conservé en JS
+
+      // Configuration du texte du bouton toggle
+      const toggleBtn = clone.querySelector('.toggleSousEtapes');
+      toggleBtn.dataset.index = index;
+      toggleBtn.innerHTML = `${startNameSimple} → ${endNameSimple} <strong style="margin-left:5px; color: ${couleurSegment}; border: none;">▼</strong>`; // Strong color dynamic
+
+      // Configuration du bouton modifier
+      const modifBtn = clone.querySelector('.modifierSousEtapes');
+      modifBtn.dataset.index = index;
+
+      // Configuration de la liste
+      const ulSub = clone.querySelector('.sousEtapesList');
+      ulSub.dataset.index = index;
+
+      document.getElementById('legendList').appendChild(clone);
 
     } catch (e) {
       console.error("Erreur segment :", e);
     }
   }
 
-  // Fonction pour afficher le formulaire de segment avec croix de fermeture
+  // Fonction pour afficher le formulaire de segment
+  // (Le bouton fermer est maintenant en dur dans le HTML, on gère juste l'événement ici si besoin ou dans init)
   function showSegmentForm() {
     const container = document.getElementById('segmentFormContainer');
     container.style.display = 'block';
+    document.getElementsByClassName('sidebar')[0].style.width = '300px';
+    // Reset de la classe 'hidden' si elle était présente (pour l'animation)
+    container.classList.remove('hidden');
 
-    if (!document.getElementById('closeSegmentForm')) {
-      const closeBtn = document.createElement('span');
-      closeBtn.id = 'closeSegmentForm';
-      closeBtn.textContent = '✖';
-      closeBtn.title = 'Fermer';
-      closeBtn.style.position = 'absolute';
-      closeBtn.style.top = '5px';
-      closeBtn.style.right = '5px';
-      closeBtn.style.cursor = 'pointer';
-      closeBtn.style.fontSize = '18px';
-      closeBtn.style.fontWeight = 'bold';
-      closeBtn.style.color = 'red';
-
-      closeBtn.addEventListener('click', () => {
-        container.classList.add('hidden');
-        // Après la durée de transition, on met display:none
-        setTimeout(() => {
-          container.style.display = 'none';
-          container.classList.remove('hidden'); // reset pour prochaine ouverture
-        }, 300); // 300ms = même durée que la transition CSS
-      });
-
-      container.style.position = 'relative';
-      container.appendChild(closeBtn);
-    }
+    // Gestion de la fermeture via le bouton statique
+    const closeBtn = document.getElementById('closeSegmentForm');
+    // On s'assure de ne pas empiler les events listeners si on appelle la fonction plusieurs fois
+    // Une façon simple est de cloner le bouton pour nettoyer les listeners, ou juste de vérifier.
+    // Ici, le plus simple est de mettre le listener une seule fois au chargement (voir plus bas)
+    // ou de laisser faire si c'est déjà géré.
   }
 
-  // --- Gestion des sous-étapes (MODIFIÉE POUR TINYMCE) ---
+  // Initialisation event listener fermeture formulaire (une seule fois)
+  const closeSegmentBtn = document.getElementById('closeSegmentForm');
+  if(closeSegmentBtn){
+      closeSegmentBtn.addEventListener('click', () => {
+        const container = document.getElementById('segmentFormContainer');
+        container.classList.add('hidden');
+        document.getElementsByClassName('sidebar')[0].style.width = '450px';
+        setTimeout(() => {
+          container.style.display = 'none';
+          container.classList.remove('hidden');
+        }, 300);
+      });
+  }
+
+  // --- Gestion des sous-étapes (REFATO AVEC TEMPLATE) ---
   const segmentFormContainer = document.getElementById('segmentFormContainer');
   const subEtapesContainer = document.getElementById('subEtapesContainer');
   const segmentDateInput = document.getElementById('segmentDate');
   let currentSegmentIndex = null;
+  const templateSubEtape = document.getElementById('template-sub-etape');
 
   function addSousEtapeForm(data = {}) {
     // ID unique est CRITIQUE pour TinyMCE
     const uniqueId = 'editor-' + Date.now() + Math.random().toString(36).substring(2, 9);
     
-    const div = document.createElement('div');
-    div.classList.add('subEtape');
-    div.style.display = 'flex'; 
-    div.style.flexDirection = 'column';
-    div.style.marginBottom = '20px'; 
-    div.style.position = 'relative';
+    // Cloner le template
+    const clone = templateSubEtape.content.cloneNode(true);
+    const div = clone.querySelector('.subEtape'); // Le container principal du clone
 
-    div.innerHTML = `
-      <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom" value="${data.nom || ''}">
-      
-      <textarea id="${uniqueId}" class="subEtapeRemarque" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
-      
-      <input type="time" class="subEtapeHeure" value="${data.heure || ''}">
-      <input type="file" class="subEtapePhoto" multiple accept="image/*">
-      
-      <button class="removeSubEtapeBtn" 
-              style="position: absolute; top: 0px; right: 0px; background: none; border: none; color: var(--rouge); cursor: pointer; font-size: 1.2rem; line-height: 1; padding: 5px;">
-        ✖
-      </button>
-    `;
+    // Remplir les données
+    const inputNom = clone.querySelector('.subEtapeNom');
+    inputNom.value = data.nom || '';
+
+    const textArea = clone.querySelector('.subEtapeRemarque');
+    textArea.id = uniqueId; // Assigner l'ID unique
+    textArea.value = data.remarque || ''; // Value pour textarea (avant init TinyMCE)
+
+    const inputHeure = clone.querySelector('.subEtapeHeure');
+    inputHeure.value = data.heure || '';
+
+    // Ajouter au DOM
     subEtapesContainer.appendChild(div);
 
     // Initialiser Autocomplete sur l'input de nom
-    const subEtapeInput = div.querySelector('.subEtapeNom');
-    initAutocomplete(subEtapeInput);
+    initAutocomplete(inputNom);
 
     // NOUVEAU : INITIALISATION DE TINYMCE
     tinymce.init({
@@ -436,26 +428,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Clic sur un segment pour modifier sous-étapes (MODIFIÉ) ---
   document.getElementById('legendList').addEventListener('click', e => {
+    // On remonte jusqu'au LI car le bouton peut contenir du HTML
     const li = e.target.closest('li');
     if (!li) return;
 
-    const index = parseInt(li.dataset.index);
-    if (isNaN(index)) return;
-    currentSegmentIndex = index;
-
+    // Gestion du clic sur le bouton "Modifier"
     if (e.target.classList.contains('modifierSousEtapes')) {
-      const seg = segments[index];
-      
-      // Utilisation des noms simples stockés pour le titre
-      const start = seg.startNameSimple || getNomSimple(seg.startName); 
-      const end = seg.endNameSimple || getNomSimple(seg.endName); 
-      
-      document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} → ${end}`;
-      showSegmentForm();
-      // Le contenu du subEtapesContainer est vidé ici avant d'être reconstruit
-      subEtapesContainer.innerHTML = ''; 
-      seg.sousEtapes.forEach(se => addSousEtapeForm(se));
-      segmentDateInput.value = seg.date || '';
+        const index = parseInt(li.dataset.index);
+        if (isNaN(index)) return;
+        currentSegmentIndex = index;
+
+        const seg = segments[index];
+        
+        // Utilisation des noms simples stockés pour le titre
+        const start = seg.startNameSimple || getNomSimple(seg.startName); 
+        const end = seg.endNameSimple || getNomSimple(seg.endName); 
+        
+        document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} → ${end}`;
+        showSegmentForm();
+        
+        // Le contenu du subEtapesContainer est vidé ici avant d'être reconstruit
+        subEtapesContainer.innerHTML = ''; 
+        seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+        segmentDateInput.value = seg.date || '';
     }
   });
 
@@ -464,7 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Sauvegarder sous-étapes + ajout markers (MODIFIÉ POUR TINYMCE) ---
 document.getElementById('saveSegment').addEventListener('click', async () => {
     if (currentSegmentIndex === null) return;
-
     const seg = segments[currentSegmentIndex];
     seg.date = segmentDateInput.value;
     seg.sousEtapes = [];
@@ -574,13 +568,16 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
           console.error(err);
           alert("Erreur lors du recalcul d’itinéraire.");
       }
+      document.getElementsByClassName('sidebar')[0].style.width = '450px';
   });
 
 
   // --- Toggle sous-étapes dans la légende (MODIFIÉ) ---
   document.getElementById('legendList').addEventListener('click', e => {
-    if (e.target.classList.contains('toggleSousEtapes')) {
-      const index = e.target.dataset.index;
+    // Si c'est le bouton toggle ou un enfant
+    const toggleBtn = e.target.closest('.toggleSousEtapes');
+    if (toggleBtn) {
+      const index = toggleBtn.dataset.index;
       const ul = document.querySelector(`.sousEtapesList[data-index="${index}"]`);
       if (!ul) return;
 
@@ -600,13 +597,15 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
             let photoHTML = '';
             if (se.photos && se.photos.length > 0) {
               const url = URL.createObjectURL(se.photos[0]);
-              photoHTML = `<img src="${url}" class="sousetape-photo" style="max-width: 50px; max-height: 50px; margin-left: 5px;">`;
+              // Utilisation de classe CSS .legend-thumb pour le style
+              photoHTML = `<img src="${url}" class="sousetape-photo legend-thumb">`;
             }
             
             const li = document.createElement('li');
-            li.innerHTML = `<div style="display: flex; align-items: center;">
-                              <span style="flex-grow: 1;">
-                                <strong>${se.nom}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
+            // Utilisation de classes CSS
+            li.innerHTML = `<div class="legend-sub-item-content">
+                              <span class="legend-sub-text">
+                                <strong>${getNomSimple(se.nom)}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
                                 ${se.remarque || ''} 
                               </span>
                               ${photoHTML}
@@ -615,7 +614,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
           });
         } else {
           let liAucune = document.createElement('li');
-          liAucune.innerHTML = '<li><em>Aucune sous-étape</em></li>';
+          liAucune.innerHTML = '<em>Aucune sous-étape</em>';
           ul.appendChild(liAucune);
         }
 
@@ -641,7 +640,10 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     // 1. Rendre visibles les éléments de création
     document.getElementById('etapesContainer').style.display = 'block';
     document.getElementById('addEtape').style.display = 'inline-block';
-    document.getElementById('btnCalculer').style.display = 'inline-block';
+    document.getElementById('btnCalculer').style.display = 'none';
+    if(document.getElementById('segmentFormContainer').style.display ==='block'){
+      document.getElementById('segmentFormContainer').style.display ='none';
+    }
 
     // 2. Cacher la légende et les boutons de navigation
     document.getElementById('legend').style.display = 'none';
@@ -681,6 +683,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     if (e.target.classList.contains('sousetape-photo')) {
       const modal = document.getElementById('imageModal');
       const modalImg = document.getElementById('imageModalContent');
+      // Les classes et styles sont maintenant gérés par CSS
       modal.style.display = 'block';
       modalImg.src = e.target.src;
     } else if (e.target.classList.contains('image-modal')) {
@@ -913,107 +916,89 @@ function compresserImage(file, quality = 0.6, maxWidth = 1200) {
     });
 }
 
+// NOTE: Le code suivant (modal et toggle) est partiellement redondant si utilisé uniquement sur vuRoadTrip, 
+// mais conservé ici pour compatibilité si map.js est utilisé ailleurs.
+// J'ai retiré la création dynamique du modal ici car il est dans le PHP maintenant.
+
 function toggleSousEtapes(trajetId) {
     const container = document.getElementById('sous-etapes-' + trajetId);
     const card = document.querySelector('[data-trajet-id="' + trajetId + '"]');
     
-    container.classList.toggle('active');
-    card.classList.toggle('active');
+    if (container && card) {
+        container.classList.toggle('active');
+        card.classList.toggle('active');
+    }
 }
 
+// Initialisation globale pour lightbox si non gérée ailleurs
 document.addEventListener('DOMContentLoaded', function() {
-    if (!document.getElementById('imageModal')) {
-        const modal = document.createElement('div');
-        modal.id = 'imageModal';
-        modal.className = 'image-modal';
-        modal.style.cssText = `
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-            cursor: pointer;
-        `;
-        
-        const img = document.createElement('img');
-        img.id = 'imageModalContent';
-        img.style.cssText = `
-            margin: auto;
-            display: block;
-            max-width: 90%;
-            max-height: 90%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        `;
-        
-        modal.appendChild(img);
-        document.body.appendChild(modal);
-        
-        modal.addEventListener('click', function() {
-            this.style.display = 'none';
+    // Le modal est supposé être dans le HTML maintenant (voir template PHP)
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            // Ferme si on clique sur le fond (la classe .image-modal)
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
         });
     }
+
+    // Event delegation pour les images
     document.addEventListener('click', function(e) {
         if (e.target.tagName === 'IMG' && e.target.closest('.photos-container')) {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('imageModalContent');
-            modal.style.display = 'block';
-            modalImg.src = e.target.src;
-        }
-        
-        if (e.target.classList.contains('image-modal')) {
-            e.target.style.display = 'none';
+            if (modal && modalImg) {
+                modal.style.display = 'block';
+                modalImg.src = e.target.src;
+            }
         }
     });
 });
-
-
 
 /*=======================================
 Elements de gestion du formulaire d'inscription et de connexion
 =======================================*/
 
 function showLogin() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('btnLogin').classList.add('active');
-    document.getElementById('btnRegister').classList.remove('active');
+    const loginForm = document.getElementById('loginForm');
+    if(loginForm) {
+        loginForm.style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('btnLogin').classList.add('active');
+        document.getElementById('btnRegister').classList.remove('active');
+    }
 }
 
 function showRegister() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-    document.getElementById('btnLogin').classList.remove('active');
-    document.getElementById('btnRegister').classList.add('active');
+    const regForm = document.getElementById('registerForm');
+    if(regForm) {
+        document.getElementById('loginForm').style.display = 'none';
+        regForm.style.display = 'block';
+        document.getElementById('btnLogin').classList.remove('active');
+        document.getElementById('btnRegister').classList.add('active');
+    }
 }
 
-// Fonction à appeler pour afficher ta modale (si tu as un conteneur modale, sinon adapter)
 function openModal() {
-    // Par exemple, si tu as un div modale, tu peux le passer en display:flex ou block
-    const modal = document.querySelector('.formulaire'); // adapte selon ta structure
+    const modal = document.querySelector('.formulaire'); 
     if (modal) {
         modal.style.display = 'block';
     }
 }
 
-// Appel automatique de la modale au chargement de la page profil
 document.addEventListener('DOMContentLoaded', function() {
-    openModal();
-    // Initialisation sur le formulaire que tu veux afficher par défaut :
-    showLogin(); // ou showLogin() selon souhait
+    // Si on est sur la page de profil/login
+    if(document.querySelector('.formulaire')) {
+        openModal();
+        showLogin(); 
+    }
 });
-
 
 
 /*=======================================
           Changement de thème
 =======================================*/
-
 
 const savedTheme = localStorage.getItem("theme");
 const toggleSombre = document.getElementById("checkboxSombre");
@@ -1066,3 +1051,84 @@ if (toggleMalvoyant) {
         }
     });
 }
+
+/*========================================================================
+  FONCTION DE RÉCUPÉRATION ASYNCHRONE DES DISTANCES ET TEMPS ENTRE DEUX POINTS
+========================================================================*/
+
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("Démarrage du calcul des distances (mode progressif)...");
+
+    const elements = document.querySelectorAll('.js-calculate-distance');
+    
+    if(elements.length === 0) {
+        console.warn("Aucun élément '.js-calculate-distance' trouvé.");
+    }
+    elements.forEach(function(el, i) {
+        
+        setTimeout(function() {
+
+            const latDep = el.dataset.latDep;
+            const lonDep = el.dataset.lonDep;
+            const latArr = el.dataset.latArr;
+            const lonArr = el.dataset.lonArr;
+            let mode = el.dataset.mode || 'voiture';
+
+            const distEl = el.querySelector('.result-distance');
+            const timeEl = el.querySelector('.result-time');
+
+            if (!latDep || !lonDep || !latArr || !lonArr) {
+                distEl.innerHTML = "N/A";
+                timeEl.innerHTML = "N/A";
+                return;
+            }
+
+            const profiles = {
+                'voiture': 'car',
+                'velo': 'bike',
+                'vélo': 'bike',
+                'marche': 'foot',
+                'à pied': 'foot',
+                'a pied': 'foot'
+            };
+            const profile = profiles[mode.toLowerCase()] || 'car';
+
+            const url = `https://router.project-osrm.org/route/v1/${profile}/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
+
+            fetch(url)
+                .then(response => {
+                    if (response.status === 429) {
+                        throw new Error("Trop de requêtes (429)");
+                    }
+                    if (!response.ok) throw new Error("Erreur réseau");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+                        const route = data.routes[0];
+                        
+                        const distKm = (route.distance / 1000).toFixed(1).replace('.', ',');
+                        distEl.innerHTML = `<strong>${distKm} km</strong>`;
+
+                        const duration = route.duration;
+                        const h = Math.floor(duration / 3600);
+                        const m = Math.floor((duration % 3600) / 60);
+                        let timeText = "";
+                        if (h > 0) timeText += `${h}h `;
+                        timeText += `${m}min`;
+
+                        timeEl.innerHTML = timeText;
+                    } else {
+                        distEl.innerHTML = "-";
+                        timeEl.innerHTML = "-";
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur calcul:", error);
+                    distEl.innerHTML = "<span class='error-data'>Busy</span>";
+                    timeEl.innerHTML = "<span class='error-data'>Busy</span>";
+                });
+
+        }, i * 1500); 
+    });
+});
