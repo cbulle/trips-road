@@ -388,6 +388,7 @@ header nav > ul > div span {
    Bouton Mode Nuit
 ============================== */
 
+  
   .btnSombre>h2 {
     text-align: center;
 
@@ -512,6 +513,7 @@ header nav > ul > div span {
   .btnMalvoyant .slider.round:before {
     border-radius: 50%;
   }
+
 
 /*============================
     Profil

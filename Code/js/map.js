@@ -12,11 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
   var darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap & © CartoDB'
-});
+  });
 
 
   let segments = [];
   const markers = {}; // Stockage centralisé de tous les markers
+
 
   const strategies = {
     Voiture: { profile: 'driving' },
@@ -969,7 +970,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.target.style.display = 'none';
         }
     });
-})();
+});
 
 
 
@@ -1004,8 +1005,9 @@ function openModal() {
 document.addEventListener('DOMContentLoaded', function() {
     openModal();
     // Initialisation sur le formulaire que tu veux afficher par défaut :
-    showRegister(); // ou showLogin() selon souhait
+    showLogin(); // ou showLogin() selon souhait
 });
+
 
 
 /*=======================================
@@ -1045,7 +1047,7 @@ if (toggleSombre) {
 
 if (savedMalvoyant === "malvoyant") {
     document.documentElement.classList.add("malvoyant");
-    document.documentElement.classList.add("SombreBtn");
+    document.documentElement.classList.add("MalvoyantBtn");
 }
 
 if (toggleMalvoyant) {
@@ -1054,12 +1056,12 @@ if (toggleMalvoyant) {
     toggleMalvoyant.addEventListener("change", () => {
         if (toggleMalvoyant.checked) {
             document.documentElement.classList.add("malvoyant");
-            document.documentElement.classList.add("SombreBtn");
+            document.documentElement.classList.add("MalvoyantBtn");
             localStorage.setItem("Police", "malvoyant");
 
         } else {
             document.documentElement.classList.remove("malvoyant");
-            document.documentElement.classList.remove("SombreBtn");
+            document.documentElement.classList.remove("MalvoyantBtn");
             localStorage.setItem("Police", "voyant");
         }
     });
