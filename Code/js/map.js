@@ -280,8 +280,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  async function updateRouteSegment(index, mode, options = {}) {
+      const seg = segments[index];
+      if (!seg) return;
+
+      // Mapping des modes vers les profils OSRM
+      const strategiesMap = {
+          'Voiture': 'driving',
+          'Velo': 'bike',
+          'Marche': 'foot'
+      };
+      const profile = strategiesMap[mode] || 'driving';
+
+      // Construction de l'URL
+      const coordString = `${seg.startCoord[1]},${seg.startCoord[0]};${seg.endCoord[1]},${seg.endCoord[0]}`;
+      let url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+
+      // Gestion des exclusions (Péages / Autoroutes)
+      const excludes = [];
+      if (options.excludeTolls) excludes.push('toll');
+      if (options.excludeMotorways) excludes.push('motorway');
+      
+      if (excludes.length > 0) {
+          url += `&exclude=${excludes.join(',')}`;
+      }
+
+      try {
+          const resp = await fetch(url);
+          const data = await resp.json();
+          
+          if (data.code !== 'Ok') {
+              console.warn("Impossible de recalculer ce segment avec ces options.");
+              return;
+          }
+
+          const route = data.routes[0];
+
+          // Mise à jour visuelle (supprime l'ancienne ligne, ajoute la nouvelle)
+          if (seg.line) map.removeLayer(seg.line);
+          
+          seg.line = L.geoJSON(route.geometry, { 
+              color: seg.couleurSegment, 
+              weight: 5, 
+              opacity: 0.8 
+          }).addTo(map);
+
+          // Mise à jour des données du segment
+          seg.distance = (route.distance / 1000).toFixed(1);
+          seg.duration = Math.floor(route.duration / 60);
+
+          console.log(`Segment ${index} mis à jour : Mode ${mode}, ${seg.distance}km`);
+
+      } catch (e) {
+          console.error("Erreur lors de la mise à jour du segment :", e);
+      }
+  }
+
 
   // --- Fonction pour ajouter un segment (REFATO AVEC TEMPLATE) ---
+  // --- Fonction modifiée : Ajout d'un segment initial ---
   async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy) {
     const coordString = `${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}`;
     const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordString}?overview=full&geometries=geojson`;
@@ -295,45 +352,48 @@ document.addEventListener('DOMContentLoaded', () => {
       const couleurSegment = segmentColors[index % segmentColors.length];
       const line = L.geoJSON(route.geometry, { color: couleurSegment, weight: 5, opacity: 0.8 }).addTo(map);
 
-      // NOUVEAU : Calculer les noms simples pour la légende
       const startNameSimple = getNomSimple(startName);
       const endNameSimple = getNomSimple(endName);
 
       segments.push({
         line,
-        startName: startName, // CONSERVE LE NOM COMPLET
+        startName: startName,
         startCoord: startCoords,
-        endName: endName,     // CONSERVE LE NOM COMPLET
+        endName: endName,
         endCoord: endCoords,
         distance: (route.distance / 1000).toFixed(1),
         duration: Math.floor(route.duration / 60),
         couleurSegment,
         sousEtapes: [],
-        startNameSimple: startNameSimple, // Ajout des noms simples
+        startNameSimple: startNameSimple,
         endNameSimple: endNameSimple
       });
 
-      // --- UTILISATION DU TEMPLATE POUR LA LÉGENDE ---
+      // --- UTILISATION DU TEMPLATE (PARTIE MODIFIÉE) ---
       const templateLegend = document.getElementById('template-legend-item');
       const clone = templateLegend.content.cloneNode(true);
       const li = clone.querySelector('li');
       
       li.dataset.index = index;
 
-      // Configuration de la couleur
+      // Configuration couleur
       const colorBox = clone.querySelector('.legend-color-indicator');
-      colorBox.style.background = couleurSegment; // Seul style dynamique conservé en JS
+      colorBox.style.background = couleurSegment;
 
-      // Configuration du texte du bouton toggle
+      // Configuration texte Toggle
       const toggleBtn = clone.querySelector('.toggleSousEtapes');
       toggleBtn.dataset.index = index;
-      toggleBtn.innerHTML = `${startNameSimple} → ${endNameSimple} <strong style="margin-left:5px; color: ${couleurSegment}; border: none;">▼</strong>`; // Strong color dynamic
+      toggleBtn.innerHTML = `${startNameSimple} → ${endNameSimple} <strong style="margin-left:5px; color: ${couleurSegment}; border: none;">▼</strong>`;
 
-      // Configuration du bouton modifier
+      // NOUVEAU : On active le bouton "Voiture" par défaut à la création
+      const btnVoiture = clone.querySelector('.transport-btn[data-mode="Voiture"]');
+      if(btnVoiture) btnVoiture.classList.add('active');
+
+      // Configuration bouton modifier
       const modifBtn = clone.querySelector('.modifierSousEtapes');
       modifBtn.dataset.index = index;
 
-      // Configuration de la liste
+      // Configuration liste sous-étapes
       const ulSub = clone.querySelector('.sousEtapesList');
       ulSub.dataset.index = index;
 
@@ -575,60 +635,130 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
 
 
   // --- Toggle sous-étapes dans la légende (MODIFIÉ) ---
-  document.getElementById('legendList').addEventListener('click', e => {
-    // Si c'est le bouton toggle ou un enfant
-    const toggleBtn = e.target.closest('.toggleSousEtapes');
-    if (toggleBtn) {
-      const index = toggleBtn.dataset.index;
-      const ul = document.querySelector(`.sousEtapesList[data-index="${index}"]`);
-      if (!ul) return;
+  document.getElementById('legendList').addEventListener('click', (e) => {
+    const target = e.target;
+    const li = target.closest('li');
+    if (!li) return;
+    
+    const index = parseInt(li.dataset.index);
 
-      if (ul.style.display === 'none') {
-        const seg = segments[index];
-        ul.innerHTML = '';
-        
-        // --- 1. Ajouter la ville de départ ---
-        let liDepart = document.createElement('li');
-        const startSimple = seg.startNameSimple || getNomSimple(seg.startName);
-        liDepart.innerHTML = `<div><span style="font-weight: bold;">Départ: ${startSimple}</span></div>`; 
-        ul.appendChild(liDepart);
-        
-        // --- 2. Ajouter les sous-étapes ---
-        if (seg.sousEtapes.length > 0) {
-          seg.sousEtapes.forEach(se => {
-            let photoHTML = '';
-            if (se.photos && se.photos.length > 0) {
-              const url = URL.createObjectURL(se.photos[0]);
-              // Utilisation de classe CSS .legend-thumb pour le style
-              photoHTML = `<img src="${url}" class="sousetape-photo legend-thumb">`;
-            }
-            
-            const li = document.createElement('li');
-            // Utilisation de classes CSS
-            li.innerHTML = `<div class="legend-sub-item-content">
-                              <span class="legend-sub-text">
-                                <strong>${getNomSimple(se.nom)}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
-                                ${se.remarque || ''} 
-                              </span>
-                              ${photoHTML}
-                            </div>`;
-            ul.appendChild(li);
-          });
-        } else {
-          let liAucune = document.createElement('li');
-          liAucune.innerHTML = '<em>Aucune sous-étape</em>';
-          ul.appendChild(liAucune);
+    // 1. Clic sur l'ENGRENAGE (Afficher/Masquer options)
+    const settingsBtn = target.closest('.settings-btn');
+    if (settingsBtn) {
+        const prefsDiv = li.querySelector('.route-preferences');
+        if (prefsDiv) {
+            prefsDiv.style.display = (prefsDiv.style.display === 'none') ? 'block' : 'none';
         }
-
-        // --- 3. Ajouter la ville d'arrivée ---
-        let liArrivee = document.createElement('li');
-        const endSimple = seg.endNameSimple || getNomSimple(seg.endName);
-        liArrivee.innerHTML = `<div><span style="font-weight: bold;">Arrivée: ${endSimple}</span></div>`;
-        ul.appendChild(liArrivee);
-        
-        ul.style.display = 'block';
-      } else ul.style.display = 'none';
+        return;
     }
+
+    // 2. Clic sur un bouton de TRANSPORT (Voiture, Vélo, Marche)
+    if (target.classList.contains('transport-btn')) {
+        // Change l'aspect visuel
+        li.querySelectorAll('.transport-btn').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+
+        // Récupère les infos
+        const newMode = target.dataset.mode;
+        const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
+        const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
+
+        // Lance le recalcul
+        updateRouteSegment(index, newMode, { 
+            excludeTolls: excludeTolls, 
+            excludeMotorways: excludeMotorways 
+        });
+        return;
+    }
+
+    // 3. Clic sur MODIFIER (Gestion existante des sous-étapes)
+    if (target.classList.contains('modifierSousEtapes')) {
+        currentSegmentIndex = index;
+        const seg = segments[index];
+        const start = seg.startNameSimple || getNomSimple(seg.startName); 
+        const end = seg.endNameSimple || getNomSimple(seg.endName); 
+        
+        document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} → ${end}`;
+        showSegmentForm();
+        
+        // Vide et remplit le formulaire
+        const subEtapesContainer = document.getElementById('subEtapesContainer');
+        subEtapesContainer.innerHTML = ''; 
+        seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+        document.getElementById('segmentDate').value = seg.date || '';
+        return;
+    }
+
+    // 4. Clic sur TOGGLE (Dérouler les détails)
+    const toggleBtn = target.closest('.toggleSousEtapes');
+    if (toggleBtn) {
+        const ul = li.querySelector('.sousEtapesList');
+        if (!ul) return;
+
+        if (ul.style.display === 'none') {
+            const seg = segments[index];
+            ul.innerHTML = '';
+            
+            // Reconstruire l'affichage (Départ -> Sous-étapes -> Arrivée)
+            // (Ton code d'affichage existant ici...)
+            let liDepart = document.createElement('li');
+            const startSimple = seg.startNameSimple || getNomSimple(seg.startName);
+            liDepart.innerHTML = `<div><span style="font-weight: bold;">Départ: ${startSimple}</span></div>`; 
+            ul.appendChild(liDepart);
+            
+            if (seg.sousEtapes.length > 0) {
+                seg.sousEtapes.forEach(se => {
+                    let photoHTML = '';
+                    if (se.photos && se.photos.length > 0) {
+                        const url = URL.createObjectURL(se.photos[0]);
+                        photoHTML = `<img src="${url}" class="sousetape-photo legend-thumb">`;
+                    }
+                    const liSub = document.createElement('li');
+                    liSub.innerHTML = `<div class="legend-sub-item-content">
+                                        <span class="legend-sub-text">
+                                        <strong>${getNomSimple(se.nom)}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
+                                        ${se.remarque || ''} 
+                                        </span>
+                                        ${photoHTML}
+                                    </div>`;
+                    ul.appendChild(liSub);
+                });
+            } else {
+                ul.appendChild(document.createElement('li')).innerHTML = '<em>Aucune sous-étape</em>';
+            }
+
+            let liArrivee = document.createElement('li');
+            const endSimple = seg.endNameSimple || getNomSimple(seg.endName);
+            liArrivee.innerHTML = `<div><span style="font-weight: bold;">Arrivée: ${endSimple}</span></div>`;
+            ul.appendChild(liArrivee);
+            
+            ul.style.display = 'block';
+        } else {
+            ul.style.display = 'none';
+        }
+      }
+  });
+
+  // --- Gestion des CHANGEMENTS sur les Checkboxes (Options) ---
+  document.getElementById('legendList').addEventListener('change', (e) => {
+      if (e.target.classList.contains('pref-checkbox')) {
+          const li = e.target.closest('li');
+          const index = parseInt(li.dataset.index);
+          
+          // Trouver le mode actif actuel
+          const activeBtn = li.querySelector('.transport-btn.active');
+          const mode = activeBtn ? activeBtn.dataset.mode : 'Voiture';
+
+          // Lire l'état des deux checkboxes
+          const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
+          const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
+
+          // Recalculer
+          updateRouteSegment(index, mode, { 
+              excludeTolls: excludeTolls, 
+              excludeMotorways: excludeMotorways 
+          });
+      }
   });
   
 
