@@ -69,7 +69,7 @@ include_once __DIR__ . "/../modules/header.php";
  <?php     
 include_once __DIR__ . "/../modules/aside.php"
 ?> 
-
+<script src = "/../js/map.js" ></script>
 <?php     
 include_once __DIR__ . "/../modules/footer.php";
 ?>

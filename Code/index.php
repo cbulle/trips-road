@@ -32,7 +32,7 @@ include_once __DIR__ . "/modules/header.php"
 include_once __DIR__ . "/modules/aside.php"
 ?>       
    
-   <div id="mapContainer" style="margin: 20px 0;">
+   <div id="mapContainer" >
     <h3>Carte des environs</h3>
     <div id="userMap" ></div>
 </div>

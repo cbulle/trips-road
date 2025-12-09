@@ -24,11 +24,12 @@ html.dark {
   background-color: #132440;
   --orange: #2E8B57; 
   --vert_btn: #BF092F;
-  --bleu_foncé: #16476A;
+  --bleu_foncé: #062a47;
   --beige: #E0C58B;
   --beige_foncé: #16476A;
   --bleu_foncé_ecriture: rgb(212, 212, 212);
   --beige_visu: #40a79c;
+  
   color: black;
   }
 
@@ -234,7 +235,7 @@ aside h3 {
 
 aside p {
     font-size: 1em;
-    color: #555;             
+    color: var(--bleu_foncé_ecriture);             
     margin-bottom: 20px;      
     line-height: 1.6;         
 }
@@ -358,7 +359,7 @@ aside ul li {
     width: 30px;
     height: 22px;
     cursor: pointer;
-    z-index: 1001;
+    z-index: 40000;
   }
 
 
