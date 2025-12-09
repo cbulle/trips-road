@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'postal' => $user['postal'],
             'ville' => $user['ville'],
             'tel' => $user['tel'],
-            'date_naissance' => $user['date_naissance']
+            'date_naissance' => $user['date_naissance'],
+            'photo_profil' => $user['photo_profil']
         ];
 
 

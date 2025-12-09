@@ -66,7 +66,21 @@
                     <span> 
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
-                        <img src="/uploads/pp/<?= htmlspecialchars($_SESSION['utilisateur']['photo_profil']) ?>" alt="Photo de profil">
+                            <?php
+                            if (isset($_SESSION['utilisateur']['photo_profil']) && !empty($_SESSION['utilisateur']['photo_profil'])) {
+                                $photoProfil = htmlspecialchars($_SESSION['utilisateur']['photo_profil']);
+                            
+                            } else {
+                                $photoProfil = "User.png"; 
+                                
+                            }
+                            $photoPath = __DIR__ . "/../uploads/pp/$photoProfil";
+                            if (!file_exists($photoPath)) {
+                                $photoPath = __DIR__ . "/../img/$photoProfil"; 
+                                
+                            }
+                            ?>
+                        <img src= "<?= $photoPath ?>" alt="Photo de profil">                       
                         <a href="/logout.php">Déconnexion</a>                        
                         <a href= "/profil.php"> Profil</a>
                     </span>
@@ -91,12 +105,13 @@
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
 
+                <li><a href="../Roadtrip.php">Roads-Trips</a></li>
                 <li><a href="../mesRoadTrips.php">Mes Roads-Trips</a></li>
                 <li><a href="../historique.php">Historique</a></li>
                 <li><a href="../favoris.php">Favoris</a></li>
                 <li><a href="../compte.php">Paramètres de compte</a></li>
-                <li><a href="../aide.php">Aide / FAQ</a></li>
-                <li><a href="../contact.php">À propos / Contact</a></li>
+                <li><a href="..//page_link/faq.php">Aide / FAQ</a></li>
+                <li><a href="../page_link/contact.php">À propos / Contact</a></li>
                 <li><a href="/logout.php">Déconnexion</a></li>
 
             <?php else: ?>
