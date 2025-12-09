@@ -9,6 +9,9 @@
 <?php     
 include_once __DIR__ . "/modules/header.php"
 ?>
+<?php     
+include_once __DIR__ . "/modules/header.php"
+?>
 <h1>Identification </h1>
 <main>
 
@@ -83,7 +86,6 @@ Les informations avec astérisque sont nécessaires à la création et à la ges
 </div>
 
 </main>
-    
 <?php     
 include_once __DIR__ . "/modules/footer.php"
 ?>
