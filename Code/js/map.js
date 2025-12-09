@@ -770,7 +770,7 @@ let userId = null;
 fetch("../bd/lec_bd.php")
     .then(response => response.json())
     .then(json => {
-        userId = USER_ID;
+        userId = json.userId;
         data = json.roadtrips;
         console.log("User ID :", userId);
         console.log("Roadtrips :", data);
@@ -814,3 +814,5 @@ searchBox.addEventListener('input', function(event) {
         resultsTableBody.appendChild(row);
     }
 });
+
+console.log(USER_ID);

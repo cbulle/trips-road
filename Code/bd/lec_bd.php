@@ -22,5 +22,3 @@ $response = [
     "userId" => $_SESSION['id'] ?? null,
     "roadtrips" => $resultats
 ];
-
-echo json_encode($response);

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../modules/init.php';
 require_once __DIR__ . '/../bd/lec_bd.php';
 
-$error = null;
+$error = null; 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($_POST['email']) && !empty($_POST['password'])) {
@@ -52,7 +52,7 @@ if (isset($_SESSION['user_id'])) {
     echo "<script>const USER_ID = null;</script>";
 }
 
-$userId = $_SESSION['user_id'] ?? null;
+
 ?>
 
 <!DOCTYPE html>
@@ -65,10 +65,7 @@ $userId = $_SESSION['user_id'] ?? null;
 <body>
 
 <?php include __DIR__ . '/../modules/header.php'; ?>
-<script>
-        const currentUserId = <?php echo json_encode($userId); ?>;
-        console.log("ID utilisateur récupéré en JS :", currentUserId);
-</script>
+
 <main>
     <h2>Connexion</h2>
 
