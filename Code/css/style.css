@@ -24,11 +24,12 @@ html.dark {
   background-color: #132440;
   --orange: #2E8B57; 
   --vert_btn: #BF092F;
-  --bleu_foncé: #16476A;
+  --bleu_foncé: #062a47;
   --beige: #E0C58B;
   --beige_foncé: #16476A;
   --bleu_foncé_ecriture: rgb(212, 212, 212);
   --beige_visu: #40a79c;
+  
   color: black;
   }
 
@@ -204,6 +205,80 @@ header nav > ul > div span {
   margin-top: 5px;
   font-size: 1rem;
 }
+/* ==============================
+   aside
+============================== */
+
+aside {
+    width: 30%;               
+    min-width: 250px;        
+    max-width: 400px;         
+    padding: 20px;            
+    background-color: var(--beige_foncé);
+    border-radius: 8px;       
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);  
+    margin-left: auto;        
+    margin-top: 300px;         
+    position: fixed;          
+    top: 20px;                
+    right: 0;                 
+    z-index: 100;             
+}
+
+aside h3 {
+    font-size: 1.6em;         
+    color: var(--bleu_foncé);           
+    margin-bottom: 15px;      
+    border-bottom: 2px solid var(--bleu_foncé); 
+    padding-bottom: 5px;     
+}
+
+aside p {
+    font-size: 1em;
+    color: var(--bleu_foncé_ecriture);             
+    margin-bottom: 20px;      
+    line-height: 1.6;         
+}
+
+aside a {
+    color: var(--bleu_foncé);          
+    text-decoration: none;    
+    font-weight: bold;        
+}
+
+aside a:hover {
+    text-decoration: underline; 
+}
+
+aside ul {
+    margin-left: 20px;        
+    list-style-type: disc;    
+}
+
+aside ul li {
+    margin-bottom: 10px;      
+}
+
+@media (max-width: 768px) {
+    aside {
+        width: 100%;         
+        min-width: 100%;       
+        max-width: none;       
+        margin-left: 0;        
+        margin-top: 10px;      
+        position: static;      
+    }
+
+    aside h3 {
+        font-size: 1.4em;     
+    }
+
+    aside p {
+        font-size: 0.9em;      
+    }
+}
+
+
 
 /* ==============================
     BAR DE RECHERCHE
@@ -319,7 +394,7 @@ header nav > ul > div span {
     width: 30px;
     height: 22px;
     cursor: pointer;
-    z-index: 1001;
+    z-index: 40000;
   }
 
 
@@ -660,8 +735,70 @@ main.profil {
     text-decoration: none;
 }
 
+/* ==============================
+        Indexx 
+============================== */
+.main-index main {
+    padding: 2rem;
+    background-color: var(--beige);
+    margin-top: 20px;
+}
 
+.index_container {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
 
+.main-index h2 {
+    font-size: 2rem;
+    color: var(--bleu_foncé);
+    margin-bottom: 1rem;
+}
+
+.main-index p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--bleu_foncé_ecriture);
+}
+
+ .main-index button {
+    background-color: var(--bleu_foncé);
+    color: var(--beige_foncé);
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.main-index button:hover {
+    background-color: var(--bleu_clair);
+}
+
+#mapContainer {
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: var(--beige_foncé);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--bleu_foncé_ecriture);
+    max-width: 1000px;
+    text-align: center;
+}
+
+.main-index h3 {
+    font-size: 1.5rem;
+    color: var(--bleu_foncé);
+    margin-bottom: 1rem;
+}
+
+#userMap {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+}
 /* ==============================
    CONTENU PRINCIPAL
 ============================== */
@@ -1472,5 +1609,77 @@ footer .footer-links>li>a:hover {
 #legendList .modifierSousEtapes:hover {
   cursor: pointer;
   background-color: var(--vert);
+}
+/*
+=================================
+         CGU
+================================
+*/
+
+.cgu-container {
+    width: 80%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: var(--beige_foncé);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.cgu-container h1 {
+    text-align: center;
+    font-size: 2.5em;
+    color: var(--bleu_clair);
+    margin-bottom: 20px;
+}
+
+.cgu-container section {
+    margin-bottom: 20px;
+}
+
+.cgu-container h2 {
+    font-size: 1.8em;
+    color: var(--bleu_foncé);
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--bleu_foncé);
+    padding-bottom: 5px;
+}
+
+.cgu-container p {
+    font-size: 1em;
+    margin-bottom: 15px;
+    line-height: 1.8;
+    color: var(--bleu_foncé_ecriture);
+}
+
+.cgu-container ul {
+    margin-left: 20px;
+    list-style-type: disc;
+}
+
+.cgu-container ul li {
+    margin-bottom: 10px;
+}
+
+
+
+@media (max-width: 768px) {
+    .cgu-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .cgu-container h1 {
+        font-size: 2em;
+    }
+
+    .cgu-container h2 {
+        font-size: 1.5em;
+    }
+
+    .cgu-container p {
+        font-size: 0.9em;
+    }
 }
 

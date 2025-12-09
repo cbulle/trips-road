@@ -20,6 +20,7 @@ require_once __DIR__ . '/modules/init.php';
 <?php     
 include_once __DIR__ . "/modules/header.php"
 ?>
+<main class = "main-index" >
         <div class="index_container">
             <h2>Bienvenue sur Trips & Roads !</h2>
             <p>Planifiez et partagez vos road trips facilement.</p>
@@ -31,7 +32,7 @@ include_once __DIR__ . "/modules/header.php"
 include_once __DIR__ . "/modules/aside.php"
 ?>       
    
-   <div id="mapContainer" style="margin: 20px 0;">
+   <div id="mapContainer" >
     <h3>Carte des environs</h3>
     <div id="userMap" ></div>
 </div>
@@ -44,53 +45,43 @@ include_once __DIR__ . "/modules/footer.php"
 ?>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Coordonnée par défaut (Lyon) si l'utilisateur n'est ni connecté, ni géolocalisé
-    const defaultCoords = [45.75, 4.85]; // Lyon par défaut
-    let userCoords = defaultCoords;  // Coordonnée initiale par défaut
+    const defaultCoords = [45.75, 4.85]; 
+    let userCoords = defaultCoords;  
 
-    // Vérifier si l'utilisateur est connecté et a une ville
     const userCity = "<?php echo isset($_SESSION['utilisateur']['ville']) ? $_SESSION['utilisateur']['ville'] : ''; ?>";
     
     if (userCity) {
         
-
-        // Vérifier si la ville de l'utilisateur est dans notre base de données de villes
-        userCoords = cityCoords[userCity] || defaultCoords; // Sinon, on garde Lyon par défaut
+        // pas de solution encore 
     }
 
-    // Si la géolocalisation est possible, utiliser la position actuelle de l'utilisateur
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            userCoords = [lat, lon]; // Mettre à jour la position de la carte avec la géolocalisation
+            userCoords = [lat, lon]; 
             updateMap(userCoords);
         }, function() {
-            // Si l'utilisateur refuse la géolocalisation, on utilise les coordonnées par défaut
             updateMap(userCoords);
         });
     } else {
-        // Si la géolocalisation n'est pas supportée, utiliser les coordonnées par défaut
         updateMap(userCoords);
     }
 
-    // Fonction pour initialiser la carte avec les coordonnées données
     function updateMap(coords) {
-        // Création de la carte
         const map = L.map('userMap').setView(coords, 10);
 
-        // Ajouter le fond OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Ajouter un marqueur pour la position de l'utilisateur
-         L.marker(defaultCoords).addTo(map)
-        .bindPopup(`Ville : ${userCity}`)
+        L.marker(coords).addTo(map)
+        .bindPopup(`Ville : ${userCity || 'Non définie'}`)
         .openPopup();
     }
 });
 </script>
+
 
 
 </body>
