@@ -2118,3 +2118,75 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     width: 16px;
     height: 16px;
 }
+/*
+=================================
+         CGU
+================================
+*/
+
+.cgu-container {
+    width: 80%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: var(--beige_foncé);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.cgu-container h1 {
+    text-align: center;
+    font-size: 2.5em;
+    color: var(--bleu_clair);
+    margin-bottom: 20px;
+}
+
+.cgu-container section {
+    margin-bottom: 20px;
+}
+
+.cgu-container h2 {
+    font-size: 1.8em;
+    color: var(--bleu_foncé);
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--bleu_foncé);
+    padding-bottom: 5px;
+}
+
+.cgu-container p {
+    font-size: 1em;
+    margin-bottom: 15px;
+    line-height: 1.8;
+    color: var(--bleu_foncé_ecriture);
+}
+
+.cgu-container ul {
+    margin-left: 20px;
+    list-style-type: disc;
+}
+
+.cgu-container ul li {
+    margin-bottom: 10px;
+}
+
+
+
+@media (max-width: 768px) {
+    .cgu-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .cgu-container h1 {
+        font-size: 2em;
+    }
+
+    .cgu-container h2 {
+        font-size: 1.5em;
+    }
+
+    .cgu-container p {
+        font-size: 0.9em;
+    }
+}
