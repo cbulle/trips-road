@@ -17,7 +17,7 @@
 }
 
 /* ==============================
-   React Access
+  React Access
 ============================== */
 
 html.dark {
@@ -31,7 +31,7 @@ html.dark {
   --beige_visu: #40a79c;
   
   color: black;
-  }
+}
 
 
 html.malvoyant {
@@ -51,7 +51,7 @@ h1{
   text-align: center;
 }
 /* ==============================
-   STYLE GLOBAL
+  STYLE GLOBAL
 ============================== */
 *, ::before, ::after{
   text-decoration: none ;
@@ -75,7 +75,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  
+
 }
 
 footer {
@@ -84,7 +84,7 @@ footer {
 
 
 /* ==============================
-   NAVBAR / HEADER
+  NAVBAR / HEADER
 ============================== */
 
 header {
@@ -124,7 +124,7 @@ header nav > ul > div > li > a {
 }
 
 /* ==============================
-   NAV ITEM STYLE
+  NAV ITEM STYLE
 ============================== */
 
 header nav > ul > div {
@@ -190,7 +190,6 @@ header nav > ul > div span {
   font-size: 1.2rem; 
   color: var(--orange);
   transition: all 0.5s ease;
- 
 }
 
 .nav-item {
@@ -281,14 +280,14 @@ aside ul li {
 
 
 /* ==============================
-    BAR DE RECHERCHE
+  BAR DE RECHERCHE
 ============================== */
 .bar_rech {
   position: absolute;
   left: 10px;
   top: 110px;
   transform: translate(-50%, -50%);
-  } 
+} 
 
 
 .bar_rech>input {
@@ -376,7 +375,7 @@ aside ul li {
 }
 
 /* ==============================
-   BURGER
+  BURGER
 ============================== */
 #burger {
   opacity: 1;
@@ -386,16 +385,16 @@ aside ul li {
 }
 
 
-  .burger {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    width: 30px;
-    height: 22px;
-    cursor: pointer;
-    z-index: 40000;
-  }
+.burger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 30px;
+  height: 22px;
+  cursor: pointer;
+  z-index: 1001;
+}
 
 
 .ul_burger {
@@ -412,7 +411,6 @@ aside ul li {
   padding-right: 30px;
   padding-left: 10px;
   transition: left 0.4s ease;
- 
 }
 
 .ul_burger>li>a {
@@ -449,224 +447,226 @@ aside ul li {
 #burger:checked ~ .ul_burger li:nth-child(7) { transition-delay: 0.7s; }
 
 
-    header>nav>label>span,
-    header>nav>label>span::after,
-    header>nav>label>span::before{    
-        content: "";
-        width: 36px;
-        height: 7px;
-        background-color: var(--orange);
-        border-radius: 3px;
-        position: absolute;      
-        transition: 1s; 
-        z-index: 2;
-        top : 55px;
-        left : 20px;
-    }
- 
-    header>nav>label>span::after {
-        margin-top: -66px;
-        margin-left: -20px;
+header>nav>label>span,
+header>nav>label>span::after,
+header>nav>label>span::before{    
+  content: "";
+  width: 36px;
+  height: 7px;
+  background-color: var(--orange);
+  border-radius: 3px;
+  position: absolute;      
+  transition: 1s; 
+  z-index: 2;
+  top : 55px;
+  left : 20px;
+}
 
-    }
-    header>nav>label>span::before {
-        margin-top: -43px;
-        margin-left: -20px;
-    }  
- 
-    header>nav>input:checked ~ label>span::before{
-        transform: rotate(45deg) translateX(40px) translateY(-59px);
-        transition: 1s;
-    }
- 
-    header>nav>input:checked ~ label>span{
-        transform: translateX(-70px);
-        transition: 1s;
- 
-    }
- 
-    header>nav>input:checked ~ label>span::after{
-        transform: rotate(-45deg) translateX(43px) translateY(56px);;
-        transition: 1s;
-    }
+header>nav>label>span::after {
+  margin-top: -66px;
+  margin-left: -20px;
+
+}
+header>nav>label>span::before {
+  margin-top: -43px;
+  margin-left: -20px;
+}  
+
+header>nav>input:checked ~ label>span::before{
+  transform: rotate(45deg) translateX(40px) translateY(-59px);
+  transition: 1s;
+}
+
+header>nav>input:checked ~ label>span{
+  transform: translateX(-70px);
+  transition: 1s;
+
+}
+
+header>nav>input:checked ~ label>span::after{
+  transform: rotate(-45deg) translateX(43px) translateY(56px);;
+  transition: 1s;
+}
 
 
 
 /*============================
-    Accessibilité :
+  Accessibilité :
 
-   Bouton Mode Nuit
+  Bouton Mode Nuit
 ============================== */
 
-  .btnSombre>h2 {
-    text-align: center;
 
-  }
-  #btnSombreLabel {
-    text-align: center;
-  }
-  .btnSombre{
-    position:relative;
-    left:47%;
-  }
-  .btnSombre .switch {
-    display: inline-block;
-    height: 34px;
-    position: relative;
-    width: 60px;
-  }
+.btnSombre>h2 {
+  text-align: center;
 
-  .btnSombre .switch input {
-    display:none;
-  }
+}
+#btnSombreLabel {
+  text-align: center;
+}
+.btnSombre{
+  position:relative;
+  left:47%;
+}
+.btnSombre .switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
 
-  .btnSombre .slider {
-    background-color: var(--orange_sombre);
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: .4s;
-  }
+.btnSombre .switch input {
+  display:none;
+}
 
-   .btnSombre>.slider.SombreBtn {
-    background-color: var(--vert_btn);
-  }
+.btnSombre .slider {
+  background-color: var(--orange_sombre);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
 
-  .btnSombre .slider:before {
-    background-color: var(--beige);
-    bottom: 4px;
-    content: "";
-    height: 26px;
-    left: 4px;
-    position: absolute;
-    transition: .4s;
-    width: 26px;
-  }
+  .btnSombre>.slider.SombreBtn {
+  background-color: var(--vert_btn);
+}
+
+.btnSombre .slider:before {
+  background-color: var(--beige);
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
+}
 
 
 
-  .btnSombre input:checked + .slider:before {
-    transform: translateX(26px);
-  }
+.btnSombre input:checked + .slider:before {
+  transform: translateX(26px);
+}
 
-  .btnSombre .slider.round {
-    border-radius: 34px;
-  }
+.btnSombre .slider.round {
+  border-radius: 34px;
+}
 
-  .btnSombre .slider.round:before {
-    border-radius: 50%;
-  }
+.btnSombre .slider.round:before {
+  border-radius: 50%;
+}
 
 /* ==============================
-   Bouton Mode Malvoyant
+  Bouton Mode Malvoyant
 ============================== */
 
- .btnMalvoyant>h2 {
-    text-align: center;
+.btnMalvoyant>h2 {
+  text-align: center;
 
-  }
-  #btnMalvoyantLabel {
-    text-align: center;
-  }
-  .btnMalvoyant{
-    position:relative;
-    left:47%;
-  }
-  .btnMalvoyant .switch {
-    display: inline-block;
-    height: 34px;
-    position: relative;
-    width: 60px;
-  }
+}
+#btnMalvoyantLabel {
+  text-align: center;
+}
+.btnMalvoyant{
+  position:relative;
+  left:47%;
+}
+.btnMalvoyant .switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
 
-  .btnMalvoyant .switch input {
-    display:none;
-  }
+.btnMalvoyant .switch input {
+  display:none;
+}
 
-  .btnMalvoyant .slider {
-    background-color: var(--orange_malvoyant);
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: .4s;
-  }
-  .btnMalvoyant>.slider.MalvoyantBtn {
-    background-color: var(--vert_btn);
-  }
+.btnMalvoyant .slider {
+  background-color: var(--orange_malvoyant);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+.btnMalvoyant>.slider.MalvoyantBtn {
+  background-color: var(--vert_btn);
+}
 
-  .btnMalvoyant .slider:before {
-    background-color: var(--beige);
-    bottom: 4px;
-    content: "";
-    height: 26px;
-    left: 4px;
-    position: absolute;
-    transition: .4s;
-    width: 26px;
-  }
+.btnMalvoyant .slider:before {
+  background-color: var(--beige);
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
+}
 
-  .btnMalvoyant input:checked + .slider:before {
-    transform: translateX(26px);
-  }
+.btnMalvoyant input:checked + .slider:before {
+  transform: translateX(26px);
+}
 
-  .btnMalvoyant .slider.round {
-    border-radius: 34px;
-  }
+.btnMalvoyant .slider.round {
+  border-radius: 34px;
+}
 
-  .btnMalvoyant .slider.round:before {
-    border-radius: 50%;
-  }
+.btnMalvoyant .slider.round:before {
+  border-radius: 50%;
+}
+
 
 /*============================
-    Profil
+  Profil
 ============================*/
 
 main.profil {
-    padding: 20px;
-    border-radius: 10px;
-    display : flex ;
+  padding: 20px;
+  border-radius: 10px;
+  display : flex ;
 }
 
 .profil div {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .info_profil{
   background-color: var(--beige_foncé);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px var(--noir);
-    margin-right: 200px;
-  
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--noir);
+  margin-right: 200px;
+
 }
 
 .form_modif {
-    background-color: var(--beige_foncé);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px var(--noir);
-    
+  background-color: var(--beige_foncé);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--noir);
+  
 }
 
 #login-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--vert); 
-    text-align: center;
-    margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--vert); 
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .form_modif label {
-    display: block;
-    font-size: 1rem;
-    color: var(--gris_foncé);
-    margin-bottom: 8px;
+  display: block;
+  font-size: 1rem;
+  color: var(--gris_foncé);
+  margin-bottom: 8px;
 }
 
 .form_modif input[type="text"],
@@ -674,13 +674,13 @@ main.profil {
 .form_modif input[type="password"],
 .form_modif input[type="tel"],
 .form_modif input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    color: var(--gris_foncé);
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--gris_foncé);
 }
 
 .form_modif input[type="password"],
@@ -688,51 +688,51 @@ main.profil {
 .form_modif input[type="email"],
 .form_modif input[type="tel"],
 .form_modif input[type="date"] {
-    width: 100%;
-    max-width: 350px;
-    margin-bottom: 15px;
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 15px;
 }
 
 .form_modif button {
-    background-color: var(--bleu_foncé); 
-    color: white;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 5px;
-    display: block;
-    margin: 0 auto;
-    transition: background-color 0.3s;
+  background-color: var(--bleu_foncé); 
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 5px;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.3s;
 }
 
 .form_modif button:hover {
-    background-color: var(--vert); 
+  background-color: var(--vert); 
 }
 .form_modif input[type="file"] {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .profil ul {
-    list-style: none;
-    padding-left: 30;
+  list-style: none;
+  padding-left: 30;
 }
 
 .profil ul li {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .profil ul li a {
-    font-size: 1rem;
-    color: var(--bleu_foncé_ecriture);
-    text-decoration: none;
-    transition: color 0.3s;
+  font-size: 1rem;
+  color: var(--bleu_foncé_ecriture);
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
 .profil ul li a:hover {
-    color: var(--vert);
+  color: var(--vert);
 }
 
 .profil a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 /* ==============================
@@ -800,7 +800,7 @@ main.profil {
     border-radius: 8px;
 }
 /* ==============================
-   CONTENU PRINCIPAL
+  CONTENU PRINCIPAL
 ============================== */
 
 .index_container {
@@ -814,60 +814,60 @@ main.profil {
 }
 
 /* ==============================
-   FORMULAIRE
+  FORMULAIRE
 ============================== */
 .formulaire {
-    width: 60%;
-    margin: 30px auto;
-    background-color: var(--beige_foncé);
-    padding: 30px 25px;
-    border-radius: 12px;
-    box-shadow: 0 6px 24px var(--bleu_clair);
-    font-family: 'Arial', sans-serif;
+  width: 60%;
+  margin: 30px auto;
+  background-color: var(--beige_foncé);
+  padding: 30px 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px var(--bleu_clair);
+  font-family: 'Arial', sans-serif;
 }
 
 .toggle-box {
-    display: flex;
-    margin-bottom: 20px;
+  display: flex;
+  margin-bottom: 20px;
 }
 
 .toggle-btn {
-    flex: 1;
-    background-color: white;
-    border: none;
-    padding: 14px 0;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--bleu_foncé_ecriture);
-    border-radius: 12px 12px 0 0;
-    transition:  0.3s ease, color 0.3s ease;
+  flex: 1;
+  background-color: white;
+  border: none;
+  padding: 14px 0;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--bleu_foncé_ecriture);
+  border-radius: 12px 12px 0 0;
+  transition:  0.3s ease, color 0.3s ease;
 }
 
 .toggle-btn.active {
-    background-color: var(--bleu_clair);
-    color: white;
+  background-color: var(--bleu_clair);
+  color: white;
 }
 
 .form-box {
-    display: block;
+  display: block;
 }
 
 
 .form-box h2 {
-    text-align: center;
-    margin-bottom: 24px;
-    color: var(--bleu_clair);
-    font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--bleu_clair);
+  font-weight: 700;
 }
 
 
 label {
-    display: block;
-    margin: 12px 0 6px 0;
-    font-weight: 600;
-    font-size: 1.3rem ;
-    color: var(--bleu_foncé_ecriture);
+  display: block;
+  margin: 12px 0 6px 0;
+  font-weight: 600;
+  font-size: 1.3rem ;
+  color: var(--bleu_foncé_ecriture);
 }
 
 input[type="text"],
@@ -875,12 +875,12 @@ input[type="email"],
 input[type="password"],
 input[type="tel"],
 input[type="date"] {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
 }
 
 input[type="text"]:focus,
@@ -888,43 +888,42 @@ input[type="email"]:focus,
 input[type="password"]:focus,
 input[type="tel"]:focus,
 input[type="date"]:focus {
-    border-color: var(--bleu_clair);
-    outline: none;
+  border-color: var(--bleu_clair);
+  outline: none;
 }
 
 
 button[type="submit"] {
-    width: 100%;
-    background-color: var(--orange);
-    color: white;
-    border: none;
-    padding: 14px 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-    border-radius: 8px;
-    margin-top: 20px;
-    cursor: pointer;
-    transition: 0.3s ease;
+  width: 100%;
+  background-color: var(--orange);
+  color: white;
+  border: none;
+  padding: 14px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
 button[type="submit"]:hover {
-    background-color: var(--vert_btn);
+  background-color: var(--vert_btn);
 }
 
 
 a#show-register, a#show-login {
-    color: #0e1c4c;
-    display: block;
-    text-align: center;
-    margin: 10px 0 20px;
-    text-decoration: underline;
-    cursor: pointer;
-    font-weight: 600;
+  color: #0e1c4c;
+  display: block;
+  text-align: center;
+  margin: 10px 0 20px;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-
 /* ==============================
-   STYLE DANS DES INPUTS DANS LA SIDE-BAR
+  STYLE DANS DES INPUTS DANS LA SIDE-BAR
 ============================== */
 .main-container {
   display: flex;
@@ -933,7 +932,7 @@ a#show-register, a#show-login {
 }
 
 .sidebar {
-  width: 300px;
+  width: 460px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -952,7 +951,7 @@ a#show-register, a#show-login {
   padding: 10px;
   border-radius: 15px;
   background-color: #39b2a5;
-  width: 260px;
+  width: 100%;
 }
 
 .sidebar #roadtripDescription {
@@ -991,9 +990,58 @@ a#show-register, a#show-login {
   cursor: pointer;
 }
 
+/* ==============================
+  STYLE POUR LES SUGGESTIONS DES VILLES
+============================== */
+.ui-autocomplete {
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  background: var(--beige); 
+  border: 1px solid var(--bleu_clair);
+  border-radius: 10px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.ui-menu-item {
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--bleu_foncé_ecriture);
+}
+
+.ui-menu-item-wrapper {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ui-state-active, .ui-menu-item:hover .ui-menu-item-wrapper {
+  background: var(--bleu_clair) !important; 
+  color: white !important;
+  text-decoration: none;
+}
+
+.sidebar .etape {
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+
+.subEtape input[type="text"].subEtapeNom {
+  border-radius: 15px;
+  padding: 8px 12px;
+}
+
 
 /* ==============================
-   SOUS-ETAPES
+  SOUS-ETAPES
 ============================== */
 .segment-form-container, .subEtape {
   background: #f2e9d6;
@@ -1003,18 +1051,18 @@ a#show-register, a#show-login {
 }
 
 .subEtape input {
-  padding: 6px 10px;
+padding: 6px 10px;
 }
 
 .sidebar .etape, .sidebar #roadtripTitle {
-   width: 260px;
-   margin-bottom: 10px;
-   padding : 10px;
-   border-radius: 15px;
+  width: 260px;
+  margin-bottom: 10px;
+  padding : 10px;
+  border-radius: 15px;
 }
 
 /* ==============================
-   ANIMATION FORMULAIRE SOUS-ETAPES
+  ANIMATION FORMULAIRE SOUS-ETAPES
 ============================== */
 
 .segment-form-container {
@@ -1023,6 +1071,7 @@ a#show-register, a#show-login {
   max-height: 1000px;
   overflow: hidden;
   padding: 10px;
+  position: relative; /* Pour positionner le bouton de fermeture */
 }
 
 .segment-form-container.hidden {
@@ -1032,113 +1081,113 @@ a#show-register, a#show-login {
 }
 
 /* ==============================
-   STYLE AFFICHAGE ROAD TRIP D'UN USER
+  STYLE AFFICHAGE ROAD TRIP D'UN USER
 ============================== */
 
 
 
 .roadtrip-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-    margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  margin-top: 30px;
 }
 
 .roadtrip-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; 
-    background: var(--beige_foncé);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    height: 100%;            
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  background: var(--beige_foncé);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  height: 100%;            
 }
 
 .roadtrip-card h3 {
-    color: var(--orange);
-    margin-top: 0;
+  color: var(--orange);
+  margin-top: 0;
 }
 
 .roadtrip-card p {
-    margin: 10px 0;
-    color: var(--noir);
+  margin: 10px 0;
+  color: var(--noir);
 }
 
 .roadtrip-card a {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 12px;
-    background: var(--bleu_clair);
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--bleu_clair);
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
 }
 
 .roadtrip-card a:hover {
-    background: var(--vert);
+  background: var(--vert);
 }
 
 .roadtrip-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 /* Boutons */
 .roadtrip-buttons a {
-    flex: 1;
-    text-align: center;
-    padding: 8px 0;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Voir */
 .btn-view {
-    background: #3498db;
-    color: white;
+  background: #3498db;
+  color: white;
 }
 .btn-view:hover {
-    background: #217dbb;
+  background: #217dbb;
 }
 
 /* Modifier */
 .btn-edit {
-    background: #f1c40f;
-    color: black;
+  background: #f1c40f;
+  color: black;
 }
 .btn-edit svg path {
-    stroke: black;
+  stroke: black;
 }
 .btn-edit:hover {
-    background: #d4ac0d;
+  background: #d4ac0d;
 }
 
 /* Supprimer */
 .btn-delete {
-    background-color: #e74c3c;
-    color: white;
+  background-color: #e74c3c;
+  color: white;
 }
 .btn-delete svg path {
-    stroke: white;
+  stroke: white;
 }
 .btn-delete:hover {
-    background: #c0392b;
+  background: #c0392b;
 }
 
 .roadtrip-photo {
-    width: 100%;        /* prend toute la largeur de la carte */
-    height: auto;      /* hauteur fixe identique pour toutes */
-    object-fit: contain;  /* crop automatique pour remplir le cadre */
-    border-radius: 8px;
-    margin-bottom: 10px;
+  width: 100%;        /* prend toute la largeur de la carte */
+  height: auto;      /* hauteur fixe identique pour toutes */
+  object-fit: contain;  /* crop automatique pour remplir le cadre */
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 .roadtrip-vu{
@@ -1146,54 +1195,11 @@ a#show-register, a#show-login {
 }
 
 .roadtrip-header {
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: var(--beige_foncé);
-            border-radius: 8px;
-        }
-        
-        .roadtrip-header h1 {
-            margin: 0 0 10px 0;
-            color: var(--orange);
-        }
-        
-        .roadtrip-header p {
-            margin: 0;
-            color: #666;
-            line-height: 1.6;
-        }
-        
-        .card-vu {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            overflow: hidden;
-            transition: box-shadow 0.3s;
-        }
-        
-        .card-vu:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .trajet-header {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background: var(--beige_foncé);
-            color: var(--orange);
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.3s;
-        }
-        
-        .trajet-header:hover {
-            background: var(--bleu_clair)
-        }
-        
-        .trajet-info {
-            flex: 1;
-        }
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: var(--beige_foncé);
+  border-radius: 8px;
+}
 
         .trajet-info h2{
             text-align: left;
@@ -1308,38 +1314,186 @@ a#show-register, a#show-login {
             animation: fadeIn 0.3s;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .no-sous-etapes {
-            text-align: center;
-            color: #999;
-            padding: 20px;
-            font-style: italic;
-        }
+.roadtrip-header p {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+.card-vu {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+
+.card-vu:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.trajet-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: var(--beige_foncé);
+  color: var(--orange);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s;
+}
+
+.trajet-header:hover {
+  background: var(--bleu_clair)
+}
+
+.trajet-info {
+  flex: 1;
+}
+
+.trajet-info h2{
+  text-align: left;
+}
+
+.trajet-titre {
+  margin: 0 0 10px 0;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.trajet-details {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-size: 0.95em;
+}
+
+.trajet-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.transport-icon {
+  font-size: 1.5em;
+}
+
+.toggle-icon {
+  font-size: 1.5em;
+  transition: transform 0.3s;
+}
+
+.card-vu.active .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.sous-etapes-container {
+  display: none;
+  padding: 20px;
+  background-color: var(--beige_foncé);
+}
+
+.sous-etapes-container.active {
+  display: block;
+}
+
+.sous-etape-card {
+  background: var(--beige_visu);
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid var(--orange);
+}
+
+.sous-etape-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sous-etape-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.numero-etape {
+  background: var(--orange);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.sous-etape-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.sous-etape-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.photos-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.photos-container img {
+  height: 150px;
+  border-radius: 5px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.photos-container img:hover {
+  transform: scale(1.05);
+}
+
+#imageModal {
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.no-sous-etapes {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+  font-style: italic;
+}
 
 
 
 
 /* ==============================
-   CARTE LEAFLET
+  CARTE LEAFLET
 ============================== */
 .map-container, #map{
   flex: 1;
   width: 100%;
-  height: calc(100vh - 16px - 40px);
+  height: 875px;
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.map-container-vu, #map-vu{
-  flex: 1;
-  width: 100%;
-  height: calc(100vh - 16px - 40px);
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);;
+.map-container {
+  position: sticky;
+  top: 20px;       
 }
 
 
@@ -1347,7 +1501,7 @@ a#show-register, a#show-login {
 
 
 /* ==============================
-   IMAGES / POPUPS / LIGHTBOX
+  IMAGES / POPUPS / LIGHTBOX
 ============================== */
 .popup-photo, .sousetape-photo {
   width: 180px;
@@ -1391,7 +1545,7 @@ a#show-register, a#show-login {
 }
 
 /* ==============================
-   FOOTER
+  FOOTER
 ============================== */
 footer {
   background-color: var(--bleu_foncé);
@@ -1475,7 +1629,7 @@ footer .footer-links>li>a:hover {
 
 
 /* ==============================
-   AJOUT : STYLE POUR ÉLÉMENTS DYNAMIQUES (légende, sous-étapes, formulaires)
+  AJOUT : STYLE POUR ÉLÉMENTS DYNAMIQUES (légende, sous-étapes, formulaires)
 ============================== */
 .sidebar #legend {
   margin-top: 20px;
@@ -1509,6 +1663,8 @@ footer .footer-links>li>a:hover {
 
 .segment-header button.toggleSousEtapes {
   background: none;
+  width: 100%;
+  text-align: left;
   border: none;
   font-size: 1rem;
   cursor: pointer;
@@ -1527,7 +1683,7 @@ footer .footer-links>li>a:hover {
   border-radius: 10px;
   margin-bottom: 5px;
   box-shadow: 0 1px 2px var(--noir);
-}
+  }
 
 .sousetape-photo {
   width: 100%;
@@ -1550,13 +1706,13 @@ footer .footer-links>li>a:hover {
   box-shadow: 0 3px 8px var(--noir);
   margin-top: 15px;
   width: 90%;       
-  max-width: 450px;
+  max-width: 600px;
 }
 
 #segmentFormContainer h3 {
   color: var(--orange);
   margin-bottom: 10px;
-}
+  }
 
 .subEtape input[type="text"],
 .subEtape textarea,
@@ -1567,7 +1723,7 @@ footer .footer-links>li>a:hover {
   border-radius: 10px;
   padding: 8px;
   margin-top: 5px;
-}
+  }
 
 .subEtape textarea {
   resize: vertical;
@@ -1600,7 +1756,7 @@ footer .footer-links>li>a:hover {
 }
 
 #legendList .modifierSousEtapes {
-  width: 150px;
+  width: 100%;
   border-radius: 15px;
   padding: 5px;
   background-color: var(--orange);
@@ -1610,76 +1766,355 @@ footer .footer-links>li>a:hover {
   cursor: pointer;
   background-color: var(--vert);
 }
-/*
-=================================
-         CGU
-================================
-*/
 
-.cgu-container {
-    width: 80%;
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: var(--beige_foncé);
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+/*==========================================
+STYLE DE LA TIME LINE POUR AFFICHAGE DES ROAD TRIPS
+==========================================*/
+
+.timeline {
+  position: relative;
+  padding: 20px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.timeline ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+/* Flèche verticale */
+.timeline ul::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--vert);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* Pointe de la flèche en bas */
+.timeline ul::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -15px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid var(--vert);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.timeline li {
+  position: relative;
+  background: var(--beige);
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin: 40px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.timeline li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.timeline li:first-child {
+  margin-top: 0;
+}
+
+.timeline li:last-child {
+  margin-bottom: 0;
+}
+
+.timeline li::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: var(--beige);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.transport-icon {
+  font-size: 24px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+strong {
+  color: #333;
+  font-size: 16px;
+}
+
+.timeline li:nth-child(1) {
+  background: var(--beige);
+}
+
+.timeline li:nth-child(2) {
+  background: var(--beige);
+}
+
+.timeline li:nth-child(3) {
+  background: var(--beige);
 }
 
 
-.cgu-container h1 {
-    text-align: center;
-    font-size: 2.5em;
-    color: var(--bleu_clair);
-    margin-bottom: 20px;
+/* ==============================
+STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
+============================== */
+.sous-etape-card p {
+  margin-top: 5px;
+  margin-bottom: 15px; 
 }
 
-.cgu-container section {
-    margin-bottom: 20px;
+.sous-etape-card ul,
+.sous-etape-card ol {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-left: 25px;
+  color: var(--bleu_foncé_ecriture);
 }
 
-.cgu-container h2 {
-    font-size: 1.8em;
-    color: var(--bleu_foncé);
-    margin-bottom: 10px;
-    border-bottom: 2px solid var(--bleu_foncé);
-    padding-bottom: 5px;
+.sous-etape-card li {
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+.sous-etape-card table {
+  width: 100%;
+  border-collapse: collapse; 
+  margin: 15px 0;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; 
+  overflow: hidden;
 }
 
-.cgu-container p {
-    font-size: 1em;
-    margin-bottom: 15px;
-    line-height: 1.8;
+.sous-etape-card th {
+  background-color: var(--bleu_clair);
+  color: white;
+  padding: 10px;
+  text-align: left;
+  font-weight: bold;
+  border: 1px solid var(--bleu_foncé);
+}
+
+.sous-etape-card td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  color: var(--bleu_foncé_ecriture);
+  background-color: var(--beige_foncé); 
+}
+
+.sous-etape-card tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.8); 
+}
+
+.sous-etape-card a {
+  color: var(--orange);
+  text-decoration: underline;
+}
+
+/* ==============================
+  REFATO JS ELEMENTS (Nouveaux Styles)
+============================== */
+
+/* Styles pour la ligne d'ajout d'étape (JS: addEtape) */
+.etape-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.etape-input {
+  flex: 1;
+  width: 100%;
+  padding: 10px;
+  border-radius: 15px;
+}
+.btn-remove-etape {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+  margin-left: 5px;
+  font-weight: bold;
+}
+
+.legend-segment-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.legend-color-indicator {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+}
+.legend-toggle-btn {
+  margin-left: auto;
+  font-weight: bold; 
+  border: none; 
+  background: none;
+  cursor: pointer;
+  color: var(--orange);
+}
+
+.close-segment-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  color: red;
+}
+
+.sub-etape-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.sub-etape-remove-btn {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: none;
+  border: none;
+  color: var(--rouge);
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 5px;
+}
+
+/* Style image miniature légende */
+.legend-thumb {
+  max-width: 50px;
+  max-height: 50px;
+  margin-left: 5px;
+}
+.legend-sub-item-content {
+  display: flex; 
+  align-items: center;
+}
+.legend-sub-text {
+  flex-grow: 1;
+}
+
+/* ==============================
+   STYLES BOUTONS TRANSPORT & OPTIONS
+============================== */
+
+.transport-options {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 10px;
+    margin-right: auto; 
+    align-items: center;
+}
+
+.transport-btn {
+    background-color: var(--beige);
+    border: 1px solid var(--beige_foncé);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    transition: all 0.3s ease;
+    color: var(--gris_clair);
+    opacity: 0.7; 
+}
+
+.transport-btn:hover {
+    background-color: var(--orange);
+    border-color: var(--orange);
+    transform: translateY(-2px); 
+    opacity: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.transport-btn.active {
+    background-color: var(--bleu_clair);
+    border-color: var(--bleu_foncé);
+    color: white;
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: var(--bleu_foncé); 
+    margin-right: 5px;
+    transition: all 0.5s ease; 
+    padding: 0 5px;
+    opacity: 0.8;
+}
+
+.settings-btn:hover {
+    transform: rotate(90deg); 
+    color: var(--orange); 
+    opacity: 1;
+}
+
+.route-preferences {
+    background-color: var(--beige);
+    border: 1px solid var(--bleu_clair);
+    padding: 15px;
+    margin: 10px 0 15px 0;
+    border-radius: 15px;
+    font-size: 0.95em;
     color: var(--bleu_foncé_ecriture);
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    animation: fadeIn 0.3s ease;
 }
 
-.cgu-container ul {
-    margin-left: 20px;
-    list-style-type: disc;
+.pref-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: color 0.3s ease;
 }
 
-.cgu-container ul li {
-    margin-bottom: 10px;
+.pref-item:last-child {
+    margin-bottom: 0;
 }
 
-
-
-@media (max-width: 768px) {
-    .cgu-container {
-        width: 90%;
-        padding: 15px;
-    }
-
-    .cgu-container h1 {
-        font-size: 2em;
-    }
-
-    .cgu-container h2 {
-        font-size: 1.5em;
-    }
-
-    .cgu-container p {
-        font-size: 0.9em;
-    }
+.pref-item:hover {
+    color: var(--orange);
 }
 
+.pref-item span {
+    font-weight: 500;
+}
+
+.pref-checkbox {
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: var(--orange); 
+    width: 16px;
+    height: 16px;
+}

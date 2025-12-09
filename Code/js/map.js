@@ -12,11 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
   var darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap & © CartoDB'
-});
+  });
 
 
   let segments = [];
   const markers = {}; // Stockage centralisé de tous les markers
+
 
   const strategies = {
     Voiture: { profile: 'driving' },
@@ -48,7 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   const europeViewbox = [-25.0, 35.0, 30.0, 71.0]; // Zone Europe
 
-  // --- Fonction de géocodage ---
+  // --- FONCTION UTILITAIRE : Extrait le nom simple de la ville ---
+  function getNomSimple(nomComplet) {
+      if (!nomComplet) return '';
+      // Prend tout ce qui est avant la première virgule (ex: "Lyon, Rhône, France" -> "Lyon")
+      return nomComplet.split(',')[0].trim(); 
+  }
+
+  // --- Fonction de géocodage (Utilise Nominatim) ---
   async function getCoordonnees(ville) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&viewbox=${europeViewbox.join(',')}&bounded=1&limit=1&accept-language=fr`;
     try {
@@ -70,34 +78,67 @@ document.addEventListener('DOMContentLoaded', () => {
     return marker;
   }
 
-  // --- Ajout dynamique d'étapes ---
+  // --- Remplacement de initSelect2 par initAutocomplete ---
+  function initAutocomplete(element) {
+    $(element).autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: './fonctions/recherche_villes.php',
+                dataType: "json",
+                method: "GET", // Explicite la méthode
+                data: {
+                    q: request.term
+                },
+                success: function(data) {
+                    response($.map(data, function(item) {
+                        return {
+                            label: item.nom_ville,
+                            value: item.nom_ville
+                        }
+                    }));
+                },
+                error: function() {
+                    // En cas d'erreur (timeout), on ne fait rien ou on vide la liste
+                    response([]);
+                }
+            });
+        },
+        minLength: 3,
+        delay: 600, 
+        
+        select: function(event, ui) {
+             $(element).val(ui.item.value);
+        }
+    });
+}
+
+
+  // --- 1. Initialisation au chargement de la page ---
+  // Cible les INPUTs de classe .etape 
+  document.querySelectorAll('.etape').forEach(initAutocomplete);
+
+
+  // --- 2. Ajout dynamique d'étapes (REFATO AVEC TEMPLATE) ---
   const etapesContainer = document.getElementById('etapesContainer');
+  const templateEtape = document.getElementById('template-etape');
+
   document.getElementById('addEtape').addEventListener('click', () => {
-    const container = document.createElement('div');
-    container.style.display = 'flex';
-    container.style.alignItems = 'center';
-    container.style.marginBottom = '5px';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Étape supplémentaire';
-    input.classList.add('etape');
-    input.style.flex = '1';
-
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.textContent = '✖';
-    removeBtn.style.marginLeft = '5px';
-    removeBtn.style.cursor = 'pointer';
-    removeBtn.title = 'Supprimer cette étape';
+    // Cloner le template
+    const clone = templateEtape.content.cloneNode(true);
+    const containerRow = clone.querySelector('.etape-row'); // Le div conteneur dans le template
+    const input = clone.querySelector('input.etape');
+    const removeBtn = clone.querySelector('.btn-remove-etape');
 
     removeBtn.addEventListener('click', () => {
-      container.remove();
+      // IMPORTANT : Détruire l'instance Autocomplete avant de supprimer le DOM
+      $(input).autocomplete('destroy'); 
+      containerRow.remove();
     });
 
-    container.appendChild(input);
-    container.appendChild(removeBtn);
-    etapesContainer.appendChild(container);
+    etapesContainer.appendChild(clone);
+
+    // Initialiser Autocomplete sur le nouvel input
+    initAutocomplete(input); 
 
     if (document.getElementById('btnCalculer').style.display === 'none') {
       document.getElementById('btnRecalculer').style.display = 'inline-block';
@@ -106,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
+  
   // --- Calcul de l'itinéraire principal ---
   async function calculItineraire() {
     document.getElementById('etapesContainer').style.display = 'none';
@@ -114,12 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('legend').style.display = 'block';
     document.getElementById('btnModifier').style.display = 'inline-block';
 
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
-      .map(input => input.value.trim())
-      .filter(ville => ville.length > 0);
+    const villes = [];
+    $('.etape').each(function() {
+        const val = $(this).val();
+        if (val && val.trim() !== '') {
+            villes.push(val.trim());
+        }
+    });
 
     if (villes.length < 2) { alert("Veuillez renseigner au moins deux villes."); return; }
-
+    
     const mode = 'Voiture';
     const strategy = strategies[mode] || strategies['Voiture'];
 
@@ -154,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function recalculerDerniersSegmentsMultiples() {
     const inputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
-      .map(i => i.value.trim())
+      .map(input => input.value.trim())
       .filter(v => v.length > 0);
 
     if (inputs.length < 2) {
@@ -234,8 +280,76 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Fonction pour mettre à jour un segment (Changement de mode ou options) ---
+  async function updateRouteSegment(index, mode, options = {}) {
+    const seg = segments[index];
+    if (!seg) return;
 
-  // --- Fonction pour ajouter un segment ---
+    // 1. Sauvegarder l'état actuel pour la suite (important pour la sauvegarde BDD)
+    seg.modeTransport = mode; 
+    seg.options = options;
+
+    // 2. Définir le profil OSRM (driving, bike, foot)
+    const strategiesMap = {
+        'Voiture': 'driving',
+        'Velo': 'bike',
+        'Marche': 'foot'
+    };
+    const profile = strategiesMap[mode] || 'driving';
+
+    // 3. Construire l'URL
+    const coordString = `${seg.startCoord[1]},${seg.startCoord[0]};${seg.endCoord[1]},${seg.endCoord[0]}`;
+    let url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+
+    // 4. Ajouter les exclusions si c'est une voiture
+    // (L'API OSRM Demo gère 'toll' et 'motorway' principalement pour le profil driving)
+    if (profile === 'driving') {
+        const excludes = [];
+        if (options.excludeTolls) excludes.push('toll');
+        if (options.excludeMotorways) excludes.push('motorway');
+        
+        if (excludes.length > 0) {
+            url += `&exclude=${excludes.join(',')}`;
+        }
+      }
+
+      try {
+          console.log(`Recalcul Segment ${index} : ${mode} (Péage: ${!options.excludeTolls}, Autoroute: ${!options.excludeMotorways})...`);
+          
+          const resp = await fetch(url);
+          const data = await resp.json();
+          
+          if (data.code !== 'Ok') {
+              console.warn("Erreur API OSRM ou route impossible.");
+              return;
+          }
+
+          const route = data.routes[0];
+
+          // 5. Supprimer l'ancienne ligne et ajouter la nouvelle
+          if (seg.line) map.removeLayer(seg.line);
+          
+          seg.line = L.geoJSON(route.geometry, { 
+              color: seg.couleurSegment, 
+              weight: 5, 
+              opacity: 0.8 
+          }).addTo(map);
+
+          // 6. Mettre à jour les données (Distance/Durée)
+          seg.distance = (route.distance / 1000).toFixed(1);
+          seg.duration = Math.floor(route.duration / 60);
+
+          // (Optionnel) Ici tu pourrais mettre à jour le texte dans la légende si tu affichais les km
+          console.log(`-> Nouveau trajet : ${seg.distance}km, ${seg.duration}min`);
+
+      } catch (e) {
+          console.error("Erreur technique lors du recalcul :", e);
+      }
+  }
+
+
+  // --- Fonction pour ajouter un segment (REFATO AVEC TEMPLATE) ---
+  // --- Fonction modifiée : Ajout d'un segment initial ---
   async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy) {
     const coordString = `${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}`;
     const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordString}?overview=full&geometries=geojson`;
@@ -249,115 +363,175 @@ document.addEventListener('DOMContentLoaded', () => {
       const couleurSegment = segmentColors[index % segmentColors.length];
       const line = L.geoJSON(route.geometry, { color: couleurSegment, weight: 5, opacity: 0.8 }).addTo(map);
 
+      const startNameSimple = getNomSimple(startName);
+      const endNameSimple = getNomSimple(endName);
+
       segments.push({
         line,
-        startName,
+        startName: startName,
         startCoord: startCoords,
-        endName,
+        endName: endName,
         endCoord: endCoords,
         distance: (route.distance / 1000).toFixed(1),
         duration: Math.floor(route.duration / 60),
         couleurSegment,
-        sousEtapes: []
+        sousEtapes: [],
+        startNameSimple: startNameSimple,
+        endNameSimple: endNameSimple
       });
 
-      // Ajouter au DOM légende
-      const li = document.createElement('li');
+      // --- UTILISATION DU TEMPLATE (PARTIE MODIFIÉE) ---
+      const templateLegend = document.getElementById('template-legend-item');
+      const clone = templateLegend.content.cloneNode(true);
+      const li = clone.querySelector('li');
+      
       li.dataset.index = index;
-      li.innerHTML = `
-        <div class="segment-header" style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-          <span style="display:inline-block;width:15px;height:15px;background:${segmentColors[index % segmentColors.length]};border-radius:3px;"></span>
-          <button class="toggleSousEtapes" data-index="${index}" style="margin-left:auto;">
-            ${startName} → ${endName}
-          </button>
-        </div>
-        <button class="modifierSousEtapes" data-index="${index}">Modifier</button>
-        <ul class="sousEtapesList" data-index="${index}" style="display:none;list-style:none;padding-left:20px;"></ul>
-      `;
-      document.getElementById('legendList').appendChild(li);
+
+      // Configuration couleur
+      const colorBox = clone.querySelector('.legend-color-indicator');
+      colorBox.style.background = couleurSegment;
+
+      // Configuration texte Toggle
+      const toggleBtn = clone.querySelector('.toggleSousEtapes');
+      toggleBtn.dataset.index = index;
+      toggleBtn.innerHTML = `${startNameSimple} → ${endNameSimple} <strong style="margin-left:5px; color: ${couleurSegment}; border: none;">▼</strong>`;
+
+      // NOUVEAU : On active le bouton "Voiture" par défaut à la création
+      const btnVoiture = clone.querySelector('.transport-btn[data-mode="Voiture"]');
+      if(btnVoiture) btnVoiture.classList.add('active');
+
+      // Configuration bouton modifier
+      const modifBtn = clone.querySelector('.modifierSousEtapes');
+      modifBtn.dataset.index = index;
+
+      // Configuration liste sous-étapes
+      const ulSub = clone.querySelector('.sousEtapesList');
+      ulSub.dataset.index = index;
+
+      document.getElementById('legendList').appendChild(clone);
 
     } catch (e) {
       console.error("Erreur segment :", e);
     }
   }
 
-  // Fonction pour afficher le formulaire de segment avec croix de fermeture
+  // Fonction pour afficher le formulaire de segment
+  // (Le bouton fermer est maintenant en dur dans le HTML, on gère juste l'événement ici si besoin ou dans init)
   function showSegmentForm() {
     const container = document.getElementById('segmentFormContainer');
     container.style.display = 'block';
+    document.getElementsByClassName('sidebar')[0].style.width = '300px';
+    // Reset de la classe 'hidden' si elle était présente (pour l'animation)
+    container.classList.remove('hidden');
 
-    if (!document.getElementById('closeSegmentForm')) {
-      const closeBtn = document.createElement('span');
-      closeBtn.id = 'closeSegmentForm';
-      closeBtn.textContent = '✖';
-      closeBtn.title = 'Fermer';
-      closeBtn.style.position = 'absolute';
-      closeBtn.style.top = '5px';
-      closeBtn.style.right = '5px';
-      closeBtn.style.cursor = 'pointer';
-      closeBtn.style.fontSize = '18px';
-      closeBtn.style.fontWeight = 'bold';
-      closeBtn.style.color = 'red';
-
-      closeBtn.addEventListener('click', () => {
-        container.classList.add('hidden');
-        // Après la durée de transition, on met display:none
-        setTimeout(() => {
-          container.style.display = 'none';
-          container.classList.remove('hidden'); // reset pour prochaine ouverture
-        }, 300); // 300ms = même durée que la transition CSS
-      });
-
-      container.style.position = 'relative';
-      container.appendChild(closeBtn);
-    }
+    // Gestion de la fermeture via le bouton statique
+    const closeBtn = document.getElementById('closeSegmentForm');
+    // On s'assure de ne pas empiler les events listeners si on appelle la fonction plusieurs fois
+    // Une façon simple est de cloner le bouton pour nettoyer les listeners, ou juste de vérifier.
+    // Ici, le plus simple est de mettre le listener une seule fois au chargement (voir plus bas)
+    // ou de laisser faire si c'est déjà géré.
   }
 
-  // --- Gestion des sous-étapes ---
+  // Initialisation event listener fermeture formulaire (une seule fois)
+  const closeSegmentBtn = document.getElementById('closeSegmentForm');
+  if(closeSegmentBtn){
+      closeSegmentBtn.addEventListener('click', () => {
+        const container = document.getElementById('segmentFormContainer');
+        container.classList.add('hidden');
+        document.getElementsByClassName('sidebar')[0].style.width = '450px';
+        setTimeout(() => {
+          container.style.display = 'none';
+          container.classList.remove('hidden');
+        }, 300);
+      });
+  }
+
+  // --- Gestion des sous-étapes (REFATO AVEC TEMPLATE) ---
   const segmentFormContainer = document.getElementById('segmentFormContainer');
   const subEtapesContainer = document.getElementById('subEtapesContainer');
   const segmentDateInput = document.getElementById('segmentDate');
   let currentSegmentIndex = null;
+  const templateSubEtape = document.getElementById('template-sub-etape');
 
   function addSousEtapeForm(data = {}) {
-    const div = document.createElement('div');
-    div.classList.add('subEtape');
-    div.style.marginBottom = '10px';
-    div.innerHTML = `
-      <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom" value="${data.nom || ''}">
-      <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)">${data.remarque || ''}</textarea>
-      <input type="time" class="subEtapeHeure" value="${data.heure || ''}">
-      <input type="file" class="subEtapePhoto" multiple accept="image/*">
-    `;
+    // ID unique est CRITIQUE pour TinyMCE
+    const uniqueId = 'editor-' + Date.now() + Math.random().toString(36).substring(2, 9);
+    
+    // Cloner le template
+    const clone = templateSubEtape.content.cloneNode(true);
+    const div = clone.querySelector('.subEtape'); // Le container principal du clone
+
+    // Remplir les données
+    const inputNom = clone.querySelector('.subEtapeNom');
+    inputNom.value = data.nom || '';
+
+    const textArea = clone.querySelector('.subEtapeRemarque');
+    textArea.id = uniqueId; // Assigner l'ID unique
+    textArea.value = data.remarque || ''; // Value pour textarea (avant init TinyMCE)
+
+    const inputHeure = clone.querySelector('.subEtapeHeure');
+    inputHeure.value = data.heure || '';
+
+    // Ajouter au DOM
     subEtapesContainer.appendChild(div);
+
+    // Initialiser Autocomplete sur l'input de nom
+    initAutocomplete(inputNom);
+
+    // NOUVEAU : INITIALISATION DE TINYMCE
+    tinymce.init({
+        selector: `#${uniqueId}`,
+        plugins: 'table lists link code visualblocks autoresize fullscreen textcolor colorpicker',
+        toolbar: 'bold italic underline | forecolor backcolor | bullist numlist | indent outdent | alignleft aligncenter alignright alignjustify | table | code | visualblocks | fullscreen',
+        menubar: false,
+        height: 1500, // Hauteur de l'éditeur
+        branding: false, // Cache le logo TinyMCE
+        statusbar: false
+    });
+
+    // Ajouter l'écouteur d'événement pour la suppression
+    const removeBtn = div.querySelector('.removeSubEtapeBtn');
+    removeBtn.addEventListener('click', () => {
+        // DÉTRUIRE L'ÉDITEUR AVANT DE SUPPRIMER LE DIV
+        const editor = tinymce.get(uniqueId);
+        if (editor) editor.remove();
+        div.remove(); 
+    });
   }
 
-  // --- Clic sur un segment pour modifier sous-étapes ---
+  // --- Clic sur un segment pour modifier sous-étapes (MODIFIÉ) ---
   document.getElementById('legendList').addEventListener('click', e => {
+    // On remonte jusqu'au LI car le bouton peut contenir du HTML
     const li = e.target.closest('li');
     if (!li) return;
 
-    const index = parseInt(li.dataset.index);
-    if (isNaN(index)) return;
-    currentSegmentIndex = index;
-
+    // Gestion du clic sur le bouton "Modifier"
     if (e.target.classList.contains('modifierSousEtapes')) {
-      const seg = segments[index];
-      document.getElementById('segmentTitle').textContent = `Modifier le segment : ${seg.startName} → ${seg.endName}`;
-      showSegmentForm();
-      subEtapesContainer.innerHTML = '';
-      seg.sousEtapes.forEach(se => addSousEtapeForm(se));
-      segmentDateInput.value = seg.date || '';
+        const index = parseInt(li.dataset.index);
+        if (isNaN(index)) return;
+        currentSegmentIndex = index;
+
+        const seg = segments[index];
+        
+        // Utilisation des noms simples stockés pour le titre
+        const start = seg.startNameSimple || getNomSimple(seg.startName); 
+        const end = seg.endNameSimple || getNomSimple(seg.endName); 
+        
+        document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} → ${end}`;
+        showSegmentForm();
+        
+        // Le contenu du subEtapesContainer est vidé ici avant d'être reconstruit
+        subEtapesContainer.innerHTML = ''; 
+        seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+        segmentDateInput.value = seg.date || '';
     }
   });
 
   document.getElementById('addSubEtape').addEventListener('click', () => addSousEtapeForm());
 
-  // --- Sauvegarder sous-étapes + ajout markers ---
-  // --- Sauvegarder sous-étapes + ajout markers ---
+  // --- Sauvegarder sous-étapes + ajout markers (MODIFIÉ POUR TINYMCE) ---
 document.getElementById('saveSegment').addEventListener('click', async () => {
     if (currentSegmentIndex === null) return;
-
     const seg = segments[currentSegmentIndex];
     seg.date = segmentDateInput.value;
     seg.sousEtapes = [];
@@ -367,19 +541,23 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     const subDivs = Array.from(document.querySelectorAll('.subEtape'));
     for (const div of subDivs) {
         const nom = div.querySelector('.subEtapeNom').value.trim();
-        const remarque = div.querySelector('.subEtapeRemarque').value.trim();
         const heure = div.querySelector('.subEtapeHeure').value.trim();
-       const rawPhotos = Array.from(div.querySelector('.subEtapePhoto').files);
-      const photos = [];
-      console.log("Avant la compression des images de Sous Etapes");
-      for (const f of rawPhotos) {
-        console.log("Avant l'appel de fonction compression");
+        // Récupération de l'ID du textarea (maintenant TinyMCE)
+        const textareaElement = div.querySelector('textarea.subEtapeRemarque');
+        
+        // CORRECTION CRITIQUE : Récupération du contenu HTML de l'éditeur TinyMCE
+        // Si l'éditeur existe, on prend son contenu; sinon, on prend la valeur du textarea (utile pour les cas non initialisés)
+        const remarque = tinymce.get(textareaElement.id) ? tinymce.get(textareaElement.id).getContent() : textareaElement.value;
+        
+        const rawPhotos = Array.from(div.querySelector('.subEtapePhoto').files);
+        const photos = [];
+      
+        for (const f of rawPhotos) {
           const compressed = await compresserImage(f, 0.6, 1200);
           photos.push(compressed);
-          console.log("Fin de compression, photos mise dans la liste de photos");
-      }
+        }
 
-      const se = { nom, remarque, heure, photos };
+        const se = { nom, remarque, heure, photos };
         if (!nom) continue;
         seg.sousEtapes.push(se);
         sousEtapeNoms.push(nom);
@@ -394,14 +572,26 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     // --- Calcul de l'itinéraire passant par les sous-étapes ---
     const allPlaces = [seg.startName, ...sousEtapeNoms, seg.endName];
     const coordsList = [];
+    
+    // VÉRIFICATION/SAUVEGARDE DE TOUTES LES VILLES (ÉTAPE ET SOUS-ÉTAPE) DANS lieux_geocodes
     for (const place of allPlaces) {
         const coords = await getCoordonnees(place);
         if (!coords) {
-            alert(`Lieu introuvable : ${place}`);
+            alert(`Lieu introuvable ou hors Europe : ${place}. Annulation du segment.`);
             return;
         }
+
+        // Sauvegarde/Vérification de la ville et de ses coordonnées dans la table lieux_geocodes
+        const [lat, lon] = coords;
+        const saved = await saveCoordsToDB(place, lat, lon);
+        if (!saved) {
+            alert(`Erreur lors de la sauvegarde/vérification des coordonnées de la ville ${place} en base de données. Annulation de la sauvegarde du segment.`);
+            return;
+        }
+
         coordsList.push(coords);
     }
+    // FIN VÉRIFICATION/SAUVEGARDE
 
     const coordPairs = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
     const strategy = strategies['Voiture']; // ou récupérer le mode existant
@@ -424,11 +614,14 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
 
         // --- Ajout des marqueurs pour chaque sous-étape ---
         for (const se of seg.sousEtapes) {
-            const coords = await getCoordonnees(se.nom);
+            const coords = await getCoordonnees(se.nom); 
             if (!coords) continue;
 
             let popupText = `<b>${se.nom}</b>`;
+            
+            // Le HTML stocké dans 'remarque' doit être affiché ici
             if (se.remarque) popupText += `<br><em>${se.remarque}</em>`;
+
             if (se.heure) popupText += `<br>Heure : ${se.heure}`;
 
             // Gestion de plusieurs photos
@@ -448,69 +641,137 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
           console.error(err);
           alert("Erreur lors du recalcul d’itinéraire.");
       }
+      document.getElementsByClassName('sidebar')[0].style.width = '450px';
   });
 
 
-  // --- Toggle sous-étapes dans la légende ---
-  document.getElementById('legendList').addEventListener('click', e => {
-    if (e.target.classList.contains('toggleSousEtapes')) {
-      const index = e.target.dataset.index;
-      const ul = document.querySelector(`.sousEtapesList[data-index="${index}"]`);
-      if (!ul) return;
+  // --- Toggle sous-étapes dans la légende (MODIFIÉ) ---
+  // ============================================================
+// GESTION DES INTERACTIONS (BOUTONS & CHECKBOXES)
+// ============================================================
 
-      if (ul.style.display === 'none') {
-        const seg = segments[index];
-        ul.innerHTML = '';
-        if (seg.sousEtapes.length > 0) {
-          seg.sousEtapes.forEach(se => {
-            let photoHTML = se.photo ? `<img src="${URL.createObjectURL(se.photo)}" class="sousetape-photo">` : '';
-            const li = document.createElement('li');
-            li.innerHTML = `<div><strong>${se.nom}</strong>${se.heure ? ` (${se.heure})` : ''}<br>${se.remarque || ''}${photoHTML}</div>`;
-            ul.appendChild(li);
-          });
-        } else {
-          ul.innerHTML = '<li><em>Aucune sous-étape</em></li>';
-        }
-        ul.style.display = 'block';
-      } else ul.style.display = 'none';
+// A. Gestion du CLIC sur les boutons (Transport, Engrenage, Modifier, Toggle)
+document.getElementById('legendList').addEventListener('click', (e) => {
+    const target = e.target;
+    // On remonte au LI parent pour savoir quel segment on modifie
+    const li = target.closest('li'); 
+    if (!li) return;
+    
+    const index = parseInt(li.dataset.index);
+
+    // --- 1. CLIC SUR UN BOUTON DE TRANSPORT (🚗 🚲 🚶) ---
+    if (target.classList.contains('transport-btn')) {
+        // a. Gestion visuelle (Enlever 'active' des autres, le mettre sur celui-ci)
+        li.querySelectorAll('.transport-btn').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+
+        // b. Récupérer le nouveau mode choisi
+        const newMode = target.dataset.mode; // "Voiture", "Velo", ou "Marche"
+
+        // c. Vérifier si les cases à cocher sont activées
+        const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
+        const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
+
+        // d. LANCER LE RECALCUL IMMÉDIAT
+        updateRouteSegment(index, newMode, { 
+            excludeTolls: excludeTolls, 
+            excludeMotorways: excludeMotorways 
+        });
+        return;
     }
+
+    // --- 2. CLIC SUR L'ENGRENAGE ⚙️ (Afficher/Masquer options) ---
+    const settingsBtn = target.closest('.settings-btn');
+    if (settingsBtn) {
+        const prefsDiv = li.querySelector('.route-preferences');
+        if (prefsDiv) {
+            // Bascule entre caché et visible
+            prefsDiv.style.display = (prefsDiv.style.display === 'none') ? 'block' : 'none';
+        }
+        return;
+    }
+
+    // --- 3. CLIC SUR MODIFIER (Sous-étapes) ---
+    if (target.classList.contains('modifierSousEtapes')) {
+        // ... (Ton code existant pour ouvrir le formulaire de sous-étapes) ...
+        currentSegmentIndex = index;
+        const seg = segments[index];
+        const start = seg.startNameSimple || getNomSimple(seg.startName); 
+        const end = seg.endNameSimple || getNomSimple(seg.endName); 
+        document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} → ${end}`;
+        showSegmentForm();
+        const subEtapesContainer = document.getElementById('subEtapesContainer');
+        subEtapesContainer.innerHTML = ''; 
+        seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+        document.getElementById('segmentDate').value = seg.date || '';
+        return;
+    }
+
+    // --- 4. CLIC SUR TOGGLE (Dérouler détails) ---
+    const toggleBtn = target.closest('.toggleSousEtapes');
+    if (toggleBtn) {
+        // ... (Ton code existant pour dérouler la liste) ...
+        const ul = li.querySelector('.sousEtapesList');
+        if (ul) ul.style.display = (ul.style.display === 'none') ? 'block' : 'none';
+        
+        // Si c'est la première ouverture, il faut peut-être remplir le UL (reprends ton code précédent ici si besoin)
+        if (ul.innerHTML === '') {
+             const seg = segments[index];
+             // (Remplissage rapide pour l'exemple)
+             let html = `<li><strong>Départ:</strong> ${getNomSimple(seg.startName)}</li>`;
+             seg.sousEtapes.forEach(se => html += `<li>- ${se.nom}</li>`);
+             html += `<li><strong>Arrivée:</strong> ${getNomSimple(seg.endName)}</li>`;
+             ul.innerHTML = html;
+        }
+      }
   });
+
+// B. Gestion du CHANGEMENT (Checkboxes "Sans péage" / "Sans autoroute")
+document.getElementById('legendList').addEventListener('change', (e) => {
+    // On vérifie si l'élément modifié est bien une checkbox de préférence
+    if (e.target.classList.contains('pref-checkbox')) {
+        const li = e.target.closest('li');
+        const index = parseInt(li.dataset.index);
+        
+        // 1. On doit savoir quel est le mode de transport ACTUEL (ex: Voiture)
+        const activeBtn = li.querySelector('.transport-btn.active');
+        // Si aucun bouton actif, par défaut "Voiture"
+        const mode = activeBtn ? activeBtn.dataset.mode : 'Voiture';
+
+        // 2. On lit l'état des deux cases à cocher
+        const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
+        const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
+
+        // 3. LANCER LE RECALCUL IMMÉDIAT
+        // On garde le même mode, mais on applique les nouvelles options
+        updateRouteSegment(index, mode, { 
+            excludeTolls: excludeTolls, 
+            excludeMotorways: excludeMotorways 
+        });
+      }
+  });
+  
 
   function saveEtapes() {
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
+    const villes = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
       .map(input => input.value.trim())
       .filter(ville => ville.length > 0);
     return villes;
   }
 
   document.getElementById('btnModifier').addEventListener('click', () => {
-    // Réafficher les éléments de création
+    // 1. Rendre visibles les éléments de création
     document.getElementById('etapesContainer').style.display = 'block';
     document.getElementById('addEtape').style.display = 'inline-block';
-    document.getElementById('btnCalculer').style.display = 'inline-block';
-
-    // Cacher la légende
-    document.getElementById('legend').style.display = 'none';
-
-    // Cacher le bouton "Modifier l'itinéraire"
-    document.getElementById('btnModifier').style.display = 'none';
     document.getElementById('btnCalculer').style.display = 'none';
-    document.getElementById('btnLegende').style.display = 'inline-block';
+    if(document.getElementById('segmentFormContainer').style.display ==='block'){
+      document.getElementById('segmentFormContainer').style.display ='none';
+    }
 
-    const savedEtapes = saveEtapes();
-    console.log(savedEtapes);
-    
-    // Réafficher les étapes sauvegardées
-    const etapesContainer = document.getElementById('etapesContainer');
-    etapesContainer.innerHTML = ''; // Réinitialise les étapes pour éviter les doublons
-    savedEtapes.forEach(ville => {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Étape supplémentaire';
-      input.classList.add('etape');
-      input.value = ville; // Remplir avec la ville sauvegardée
-      etapesContainer.appendChild(input);
-    });
+    // 2. Cacher la légende et les boutons de navigation
+    document.getElementById('legend').style.display = 'none';
+    document.getElementById('btnModifier').style.display = 'none';
+    document.getElementById('btnLegende').style.display = 'inline-block';
   });
 
   document.getElementById('btnLegende').addEventListener('click', () => {
@@ -545,6 +806,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     if (e.target.classList.contains('sousetape-photo')) {
       const modal = document.getElementById('imageModal');
       const modalImg = document.getElementById('imageModalContent');
+      // Les classes et styles sont maintenant gérés par CSS
       modal.style.display = 'block';
       modalImg.src = e.target.src;
     } else if (e.target.classList.contains('image-modal')) {
@@ -552,48 +814,122 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
     }
   });
 
-  /*========================================================================
-  SAUVEGARDE D'UN ROAD POUR LA BD
-  ========================================================================*/
-  document.getElementById('saveRoadtrip').addEventListener('click', async () => {
+/*========================================================================
+  FONCTION DE SAUVEGARDE/VÉRIFICATION DES COORDONNÉES EN BASE DE DONNÉES
+========================================================================*/
+async function saveCoordsToDB(ville, lat, lon) {
+    try {
+        const response = await fetch('../include/geocode.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // On envoie le nom, la latitude et la longitude trouvées par Nominatim (via getCoordonnees)
+            body: JSON.stringify({ nom: ville, lat: lat, lon: lon })
+        });
+        const result = await response.json();
+        
+        if (!result.success) {
+            console.error(`Erreur DB pour ${ville}:`, result.message);
+            // Si le PHP échoue à insérer ou vérifier, on le signale.
+            return false;
+        }
+        // Si successful, cela signifie que la ville est maintenant dans lieux_geocodes.
+        return true;
+    } catch (e) {
+        console.error("Erreur réseau ou serveur lors de la sauvegarde/vérification des coordonnées:", e);
+        return false;
+    }
+}
+
+
+/*========================================================================
+SAUVEGARDE D'UN ROADTRIP DANS LA BASE DE DONNÉES
+========================================================================*/
+document.getElementById('saveRoadtrip').addEventListener('click', async () => {
     const titre = document.getElementById('roadtripTitle').value.trim();
     const description = document.getElementById('roadtripDescription').value.trim();
     const visibilite = document.getElementById('roadtripVisibilite').value;
     let photoCover = document.getElementById('roadtripPhoto').files[0];
+    
     if (!titre || !description) {
         alert("Veuillez remplir le titre et la description.");
         return;
     }
 
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input'))
+    // Récupérer toutes les villes des étapes
+    const villesInputs = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
         .map(input => input.value.trim())
         .filter(v => v.length > 0);
 
-    // Construction des trajets et sous-étapes
+    if (villesInputs.length < 2) {
+        alert("Veuillez saisir au moins deux villes.");
+        return;
+    }
+
+    // Préparer les données des villes avec leurs coordonnées ET s'assurer qu'elles sont dans lieux_geocodes
+    const villesGeo = [];
+    for (const ville of villesInputs) {
+        // 1. Obtenir les coordonnées via Nominatim (si elles n'étaient pas connues)
+        const coords = await getCoordonnees(ville);
+        if (!coords) {
+            alert(`Ville introuvable ou hors Europe : ${ville}`);
+            return;
+        }
+        
+        const [lat, lon] = coords;
+        
+        // 2. Vérifier/Sauvegarder la ville et ses coordonnées dans la table lieux_geocodes
+        const saved = await saveCoordsToDB(ville, lat, lon);
+        if (!saved) {
+            alert(`Erreur lors de la sauvegarde/vérification des coordonnées de la ville ${ville} en base de données. Annulation de la sauvegarde du RoadTrip.`);
+            return;
+        }
+        
+        // Ajouter la ville pour la sauvegarde du RoadTrip principal
+        villesGeo.push({ 
+            nom: ville, 
+            lat: lat, 
+            lon: lon 
+        });
+    }
+
+    // Préparer les trajets avec leurs sous-étapes
     const trajets = segments.map((seg, sIdx) => ({
         depart: seg.startName,
         arrivee: seg.endName,
-        mode: 'Voiture',
+        // Récupération du mode (défaut Voiture)
+        mode: seg.modeTransport || 'Voiture', 
+        // Récupération des préférences (défaut false)
+        sansAutoroute: seg.options ? seg.options.excludeMotorways : false,
+        sansPeage: seg.options ? seg.options.excludeTolls : false,
+        
         sousEtapes: seg.sousEtapes.map((se, seIdx) => ({
             nom: se.nom,
             remarque: se.remarque,
             heure: se.heure,
+            // On peut aussi appliquer les prefs au sous-étapes si besoin
+            sansAutoroute: seg.options ? seg.options.excludeMotorways : false, 
+            sansPeage: seg.options ? seg.options.excludeTolls : false,
             photos: se.photos ? se.photos.map((f, i) => `file_s${sIdx}_se${seIdx}_${i}`) : []
         }))
     }));
 
+    // Créer le FormData pour l'envoi
     const formData = new FormData();
     formData.append('titre', titre);
     formData.append('description', description);
     formData.append('visibilite', visibilite);
-    formData.append('villes', JSON.stringify(villes));
+    formData.append('villes', JSON.stringify(villesGeo));
     formData.append('trajets', JSON.stringify(trajets));
+
+    // Ajouter la photo de couverture (compressée)
     if (photoCover) {
         photoCover = await compresserImage(photoCover, 0.6, 1200);
         formData.append('photo_cover', photoCover);
     }
 
-    // Photos sous-étapes
+    // Ajouter toutes les photos des sous-étapes
     segments.forEach((seg, sIdx) => {
         seg.sousEtapes.forEach((se, seIdx) => {
             if (se.photos && se.photos.length) {
@@ -604,48 +940,85 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
         });
     });
 
+    // Afficher un indicateur de chargement
+    const saveBtn = document.getElementById('saveRoadtrip');
+    const originalText = saveBtn.textContent;
+    saveBtn.textContent = 'Sauvegarde en cours...';
+    saveBtn.disabled = true;
+
     try {
-        const response = await fetch('/formulaire/saveRoadtrip.php', {
+        const response = await fetch('../formulaire/saveRoadtrip.php', {
             method: 'POST',
             body: formData
         });
-        const result = await response.json();
+
+        const text = await response.text();
+        console.log("Réponse brute du serveur :", text);
+
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            console.error("Erreur de parsing JSON:", e);
+            throw new Error("Réponse invalide du serveur");
+        }
+
         if (result.success) {
             alert('RoadTrip sauvegardé avec succès !');
-
-            // Reset
+            
+            // Réinitialiser le formulaire
             document.getElementById('roadtripTitle').value = '';
             document.getElementById('roadtripDescription').value = '';
             document.getElementById('roadtripVisibilite').selectedIndex = 0;
             document.getElementById('roadtripPhoto').value = '';
             document.getElementById('etapesContainer').innerHTML = '';
+            
+            // Nettoyer la carte
+            segments.forEach(seg => {
+                if (seg.line) map.removeLayer(seg.line);
+            });
+            Object.values(markers).flat().forEach(m => map.removeLayer(m.marker));
             segments.length = 0;
-            location.reload();
+            
+            window.location.href = `../mesRoadTrips.php`;
+            
         } else {
             alert(result.message || 'Erreur lors de la sauvegarde.');
         }
-      } catch (err) {
-          console.error(err);
-          alert('Erreur réseau.');
-      }
-  });
+        
+    } catch (err) {
+        console.error("Erreur lors de la sauvegarde:", err);
+        alert('Erreur réseau ou serveur. Consultez la console pour plus de détails.');
+    } finally {
+        // Réactiver le bouton
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+    }
+});
 });
 
+/*========================================================================
+  FONCTION DE COMPRESSION D'IMAGE
+========================================================================*/
 function compresserImage(file, quality = 0.6, maxWidth = 1200) {
-  console.log("Commencement de la compression de l'image")
-    return new Promise(resolve => {
+    console.log("Compression de l'image:", file.name);
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
+
+        reader.onerror = () => reject(new Error("Erreur de lecture du fichier"));
 
         reader.onload = e => {
             const img = new Image();
             img.src = e.target.result;
 
+            img.onerror = () => reject(new Error("Erreur de chargement de l'image"));
+
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ratio = img.width / img.height;
 
-                // Redimension si trop large
+                // Redimensionner si trop large
                 if (img.width > maxWidth) {
                     canvas.width = maxWidth;
                     canvas.height = maxWidth / ratio;
@@ -658,54 +1031,105 @@ function compresserImage(file, quality = 0.6, maxWidth = 1200) {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                 canvas.toBlob(blob => {
-                    resolve(new File([blob], file.name, { type: "image/jpeg" }));
+                    if (blob) {
+                        const compressedFile = new File([blob], file.name, { 
+                            type: "image/jpeg",
+                            lastModified: Date.now()
+                        });
+                        console.log(`Image compressée: ${(file.size / 1024).toFixed(2)}KB → ${(blob.size / 1024).toFixed(2)}KB`);
+                        resolve(compressedFile);
+                    } else {
+                        reject(new Error("Erreur de compression"));
+                    }
                 }, "image/jpeg", quality);
             };
         };
-        console.log("Fin de compresion");
     });
 }
 
+// NOTE: Le code suivant (modal et toggle) est partiellement redondant si utilisé uniquement sur vuRoadTrip, 
+// mais conservé ici pour compatibilité si map.js est utilisé ailleurs.
+// J'ai retiré la création dynamique du modal ici car il est dans le PHP maintenant.
+
+function toggleSousEtapes(trajetId) {
+    const container = document.getElementById('sous-etapes-' + trajetId);
+    const card = document.querySelector('[data-trajet-id="' + trajetId + '"]');
+    
+    if (container && card) {
+        container.classList.toggle('active');
+        card.classList.toggle('active');
+    }
+}
+
+// Initialisation globale pour lightbox si non gérée ailleurs
+document.addEventListener('DOMContentLoaded', function() {
+    // Le modal est supposé être dans le HTML maintenant (voir template PHP)
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            // Ferme si on clique sur le fond (la classe .image-modal)
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    }
+
+    // Event delegation pour les images
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG' && e.target.closest('.photos-container')) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('imageModalContent');
+            if (modal && modalImg) {
+                modal.style.display = 'block';
+                modalImg.src = e.target.src;
+            }
+        }
+    });
+});
 
 /*=======================================
 Elements de gestion du formulaire d'inscription et de connexion
 =======================================*/
 
 function showLogin() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('btnLogin').classList.add('active');
-    document.getElementById('btnRegister').classList.remove('active');
+    const loginForm = document.getElementById('loginForm');
+    if(loginForm) {
+        loginForm.style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        document.getElementById('btnLogin').classList.add('active');
+        document.getElementById('btnRegister').classList.remove('active');
+    }
 }
 
 function showRegister() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-    document.getElementById('btnLogin').classList.remove('active');
-    document.getElementById('btnRegister').classList.add('active');
+    const regForm = document.getElementById('registerForm');
+    if(regForm) {
+        document.getElementById('loginForm').style.display = 'none';
+        regForm.style.display = 'block';
+        document.getElementById('btnLogin').classList.remove('active');
+        document.getElementById('btnRegister').classList.add('active');
+    }
 }
 
-// Fonction à appeler pour afficher ta modale (si tu as un conteneur modale, sinon adapter)
 function openModal() {
-    // Par exemple, si tu as un div modale, tu peux le passer en display:flex ou block
-    const modal = document.querySelector('.formulaire'); // adapte selon ta structure
+    const modal = document.querySelector('.formulaire'); 
     if (modal) {
         modal.style.display = 'block';
     }
 }
 
-// Appel automatique de la modale au chargement de la page profil
 document.addEventListener('DOMContentLoaded', function() {
-    openModal();
-    // Initialisation sur le formulaire que tu veux afficher par défaut :
-    showRegister(); // ou showLogin() selon souhait
+    // Si on est sur la page de profil/login
+    if(document.querySelector('.formulaire')) {
+        openModal();
+        showLogin(); 
+    }
 });
 
 
 /*=======================================
           Changement de thème
 =======================================*/
-
 
 const savedTheme = localStorage.getItem("theme");
 const toggleSombre = document.getElementById("checkboxSombre");
@@ -759,60 +1183,65 @@ if (toggleMalvoyant) {
     });
 }
 
-/*=======================================
-          bar  de recherche
-=======================================*/
+/*========================================================================
+  FONCTION DE RÉCUPÉRATION ASYNCHRONE DES DISTANCES ET TEMPS ENTRE DEUX POINTS
+========================================================================*/
 
+document.addEventListener("DOMContentLoaded", function() {
+    const elements = document.querySelectorAll('.js-calculate-distance');
+    if(elements.length === 0) return;
 
-let data = [];
-let userId = null;
+    console.log("Démarrage calcul distances (avec préférences)...");
 
-fetch("../bd/lec_bd.php")
-    .then(response => response.json())
-    .then(json => {
-        userId = json.userId;
-        data = json.roadtrips;
-        console.log("User ID :", userId);
-        console.log("Roadtrips :", data);
-    })
-    .catch(error => console.error("Erreur fetch :", error));
+    elements.forEach(function(el, i) {
+        setTimeout(function() {
+            const latDep = el.dataset.latDep;
+            const lonDep = el.dataset.lonDep;
+            const latArr = el.dataset.latArr;
+            const lonArr = el.dataset.lonArr;
+            let mode = el.dataset.mode || 'voiture';
+            
+            // RÉCUPÉRATION DES PRÉFÉRENCES
+            // Note: dataset renvoie des strings "0" ou "1"
+            const sansAutoroute = el.dataset.sansAutoroute === "1";
+            const sansPeage = el.dataset.sansPeage === "1";
 
-const searchBox = document.getElementById('searchInput');
-const resultsTableBody = document.querySelector('#results-table tbody');
+            const distEl = el.querySelector('.result-distance');
+            const timeEl = el.querySelector('.result-time');
 
-searchBox.addEventListener('input', function(event) {
+            if (!latDep || !lonDep || !latArr || !lonArr) {
+                distEl.innerHTML = "N/A"; timeEl.innerHTML = "N/A"; return;
+            }
 
-    const query = event.target.value.trim().toLowerCase();
-    resultsTableBody.innerHTML = '';
+            const profiles = { 'voiture': 'car', 'velo': 'bike', 'marche': 'foot' };
+            const profile = profiles[mode.toLowerCase()] || 'car';
+            
+            // CONSTRUCTION DE L'URL AVEC EXCLUDE
+            let url = `https://router.project-osrm.org/route/v1/${profile}/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
+            
+            const excludes = [];
+            if (sansPeage) excludes.push('toll');
+            if (sansAutoroute) excludes.push('motorway');
+            
+            if (excludes.length > 0) {
+                url += `&exclude=${excludes.join(',')}`;
+            }
 
-    if (query.length < 2) return;
-
-    const filteredData = data.filter(item => {
-        const match = item.titre.toLowerCase().includes(query);
-
-        if (!match) return false;
-
-        if (item.visibilite === "public") return true;
-        if (item.visibilite === "prive" && item.id_utilisateur == userId) return true;
-
-        return false;
+            fetch(url).then(r => r.json()).then(data => {
+                    if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+                        const route = data.routes[0];
+                        distEl.innerHTML = `<strong>${(route.distance / 1000).toFixed(1).replace('.', ',')} km</strong>`;
+                        const h = Math.floor(route.duration / 3600);
+                        const m = Math.floor((route.duration % 3600) / 60);
+                        timeEl.innerHTML = (h > 0 ? `${h}h ` : "") + `${m}min`;
+                    } else {
+                        distEl.innerHTML = "-"; timeEl.innerHTML = "-";
+                    }
+                })
+                .catch(() => {
+                    distEl.innerHTML = "<span class='error-data'>Err</span>";
+                    timeEl.innerHTML = "<span class='error-data'>Err</span>";
+                });
+        }, i * 1500); // Délai progressif pour ne pas spammer l'API
     });
-
-    if (filteredData.length > 0) {
-        filteredData.forEach(item => {
-            const row = document.createElement('tr');
-            const nomCell = document.createElement('td');
-            nomCell.textContent = item.titre;
-            row.appendChild(nomCell);
-            resultsTableBody.appendChild(row);
-        });
-    } else {
-        const row = document.createElement('tr');
-        const cell = document.createElement('td');
-        cell.textContent = 'Aucun résultat trouvé.';
-        row.appendChild(cell);
-        resultsTableBody.appendChild(row);
-    }
 });
-
-console.log(USER_ID);
