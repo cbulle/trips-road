@@ -1,4 +1,26 @@
 <?php
+
+/*
+installation : (su)
+sudo apt update
+sudo apt install -y golang
+
+# installe la dernière version dans $GOBIN ou $HOME/go/bin
+go install github.com/mailhog/MailHog@latest
+
+# binaire installé typiquement dans ~/go/bin/MailHog ou $GOBIN
+# pour rendre la commande accessible system-wide :
+sudo mv ~/go/bin/MailHog /usr/local/bin/mailhog
+sudo chmod +x /usr/local/bin/mailhog
+
+# vérification
+which mailhog
+mailhog --help
+
+# utilisation : 
+en su : mailhog 
+sur firefox : http://localhost:8025
+*/
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -6,15 +28,16 @@ require __DIR__ . '/PHPMailer-master/src/Exception.php';
 require __DIR__ . '/PHPMailer-master/src/PHPMailer.php';
 require __DIR__ . '/PHPMailer-master/src/SMTP.php';
 
+session_start(); // Pour stocker les messages
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // 1️⃣ Récupérer et sécuriser les données du formulaire
+    // Sécurisation des données
     $nom = isset($_POST['nom']) ? htmlspecialchars(trim($_POST['nom'])) : '';
     $email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : '';
     $sujet = isset($_POST['sujet']) ? htmlspecialchars(trim($_POST['sujet'])) : '';
     $question = isset($_POST['question']) ? htmlspecialchars(trim($_POST['question'])) : '';
 
-    // 2️⃣ Validation simple des champs
     $errors = [];
     if (empty($nom)) $errors[] = "Le nom est obligatoire.";
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "L'email est invalide.";
@@ -22,32 +45,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($question)) $errors[] = "Le message est obligatoire.";
 
     if (!empty($errors)) {
-        echo "<ul style='color:red;'>";
-        foreach ($errors as $error) {
-            echo "<li>$error</li>";
-        }
-        echo "</ul>";
+        $_SESSION['faq_error'] = $errors;
+        header('Location: /faq.php');
         exit;
     }
 
-    // 3️⃣ Préparer PHPMailer
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'localhost';   // MailHog écoute sur localhost
-        $mail->Port = 1025;          // Port par défaut de MailHog
-        $mail->SMTPAuth = false;     // Pas besoin d'authentification pour MailHog
+        $mail->Host = 'localhost';
+        $mail->Port = 1025;
+        $mail->SMTPAuth = false;
 
-        // Expéditeur
         $mail->setFrom('no-reply@tripsandroads.local', 'Trips & Roads - FAQ');
-
-        // Destinataire : ton adresse MailHog (ou tripsandroads@gmail.com si tu testes en ligne)
-        $mail->addAddress('tripsandroads@gmail.com'); 
-
-        // Réponse vers l’utilisateur
+        $mail->addAddress('tripsandroad@gmail.com');
         $mail->addReplyTo($email, $nom);
 
-        // Contenu du mail
         $mail->isHTML(false);
         $mail->Subject = "FAQ - $sujet | Message de $nom";
         $mail->Body = 
@@ -61,18 +74,20 @@ Message :
 $question
 ";
 
-        // 4️⃣ Envoyer le mail
         $mail->send();
 
-        // 5️⃣ Message de confirmation
-        echo "<h2 style='color:green;'>Votre message a bien été envoyé !</h2>";
-        echo "<a href='/faq.php'>Retour à la FAQ</a>";
+        $_SESSION['faq_success'] = "Votre message a bien été envoyé !";
+        header('Location: /page_link/faq.php');
+        exit;
 
     } catch (Exception $e) {
-        echo "<h3 style='color:red;'>Erreur lors de l'envoi du message.</h3>";
-        echo "<p>Détails : {$mail->ErrorInfo}</p>";
+        $_SESSION['faq_error'] = ["Erreur lors de l'envoi du message.", $mail->ErrorInfo];
+        header('Location: /page_link/faq.php');
+        exit;
     }
+
 } else {
-    echo "Méthode non autorisée.";
+    $_SESSION['faq_error'] = ["Méthode non autorisée."];
+    header('Location: /faq.php');
+    exit;
 }
-?>

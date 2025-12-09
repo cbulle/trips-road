@@ -73,6 +73,20 @@ include_once __DIR__ . "/../modules/aside.php"
 <?php     
 include_once __DIR__ . "/../modules/footer.php";
 ?>
+<script>
+<?php
+if (isset($_SESSION['faq_success'])) {
+    $msg = addslashes($_SESSION['faq_success']);
+    echo "alert('{$msg}');";
+    unset($_SESSION['faq_success']);
+}
 
+if (isset($_SESSION['faq_error'])) {
+    $msg = addslashes(implode("\n", $_SESSION['faq_error']));
+    echo "alert('Erreur:\\n{$msg}');";
+    unset($_SESSION['faq_error']);
+}
+?>
+</script>
 </body>
 </html>
