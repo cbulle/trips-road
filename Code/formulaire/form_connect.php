@@ -46,6 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Veuillez remplir tous les champs.";
     }
 }
+
+if (isset($_SESSION['user_id'])) {
+    echo "<script>const USER_ID = " . $_SESSION['user_id'] . ";</script>";
+} else {
+    echo "<script>const USER_ID = null;</script>";
+}
+
+
 ?>
 
 <!DOCTYPE html>

@@ -759,4 +759,60 @@ if (toggleMalvoyant) {
     });
 }
 
+/*=======================================
+          bar  de recherche
+=======================================*/
 
+
+let data = [];
+let userId = null;
+
+fetch("../bd/lec_bd.php")
+    .then(response => response.json())
+    .then(json => {
+        userId = json.userId;
+        data = json.roadtrips;
+        console.log("User ID :", userId);
+        console.log("Roadtrips :", data);
+    })
+    .catch(error => console.error("Erreur fetch :", error));
+
+const searchBox = document.getElementById('searchInput');
+const resultsTableBody = document.querySelector('#results-table tbody');
+
+searchBox.addEventListener('input', function(event) {
+
+    const query = event.target.value.trim().toLowerCase();
+    resultsTableBody.innerHTML = '';
+
+    if (query.length < 2) return;
+
+    const filteredData = data.filter(item => {
+        const match = item.titre.toLowerCase().includes(query);
+
+        if (!match) return false;
+
+        if (item.visibilite === "public") return true;
+        if (item.visibilite === "prive" && item.id_utilisateur == userId) return true;
+
+        return false;
+    });
+
+    if (filteredData.length > 0) {
+        filteredData.forEach(item => {
+            const row = document.createElement('tr');
+            const nomCell = document.createElement('td');
+            nomCell.textContent = item.titre;
+            row.appendChild(nomCell);
+            resultsTableBody.appendChild(row);
+        });
+    } else {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.textContent = 'Aucun résultat trouvé.';
+        row.appendChild(cell);
+        resultsTableBody.appendChild(row);
+    }
+});
+
+console.log(USER_ID);

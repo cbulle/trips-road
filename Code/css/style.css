@@ -339,6 +339,41 @@ aside ul li {
   transform: translateX(42px);
 }
 
+.bar_rech:focus-within input{
+  transition: all .7s ease;
+  width: 250px;
+  transform: translateX(42px);
+}
+.search-results {
+    width: 80%;
+    position: fixed;
+    left: 61px;
+    top: 25px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.search-results td:first-child {
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-results td {
+    
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.search-results th {
+    background-color: #f4f4f4;
+}
+
+.search-results tr:hover {
+    background-color: #f1f1f1;
+}
 
 /* ==============================
    BURGER
@@ -1184,7 +1219,7 @@ a#show-register, a#show-login {
         }
         
         .transport-icon {
-            font-size: 1.5em;
+            font-size: 1.5em; 
         }
         
         .toggle-icon {
