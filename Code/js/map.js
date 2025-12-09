@@ -80,35 +80,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Remplacement de initSelect2 par initAutocomplete ---
   function initAutocomplete(element) {
-      $(element).autocomplete({
-          source: function(request, response) {
-              // Appel AJAX à votre script PHP (recherche_villes.php)
-              $.ajax({
-                  url: './fonctions/recherche_villes.php',
-                  dataType: "json",
-                  data: {
-                      q: request.term // Le terme tapé par l'utilisateur
-                  },
-                  success: function(data) {
-                      // Mappe les résultats au format attendu par jQuery UI Autocomplete
-                      response($.map(data, function(item) {
-                          return {
-                              label: item.nom_ville, // Ce qui est affiché dans le menu
-                              value: item.nom_ville  // Ce qui est placé dans le champ après sélection
-                          }
-                      }));
-                  }
-              });
-          },
-          minLength: 1, // Autorise la recherche dès le premier caractère
-          delay: 250,
-          
-          // Option pour s'assurer que le champ garde sa valeur si l'utilisateur ne clique pas sur le menu
-          select: function(event, ui) {
-               $(element).val(ui.item.value);
-          }
-      });
-  }
+    $(element).autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: './fonctions/recherche_villes.php',
+                dataType: "json",
+                method: "GET", // Explicite la méthode
+                data: {
+                    q: request.term
+                },
+                success: function(data) {
+                    response($.map(data, function(item) {
+                        return {
+                            label: item.nom_ville,
+                            value: item.nom_ville
+                        }
+                    }));
+                },
+                error: function() {
+                    // En cas d'erreur (timeout), on ne fait rien ou on vide la liste
+                    response([]);
+                }
+            });
+        },
+        minLength: 3,
+        delay: 600, 
+        
+        select: function(event, ui) {
+             $(element).val(ui.item.value);
+        }
+    });
+}
 
 
   // --- 1. Initialisation au chargement de la page ---
@@ -628,6 +630,7 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
       } else ul.style.display = 'none';
     }
   });
+  
 
   function saveEtapes() {
     const villes = Array.from(document.querySelectorAll('#etapesContainer input.etape'))

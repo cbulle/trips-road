@@ -81,8 +81,29 @@ require_once __DIR__ . '/modules/init.php';
       <li class="legend-li">
           <div class="segment-header legend-segment-item">
             <span class="legend-color-indicator"></span>
+            
+            <div class="transport-options">
+                <button type="button" class="transport-btn active" data-mode="Voiture" title="En Voiture">🚗</button>
+                <button type="button" class="transport-btn" data-mode="Velo" title="À Vélo">🚲</button>
+                <button type="button" class="transport-btn" data-mode="Marche" title="À Pied">🚶</button>
+            </div>
+
+            <button type="button" class="settings-btn" title="Options de trajet">⚙️</button>
+
             <button class="toggleSousEtapes legend-toggle-btn"></button>
           </div>
+
+          <div class="route-preferences" style="display: none;">
+              <label class="pref-item">
+                  <input type="checkbox" class="pref-checkbox" data-pref="exclude-tolls">
+                  <span>Sans péages</span>
+              </label>
+              <label class="pref-item">
+                  <input type="checkbox" class="pref-checkbox" data-pref="exclude-motorways">
+                  <span>Sans autoroutes</span>
+              </label>
+          </div>
+          
           <button class="modifierSousEtapes">Modifier</button>
           <ul class="sousEtapesList" style="display:none;"></ul>
       </li>
