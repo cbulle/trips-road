@@ -763,16 +763,19 @@ if (toggleMalvoyant) {
           bar  de recherche
 =======================================*/
 
+
 let data = [];
+let userId = null;
 
 fetch("../bd/lec_bd.php")
     .then(response => response.json())
     .then(json => {
-        data = json;
-        console.log("Données chargées :", data);
+        userId = USER_ID;
+        data = json.roadtrips;
+        console.log("User ID :", userId);
+        console.log("Roadtrips :", data);
     })
     .catch(error => console.error("Erreur fetch :", error));
-
 
 const searchBox = document.getElementById('searchInput');
 const resultsTableBody = document.querySelector('#results-table tbody');
@@ -784,18 +787,23 @@ searchBox.addEventListener('input', function(event) {
 
     if (query.length < 2) return;
 
-    const filteredData = data.filter(item =>
-        item.titre.toLowerCase().includes(query)
-    );
+    const filteredData = data.filter(item => {
+        const match = item.titre.toLowerCase().includes(query);
+
+        if (!match) return false;
+
+        if (item.visibilite === "public") return true;
+        if (item.visibilite === "prive" && item.id_utilisateur == userId) return true;
+
+        return false;
+    });
 
     if (filteredData.length > 0) {
         filteredData.forEach(item => {
             const row = document.createElement('tr');
-
             const nomCell = document.createElement('td');
             nomCell.textContent = item.titre;
             row.appendChild(nomCell);
-
             resultsTableBody.appendChild(row);
         });
     } else {
