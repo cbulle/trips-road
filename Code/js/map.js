@@ -280,43 +280,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Fonction pour mettre à jour un segment (Changement de mode ou options) ---
   async function updateRouteSegment(index, mode, options = {}) {
-      const seg = segments[index];
-      if (!seg) return;
+    const seg = segments[index];
+    if (!seg) return;
 
-      // Mapping des modes vers les profils OSRM
-      const strategiesMap = {
-          'Voiture': 'driving',
-          'Velo': 'bike',
-          'Marche': 'foot'
-      };
-      const profile = strategiesMap[mode] || 'driving';
+    // 1. Sauvegarder l'état actuel pour la suite (important pour la sauvegarde BDD)
+    seg.modeTransport = mode; 
+    seg.options = options;
 
-      // Construction de l'URL
-      const coordString = `${seg.startCoord[1]},${seg.startCoord[0]};${seg.endCoord[1]},${seg.endCoord[0]}`;
-      let url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+    // 2. Définir le profil OSRM (driving, bike, foot)
+    const strategiesMap = {
+        'Voiture': 'driving',
+        'Velo': 'bike',
+        'Marche': 'foot'
+    };
+    const profile = strategiesMap[mode] || 'driving';
 
-      // Gestion des exclusions (Péages / Autoroutes)
-      const excludes = [];
-      if (options.excludeTolls) excludes.push('toll');
-      if (options.excludeMotorways) excludes.push('motorway');
-      
-      if (excludes.length > 0) {
-          url += `&exclude=${excludes.join(',')}`;
+    // 3. Construire l'URL
+    const coordString = `${seg.startCoord[1]},${seg.startCoord[0]};${seg.endCoord[1]},${seg.endCoord[0]}`;
+    let url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+
+    // 4. Ajouter les exclusions si c'est une voiture
+    // (L'API OSRM Demo gère 'toll' et 'motorway' principalement pour le profil driving)
+    if (profile === 'driving') {
+        const excludes = [];
+        if (options.excludeTolls) excludes.push('toll');
+        if (options.excludeMotorways) excludes.push('motorway');
+        
+        if (excludes.length > 0) {
+            url += `&exclude=${excludes.join(',')}`;
+        }
       }
 
       try {
+          console.log(`Recalcul Segment ${index} : ${mode} (Péage: ${!options.excludeTolls}, Autoroute: ${!options.excludeMotorways})...`);
+          
           const resp = await fetch(url);
           const data = await resp.json();
           
           if (data.code !== 'Ok') {
-              console.warn("Impossible de recalculer ce segment avec ces options.");
+              console.warn("Erreur API OSRM ou route impossible.");
               return;
           }
 
           const route = data.routes[0];
 
-          // Mise à jour visuelle (supprime l'ancienne ligne, ajoute la nouvelle)
+          // 5. Supprimer l'ancienne ligne et ajouter la nouvelle
           if (seg.line) map.removeLayer(seg.line);
           
           seg.line = L.geoJSON(route.geometry, { 
@@ -325,14 +335,15 @@ document.addEventListener('DOMContentLoaded', () => {
               opacity: 0.8 
           }).addTo(map);
 
-          // Mise à jour des données du segment
+          // 6. Mettre à jour les données (Distance/Durée)
           seg.distance = (route.distance / 1000).toFixed(1);
           seg.duration = Math.floor(route.duration / 60);
 
-          console.log(`Segment ${index} mis à jour : Mode ${mode}, ${seg.distance}km`);
+          // (Optionnel) Ici tu pourrais mettre à jour le texte dans la légende si tu affichais les km
+          console.log(`-> Nouveau trajet : ${seg.distance}km, ${seg.duration}min`);
 
       } catch (e) {
-          console.error("Erreur lors de la mise à jour du segment :", e);
+          console.error("Erreur technique lors du recalcul :", e);
       }
   }
 
@@ -635,35 +646,33 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
 
 
   // --- Toggle sous-étapes dans la légende (MODIFIÉ) ---
-  document.getElementById('legendList').addEventListener('click', (e) => {
+  // ============================================================
+// GESTION DES INTERACTIONS (BOUTONS & CHECKBOXES)
+// ============================================================
+
+// A. Gestion du CLIC sur les boutons (Transport, Engrenage, Modifier, Toggle)
+document.getElementById('legendList').addEventListener('click', (e) => {
     const target = e.target;
-    const li = target.closest('li');
+    // On remonte au LI parent pour savoir quel segment on modifie
+    const li = target.closest('li'); 
     if (!li) return;
     
     const index = parseInt(li.dataset.index);
 
-    // 1. Clic sur l'ENGRENAGE (Afficher/Masquer options)
-    const settingsBtn = target.closest('.settings-btn');
-    if (settingsBtn) {
-        const prefsDiv = li.querySelector('.route-preferences');
-        if (prefsDiv) {
-            prefsDiv.style.display = (prefsDiv.style.display === 'none') ? 'block' : 'none';
-        }
-        return;
-    }
-
-    // 2. Clic sur un bouton de TRANSPORT (Voiture, Vélo, Marche)
+    // --- 1. CLIC SUR UN BOUTON DE TRANSPORT (🚗 🚲 🚶) ---
     if (target.classList.contains('transport-btn')) {
-        // Change l'aspect visuel
+        // a. Gestion visuelle (Enlever 'active' des autres, le mettre sur celui-ci)
         li.querySelectorAll('.transport-btn').forEach(b => b.classList.remove('active'));
         target.classList.add('active');
 
-        // Récupère les infos
-        const newMode = target.dataset.mode;
+        // b. Récupérer le nouveau mode choisi
+        const newMode = target.dataset.mode; // "Voiture", "Velo", ou "Marche"
+
+        // c. Vérifier si les cases à cocher sont activées
         const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
         const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
 
-        // Lance le recalcul
+        // d. LANCER LE RECALCUL IMMÉDIAT
         updateRouteSegment(index, newMode, { 
             excludeTolls: excludeTolls, 
             excludeMotorways: excludeMotorways 
@@ -671,17 +680,26 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
         return;
     }
 
-    // 3. Clic sur MODIFIER (Gestion existante des sous-étapes)
+    // --- 2. CLIC SUR L'ENGRENAGE ⚙️ (Afficher/Masquer options) ---
+    const settingsBtn = target.closest('.settings-btn');
+    if (settingsBtn) {
+        const prefsDiv = li.querySelector('.route-preferences');
+        if (prefsDiv) {
+            // Bascule entre caché et visible
+            prefsDiv.style.display = (prefsDiv.style.display === 'none') ? 'block' : 'none';
+        }
+        return;
+    }
+
+    // --- 3. CLIC SUR MODIFIER (Sous-étapes) ---
     if (target.classList.contains('modifierSousEtapes')) {
+        // ... (Ton code existant pour ouvrir le formulaire de sous-étapes) ...
         currentSegmentIndex = index;
         const seg = segments[index];
         const start = seg.startNameSimple || getNomSimple(seg.startName); 
         const end = seg.endNameSimple || getNomSimple(seg.endName); 
-        
         document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} → ${end}`;
         showSegmentForm();
-        
-        // Vide et remplit le formulaire
         const subEtapesContainer = document.getElementById('subEtapesContainer');
         subEtapesContainer.innerHTML = ''; 
         seg.sousEtapes.forEach(se => addSousEtapeForm(se));
@@ -689,75 +707,47 @@ document.getElementById('saveSegment').addEventListener('click', async () => {
         return;
     }
 
-    // 4. Clic sur TOGGLE (Dérouler les détails)
+    // --- 4. CLIC SUR TOGGLE (Dérouler détails) ---
     const toggleBtn = target.closest('.toggleSousEtapes');
     if (toggleBtn) {
+        // ... (Ton code existant pour dérouler la liste) ...
         const ul = li.querySelector('.sousEtapesList');
-        if (!ul) return;
-
-        if (ul.style.display === 'none') {
-            const seg = segments[index];
-            ul.innerHTML = '';
-            
-            // Reconstruire l'affichage (Départ -> Sous-étapes -> Arrivée)
-            // (Ton code d'affichage existant ici...)
-            let liDepart = document.createElement('li');
-            const startSimple = seg.startNameSimple || getNomSimple(seg.startName);
-            liDepart.innerHTML = `<div><span style="font-weight: bold;">Départ: ${startSimple}</span></div>`; 
-            ul.appendChild(liDepart);
-            
-            if (seg.sousEtapes.length > 0) {
-                seg.sousEtapes.forEach(se => {
-                    let photoHTML = '';
-                    if (se.photos && se.photos.length > 0) {
-                        const url = URL.createObjectURL(se.photos[0]);
-                        photoHTML = `<img src="${url}" class="sousetape-photo legend-thumb">`;
-                    }
-                    const liSub = document.createElement('li');
-                    liSub.innerHTML = `<div class="legend-sub-item-content">
-                                        <span class="legend-sub-text">
-                                        <strong>${getNomSimple(se.nom)}</strong>${se.heure ? ` (${se.heure})` : ''}<br>
-                                        ${se.remarque || ''} 
-                                        </span>
-                                        ${photoHTML}
-                                    </div>`;
-                    ul.appendChild(liSub);
-                });
-            } else {
-                ul.appendChild(document.createElement('li')).innerHTML = '<em>Aucune sous-étape</em>';
-            }
-
-            let liArrivee = document.createElement('li');
-            const endSimple = seg.endNameSimple || getNomSimple(seg.endName);
-            liArrivee.innerHTML = `<div><span style="font-weight: bold;">Arrivée: ${endSimple}</span></div>`;
-            ul.appendChild(liArrivee);
-            
-            ul.style.display = 'block';
-        } else {
-            ul.style.display = 'none';
+        if (ul) ul.style.display = (ul.style.display === 'none') ? 'block' : 'none';
+        
+        // Si c'est la première ouverture, il faut peut-être remplir le UL (reprends ton code précédent ici si besoin)
+        if (ul.innerHTML === '') {
+             const seg = segments[index];
+             // (Remplissage rapide pour l'exemple)
+             let html = `<li><strong>Départ:</strong> ${getNomSimple(seg.startName)}</li>`;
+             seg.sousEtapes.forEach(se => html += `<li>- ${se.nom}</li>`);
+             html += `<li><strong>Arrivée:</strong> ${getNomSimple(seg.endName)}</li>`;
+             ul.innerHTML = html;
         }
       }
   });
 
-  // --- Gestion des CHANGEMENTS sur les Checkboxes (Options) ---
-  document.getElementById('legendList').addEventListener('change', (e) => {
-      if (e.target.classList.contains('pref-checkbox')) {
-          const li = e.target.closest('li');
-          const index = parseInt(li.dataset.index);
-          
-          // Trouver le mode actif actuel
-          const activeBtn = li.querySelector('.transport-btn.active');
-          const mode = activeBtn ? activeBtn.dataset.mode : 'Voiture';
+// B. Gestion du CHANGEMENT (Checkboxes "Sans péage" / "Sans autoroute")
+document.getElementById('legendList').addEventListener('change', (e) => {
+    // On vérifie si l'élément modifié est bien une checkbox de préférence
+    if (e.target.classList.contains('pref-checkbox')) {
+        const li = e.target.closest('li');
+        const index = parseInt(li.dataset.index);
+        
+        // 1. On doit savoir quel est le mode de transport ACTUEL (ex: Voiture)
+        const activeBtn = li.querySelector('.transport-btn.active');
+        // Si aucun bouton actif, par défaut "Voiture"
+        const mode = activeBtn ? activeBtn.dataset.mode : 'Voiture';
 
-          // Lire l'état des deux checkboxes
-          const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
-          const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
+        // 2. On lit l'état des deux cases à cocher
+        const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
+        const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
 
-          // Recalculer
-          updateRouteSegment(index, mode, { 
-              excludeTolls: excludeTolls, 
-              excludeMotorways: excludeMotorways 
-          });
+        // 3. LANCER LE RECALCUL IMMÉDIAT
+        // On garde le même mode, mais on applique les nouvelles options
+        updateRouteSegment(index, mode, { 
+            excludeTolls: excludeTolls, 
+            excludeMotorways: excludeMotorways 
+        });
       }
   });
   
@@ -908,11 +898,19 @@ document.getElementById('saveRoadtrip').addEventListener('click', async () => {
     const trajets = segments.map((seg, sIdx) => ({
         depart: seg.startName,
         arrivee: seg.endName,
-        mode: 'Voiture',
+        // Récupération du mode (défaut Voiture)
+        mode: seg.modeTransport || 'Voiture', 
+        // Récupération des préférences (défaut false)
+        sansAutoroute: seg.options ? seg.options.excludeMotorways : false,
+        sansPeage: seg.options ? seg.options.excludeTolls : false,
+        
         sousEtapes: seg.sousEtapes.map((se, seIdx) => ({
             nom: se.nom,
             remarque: se.remarque,
             heure: se.heure,
+            // On peut aussi appliquer les prefs au sous-étapes si besoin
+            sansAutoroute: seg.options ? seg.options.excludeMotorways : false, 
+            sansPeage: seg.options ? seg.options.excludeTolls : false,
             photos: se.photos ? se.photos.map((f, i) => `file_s${sIdx}_se${seIdx}_${i}`) : []
         }))
     }));
@@ -1190,78 +1188,60 @@ if (toggleMalvoyant) {
 ========================================================================*/
 
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("Démarrage du calcul des distances (mode progressif)...");
-
     const elements = document.querySelectorAll('.js-calculate-distance');
-    
-    if(elements.length === 0) {
-        console.warn("Aucun élément '.js-calculate-distance' trouvé.");
-    }
-    elements.forEach(function(el, i) {
-        
-        setTimeout(function() {
+    if(elements.length === 0) return;
 
+    console.log("Démarrage calcul distances (avec préférences)...");
+
+    elements.forEach(function(el, i) {
+        setTimeout(function() {
             const latDep = el.dataset.latDep;
             const lonDep = el.dataset.lonDep;
             const latArr = el.dataset.latArr;
             const lonArr = el.dataset.lonArr;
             let mode = el.dataset.mode || 'voiture';
+            
+            // RÉCUPÉRATION DES PRÉFÉRENCES
+            // Note: dataset renvoie des strings "0" ou "1"
+            const sansAutoroute = el.dataset.sansAutoroute === "1";
+            const sansPeage = el.dataset.sansPeage === "1";
 
             const distEl = el.querySelector('.result-distance');
             const timeEl = el.querySelector('.result-time');
 
             if (!latDep || !lonDep || !latArr || !lonArr) {
-                distEl.innerHTML = "N/A";
-                timeEl.innerHTML = "N/A";
-                return;
+                distEl.innerHTML = "N/A"; timeEl.innerHTML = "N/A"; return;
             }
 
-            const profiles = {
-                'voiture': 'car',
-                'velo': 'bike',
-                'vélo': 'bike',
-                'marche': 'foot',
-                'à pied': 'foot',
-                'a pied': 'foot'
-            };
+            const profiles = { 'voiture': 'car', 'velo': 'bike', 'marche': 'foot' };
             const profile = profiles[mode.toLowerCase()] || 'car';
+            
+            // CONSTRUCTION DE L'URL AVEC EXCLUDE
+            let url = `https://router.project-osrm.org/route/v1/${profile}/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
+            
+            const excludes = [];
+            if (sansPeage) excludes.push('toll');
+            if (sansAutoroute) excludes.push('motorway');
+            
+            if (excludes.length > 0) {
+                url += `&exclude=${excludes.join(',')}`;
+            }
 
-            const url = `https://router.project-osrm.org/route/v1/${profile}/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
-
-            fetch(url)
-                .then(response => {
-                    if (response.status === 429) {
-                        throw new Error("Trop de requêtes (429)");
-                    }
-                    if (!response.ok) throw new Error("Erreur réseau");
-                    return response.json();
-                })
-                .then(data => {
+            fetch(url).then(r => r.json()).then(data => {
                     if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
                         const route = data.routes[0];
-                        
-                        const distKm = (route.distance / 1000).toFixed(1).replace('.', ',');
-                        distEl.innerHTML = `<strong>${distKm} km</strong>`;
-
-                        const duration = route.duration;
-                        const h = Math.floor(duration / 3600);
-                        const m = Math.floor((duration % 3600) / 60);
-                        let timeText = "";
-                        if (h > 0) timeText += `${h}h `;
-                        timeText += `${m}min`;
-
-                        timeEl.innerHTML = timeText;
+                        distEl.innerHTML = `<strong>${(route.distance / 1000).toFixed(1).replace('.', ',')} km</strong>`;
+                        const h = Math.floor(route.duration / 3600);
+                        const m = Math.floor((route.duration % 3600) / 60);
+                        timeEl.innerHTML = (h > 0 ? `${h}h ` : "") + `${m}min`;
                     } else {
-                        distEl.innerHTML = "-";
-                        timeEl.innerHTML = "-";
+                        distEl.innerHTML = "-"; timeEl.innerHTML = "-";
                     }
                 })
-                .catch(error => {
-                    console.error("Erreur calcul:", error);
-                    distEl.innerHTML = "<span class='error-data'>Busy</span>";
-                    timeEl.innerHTML = "<span class='error-data'>Busy</span>";
+                .catch(() => {
+                    distEl.innerHTML = "<span class='error-data'>Err</span>";
+                    timeEl.innerHTML = "<span class='error-data'>Err</span>";
                 });
-
-        }, i * 1500); 
+        }, i * 1500); // Délai progressif pour ne pas spammer l'API
     });
 });

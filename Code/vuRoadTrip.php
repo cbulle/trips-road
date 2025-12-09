@@ -119,16 +119,25 @@ function getTransportIcon($type) {
                 foreach ($stepsToProcess as $step) :
                     $targetCity = $step['ville'];
                     $targetCoords = getCoordonneesDepuisCache($targetCity, $pdo);
-                    $mode = strtolower($step['type_transport'] ?? 'voiture');
+                    
+                    // Récupération du mode
+                    $mode = strtolower($step['type_transport'] ?? $t['mode_transport'] ?? 'voiture');
 
-                    // Construction des data-attributes SEULEMENT si on a les deux points
+                    // Récupération des préférences (priorité à la sous-étape, sinon au trajet global)
+                    $sansAutoroute = $step['sans_autoroute'] ?? $t['sans_autoroute'] ?? 0;
+                    $sansPeage = $step['sans_peage'] ?? $t['sans_peage'] ?? 0;
+
+                    // Construction des data-attributes
                     $dataAttrs = "";
                     if ($currentDepartCoords && $targetCoords) {
                         $dataAttrs = ' data-lat-dep="'.$currentDepartCoords['lat'].'"' .
                                      ' data-lon-dep="'.$currentDepartCoords['lon'].'"' .
                                      ' data-lat-arr="'.$targetCoords['lat'].'"' .
                                      ' data-lon-arr="'.$targetCoords['lon'].'"' .
-                                     ' data-mode="'.$mode.'"';
+                                     ' data-mode="'.$mode.'"' .
+                                     // AJOUT DES NOUVEAUX ATTRIBUTS
+                                     ' data-sans-autoroute="'.$sansAutoroute.'"' .
+                                     ' data-sans-peage="'.$sansPeage.'"';
                     }
                 ?>
                     <section class="timeline">
@@ -136,6 +145,8 @@ function getTransportIcon($type) {
                             <li>
                                 <span class="transport-icon"><?php echo getTransportIcon($mode); ?></span>
                                 <strong><?php echo htmlspecialchars(ucfirst($mode)); ?></strong>
+                                <?php if($sansPeage): ?> <span title="Sans péage" style="font-size:0.8em">🚫💶</span> <?php endif; ?>
+                                <?php if($sansAutoroute): ?> <span title="Sans autoroute" style="font-size:0.8em">🚫🛣️</span> <?php endif; ?>
                             </li>
                             <li class="result-distance"><span class="loading-data">Calcul...</span></li>
                             <li class="result-time"><span class="loading-data">...</span></li>
