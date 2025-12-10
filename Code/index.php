@@ -53,7 +53,19 @@ document.addEventListener("DOMContentLoaded", function () {
     
     if (userCity) {
         
-        // pas de solution encore 
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(userCity)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                const lat = parseFloat(data[0].lat);
+                const lon = parseFloat(data[0].lon);
+                userCoords = [lat, lon];
+            }
+            updateMap(userCoords);
+        })
+        .catch(() => updateMap(userCoords));
+
+    return;
     }
 
     if (navigator.geolocation) {

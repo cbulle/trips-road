@@ -20,10 +20,14 @@ include_once __DIR__ . "/modules/header.php"
                     <button class="toggle-btn" id="btnLogin" onclick="showLogin()">Se connecter</button>
                     <button class="toggle-btn" id="btnRegister" onclick="showRegister()">S'inscrire</button>
             </div>
-            <form id="registerForm" class="form-box" action = "formulaire/form_register.php" method = "post">
-                <h2 id="login-title">Inscription </h2>
-                    <label for="name">Nom</label>
-                    <input type="text" id="name" name="name" required>
+<form id="registerForm" class="form-box" action = "formulaire/form_register.php" method = "post">
+    <h2 id="login-title">Inscription </h2>
+    
+        <label for="pseudo">Pseudo</label>
+        <input type="text" id="pseudo" name="pseudo" required>
+
+        <label for="name">Nom</label>
+        <input type="text" id="name" name="name" required>
 
                     <label for="firstname">Prénom</label>
                     <input type="text" id="firstname" name="firstname" required>

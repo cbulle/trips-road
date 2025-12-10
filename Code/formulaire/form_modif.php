@@ -15,6 +15,7 @@ if (empty($_POST['name']) || empty($_POST['firstname']) || empty($_POST['email']
     die("Veuillez remplir tous les champs obligatoires. <a href='../profil.php'>Retour</a>");
 }
 
+$pseudo      = trim($_POST['pseudo']);
 $name        = trim($_POST['name']);
 $firstname   = trim($_POST['firstname']);
 $email       = trim($_POST['email']);
@@ -83,6 +84,8 @@ if (isset($_FILES['image']) && !empty($_FILES['image']['name'])) {
 }
 
 $sql = "UPDATE utilisateurs SET 
+
+        pseudo = :pseudo,
         nom = :nom,
         prenom = :prenom,
         email = :email,
@@ -102,6 +105,7 @@ $sql .= " WHERE id = :id";
 $stmt = $pdo->prepare($sql);
 
 $params = [
+    ':pseudo'           => $pseudo,
     ':nom'            => $name,
     ':prenom'         => $firstname,
     ':email'          => $email,
@@ -121,6 +125,7 @@ if ($password_hash) {
 $stmt->execute($params);
 
 $_SESSION['utilisateur'] = [
+    'pseudo'         => $pseudo,
     'id'             => $user['id'],
     'nom'            => $name,
     'prenom'         => $firstname,
