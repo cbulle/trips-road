@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const strategies = {
         Voiture: { profile: 'driving' },
-        Velo: { profile: 'bike' },
-        Marche: { profile: 'foot' }
+        Velo: { profile: 'cycling' },
+        Marche: { profile: 'walking' }
     };
 
     const segmentColors = [
@@ -257,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Fonction pour mettre � jour un segment (Changement de mode ou options) ---
     async function updateRouteSegment(index, mode, options = {}) {
         const seg = segments[index];
         if (!seg) return;
@@ -265,18 +264,31 @@ document.addEventListener('DOMContentLoaded', () => {
         seg.modeTransport = mode; 
         seg.options = options;
 
-        const strategiesMap = {
-            'Voiture': 'driving',
-            'Velo': 'bike',
-            'Marche': 'foot'
-        };
-        const profile = strategiesMap[mode] || 'driving';
+        let urlBase = '';
+        
+        if (mode === 'Velo') {
+            urlBase = 'https://routing.openstreetmap.de/routed-bike/route/v1/driving/';
+        } else if (mode === 'Marche') {
+            urlBase = 'https://routing.openstreetmap.de/routed-foot/route/v1/driving/';
+        } else {
+            urlBase = 'https://routing.openstreetmap.de/routed-car/route/v1/driving/';
+        }
 
-        const coordString = `${seg.startCoord[1]},${seg.startCoord[0]};${seg.endCoord[1]},${seg.endCoord[0]}`;
-        let url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+        let coordsList = [seg.startCoord];
+        if (seg.sousEtapes && seg.sousEtapes.length > 0) {
+            for (const sub of seg.sousEtapes) {
+                const subCoords = await getCoordonnees(sub.nom);
+                if (subCoords) coordsList.push(subCoords);
+            }
+        }
+        coordsList.push(seg.endCoord);
 
-        if (profile === 'driving') {
+        const coordString = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
+        let url = `${urlBase}${coordString}?overview=full&geometries=geojson`;
+
+        if (mode === 'Voiture' || !mode || mode === 'driving') {
             const excludes = [];
+            
             if (options.excludeTolls) excludes.push('toll');
             if (options.excludeMotorways) excludes.push('motorway');
             
@@ -285,14 +297,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        console.log(`URL appelée (${mode}) : ${url}`);
+
         try {
-            console.log(`Recalcul Segment ${index} : ${mode} (P�age: ${!options.excludeTolls}, Autoroute: ${!options.excludeMotorways})...`);
-            
-            const resp = await fetch(url);
+            const resp = await fetch(url, { cache: "reload" });
             const data = await resp.json();
             
             if (data.code !== 'Ok') {
-                console.warn("Erreur API OSRM ou route impossible.");
+                console.warn("Erreur API OSRM :", data.message);
+                
+                if (data.message && data.message.includes('Exclude flag')) {
+                    alert("Ce serveur ne supporte pas cette combinaison d'options (péages/autoroutes) pour ce trajet.");
+                } else {
+                    alert(`Impossible de calculer le trajet. Vérifiez que la distance n'est pas trop grande pour le mode ${mode}.`);
+                }
                 return;
             }
 
@@ -309,10 +327,10 @@ document.addEventListener('DOMContentLoaded', () => {
             seg.distance = (route.distance / 1000).toFixed(1);
             seg.duration = Math.floor(route.duration / 60);
 
-            console.log(`-> Nouveau trajet : ${seg.distance}km, ${seg.duration}min`);
+            console.log(`-> Résultat : ${seg.distance}km, ${seg.duration}min`);
 
         } catch (e) {
-            console.error("Erreur technique lors du recalcul :", e);
+            console.error("Erreur technique :", e);
         }
     }
 
@@ -587,7 +605,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // GESTION DES INTERACTIONS (BOUTONS & CHECKBOXES)
     // ============================================================
 
-    // A. Gestion du CLIC sur les boutons
     document.getElementById('legendList').addEventListener('click', (e) => {
         const target = e.target;
         const li = target.closest('li'); 
@@ -595,14 +612,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const index = parseInt(li.dataset.index);
 
-        // --- 1. CLIC SUR UN BOUTON DE TRANSPORT ---
-        if (target.classList.contains('transport-btn')) {
+        const btnTransport = target.closest('.transport-btn');
+        
+        if (btnTransport) {
             li.querySelectorAll('.transport-btn').forEach(b => b.classList.remove('active'));
-            target.classList.add('active');
+            btnTransport.classList.add('active');
 
-            const newMode = target.dataset.mode;
-            const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
-            const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
+            const newMode = btnTransport.dataset.mode;
+            
+            const checkboxPeage = li.querySelector('input[data-pref="exclude-tolls"]');
+            const checkboxAutoroute = li.querySelector('input[data-pref="exclude-motorways"]');
+            
+            const excludeTolls = checkboxPeage ? checkboxPeage.checked : false;
+            const excludeMotorways = checkboxAutoroute ? checkboxAutoroute.checked : false;
+
+            console.log(`Clic détecté : Segment ${index}, Mode ${newMode}`);
 
             updateRouteSegment(index, newMode, { 
                 excludeTolls: excludeTolls, 
@@ -611,7 +635,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- 2. CLIC SUR L'ENGRENAGE ---
         const settingsBtn = target.closest('.settings-btn');
         if (settingsBtn) {
             const prefsDiv = li.querySelector('.route-preferences');
@@ -621,22 +644,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- 3. CLIC SUR MODIFIER ---
-        if (target.classList.contains('modifierSousEtapes')) {
+        if (target.classList.contains('modifierSousEtapes') || target.closest('.modifierSousEtapes')) {
             currentSegmentIndex = index;
             const seg = segments[index];
             const start = seg.startNameSimple || getNomSimple(seg.startName); 
             const end = seg.endNameSimple || getNomSimple(seg.endName); 
-            document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} � ${end}`;
+            
+            document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} à ${end}`;
             showSegmentForm();
-            const subEtapesContainer = document.getElementById('subEtapesContainer');
-            subEtapesContainer.innerHTML = ''; 
-            seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+            
+            const subContainer = document.getElementById('subEtapesContainer');
+            subContainer.innerHTML = ''; 
+            
+            if (seg.sousEtapes && seg.sousEtapes.length > 0) {
+                seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+            }
+            
             document.getElementById('segmentDate').value = seg.date || '';
             return;
         }
 
-        // --- 4. CLIC SUR TOGGLE ---
         const toggleBtn = target.closest('.toggleSousEtapes');
         if (toggleBtn) {
             const ul = li.querySelector('.sousEtapesList');
@@ -644,30 +671,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (ul.innerHTML === '') {
                 const seg = segments[index];
-                let html = `<li><strong>D�part:</strong> ${getNomSimple(seg.startName)}</li>`;
-                seg.sousEtapes.forEach(se => html += `<li>- ${se.nom}</li>`);
-                html += `<li><strong>Arriv�e:</strong> ${getNomSimple(seg.endName)}</li>`;
+                let html = `<li><strong>Départ:</strong> ${getNomSimple(seg.startName)}</li>`;
+                if(seg.sousEtapes) {
+                    seg.sousEtapes.forEach(se => html += `<li>- ${se.nom}</li>`);
+                }
+                html += `<li><strong>Arrivée:</strong> ${getNomSimple(seg.endName)}</li>`;
                 ul.innerHTML = html;
             }
-        }
-    });
-
-    // B. Gestion du CHANGEMENT (Checkboxes)
-    document.getElementById('legendList').addEventListener('change', (e) => {
-        if (e.target.classList.contains('pref-checkbox')) {
-            const li = e.target.closest('li');
-            const index = parseInt(li.dataset.index);
-            
-            const activeBtn = li.querySelector('.transport-btn.active');
-            const mode = activeBtn ? activeBtn.dataset.mode : 'Voiture';
-
-            const excludeTolls = li.querySelector('input[data-pref="exclude-tolls"]').checked;
-            const excludeMotorways = li.querySelector('input[data-pref="exclude-motorways"]').checked;
-
-            updateRouteSegment(index, mode, { 
-                excludeTolls: excludeTolls, 
-                excludeMotorways: excludeMotorways 
-            });
         }
     });
 
