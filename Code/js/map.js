@@ -1157,69 +1157,84 @@ document.addEventListener("DOMContentLoaded", function() {
 /*=======================================
   Barre de recherche
 =======================================*/
-
 let data = [];
-let userId = null; 
+let userId = null;
 
+
+
+// 1. Chargement des données
 fetch("../bd/rech_bd.php")
     .then(response => response.json())
     .then(json => {
-        userId = json.userId;  
-        data = json.roadtrips;  
-        
-        console.log("Connecté avec l'ID :", userId);
-        console.log("Liste des roadtrips chargés :", data);
+        userId = json.userId;
+        data = json.roadtrips;
+        console.log("Données chargées :", data);
     })
     .catch(error => console.error("Erreur fetch :", error));
 
 const searchBox = document.getElementById('searchInput');
-const resultsTableBody = document.querySelector('#results-table tbody');
+const resultsTableBody = document.querySelector('#results-table tbody'); 
 
 if (searchBox && resultsTableBody) {
+    
     searchBox.addEventListener('input', function(event) {
+        
         const query = event.target.value.trim().toLowerCase();
+        
         resultsTableBody.innerHTML = '';
 
         if (query.length < 2) return;
 
+        // 2. Filtrage
         const filteredData = data.filter(item => {
-            const match = item.titre.toLowerCase().includes(query);
+            const matchTitle = item.titre.toLowerCase().includes(query);
+            if (!matchTitle) return false;
 
-    const myId = userId; 
+            if (item.visibilite === "public") return true;
+            if (item.visibilite === "prive" && userId !== null && item.id_utilisateur == userId) return true;
 
-    const filteredData = data.filter(item => {
-        const matchTitle = item.titre.toLowerCase().includes(query);
-        if (!matchTitle) return false;
-
-        
-        if (item.visibilite === "public") {
-            return true;
-        }
-
-       
-        if (item.visibilite === "prive" && myId !== null && item.id_utilisateur == myId) {
-            return true;
-        }
-
-       
-        return false;
-    });
-
-   
-    if (filteredData.length > 0) {
-        filteredData.forEach(item => {
-            const row = document.createElement('tr');
-            
-           
-            const nomCell = document.createElement('td');
-            nomCell.textContent = item.titre + ' (Road-Trip)';
-            
-            
-            if (item.visibilite === 'prive') {
-                nomCell.textContent += ' (Privé)';
-                nomCell.style.fontStyle = 'italic';
-            }
-            
-            row.appendChild(nomCell);
-            resultsTableBody.appendChild(row);
+            return false;
         });
+
+        // 3. Affichage
+        if (filteredData.length > 0) {
+            filteredData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                row.style.cursor = "pointer"; 
+                row.addEventListener('click', function() {
+                    window.location.href = "public_road.php?id=" + item.id;
+                });
+
+                row.addEventListener('mouseover', function() {
+                    this.style.backgroundColor = "#f0f0f0"; 
+                });
+                row.addEventListener('mouseout', function() {
+                    this.style.backgroundColor = ""; 
+                });
+
+                const nomCell = document.createElement('td');
+                
+                let texteAffichage = item.titre;
+                
+                if (item.visibilite === 'prive') {
+                    texteAffichage += ' (Privé)';
+                    nomCell.style.color = '#d9534f'; 
+                    nomCell.style.fontStyle = 'italic';
+                }
+                
+                nomCell.textContent = texteAffichage;
+                
+                row.appendChild(nomCell);
+                resultsTableBody.appendChild(row);
+            }); 
+        } else {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.textContent = "Aucun road trip trouvé.";
+            cell.style.color = "#777";
+            row.appendChild(cell);
+            resultsTableBody.appendChild(row);
+        }
+    });
+}
