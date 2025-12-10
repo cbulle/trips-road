@@ -77,12 +77,15 @@
                                 $photoProfil = "User.png"; 
                                 
                             }
-                            $photoPath = __DIR__ . "/../uploads/pp/$photoProfil";
-                            if (!file_exists($photoPath)) {
+                            $serverPathUploads = __DIR__ . "/../uploads/pp/$photoProfil";                            
+                            if (!file_exists($serverPathUploads)) {
                                 $photoPath = __DIR__ . "/../img/$photoProfil"; 
                                 
                             }
-                            ?>
+                             else {
+                                $photoPath = "/uploads/pp/$photoProfil";
+                            }
+                                                        ?>
                         <img src= "<?= $photoPath ?>" alt="Photo de profil">                       
                         <a href="/logout.php">Déconnexion</a>                        
                         <a href= "/profil.php"> Profil</a>
@@ -119,6 +122,7 @@
 
             <?php else: ?>
 
+                <li><a href="../Roadtrip.php">Roads-Trips</a></li>
                 <li><a href="/id.php">Se connecter</a></li>
 
             <?php endif; ?>
