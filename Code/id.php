@@ -23,6 +23,10 @@ include_once __DIR__ . "/modules/header.php"
             </div>
 <form id="registerForm" class="form-box" action = "formulaire/form_register.php" method = "post">
     <h2 id="login-title">Inscription </h2>
+    
+        <label for="pseudo">Pseudo</label>
+        <input type="text" id="pseudo" name="pseudo" required>
+
         <label for="name">Nom</label>
         <input type="text" id="name" name="name" required>
 

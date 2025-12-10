@@ -37,6 +37,10 @@ $user = $_SESSION['utilisateur'];
 
     <h2>Données personnelles</h2>
 
+    <label for="pseudo">Pseudo</label>
+    <input type="text" id="pseudo" name="pseudo" required
+           value="<?= htmlspecialchars($user['pseudo']) ?>">
+
     <label for="name">Nom</label>
     <input type="text" id="name" name="name" required
            value="<?= htmlspecialchars($user['nom']) ?>">

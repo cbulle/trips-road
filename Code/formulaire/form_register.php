@@ -1,9 +1,8 @@
 <?php
 require_once __DIR__ . '/../bd/lec_bd.php'; 
-session_start();
 
 
-$required = ['name', 'firstname', 'email', 'password', 'confirm_password', 
+$required = ['pseudo','name', 'firstname', 'email', 'password', 'confirm_password', 
              'address', 'postal', 'town', 'phone', 'birthdate'];
 
 foreach ($required as $field) {
@@ -12,7 +11,7 @@ foreach ($required as $field) {
             <p><a href='../id.php'>Retour</a></p>");
     }
 }
-
+$pseudo      = trim($_POST['pseudo']);
 $name        = trim($_POST['name']);
 $firstname   = trim($_POST['firstname']);
 $email       = trim($_POST['email']);
@@ -79,13 +78,14 @@ if (!empty($_FILES['image']['name'])) {
 
 
 $sql = "INSERT INTO utilisateurs 
-        (nom, prenom, email, mot_de_passe, adresse, postal, ville, tel, date_naissance, photo_profil)
+        (pseudo, nom, prenom, email, mot_de_passe, adresse, postal, ville, tel, date_naissance, photo_profil)
         VALUES 
-        (:nom, :prenom, :email, :mot_de_passe, :adresse, :postal, :ville, :tel, :date_naissance, :photo_profil)";
+        (:pseudo, :nom, :prenom, :email, :mot_de_passe, :adresse, :postal, :ville, :tel, :date_naissance, :photo_profil)";
 
 $stmt = $pdo->prepare($sql);
 
 $stmt->execute([
+    ':pseudo'         => $pseudo,
     ':nom'            => $name,
     ':prenom'         => $firstname,
     ':email'          => $email,
@@ -100,11 +100,13 @@ $stmt->execute([
 
 
 $_SESSION['utilisateur'] = [
+    'pseudo'    => $pseudo,
     'id'       => $pdo->lastInsertId(),
     'nom'      => $name,
     'prenom'   => $firstname,
     'email'    => $email,
-    'photo_profil' => $photo_profil
+    'photo_profil' => $photo_profil,
+    'ville'     =>$town
 ];
 
 header('Location: /index.php');
