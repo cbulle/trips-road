@@ -752,13 +752,6 @@ document.getElementById('legendList').addEventListener('change', (e) => {
   });
   
 
-  function saveEtapes() {
-    const villes = Array.from(document.querySelectorAll('#etapesContainer input.etape'))
-      .map(input => input.value.trim())
-      .filter(ville => ville.length > 0);
-    return villes;
-  }
-
   document.getElementById('btnModifier').addEventListener('click', () => {
     // 1. Rendre visibles les éléments de création
     document.getElementById('etapesContainer').style.display = 'block';
@@ -813,6 +806,36 @@ document.getElementById('legendList').addEventListener('change', (e) => {
       e.target.style.display = 'none';
     }
   });
+
+  const burgerCheckbox = document.getElementById('burger');
+
+    if (burgerCheckbox) {
+        burgerCheckbox.addEventListener('click', () => {
+            
+            // CORRECTION 1 : Ajout du "s" à .transport-options
+            const transportDiv = document.querySelector('.transport-options');
+            const settingsBtn = document.querySelector('.settings-btn');
+
+            // Fonction pour basculer l'affichage proprement
+            const toggleElement = (element) => {
+                if (!element) return;
+
+                // CORRECTION 2 : On lit le style réel (celui du CSS)
+                // Cela permet de savoir si c'est vraiment visible ou non au départ
+                const styleReel = window.getComputedStyle(element).display;
+
+                if (styleReel !== 'none') {
+                    element.style.display = 'none';
+                } else {
+                    // On remet inline-flex pour respecter ta mise en page
+                    element.style.display = 'inline-flex'; 
+                }
+            };
+
+            toggleElement(transportDiv);
+            toggleElement(settingsBtn);
+        });
+    }
 
 /*========================================================================
   FONCTION DE SAUVEGARDE/VÉRIFICATION DES COORDONNÉES EN BASE DE DONNÉES
@@ -1245,7 +1268,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }, i * 1500); // Délai progressif pour ne pas spammer l'API
     });
 });
-
 
 /*=======================================
           bar  de recherche
