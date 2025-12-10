@@ -86,7 +86,7 @@ CREATE TABLE roadtrip_points_interet (
 CREATE TABLE amis (
     id_utilisateur INT,
     id_ami INT,
-    statut ENUM('en_attente', 'accepte', 'bloque') DEFAULT 'en_attente',
+    statut ENUM('en_attente', 'accepte', 'bloque', 'supprime') DEFAULT 'en_attente',
     date_relation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id_utilisateur, id_ami),
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id) ON DELETE CASCADE,

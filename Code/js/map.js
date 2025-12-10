@@ -1207,7 +1207,7 @@ if (searchBox && resultsTableBody) {
                 });
 
                 row.addEventListener('mouseover', function() {
-                    this.style.backgroundColor = "#f0f0f0"; 
+                    this.style.backgroundColor = "#F2E9D6"; 
                 });
                 row.addEventListener('mouseout', function() {
                     this.style.backgroundColor = ""; 
@@ -1219,7 +1219,6 @@ if (searchBox && resultsTableBody) {
                 
                 if (item.visibilite === 'prive') {
                     texteAffichage += ' (Privé)';
-                    nomCell.style.color = '#d9534f'; 
                     nomCell.style.fontStyle = 'italic';
                 }
                 

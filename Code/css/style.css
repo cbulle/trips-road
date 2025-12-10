@@ -330,7 +330,7 @@ aside ul li {
   width: 0px;
   outline: none;
   padding: 0 20px;
-  color: var(--noir);
+  color: var(--bleu_foncé_ecriture);
   font-size: 1rem;
   border : 1px solid var(--beige);
   border-radius: 60px;
@@ -404,8 +404,27 @@ aside ul li {
     background-color: #f4f4f4;
 }
 
-.search-results tr:hover {
-    background-color: #f1f1f1;
+
+
+
+#results-table {
+    position: absolute;
+    background-color: var(--orange);
+    width: 100%;
+    max-width: 300px;
+    z-index: 9999;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-collapse: collapse;
+    margin-top: 5px;
+    /*display: none;  Caché par défaut */
+}
+
+#results-table th {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: var(--noir);
+    background-color: var(--beige);
 }
 
 /* ==============================
