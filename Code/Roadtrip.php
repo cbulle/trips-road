@@ -35,7 +35,7 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p><?= htmlspecialchars($rt['description']) ?></p>
 
             <div class="roadtrip-buttons">
-                <a class="btn-view" href="vuRoadTrip.php?id=<?= $rt['id'] ?>">
+                <a class="btn-view" href="public_road.php?id=<?= $rt['id'] ?>">
                     Voir en détail
                 </a>
             </div>

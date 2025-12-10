@@ -1159,15 +1159,16 @@ document.addEventListener("DOMContentLoaded", function() {
 =======================================*/
 
 let data = [];
-let userId = null;
+let userId = null; 
 
-fetch("../bd/lec_bd.php")
+fetch("../bd/rech_bd.php")
     .then(response => response.json())
     .then(json => {
-        userId = json.userId;
-        data = json.roadtrips;
-        console.log("User ID :", userId);
-        console.log("Roadtrips :", data);
+        userId = json.userId;  
+        data = json.roadtrips;  
+        
+        console.log("Connecté avec l'ID :", userId);
+        console.log("Liste des roadtrips chargés :", data);
     })
     .catch(error => console.error("Erreur fetch :", error));
 
@@ -1184,32 +1185,41 @@ if (searchBox && resultsTableBody) {
         const filteredData = data.filter(item => {
             const match = item.titre.toLowerCase().includes(query);
 
-            if (!match) return false;
+    const myId = userId; 
 
-            if (item.visibilite === "public") return true;
-            if (item.visibilite === "prive" && item.id_utilisateur == userId) return true;
+    const filteredData = data.filter(item => {
+        const matchTitle = item.titre.toLowerCase().includes(query);
+        if (!matchTitle) return false;
 
-            return false;
-        });
-
-        if (filteredData.length > 0) {
-            filteredData.forEach(item => {
-                const row = document.createElement('tr');
-                const nomCell = document.createElement('td');
-                nomCell.textContent = item.titre;
-                row.appendChild(nomCell);
-                resultsTableBody.appendChild(row);
-            });
-        } else {
-            const row = document.createElement('tr');
-            const cell = document.createElement('td');
-            cell.textContent = 'Aucun r�sultat trouv�.';
-            row.appendChild(cell);
-            resultsTableBody.appendChild(row);
+        
+        if (item.visibilite === "public") {
+            return true;
         }
-    });
-}
 
-if (typeof USER_ID !== 'undefined') {
-    console.log(USER_ID);
-}
+       
+        if (item.visibilite === "prive" && myId !== null && item.id_utilisateur == myId) {
+            return true;
+        }
+
+       
+        return false;
+    });
+
+   
+    if (filteredData.length > 0) {
+        filteredData.forEach(item => {
+            const row = document.createElement('tr');
+            
+           
+            const nomCell = document.createElement('td');
+            nomCell.textContent = item.titre + ' (Road-Trip)';
+            
+            
+            if (item.visibilite === 'prive') {
+                nomCell.textContent += ' (Privé)';
+                nomCell.style.fontStyle = 'italic';
+            }
+            
+            row.appendChild(nomCell);
+            resultsTableBody.appendChild(row);
+        });

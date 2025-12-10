@@ -66,9 +66,8 @@
             <li class="nav-item">
                 <?php if (isset($_SESSION['utilisateur'])): ?>
 
-                    <span> 
-                        <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
-                        <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
+                    <span class="profil-box"> 
+                         
                             <?php
                             if (isset($_SESSION['utilisateur']['photo_profil']) && !empty($_SESSION['utilisateur']['photo_profil'])) {
                                 $photoProfil = htmlspecialchars($_SESSION['utilisateur']['photo_profil']);
@@ -77,15 +76,26 @@
                                 $photoProfil = "User.png"; 
                                 
                             }
-                            $photoPath = __DIR__ . "/../uploads/pp/$photoProfil";
-                            if (!file_exists($photoPath)) {
+                            $serverPathUploads = __DIR__ . "/../uploads/pp/$photoProfil";                            
+                            if (!file_exists($serverPathUploads)) {
                                 $photoPath = __DIR__ . "/../img/$photoProfil"; 
                                 
                             }
+                             else {
+                                $photoPath = "/uploads/pp/$photoProfil";
+                            }
                             ?>
-                        <img src= "<?= $photoPath ?>" alt="Photo de profil">                       
-                        <a href="/logout.php">Déconnexion</a>                        
-                        <a href= "/profil.php"> Profil</a>
+                            <a  href="/profil.php"><img class="profil-photo" src="<?= $photoPath ?>" alt="Photo de profil"> </a>
+                    <span class="profil-nom">
+                        <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
+                        <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
+                        </span>
+                    <li class = "nav-item">                     
+                    <a class = "pp_logout" href="/logout.php">
+                        <i class="material-icons">logout</i>
+                        <span>Déconnexion</span>
+                    </a>                        
+                    </li>
                     </span>
 
                 <?php else: ?>
@@ -119,6 +129,7 @@
 
             <?php else: ?>
 
+                <li><a href="../Roadtrip.php">Roads-Trips</a></li>
                 <li><a href="/id.php">Se connecter</a></li>
 
             <?php endif; ?>

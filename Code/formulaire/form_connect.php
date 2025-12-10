@@ -19,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($password, $user['mot_de_passe'])) {   
 
            $_SESSION['utilisateur'] = [
+
+            'pseudo' => $user['pseudo'],
             'id' => $user['id'],
             'nom' => $user['nom'],
             'prenom' => $user['prenom'],
