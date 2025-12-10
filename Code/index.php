@@ -8,6 +8,7 @@ $userId = $_SESSION['utilisateur']['id'] ?? null;
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Road Trip Planner</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -25,12 +26,25 @@ $userId = $_SESSION['utilisateur']['id'] ?? null;
 <?php     
 include_once __DIR__ . "/modules/header.php"
 ?>
+
 <main class = "main-index" >
     <div class="index_container">
         <h2>Bienvenue sur Trips & Roads !</h2>
         <p>Planifiez et partagez vos road trips facilement.</p>
         <a href="creationRoadTrip.php"><button type="submit">Créer un nouveau Road Trip</button></a>
     </div>
+    <div class="search-container">
+    <input type="text" id="poiSearch" placeholder="Rechercher un lieu..." />
+    <button id="searchBtn">Rechercher</button>
+</div>
+
+<div class="filter-buttons">
+    <button id="restaurantBtn">Restaurant</button>
+    <button id="hotelBtn">Hôtel</button>
+    <button id="poiBtn">Attractions</button>
+    <button id="shopBtn">Magasin</button>
+</div>
+
     <div id="mapContainer" >
         <h3>Carte des environs</h3>
         <div id="userMap" ></div>
@@ -44,56 +58,11 @@ include_once __DIR__ . "/modules/aside.php"
 <?php     
 include_once __DIR__ . "/modules/footer.php"
 ?>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const defaultCoords = [45.75, 4.85]; 
-    let userCoords = defaultCoords;  
-
-    const userCity = "<?php echo isset($_SESSION['utilisateur']['ville']) ? $_SESSION['utilisateur']['ville'] : ''; ?>";
-    
-    if (userCity) {
-        
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(userCity)}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length > 0) {
-                const lat = parseFloat(data[0].lat);
-                const lon = parseFloat(data[0].lon);
-                userCoords = [lat, lon];
-            }
-            updateMap(userCoords);
-        })
-        .catch(() => updateMap(userCoords));
-
-    return;
-    }
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            userCoords = [lat, lon]; 
-            updateMap(userCoords);
-        }, function() {
-            updateMap(userCoords);
-        });
-    } else {
-        updateMap(userCoords);
-    }
-
-    function updateMap(coords) {
-        const map = L.map('userMap').setView(coords, 10);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        L.marker(coords).addTo(map)
-        .bindPopup(`Ville : ${userCity || 'Non définie'}`)
-        .openPopup();
-    }
-});
-</script>
+<input type="hidden" id="userCity" value="<?php echo isset($_SESSION['utilisateur']['ville']) ? $_SESSION['utilisateur']['ville'] : ''; ?>">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://unpkg.com/leaflet-markercluster/dist/leaflet.markercluster.js"></script>
+<script src="js/index.js"></script>
 
 
 
