@@ -1223,3 +1223,8 @@ if (searchBox && resultsTableBody) {
             row.appendChild(nomCell);
             resultsTableBody.appendChild(row);
         });
+    }
+});
+    });
+}
+
