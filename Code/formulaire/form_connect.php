@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             'pseudo' => $user['pseudo'],
             'id' => $user['id'],
-            'nom' => $user['nom'],
+            'nom' => $user['nom'],  
             'prenom' => $user['prenom'],
             'email' => $user['email'],
             'adresse' => $user['adresse'],
