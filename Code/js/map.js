@@ -1251,17 +1251,17 @@ document.addEventListener("DOMContentLoaded", function() {
           bar  de recherche
 =======================================*/
 
-
 let data = [];
-let userId = null;
+let userId = null; 
 
-fetch("../bd/lec_bd.php")
+fetch("../bd/rech_bd.php")
     .then(response => response.json())
     .then(json => {
-        userId = json.userId;
-        data = json.roadtrips;
-        console.log("User ID :", userId);
-        console.log("Roadtrips :", data);
+        userId = json.userId;  
+        data = json.roadtrips;  
+        
+        console.log("Connecté avec l'ID :", userId);
+        console.log("Liste des roadtrips chargés :", data);
     })
     .catch(error => console.error("Erreur fetch :", error));
 
@@ -1275,22 +1275,41 @@ searchBox.addEventListener('input', function(event) {
 
     if (query.length < 2) return;
 
+    const myId = userId; 
+
     const filteredData = data.filter(item => {
-        const match = item.titre.toLowerCase().includes(query);
+        const matchTitle = item.titre.toLowerCase().includes(query);
+        if (!matchTitle) return false;
 
-        if (!match) return false;
+        
+        if (item.visibilite === "public") {
+            return true;
+        }
 
-        if (item.visibilite === "public") return true;
-        if (item.visibilite === "prive" && item.id_utilisateur == userId) return true;
+       
+        if (item.visibilite === "prive" && myId !== null && item.id_utilisateur == myId) {
+            return true;
+        }
 
+       
         return false;
     });
 
+   
     if (filteredData.length > 0) {
         filteredData.forEach(item => {
             const row = document.createElement('tr');
+            
+           
             const nomCell = document.createElement('td');
-            nomCell.textContent = item.titre;
+            nomCell.textContent = item.titre + ' (Road-Trip)';
+            
+            
+            if (item.visibilite === 'prive') {
+                nomCell.textContent += ' (Privé)';
+                nomCell.style.fontStyle = 'italic';
+            }
+            
             row.appendChild(nomCell);
             resultsTableBody.appendChild(row);
         });
@@ -1303,4 +1322,3 @@ searchBox.addEventListener('input', function(event) {
     }
 });
 
-console.log(USER_ID);
