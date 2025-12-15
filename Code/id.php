@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Road Trip Planner</title>
     <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
 <container class="container">    

@@ -9,6 +9,8 @@ require_once __DIR__ . '/../modules/init.php';
     <meta charset="UTF-8">
     <title>Conditions Générales d'Utilisation - Trips & Road </title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/page_link.css">
+
 </head>
 <body>
    
@@ -76,9 +78,7 @@ include_once __DIR__ . "/../modules/header.php";
         </section>
     </div>
 </main>
- <?php     
-include_once __DIR__ . "/../modules/aside.php"
-?> 
+
 
 <?php     
 include_once __DIR__ . "/../modules/footer.php";

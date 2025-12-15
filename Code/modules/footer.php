@@ -3,9 +3,13 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/footer.css">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
-<script src="js/map.js"></script>  
+<script src="js/recherche.js"></script>  
+
+
 <footer>
     <div class="footer-container">
       <div class="image-container">

@@ -1,0 +1,226 @@
+/* ==============================
+  BAR DE RECHERCHE
+============================== */
+.bar_rech {
+  position: absolute;
+  left: 10px;
+  top: 110px;
+  transform: translate(-50%, -50%);
+} 
+
+
+.bar_rech>input {
+  box-sizing: border-box;
+  height: 30px;
+  width: 0px;
+  outline: none;
+  padding: 0 20px;
+  color: var(--bleu_foncé_ecriture);
+  font-size: 1rem;
+  border : 1px solid var(--beige);
+  border-radius: 60px;
+  position: absolute;
+  left: 9px;
+  top: -6px;
+}
+
+
+::placeholder {
+  color: var(--gris_clair);
+}
+
+.btn {
+  position: absolute;
+  right: -50px;
+  top: -15px;
+  background: var(--orange);
+  line-height: 80px;
+  height: 45px;
+  width: 45px;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.btn>i {
+  font-size: 30px;
+  line-height: 80px;
+  color: var(--noir);
+  position: absolute;
+  left: 4px;
+  top: -19px;
+}
+
+
+.bar_rech:hover input{
+  transition: all .7s ease;
+  width: 250px;
+  transform: translateX(42px);
+}
+
+.bar_rech:focus-within input{
+  transition: all .7s ease;
+  width: 250px;
+  transform: translateX(42px);
+}
+.search-results {
+    width: 80%;
+    position: fixed;
+    left: 61px;
+    top: 25px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.search-results td:first-child {
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-results td {
+    
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.search-results th {
+    background-color: #f4f4f4;
+}
+
+
+
+
+#results-table {
+    position: absolute;
+    background-color: var(--orange);
+    width: 100%;
+    max-width: 300px;
+    z-index: 9999;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-collapse: collapse;
+    margin-top: 5px;
+    /*display: none;  Caché par défaut */
+}
+
+#results-table th {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: var(--noir);
+    background-color: var(--beige);
+}
+/* ==============================
+  BURGER
+============================== */
+#burger {
+  opacity: 0;
+  top: 52px;
+  position: absolute;
+  left: 30px;
+}
+
+
+.burger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 30px;
+  height: 22px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+
+.ul_burger {
+  position: fixed;
+  top:0px;
+  left: -100%;
+  width: 385px;
+  height: 100%;
+  background-color: var(--bleu_foncé);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding-right: 30px;
+  padding-left: 10px;
+  transition: left 0.4s ease;
+}
+
+.ul_burger>li>a {
+  color:var(--beige);
+}
+
+.ul_burger>li>a:hover{
+  color: var(--orange);
+  font-size:1.7rem;
+}
+
+#burger:checked ~ .ul_burger {
+  left: 0;
+}
+
+.ul_burger li {
+  opacity: 0;
+  font-size: 1.5rem;
+  transform: translateX(20px);
+  transition: all 0.3s ease-out;
+}
+
+#burger:checked ~ .ul_burger li {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+#burger:checked ~ .ul_burger li:nth-child(1) { transition-delay: 0.1s; }
+#burger:checked ~ .ul_burger li:nth-child(2) { transition-delay: 0.2s; }
+#burger:checked ~ .ul_burger li:nth-child(3) { transition-delay: 0.3s; }
+#burger:checked ~ .ul_burger li:nth-child(4) { transition-delay: 0.4s; }
+#burger:checked ~ .ul_burger li:nth-child(5) { transition-delay: 0.5s; }
+#burger:checked ~ .ul_burger li:nth-child(6) { transition-delay: 0.6s; }
+#burger:checked ~ .ul_burger li:nth-child(7) { transition-delay: 0.7s; }
+
+
+header>nav>label>span,
+header>nav>label>span::after,
+header>nav>label>span::before{    
+  content: "";
+  width: 36px;
+  height: 7px;
+  background-color: var(--orange);
+  border-radius: 3px;
+  position: absolute;      
+  transition: 1s; 
+  z-index: 2;
+  top : 55px;
+  left : 20px;
+}
+
+header>nav>label>span::after {
+  margin-top: -66px;
+  margin-left: -20px;
+
+}
+header>nav>label>span::before {
+  margin-top: -43px;
+  margin-left: -20px;
+}  
+
+header>nav>input:checked ~ label>span::before{
+  transform: rotate(45deg) translateX(40px) translateY(-59px);
+  transition: 1s;
+}
+
+header>nav>input:checked ~ label>span{
+  transform: translateX(-70px);
+  transition: 1s;
+
+}
+
+header>nav>input:checked ~ label>span::after{
+  transform: rotate(-45deg) translateX(43px) translateY(56px);;
+  transition: 1s;
+}

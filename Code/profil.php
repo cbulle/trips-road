@@ -15,6 +15,9 @@ $user = $_SESSION['utilisateur'];
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/profil.css">
+
     <title>Profil</title>
 </head>
 <body>

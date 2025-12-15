@@ -1,0 +1,112 @@
+/*============================
+  Profil
+============================*/
+
+main.profil {
+  padding: 20px;
+  border-radius: 10px;
+  display : flex ;
+}
+
+.profil div {
+  margin-bottom: 20px;
+}
+
+.info_profil{
+  background-color: var(--beige_foncé);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--noir);
+  margin-right: 200px;
+
+}
+
+.form_modif {
+  background-color: var(--beige_foncé);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--noir);
+  
+}
+
+#login-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--vert); 
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form_modif label {
+  display: block;
+  font-size: 1rem;
+  color: var(--gris_foncé);
+  margin-bottom: 8px;
+}
+
+.form_modif input[type="text"],
+.form_modif input[type="email"],
+.form_modif input[type="password"],
+.form_modif input[type="tel"],
+.form_modif input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--gris_foncé);
+}
+
+.form_modif input[type="password"],
+.form_modif input[type="text"],
+.form_modif input[type="email"],
+.form_modif input[type="tel"],
+.form_modif input[type="date"] {
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 15px;
+}
+
+.form_modif button {
+  background-color: var(--bleu_foncé); 
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 5px;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.3s;
+}
+
+.form_modif button:hover {
+  background-color: var(--vert); 
+}
+.form_modif input[type="file"] {
+  margin-top: 10px;
+}
+
+.profil ul {
+  list-style: none;
+  padding-left: 30;
+}
+
+.profil ul li {
+  margin-bottom: 15px;
+}
+
+.profil ul li a {
+  font-size: 1rem;
+  color: var(--bleu_foncé_ecriture);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.profil ul li a:hover {
+  color: var(--vert);
+}
+
+.profil a {
+  text-decoration: none;
+}
+

@@ -113,9 +113,7 @@ include_once __DIR__ . "/modules/header.php"
     </div>
 </main>
 
-<?php     
-include_once __DIR__ . "/modules/aside.php"
-?>       
+      
      
 <?php     
 include_once __DIR__ . "/modules/footer.php"
