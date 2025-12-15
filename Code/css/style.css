@@ -330,7 +330,7 @@ aside ul li {
   width: 0px;
   outline: none;
   padding: 0 20px;
-  color: var(--noir);
+  color: var(--bleu_foncé_ecriture);
   font-size: 1rem;
   border : 1px solid var(--beige);
   border-radius: 60px;
@@ -404,8 +404,27 @@ aside ul li {
     background-color: #f4f4f4;
 }
 
-.search-results tr:hover {
-    background-color: #f1f1f1;
+
+
+
+#results-table {
+    position: absolute;
+    background-color: var(--orange);
+    width: 100%;
+    max-width: 300px;
+    z-index: 9999;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-collapse: collapse;
+    margin-top: 5px;
+    /*display: none;  Caché par défaut */
+}
+
+#results-table th {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: var(--noir);
+    background-color: var(--beige);
 }
 
 /* ==============================
@@ -976,12 +995,13 @@ a#show-register, a#show-login {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.sidebar .villesInput{
-  padding: 10px;
-  border-radius: 15px;
-}
-
-.sidebar #addEtape, .sidebar #btnCalculer, .sidebar #btnModifier, .sidebar #saveRoadtrip, .sidebar #btnLegende, .sidebar #btnRecalculer{
+.sidebar #addEtape, 
+.sidebar #btnCalculer, 
+.sidebar #btnModifier, 
+.sidebar #saveRoadtrip, 
+.sidebar #btnLegende, 
+.sidebar #btnRecalculer, 
+.sidebar #btnAddSegment{
   padding: 10px;
   border-radius: 15px;
   background-color: #39b2a5;
@@ -1009,7 +1029,8 @@ a#show-register, a#show-login {
 .sidebar #btnModifier:hover,
 .sidebar #saveRoadtrip:hover,
 .sidebar #btnLegende:hover,
-.sidebar #btnRecalculer:hover {
+.sidebar #btnRecalculer:hover,
+.sidebar #btnAddSegment:hover {
   background-color: #2E8B57;
   cursor: pointer;
 }
@@ -1022,6 +1043,107 @@ a#show-register, a#show-login {
 .sidebar #mode:hover{
   background-color: #2E8B57;
   cursor: pointer;
+}
+
+#newBlockForm{
+  margin-top: 15px;
+  border: 1px dashed #ccc;
+  padding: 10px;
+  border-radius: 5px
+}
+
+#newBlockForm #inputStartBlock, 
+#newBlockForm #inputEndBlock{
+  padding: 10px;
+  border-radius: 15px;
+  width: 100%;
+}
+
+/* ==============================
+   STYLE DU FORMULAIRE "AJOUTER UN TRAJET"
+   (Généré dynamiquement en JS)
+============================== */
+
+/* Conteneur de chaque champ */
+.new-block-field {
+    margin-bottom: 15px;
+}
+
+.new-block-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--bleu_foncé_ecriture);
+    font-size: 1rem;
+}
+
+.new-block-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-sizing: border-box;
+    color: var(--gris_foncé);
+}
+
+.new-block-input:focus {
+    outline: none;
+    border-color: var(--bleu_clair);
+    box-shadow: 0 0 0 2px rgba(57, 178, 165, 0.2);
+}
+
+.new-block-static {
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: var(--beige);
+    border: 1px solid var(--beige_foncé);
+    border-radius: 15px;
+    color: var(--bleu_foncé_ecriture);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.new-block-static strong {
+    color: var(--bleu_foncé);
+}
+
+.new-block-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-block-action {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    flex: 1; 
+}
+
+.btn-block-cancel {
+    background-color: var(--gris_clair);
+    color: var(--beige);
+}
+
+.btn-block-cancel:hover {
+    background-color: var(--noir);
+    transform: translateY(-2px);
+}
+
+.btn-block-validate {
+    background-color: var(--bleu_clair); 
+    color: white;
+}
+
+.btn-block-validate:hover {
+    background-color: var(--vert);
+    transform: translateY(-2px);
 }
 
 /* ==============================
@@ -2202,6 +2324,52 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 .cgu-container ul li {
     margin-bottom: 10px;
+}
+
+/* ==============================
+   STYLE CONTENU TINYMCE (Légende & Affichage)
+============================== */
+
+.tinymce-content {
+    font-size: 0.95rem;
+    color: var(--bleu_foncé_ecriture);
+    line-height: 1.5;
+    word-wrap: break-word; 
+    overflow-wrap: break-word;
+}
+
+.tinymce-content img {
+    display: block;
+    max-width: 100% !important; 
+    height: auto !important;    
+    margin: 10px 0;            
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.tinymce-content ul, 
+.tinymce-content ol {
+    margin: 10px 0 10px 20px !important; 
+    padding-left: 15px !important;
+}
+
+.tinymce-content ul {
+    list-style-type: disc !important; 
+}
+
+.tinymce-content ol {
+    list-style-type: decimal !important; 
+}
+
+.tinymce-content li {
+    display: list-item !important;
+    margin-bottom: 5px;
+    padding-left: 5px; 
+}
+
+.tinymce-content ul ul, 
+.tinymce-content ol ul {
+    list-style-type: circle !important;
 }
 
 

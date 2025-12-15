@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/modules/init.php';
+
+$defaultCity = isset($_SESSION['user']['ville']) ? $_SESSION['user']['ville'] : ""; 
 ?>
 
 <!doctype html>
@@ -17,30 +19,35 @@ require_once __DIR__ . '/modules/init.php';
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
 
+    <script>
+        const USER_DEFAULT_CITY = "<?php echo htmlspecialchars($defaultCity); ?>";
+    </script>
+
   </head>
   <body>
-    <?php     
-      include_once __DIR__ . "/modules/header.php"
-    ?>
-    <h1>Calcul d'itinéraire OpenStreetMap</h1>
+    <?php include_once __DIR__ . "/modules/header.php" ?>
+    
+    <h1>Création de RoadTrip</h1>
 
     <div class="main-container">
       <div class="sidebar">
-        <div id="etapesContainer">
-            <input type="text" class="etape" placeholder="Choisir une ville..." style="width: 100%;">
-        </div>
         
-        <button type="button" id="addEtape">+ Ajouter une étape</button>
-        <button type="button" id="btnCalculer">Calculer</button>
-        <button type="button" id="btnModifier" style="display: none;">Modifier l'itinéraire</button>
-        <button type="button" id="btnLegende" style="display: none;">Afficher la légende</button>
-        <button type="button" id="btnRecalculer" style="display: none;">Recalculer</button>
-
-        <div id="legend" style="display: none;">
-          <h3>Légende des étapes :</h3>
+        <div id="legend" style="display: block;">
+          <h3>Itinéraire :</h3>
           <ul id="legendList" style="list-style:none; padding:0;"></ul>
+          
+          <div id="newBlockForm">
+          </div>
         </div>
+
+        <div id="actionsContainer" style="margin-top:10px;">
+            <button type="button" id="btnAddSegment" style="width:100%;">+ Ajouter un trajet</button>
+        </div>
+
+        <hr>
+
         <div id="saveContainer">
+          <h3>Sauvegarde</h3>
           <input type="text" id="roadtripTitle" placeholder="Titre du RoadTrip" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
           <textarea id="roadtripDescription" placeholder="Description (optionnelle)" style="width:100%;box-sizing:border-box;margin-bottom:6px;"></textarea>
           <select id="roadtripVisibilite" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
@@ -70,13 +77,6 @@ require_once __DIR__ . '/modules/init.php';
       </div>
     </div>
 
-    <template id="template-etape">
-        <div class="etape-row">
-            <input type="text" class="etape etape-input" placeholder="Choisir une ville...">
-            <button class="btn-remove-etape">✖</button>
-        </div>
-    </template>
-
     <template id="template-legend-item">
       <li class="legend-li">
           <div class="segment-header legend-segment-item">
@@ -87,9 +87,7 @@ require_once __DIR__ . '/modules/init.php';
                 <button type="button" class="transport-btn" data-mode="Velo" title="À Vélo">🚲</button>
                 <button type="button" class="transport-btn" data-mode="Marche" title="À Pied">🚶</button>
             </div>
-
             <button type="button" class="settings-btn" title="Options de trajet">⚙️</button>
-
             <button class="toggleSousEtapes legend-toggle-btn"></button>
           </div>
 
@@ -105,7 +103,7 @@ require_once __DIR__ . '/modules/init.php';
           </div>
           
           <button class="modifierSousEtapes">Modifier</button>
-          <ul class="sousEtapesList" style="display:none;"></ul>
+          <ul class="sousEtapesList" style="display:block;"></ul>
       </li>
     </template>
 
@@ -114,7 +112,7 @@ require_once __DIR__ . '/modules/init.php';
             <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom">
             <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)"></textarea>
             <input type="time" class="subEtapeHeure">
-            <input type="file" class="subEtapePhoto" multiple accept="image/*">
+            <!--<input type="file" class="subEtapePhoto" multiple accept="image/*">-->
             <button class="removeSubEtapeBtn sub-etape-remove-btn">✖</button>
         </div>
     </template>
@@ -123,9 +121,7 @@ require_once __DIR__ . '/modules/init.php';
       <img id="imageModalContent" class="image-modal-content" src="" alt="photo en grand">
     </div>
 
-    <?php     
-      include_once __DIR__ . "/modules/footer.php"
-    ?>
+    <?php include_once __DIR__ . "/modules/footer.php" ?>
 
     <script src="js/map.js"></script>
   </body>
