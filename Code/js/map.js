@@ -116,27 +116,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!currentStartCoords) {
                 needStartInput = true;
                 html += `
-                    <div style="margin-bottom:10px;">
-                        <label style="display:block;font-weight:bold;margin-bottom:5px;">Ville de Départ :</label>
-                        <input type="text" id="inputStartBlock" class="etape" placeholder="Ex: Paris" style="width:100%; padding:8px;">
+                    <div class="new-block-field">
+                        <label class="new-block-label">Ville de Départ :</label>
+                        <input type="text" id="inputStartBlock" class="etape new-block-input" placeholder="Ex: Paris">
                     </div>
                 `;
             } else {
                 html += `
-                    <div style="margin-bottom:10px; padding: 5px; background: #f0f0f0; border-radius: 4px;">
-                        <strong>Départ :</strong> ${currentStartCity}
+                    <div class="new-block-static">
+                        <strong>Départ :</strong> <span>${currentStartCity}</span>
                     </div>
                 `;
             }
 
             html += `
-                <div style="margin-bottom:10px;">
-                    <label style="display:block;font-weight:bold;margin-bottom:5px;">Ville d'Arrivée :</label>
-                    <input type="text" id="inputEndBlock" class="etape" placeholder="Ex: Lyon" style="width:100%; padding:8px;">
+                <div class="new-block-field">
+                    <label class="new-block-label">Ville d'Arrivée :</label>
+                    <input type="text" id="inputEndBlock" class="etape new-block-input" placeholder="Ex: Lyon">
                 </div>
-                <div style="text-align:right; margin-top:10px;">
-                    <button id="btnCancelBlock" style="background:#ccc; border:none; padding:8px 12px; cursor:pointer; margin-right:5px;">Annuler</button>
-                    <button id="btnValidateBlock" style="background:#28a745; color:white; border:none; padding:8px 12px; cursor:pointer;">Valider le trajet</button>
+                
+                <div class="new-block-actions">
+                    <button id="btnCancelBlock" class="btn-block-action btn-block-cancel">Annuler</button>
+                    <button id="btnValidateBlock" class="btn-block-action btn-block-validate">Valider le trajet</button>
                 </div>
             `;
 
@@ -492,33 +493,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const heure = div.querySelector('.subEtapeHeure').value;
             const textId = div.querySelector('.subEtapeRemarque').id;
+            
+            // On récupère tout le contenu HTML (texte + images base64)
             const remarque = tinymce.get(textId) ? tinymce.get(textId).getContent() : "";
 
-            const rawPhotos = div.querySelector('.subEtapePhoto').files;
-            let photos = [];
+            // NOTE : On ne traite plus les .subEtapePhoto ici
             
-            if (rawPhotos.length > 0) {
-                for (const f of rawPhotos) {
-                    try {
-                        const compressed = await compresserImage(f, 0.6, 1200);
-                        photos.push(compressed);
-                    } catch(e) { console.error(e); }
-                }
-            }
-
-            seg.sousEtapes.push({ nom, remarque, heure, photos });
+            // On sauvegarde le HTML complet (qui contient les images) dans l'objet
+            seg.sousEtapes.push({ nom, remarque, heure });
             
+            // Gestion des marqueurs sur la carte (inchangé)
             const coords = await getCoordonnees(nom);
             if (coords) {
                 const nomSimple = getNomSimple(nom);
                 let txt = `<b>${nomSimple}</b>`;
-                if(remarque) txt += `<div style="max-height:200px; overflow:auto;">${remarque}</div>`;
+                if(remarque) txt += `<div class="tinymce-content" style="max-height:200px; overflow:auto;">${remarque}</div>`;
                 addMarker(nom, coords, "sous_etape", txt);
             }
         }
 
         await updateRouteSegment(currentSegmentIndex, seg.modeTransport || 'Voiture', seg.options || {});
 
+        // Mise à jour visuelle de la LÉGENDE
         const li = document.querySelector(`li[data-index="${currentSegmentIndex}"]`);
         if (li) {
             const ul = li.querySelector('.sousEtapesList');
@@ -529,14 +525,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                     seg.sousEtapes.forEach(se => {
                         const nomSimple = getNomSimple(se.nom);
 
+                        // ICI : On injecte le HTML proprement avec la classe CSS
                         listHtml += `
                         <li style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                            <div style="font-weight:bold; color:#2c3e50; font-size:1.1em;">
+                            <div style="font-weight:bold; color:var(--bleu_foncé); font-size:1.1em; margin-bottom:5px;">
                                 📍 ${nomSimple} 
-                                <span style="font-size:0.8em;color:#666; font-weight:normal;">${se.heure ? ' ('+se.heure+')' : ''}</span>
+                                <span style="font-size:0.8em;color:var(--gris_clair); font-weight:normal;">${se.heure ? ' ('+se.heure+')' : ''}</span>
                             </div>
                             
-                            <div class="tinymce-content" style="margin-top:8px; font-size:0.9em; overflow-x:auto;">
+                            <div class="tinymce-content">
                                 ${se.remarque}
                             </div>
                         </li>`;
@@ -545,21 +542,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 listHtml += `<li style="margin-top:15px; border-top:2px solid #ddd; padding-top:10px;"><strong>Arrivée:</strong> ${seg.endNameSimple}</li>`;
                 ul.innerHTML = listHtml;
-                
-                const images = ul.querySelectorAll('img');
-                images.forEach(img => {
-                    img.style.maxWidth = "100%";
-                    img.style.height = "auto";
-                    img.style.display = "block";
-                    img.style.marginTop = "5px";
-                });
-                
-                const tables = ul.querySelectorAll('table');
-                tables.forEach(tab => {
-                    tab.style.width = "100%";
-                    tab.style.fontSize = "0.85em";
-                    tab.style.borderCollapse = "collapse";
-                });
             }
         }
 
@@ -656,31 +638,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Structure Trajets
         const trajets = segments.map((seg, sIdx) => ({
-            depart: seg.startName,
-            arrivee: seg.endName,
-            mode: seg.modeTransport || 'Voiture',
-            sansAutoroute: seg.options ? seg.options.excludeMotorways : false,
-            sansPeage: seg.options ? seg.options.excludeTolls : false,
-            date: seg.date || null,
-            sousEtapes: seg.sousEtapes.map((se, seIdx) => ({
-                nom: se.nom,
-                remarque: se.remarque,
-                heure: se.heure,
-                photos: se.photos ? se.photos.map((f, i) => `file_s${sIdx}_se${seIdx}_${i}`) : []
-            }))
-        }));
+    depart: seg.startName,
+    arrivee: seg.endName,
+    mode: seg.modeTransport || 'Voiture',
+    sansAutoroute: seg.options ? seg.options.excludeMotorways : false,
+    sansPeage: seg.options ? seg.options.excludeTolls : false,
+    date: seg.date || null,
+    sousEtapes: seg.sousEtapes.map((se) => ({
+        nom: se.nom,
+        remarque: se.remarque, // Contient le HTML avec les images <img src="data:image...">
+        heure: se.heure
+        // photos: []  <-- On retire ça
+        }))
+    }));
 
-        const formData = new FormData();
-        formData.append('titre', titre);
-        formData.append('description', description);
-        formData.append('visibilite', visibilite);
-        formData.append('villes', JSON.stringify(villesGeo));
-        formData.append('trajets', JSON.stringify(trajets));
+    const formData = new FormData();
+    formData.append('titre', titre);
+    formData.append('description', description);
+    formData.append('visibilite', visibilite);
+    formData.append('villes', JSON.stringify(villesGeo));
+    formData.append('trajets', JSON.stringify(trajets)); // Le HTML lourd passe ici
 
-        if (photoCover) {
-            photoCover = await compresserImage(photoCover);
-            formData.append('photo_cover', photoCover);
-        }
+    if (photoCover) {
+        photoCover = await compresserImage(photoCover);
+        formData.append('photo_cover', photoCover);
+    }
 
         segments.forEach((seg, sIdx) => {
             seg.sousEtapes.forEach((se, seIdx) => {

@@ -36,8 +36,8 @@ $defaultCity = isset($_SESSION['user']['ville']) ? $_SESSION['user']['ville'] : 
           <h3>Itinéraire :</h3>
           <ul id="legendList" style="list-style:none; padding:0;"></ul>
           
-          <div id="newBlockForm" style="margin-top: 15px; border: 1px dashed #ccc; padding: 10px; border-radius: 5px;">
-             </div>
+          <div id="newBlockForm">
+          </div>
         </div>
 
         <div id="actionsContainer" style="margin-top:10px;">
@@ -112,7 +112,7 @@ $defaultCity = isset($_SESSION['user']['ville']) ? $_SESSION['user']['ville'] : 
             <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom">
             <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)"></textarea>
             <input type="time" class="subEtapeHeure">
-            <input type="file" class="subEtapePhoto" multiple accept="image/*">
+            <!--<input type="file" class="subEtapePhoto" multiple accept="image/*">-->
             <button class="removeSubEtapeBtn sub-etape-remove-btn">✖</button>
         </div>
     </template>
