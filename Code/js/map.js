@@ -336,6 +336,272 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // --- Fonction modifi�e : Ajout d'un segment initial ---
+    async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy) {
+        const coordString = `${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}`;
+        const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordString}?overview=full&geometries=geojson`;
+
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (data.code !== 'Ok') return;
+
+            const route = data.routes[0];
+            const couleurSegment = segmentColors[index % segmentColors.length];
+            const line = L.geoJSON(route.geometry, { 
+                color: couleurSegment, 
+                weight: 5, 
+                opacity: 0.8 
+            }).addTo(map);
+
+            const startNameSimple = getNomSimple(startName);
+            const endNameSimple = getNomSimple(endName);
+
+            segments.push({
+                line,
+                startName: startName,
+                startCoord: startCoords,
+                endName: endName,
+                endCoord: endCoords,
+                distance: (route.distance / 1000).toFixed(1),
+                duration: Math.floor(route.duration / 60),
+                couleurSegment,
+                sousEtapes: [],
+                startNameSimple: startNameSimple,
+                endNameSimple: endNameSimple
+            });
+
+            // --- UTILISATION DU TEMPLATE ---
+            const templateLegend = document.getElementById('template-legend-item');
+            const clone = templateLegend.content.cloneNode(true);
+            const li = clone.querySelector('li');
+            
+            li.dataset.index = index;
+
+            const colorBox = clone.querySelector('.legend-color-indicator');
+            colorBox.style.background = couleurSegment;
+
+            const toggleBtn = clone.querySelector('.toggleSousEtapes');
+            toggleBtn.dataset.index = index;
+            toggleBtn.innerHTML = `${startNameSimple} � ${endNameSimple} <strong style="margin-left:5px; color: ${couleurSegment}; border: none;">�</strong>`;
+
+            const btnVoiture = clone.querySelector('.transport-btn[data-mode="Voiture"]');
+            if (btnVoiture) btnVoiture.classList.add('active');
+
+            const modifBtn = clone.querySelector('.modifierSousEtapes');
+            modifBtn.dataset.index = index;
+
+            const ulSub = clone.querySelector('.sousEtapesList');
+            ulSub.dataset.index = index;
+
+            document.getElementById('legendList').appendChild(clone);
+
+        } catch (e) {
+            console.error("Erreur segment :", e);
+        }
+    }
+
+    // Fonction pour afficher le formulaire de segment
+    function showSegmentForm() {
+        const container = document.getElementById('segmentFormContainer');
+        container.style.display = 'block';
+        document.getElementsByClassName('sidebar')[0].style.width = '300px';
+        container.classList.remove('hidden');
+    }
+
+    // Initialisation event listener fermeture formulaire
+    const closeSegmentBtn = document.getElementById('closeSegmentForm');
+    if (closeSegmentBtn) {
+        closeSegmentBtn.addEventListener('click', () => {
+            const container = document.getElementById('segmentFormContainer');
+            container.classList.add('hidden');
+            document.getElementsByClassName('sidebar')[0].style.width = '450px';
+            setTimeout(() => {
+                container.style.display = 'none';
+                container.classList.remove('hidden');
+            }, 300);
+        });
+    }
+
+    // --- Gestion des sous-�tapes (REFATO AVEC TEMPLATE) ---
+    const segmentFormContainer = document.getElementById('segmentFormContainer');
+    const subEtapesContainer = document.getElementById('subEtapesContainer');
+    const segmentDateInput = document.getElementById('segmentDate');
+    let currentSegmentIndex = null;
+    const templateSubEtape = document.getElementById('template-sub-etape');
+
+    function addSousEtapeForm(data = {}) {
+        const uniqueId = 'editor-' + Date.now() + Math.random().toString(36).substring(2, 9);
+        
+        const clone = templateSubEtape.content.cloneNode(true);
+        const div = clone.querySelector('.subEtape');
+
+        const inputNom = clone.querySelector('.subEtapeNom');
+        inputNom.value = data.nom || '';
+
+        const textArea = clone.querySelector('.subEtapeRemarque');
+        textArea.id = uniqueId;
+        textArea.value = data.remarque || '';
+
+        const inputHeure = clone.querySelector('.subEtapeHeure');
+        inputHeure.value = data.heure || '';
+
+        subEtapesContainer.appendChild(div);
+        initAutocomplete(inputNom);
+
+        // INITIALISATION DE TINYMCE
+        tinymce.init({
+            selector: `#${uniqueId}`,
+            plugins: 'table lists link code visualblocks autoresize fullscreen textcolor colorpicker',
+            toolbar: 'bold italic underline | forecolor backcolor | bullist numlist | indent outdent | alignleft aligncenter alignright alignjustify | table | code | visualblocks | fullscreen',
+            menubar: false,
+            height: 1500,
+            branding: false,
+            statusbar: false
+        });
+
+        const removeBtn = div.querySelector('.removeSubEtapeBtn');
+        removeBtn.addEventListener('click', () => {
+            const editor = tinymce.get(uniqueId);
+            if (editor) editor.remove();
+            div.remove(); 
+        });
+    }
+
+    // --- Clic sur un segment pour modifier sous-�tapes ---
+    document.getElementById('legendList').addEventListener('click', e => {
+        const li = e.target.closest('li');
+        if (!li) return;
+
+        if (e.target.classList.contains('modifierSousEtapes')) {
+            const index = parseInt(li.dataset.index);
+            if (isNaN(index)) return;
+            currentSegmentIndex = index;
+
+            const seg = segments[index];
+            const start = seg.startNameSimple || getNomSimple(seg.startName); 
+            const end = seg.endNameSimple || getNomSimple(seg.endName); 
+            
+            document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} � ${end}`;
+            showSegmentForm();
+            
+            subEtapesContainer.innerHTML = ''; 
+            seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+            segmentDateInput.value = seg.date || '';
+        }
+    });
+
+    document.getElementById('addSubEtape').addEventListener('click', () => addSousEtapeForm());
+
+    // --- Sauvegarder sous-�tapes + ajout markers ---
+    document.getElementById('saveSegment').addEventListener('click', async () => {
+        if (currentSegmentIndex === null) return;
+        const seg = segments[currentSegmentIndex];
+        seg.date = segmentDateInput.value;
+        seg.sousEtapes = [];
+
+        const sousEtapeNoms = [];
+        const subDivs = Array.from(document.querySelectorAll('.subEtape'));
+        for (const div of subDivs) {
+            const nom = div.querySelector('.subEtapeNom').value.trim();
+            const heure = div.querySelector('.subEtapeHeure').value.trim();
+            const textareaElement = div.querySelector('textarea.subEtapeRemarque');
+            
+            const remarque = tinymce.get(textareaElement.id) 
+                ? tinymce.get(textareaElement.id).getContent() 
+                : textareaElement.value;
+            
+            const rawPhotos = Array.from(div.querySelector('.subEtapePhoto').files);
+            const photos = [];
+            
+            for (const f of rawPhotos) {
+                const compressed = await compresserImage(f, 0.6, 1200);
+                photos.push(compressed);
+            }
+
+            const se = { nom, remarque, heure, photos };
+            if (!nom) continue;
+            seg.sousEtapes.push(se);
+            sousEtapeNoms.push(nom);
+        }
+
+        if (sousEtapeNoms.length === 0) {
+            alert("Aucune sous-�tape renseign�e. Enregistrement simple.");
+            segmentFormContainer.style.display = 'none';
+            return;
+        }
+
+        // --- Calcul de l'itin�raire passant par les sous-�tapes ---
+        const allPlaces = [seg.startName, ...sousEtapeNoms, seg.endName];
+        const coordsList = [];
+        
+        for (const place of allPlaces) {
+            const coords = await getCoordonnees(place);
+            if (!coords) {
+                alert(`Lieu introuvable ou hors Europe : ${place}. Annulation du segment.`);
+                return;
+            }
+
+            const [lat, lon] = coords;
+            const saved = await saveCoordsToDB(place, lat, lon);
+            if (!saved) {
+                alert(`Erreur lors de la sauvegarde/v�rification des coordonn�es de la ville ${place} en base de donn�es. Annulation de la sauvegarde du segment.`);
+                return;
+            }
+
+            coordsList.push(coords);
+        }
+
+        const coordPairs = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
+        const strategy = strategies['Voiture'];
+        const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordPairs}?overview=full&geometries=geojson`;
+
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (data.code !== 'Ok') {
+                alert("Erreur lors du recalcul du trajet.");
+                return;
+            }
+
+            if (seg.line) map.removeLayer(seg.line);
+            const route = data.routes[0];
+            seg.line = L.geoJSON(route.geometry, { 
+                color: seg.couleurSegment, 
+                weight: 5, 
+                opacity: 0.8 
+            }).addTo(map);
+            seg.distance = (route.distance / 1000).toFixed(1);
+            seg.duration = Math.floor(route.duration / 60);
+
+            // --- Ajout des marqueurs pour chaque sous-�tape ---
+            for (const se of seg.sousEtapes) {
+                const coords = await getCoordonnees(se.nom); 
+                if (!coords) continue;
+
+                let popupText = `<b>${se.nom}</b>`;
+                
+                if (se.remarque) popupText += `<br><em>${se.remarque}</em>`;
+                if (se.heure) popupText += `<br>Heure : ${se.heure}`;
+
+                if (se.photos && se.photos.length > 0) {
+                    se.photos.forEach(f => {
+                        const url = URL.createObjectURL(f);
+                        popupText += `<br><img src="${url}" class="popup-photo">`;
+                    });
+                }
+
+                addMarker(se.nom, coords, "sous_etape", popupText);
+            }
+
+            alert(`Segment "${seg.startName} � ${seg.endName}" recalcul� (${seg.distance} km, ${seg.duration} min).`);
+            segmentFormContainer.style.display = 'none';
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors du recalcul d'itin�raire.");
+        }
+        document.getElementsByClassName('sidebar')[0].style.width = '450px';
+    });
 
     // ============================================================
     // 5. GESTION DES �V�NEMENTS DE LA LISTE (L�GENDE)
@@ -357,9 +623,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const checkboxPeage = li.querySelector('input[data-pref="exclude-tolls"]');
             const checkboxAutoroute = li.querySelector('input[data-pref="exclude-motorways"]');
             
-            updateRouteSegment(index, btnTransport.dataset.mode, { 
-                excludeTolls: checkboxPeage ? checkboxPeage.checked : false, 
-                excludeMotorways: checkboxAutoroute ? checkboxAutoroute.checked : false 
+            const excludeTolls = checkboxPeage ? checkboxPeage.checked : false;
+            const excludeMotorways = checkboxAutoroute ? checkboxAutoroute.checked : false;
+
+            console.log(`Clic d�tect� : Segment ${index}, Mode ${newMode}`);
+
+            updateRouteSegment(index, newMode, { 
+                excludeTolls: excludeTolls, 
+                excludeMotorways: excludeMotorways 
             });
             return;
         }
@@ -371,11 +642,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // C. Toggle affichage liste sous-�tapes
-        // => SUPPRIM� : On ne veut plus avoir � cliquer. La liste est toujours l�.
-        // Si vous voulez que la fl�che serve quand m�me � masquer au cas o�, d�commentez les lignes ci-dessous :
-        /*
-        if (target.closest('.toggleSousEtapes')) {
+        if (target.classList.contains('modifierSousEtapes') || target.closest('.modifierSousEtapes')) {
+            currentSegmentIndex = index;
+            const seg = segments[index];
+            const start = seg.startNameSimple || getNomSimple(seg.startName); 
+            const end = seg.endNameSimple || getNomSimple(seg.endName); 
+            
+            document.getElementById('segmentTitle').textContent = `Modifier le segment : ${start} � ${end}`;
+            showSegmentForm();
+            
+            const subContainer = document.getElementById('subEtapesContainer');
+            subContainer.innerHTML = ''; 
+            
+            if (seg.sousEtapes && seg.sousEtapes.length > 0) {
+                seg.sousEtapes.forEach(se => addSousEtapeForm(se));
+            }
+            
+            document.getElementById('segmentDate').value = seg.date || '';
+            return;
+        }
+
+        const toggleBtn = target.closest('.toggleSousEtapes');
+        if (toggleBtn) {
             const ul = li.querySelector('.sousEtapesList');
             ul.style.display = (ul.style.display === 'none') ? 'block' : 'none';
             return;
@@ -888,13 +1176,13 @@ let userId = null;
 
 
 
-// 1. Chargement des données
+// 1. Chargement des donn�es
 fetch("../bd/rech_bd.php")
     .then(response => response.json())
     .then(json => {
         userId = json.userId;
         data = json.roadtrips;
-        console.log("Données chargées :", data);
+        console.log("Donn�es charg�es :", data);
     })
     .catch(error => console.error("Erreur fetch :", error));
 
@@ -956,7 +1244,7 @@ if (searchBox && resultsTableBody) {
         } else {
             const row = document.createElement('tr');
             const cell = document.createElement('td');
-            cell.textContent = "Aucun road trip trouvé.";
+            cell.textContent = "Aucun road trip trouv�.";
             cell.style.color = "#777";
             row.appendChild(cell);
             resultsTableBody.appendChild(row);
