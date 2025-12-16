@@ -172,7 +172,8 @@ function getTransportIcon($type) {
                                 $desc = trim($step['description'] ?? '');
                                 if (!empty($desc)) : 
                             ?>
-                                <p><?php echo $desc; ?></p> 
+                                <div class="tinymce-content" style="margin-top: 15px;">
+                                    <?php echo $desc; ?> </div>
                             <?php endif; ?>
                             
                             <?php if (isset($step['photos']) && count($step['photos']) > 0) : ?>
