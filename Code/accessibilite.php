@@ -8,6 +8,8 @@ require_once __DIR__ . '/modules/init.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href= "/css/style.css">
+    <link rel="stylesheet" href= "/css/accessibilite.css">
+
     <title>Accessibilité</title>
 </head>
 <body>
@@ -33,7 +35,6 @@ require_once __DIR__ . '/modules/init.php';
         </div>
 
 
-<?php include_once __DIR__ . "/modules/aside.php"?>  
     <?php include __DIR__ . "/modules/footer.php" ?>
     <script src="/js/map.js"></script>
 </body>

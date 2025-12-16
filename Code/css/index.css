@@ -1,3 +1,82 @@
+/* ==============================
+        Indexx 
+============================== */
+.main-index main {
+    padding: 2rem;
+    background-color: var(--beige);
+    margin-top: 20px;
+}
+
+.index_container {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.main-index h2 {
+    font-size: 2rem;
+    color: var(--bleu_foncé);
+    margin-bottom: 1rem;
+}
+
+.main-index p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--bleu_foncé_ecriture);
+}
+
+ .main-index button {
+    background-color: var(--bleu_foncé);
+    color: var(--beige_foncé);
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.main-index button:hover {
+    background-color: var(--bleu_clair);
+}
+
+#mapContainer {
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: var(--beige_foncé);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--bleu_foncé_ecriture);
+    max-width: 1000px;
+    text-align: center;
+}
+
+.main-index h3 {
+    font-size: 1.5rem;
+    color: var(--bleu_foncé);
+    margin-bottom: 1rem;
+}
+
+#userMap {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* ==============================
+  CONTENU PRINCIPAL
+============================== */
+
+.index_container {
+  padding: 30px;
+  background-color: var(--beige_foncé);
+}
+
+.index_container>h1,.index_container> h2 {
+  text-align: center;
+  color: var(--orange);
+}
+
 /* Styles pour la section de recherche */
 .search-container {
     position: relative;

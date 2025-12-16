@@ -9,6 +9,7 @@ require_once __DIR__ . '/formulaire/form_amis.php' ;
     <meta charset="UTF-8">
     <title>Mes amis - Trips & Roads</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
 

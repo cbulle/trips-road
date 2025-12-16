@@ -9,6 +9,8 @@ require_once __DIR__ . '/../modules/init.php';
     <meta charset="UTF-8">
     <title>À propos / Contact - Trips & Road</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/form.css">
+    <link rel="stylesheet" href="../css/page_link.css">
 </head>
 <body>
    
@@ -62,9 +64,7 @@ include_once __DIR__ . "/../modules/header.php";
     </div>
 </main>
 
- <?php     
-include_once __DIR__ . "/../modules/aside.php"
-?> 
+
 <script src = "/../js/map.js" ></script>
 <?php     
 include_once __DIR__ . "/../modules/footer.php";
