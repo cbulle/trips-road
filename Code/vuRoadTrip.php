@@ -1,27 +1,75 @@
 <?php
 require_once __DIR__ . '/modules/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
+
+include_once __DIR__ . '/bd/lec_bd.php'; 
+
 include_once __DIR__ . '/fonctions/InfoItineraire.php';
 
+
+// Vérification de connexion (Votre logique actuelle)
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /id.php');
     exit;
 }
 $id_utilisateur = $_SESSION['utilisateur']['id'];
-$id_roadtrip = $_GET['id'];
+$id_roadtrip = $_GET['id'] ?? null;
 
-// Récupérer les informations du road trip
-$stmt = $pdo->prepare("SELECT * FROM roadtrip WHERE id = ? AND id_utilisateur = ?");
-$stmt->execute([$id_roadtrip, $id_utilisateur]);
+if (!$id_roadtrip) {
+    die("Erreur : Aucun road trip spécifié.");
+}
+
+// ---------------------------------------------------------
+//  requete pour avoir Public + Privé + Amis
+// ---------------------------------------------------------
+$sql = '
+    SELECT r.*, u.pseudo 
+    FROM roadtrip r
+    JOIN utilisateurs u ON r.id_utilisateur = u.id
+    WHERE r.id = :idRoadTrip
+    AND (
+        -- 1. Tout le monde peut voir le Public
+        r.visibilite = "public"
+        
+        -- 2. Je peux voir MON road trip
+        OR r.id_utilisateur = :userId
+        
+        -- 3. Je peux voir si c\'est "amis" ET qu\'on est amis
+        OR (
+            r.visibilite = "amis" 
+            AND EXISTS (
+                SELECT 1 FROM amis a 
+                WHERE a.statut = "accepte" 
+                AND (
+                    (a.id_utilisateur = :userId AND a.id_ami = r.id_utilisateur)
+                    OR 
+                    (a.id_utilisateur = r.id_utilisateur AND a.id_ami = :userId)
+                )
+            )
+        )
+    )
+    LIMIT 1
+';
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute([
+    ':idRoadTrip' => $id_roadtrip,
+    ':userId'     => $id_utilisateur
+]);
+
 $roadTrip = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$roadTrip) { echo "Road trip introuvable."; exit; }
 
-// Récupérer les trajets
+if (!$roadTrip) { 
+    echo "<h2 style='text-align:center; margin-top:50px'>Road trip introuvable ou accès refusé.</h2>"; 
+    echo "<p style='text-align:center'><a href='index.php'>Retour à l'accueil</a></p>";
+    exit; 
+}
+
+
+
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Récupérer les sous-étapes
 $etapes = [];
 foreach ($trajets as $trajet) {
     $stmt = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero");
@@ -56,6 +104,8 @@ function getTransportIcon($type) {
     <style>
         .loading-data { color: #999; font-size: 0.9em; font-style: italic; }
         .error-data { color: red; font-size: 0.8em; }
+        
+        .trip-author-info { font-size: 0.9em; color: #666; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -64,6 +114,16 @@ function getTransportIcon($type) {
 <div class="roadtrip-vu">
     <div class="roadtrip-header">
         <h1><?php echo htmlspecialchars($roadTrip['titre']); ?></h1>
+        
+        <p class="trip-author-info">
+            Proposé par : <strong><?php echo htmlspecialchars($roadTrip['pseudo']); ?></strong>
+            <?php if($roadTrip['visibilite'] === 'amis'): ?>
+                <span style="color: green; font-style: italic;">(Amis)</span>
+            <?php elseif($roadTrip['visibilite'] === 'prive'): ?>
+                <span style="color: red; font-style: italic;">(Privé)</span>
+            <?php endif; ?>
+        </p>
+        
         <p><?php echo nl2br(htmlspecialchars($roadTrip['description'])); ?></p>
     </div>
     
@@ -101,18 +161,14 @@ function getTransportIcon($type) {
                 </div>
 
                 <?php 
-                // Gestion des sous-étapes ou du trajet direct
                 $listeEtapes = (isset($etapes[$t['id']]) && count($etapes[$t['id']]) > 0) ? $etapes[$t['id']] : [];
                 
-                // Si pas de sous-étapes, on crée un tableau fictif pour faire le lien direct Départ -> Arrivée
                 if (empty($listeEtapes)) {
-                    // On simule une étape finale qui est l'arrivée
                     $isDirect = true;
                     $stepsToProcess = [['ville' => $arrive, 'type_transport' => $t['mode_transport'], 'is_arrival' => true]];
                 } else {
                     $isDirect = false;
                     $stepsToProcess = $listeEtapes;
-                    // On ajoute l'arrivée réelle à la fin pour le dernier tronçon
                     $stepsToProcess[] = ['ville' => $arrive, 'type_transport' => $t['mode_transport'], 'is_arrival' => true];
                 }
 
@@ -120,14 +176,11 @@ function getTransportIcon($type) {
                     $targetCity = $step['ville'];
                     $targetCoords = getCoordonneesDepuisCache($targetCity, $pdo);
                     
-                    // Récupération du mode
                     $mode = strtolower($step['type_transport'] ?? $t['mode_transport'] ?? 'voiture');
 
-                    // Récupération des préférences (priorité à la sous-étape, sinon au trajet global)
                     $sansAutoroute = $step['sans_autoroute'] ?? $t['sans_autoroute'] ?? 0;
                     $sansPeage = $step['sans_peage'] ?? $t['sans_peage'] ?? 0;
 
-                    // Construction des data-attributes
                     $dataAttrs = "";
                     if ($currentDepartCoords && $targetCoords) {
                         $dataAttrs = ' data-lat-dep="'.$currentDepartCoords['lat'].'"' .
@@ -135,7 +188,6 @@ function getTransportIcon($type) {
                                      ' data-lat-arr="'.$targetCoords['lat'].'"' .
                                      ' data-lon-arr="'.$targetCoords['lon'].'"' .
                                      ' data-mode="'.$mode.'"' .
-                                     // AJOUT DES NOUVEAUX ATTRIBUTS
                                      ' data-sans-autoroute="'.$sansAutoroute.'"' .
                                      ' data-sans-peage="'.$sansPeage.'"';
                     }
