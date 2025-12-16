@@ -10,29 +10,67 @@ if (!isset($_SESSION['utilisateur']['id'])) {
 $id_utilisateur = $_SESSION['utilisateur']['id'];
 $id_roadtrip = $_GET['id'];
 
-// Récupérer les informations du road trip
+// 1. Récupération Roadtrip
 $stmt = $pdo->prepare("SELECT * FROM roadtrip WHERE id = ? AND id_utilisateur = ?");
 $stmt->execute([$id_roadtrip, $id_utilisateur]);
 $roadTrip = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$roadTrip) { echo "Road trip introuvable."; exit; }
 
-// Récupérer les trajets
+// 2. Récupération Trajets
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Récupérer les sous-étapes
 $etapes = [];
+$jsMapData = []; // Tableau qui sera envoyé au JS
+
+// 3. Boucle de préparation des données
 foreach ($trajets as $trajet) {
+    // Récup sous-étapes
     $stmt = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero");
     $stmt->execute([$trajet['id']]);
     $sousEtapes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $etapes[$trajet['id']] = [];
-    foreach ($sousEtapes as $sousEtape) {
-        $stmt = $pdo->prepare("SELECT * FROM sous_etape_photos WHERE sous_etape_id = ?");
-        $stmt->execute([$sousEtape['id']]);
-        $sousEtape['photos'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $etapes[$trajet['id']][] = $sousEtape;
+    
+    // Récup photos
+    foreach ($sousEtapes as &$se) {
+        $stmtPhoto = $pdo->prepare("SELECT * FROM sous_etape_photos WHERE sous_etape_id = ?");
+        $stmtPhoto->execute([$se['id']]);
+        $se['photos'] = $stmtPhoto->fetchAll(PDO::FETCH_ASSOC);
+    }
+    unset($se);
+    
+    $etapes[$trajet['id']] = $sousEtapes;
+
+    // Coordonnées pour la carte JS
+    $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
+    $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
+
+    if ($coordsDep && $coordsArr) {
+        // Préparer les coordonnées des sous-étapes pour la carte
+        $sousEtapesCoords = [];
+        foreach ($sousEtapes as $se) {
+            if (!empty($se['ville'])) {
+                $coords = getCoordonneesDepuisCache($se['ville'], $pdo);
+                if ($coords) {
+                    $sousEtapesCoords[] = [
+                        'lat' => $coords['lat'],
+                        'lon' => $coords['lon'],
+                        'nom' => $se['ville'],
+                        'heure' => $se['heure'] ?? '',
+                        'remarque' => $se['description'] ?? ''
+                    ];
+                }
+            }
+        }
+
+        $jsMapData[$trajet['id']] = [
+            'id' => $trajet['id'],
+            'titre' => $trajet['titre'],
+            'mode' => strtolower($trajet['mode_transport']),
+            'depart' => ['lat' => $coordsDep['lat'], 'lon' => $coordsDep['lon'], 'nom' => $trajet['depart']],
+            'arrivee' => ['lat' => $coordsArr['lat'], 'lon' => $coordsArr['lon'], 'nom' => $trajet['arrivee']],
+            'sousEtapes' => $sousEtapesCoords // Ajout des sous-étapes
+        ];
     }
 }
 
@@ -40,7 +78,7 @@ function getTransportIcon($type) {
     switch(strtolower($type)) {
         case 'voiture': return '🚗';
         case 'velo': case 'vélo': return '🚴';
-        case 'marche': case 'à pied': case 'a pied': return '🚶';
+        case 'marche': case 'à pied': return '🚶';
         default: return '🚗';
     }
 }
@@ -49,16 +87,12 @@ function getTransportIcon($type) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Détails du Road Trip</title>
+    <title><?php echo htmlspecialchars($roadTrip['titre']); ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .loading-data { color: #999; font-size: 0.9em; font-style: italic; }
-        .error-data { color: red; font-size: 0.8em; }
-    </style>
 </head>
 <body>
+
 <?php include_once __DIR__ . "/modules/header.php"; ?>
 
 <div class="roadtrip-vu">
@@ -66,29 +100,26 @@ function getTransportIcon($type) {
         <h1><?php echo htmlspecialchars($roadTrip['titre']); ?></h1>
         <p><?php echo nl2br(htmlspecialchars($roadTrip['description'])); ?></p>
     </div>
+
+    <h2>Vue d'ensemble du Road Trip 🌍</h2>
+    <div id="map-global"></div>
     
-    <?php foreach ($trajets as $t) : 
-        $depart = $t['depart'];
-        $arrive = $t['arrivee']; 
-        $currentDepartCity = $depart;
-        $currentDepartCoords = getCoordonneesDepuisCache($currentDepartCity, $pdo);
-    ?>
-        <div class="card-vu" data-trajet-id="<?php echo $t['id']; ?>">
-            <div class="trajet-header" onclick="toggleSousEtapes(<?php echo $t['id']; ?>)">
+    <?php foreach ($trajets as $t) : ?>
+        <div class="card-vu" id="card-<?php echo $t['id']; ?>">
+            
+            <div class="trajet-header" onclick="toggleTrajet(<?php echo $t['id']; ?>)">
                 <div class="trajet-info">
-                    <h2 class="trajet-titre"><?php echo htmlspecialchars($t['titre']); ?></h2>
+                    <h2 class="trajet-titre"><?php echo htmlspecialchars($t['depart'] . ' ➝ ' . $t['arrivee']); ?></h2>
+                    
                     <div class="trajet-details">
                         <?php if (!empty($t['date_trajet'])) : ?>
                             <div class="trajet-detail-item">
-                                <span>📅</span><span><?php echo date('d/m/Y', strtotime($t['date_trajet'])); ?></span>
+                                <span>📅 <?php echo date('d/m/Y', strtotime($t['date_trajet'])); ?></span>
                             </div>
                         <?php endif; ?>
-                        <?php if (!empty($t['mode_transport'])) : ?>
-                            <div class="trajet-detail-item">
-                                <span class="transport-icon"><?php echo getTransportIcon($t['mode_transport']); ?></span>
-                                <strong><?php echo htmlspecialchars(ucfirst($t['mode_transport'])); ?></strong>
-                            </div>
-                        <?php endif; ?>
+                        <div class="trajet-detail-item">
+                            <span class="transport-icon"><?php echo getTransportIcon($t['mode_transport']); ?></span>
+                        </div>
                     </div>
                 </div>
                 <div class="toggle-icon">▼</div>
@@ -96,108 +127,138 @@ function getTransportIcon($type) {
             
             <div class="sous-etapes-container" id="sous-etapes-<?php echo $t['id']; ?>">
                 
-                <div class="sous-etape-card">
-                    <div class="sous-etape-header"><h3><?php echo htmlspecialchars($depart) ?></h3></div>
-                </div>
-
-                <?php 
-                // Gestion des sous-étapes ou du trajet direct
-                $listeEtapes = (isset($etapes[$t['id']]) && count($etapes[$t['id']]) > 0) ? $etapes[$t['id']] : [];
-                
-                // Si pas de sous-étapes, on crée un tableau fictif pour faire le lien direct Départ -> Arrivée
-                if (empty($listeEtapes)) {
-                    // On simule une étape finale qui est l'arrivée
-                    $isDirect = true;
-                    $stepsToProcess = [['ville' => $arrive, 'type_transport' => $t['mode_transport'], 'is_arrival' => true]];
-                } else {
-                    $isDirect = false;
-                    $stepsToProcess = $listeEtapes;
-                    // On ajoute l'arrivée réelle à la fin pour le dernier tronçon
-                    $stepsToProcess[] = ['ville' => $arrive, 'type_transport' => $t['mode_transport'], 'is_arrival' => true];
-                }
-
-                foreach ($stepsToProcess as $step) :
-                    $targetCity = $step['ville'];
-                    $targetCoords = getCoordonneesDepuisCache($targetCity, $pdo);
+                <div class="trajet-details-column">
+                    <?php 
+                    $listeEtapes = $etapes[$t['id']] ?? [];
                     
-                    // Récupération du mode
-                    $mode = strtolower($step['type_transport'] ?? $t['mode_transport'] ?? 'voiture');
-
-                    // Récupération des préférences (priorité à la sous-étape, sinon au trajet global)
-                    $sansAutoroute = $step['sans_autoroute'] ?? $t['sans_autoroute'] ?? 0;
-                    $sansPeage = $step['sans_peage'] ?? $t['sans_peage'] ?? 0;
-
-                    // Construction des data-attributes
-                    $dataAttrs = "";
-                    if ($currentDepartCoords && $targetCoords) {
-                        $dataAttrs = ' data-lat-dep="'.$currentDepartCoords['lat'].'"' .
-                                     ' data-lon-dep="'.$currentDepartCoords['lon'].'"' .
-                                     ' data-lat-arr="'.$targetCoords['lat'].'"' .
-                                     ' data-lon-arr="'.$targetCoords['lon'].'"' .
-                                     ' data-mode="'.$mode.'"' .
-                                     // AJOUT DES NOUVEAUX ATTRIBUTS
-                                     ' data-sans-autoroute="'.$sansAutoroute.'"' .
-                                     ' data-sans-peage="'.$sansPeage.'"';
+                    // MODIFICATION : Construire la timeline complète avec DEPART + SOUS-ETAPES + ARRIVEE
+                    $timeline = [];
+                    
+                    // 1. Ajout du DÉPART
+                    $timeline[] = [
+                        'ville' => $t['depart'], 
+                        'is_departure' => true
+                    ];
+                    
+                    // 2. Ajout des SOUS-ÉTAPES
+                    foreach ($listeEtapes as $etape) {
+                        $timeline[] = $etape;
                     }
-                ?>
-                    <section class="timeline">
-                        <ul class="js-calculate-distance" <?php echo $dataAttrs; ?>>
-                            <li>
-                                <span class="transport-icon"><?php echo getTransportIcon($mode); ?></span>
-                                <strong><?php echo htmlspecialchars(ucfirst($mode)); ?></strong>
-                                <?php if($sansPeage): ?> <span title="Sans péage" style="font-size:0.8em">🚫💶</span> <?php endif; ?>
-                                <?php if($sansAutoroute): ?> <span title="Sans autoroute" style="font-size:0.8em">🚫🛣️</span> <?php endif; ?>
-                            </li>
-                            <li class="result-distance"><span class="loading-data">Calcul...</span></li>
-                            <li class="result-time"><span class="loading-data">...</span></li>
-                        </ul>
-                    </section>
+                    
+                    // 3. Ajout de l'ARRIVÉE
+                    $timeline[] = [
+                        'ville' => $t['arrivee'], 
+                        'is_arrival' => true
+                    ];
+                    
+                    // Affichage de toute la timeline
+                    for ($i = 0; $i < count($timeline); $i++) :
+                        $step = $timeline[$i];
+                        $villeNom = $step['ville'] ?? $step['nom'] ?? 'Étape';
+                        $isDeparture = isset($step['is_departure']);
+                        $isArrival = isset($step['is_arrival']);
+                    ?>
+                        <div class="sous-etape-card <?php echo $isDeparture ? 'depart-card' : ($isArrival ? 'arrivee-card' : ''); ?>">
+                            <div class="sous-etape-header">
+                                <h3>
+                                    <?php 
+                                    if ($isDeparture) {
+                                        echo '🚀 Départ : ';
+                                    } elseif ($isArrival) {
+                                        echo '🏁 Arrivée : ';
+                                    } else {
+                                        echo '📍 ';
+                                    }
+                                    echo htmlspecialchars($villeNom); 
+                                    ?>
+                                </h3>
+                            </div>
 
-                    <div class="sous-etape-card">
-                        <div class="sous-etape-header">
-                            <h3><?php echo htmlspecialchars($targetCity); ?></h3>
-                            <?php if (isset($step['numero'])) : ?>
-                                <span class="numero-etape">Étape <?php echo $step['numero']; ?></span>
+                            <?php if (!$isDeparture && !$isArrival): ?>
+                                <!-- Affichage des sous-étapes normales -->
+                                <div class="sous-etape-info">    
+                                    <?php if (!empty($step['heure'])) : ?>
+                                        <span>🕐 <?php echo htmlspecialchars($step['heure']); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <?php if (!empty($step['description'])) : ?>
+                                    <div class="sous-etape-description">
+                                        <h4 class="description-title">📝 Description</h4>
+                                        <div class="tinymce-content">
+                                            <?php echo $step['description']; ?> 
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Debug : afficher si la description est vide -->
+                                    <div class="sous-etape-description-empty">
+                                        <p style="color: #999; font-style: italic;">Aucune description pour cette étape</p>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (isset($step['photos']) && count($step['photos']) > 0) : ?>
+                                    <div class="photos-section">
+                                        <h4 class="photos-title">📷 Photos</h4>
+                                        <div class="photos-container">
+                                            <?php foreach ($step['photos'] as $photo) : ?>
+                                                <img src="/uploads/sousetapes/<?php echo htmlspecialchars($photo['photo']); ?>" alt="Photo" class="popup-photo">
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
-
-                        <?php if (isset($step['is_arrival']) && $step['is_arrival'] == true): ?>
-                             <?php else: ?>
-                            <div class="sous-etape-info">    
-                                <?php if (!empty($step['heure'])) : ?>
-                                    <span><strong>🕐</strong> <?php echo htmlspecialchars($step['heure']); ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <?php 
-                                $desc = trim($step['description'] ?? '');
-                                if (!empty($desc)) : 
-                            ?>
-                                <div class="tinymce-content" style="margin-top: 15px;">
-                                    <?php echo $desc; ?> </div>
-                            <?php endif; ?>
+                        
+                        <?php 
+                        // NOUVEAU : Affichage du segment de transport vers la prochaine étape
+                        if ($i < count($timeline) - 1) :
+                            $nextStep = $timeline[$i + 1];
+                            $nextVilleNom = $nextStep['ville'] ?? $nextStep['nom'] ?? 'Étape';
                             
-                            <?php if (isset($step['photos']) && count($step['photos']) > 0) : ?>
-                                <div class="photos-container">
-                                    <?php foreach ($step['photos'] as $photo) : ?>
-                                        <img src="/uploads/sousetapes/<?php echo htmlspecialchars($photo['photo']); ?>" alt="Photo">
-                                    <?php endforeach; ?>
+                            // Récupérer les coordonnées
+                            $coordsFrom = getCoordonneesDepuisCache($villeNom, $pdo);
+                            $coordsTo = getCoordonneesDepuisCache($nextVilleNom, $pdo);
+                            
+                            if ($coordsFrom && $coordsTo) :
+                        ?>
+                            <div class="segment-transport">
+                                <div class="segment-line"></div>
+                                <div class="segment-info" 
+                                     data-lat-dep="<?php echo $coordsFrom['lat']; ?>"
+                                     data-lon-dep="<?php echo $coordsFrom['lon']; ?>"
+                                     data-lat-arr="<?php echo $coordsTo['lat']; ?>"
+                                     data-lon-arr="<?php echo $coordsTo['lon']; ?>"
+                                     data-mode="<?php echo strtolower($t['mode_transport']); ?>">
+                                    <span class="segment-icon"><?php echo getTransportIcon($t['mode_transport']); ?></span>
+                                    <span class="segment-distance">Calcul...</span>
+                                    <span class="segment-separator">•</span>
+                                    <span class="segment-time">Calcul...</span>
                                 </div>
-                            <?php endif; ?>
-                        <?php endif; ?>
-                    </div>
+                            </div>
+                        <?php 
+                            endif;
+                        endif; 
+                        ?>
+                        
+                    <?php endfor; ?>
+                </div> 
+                
+                <div id="map-trajet-<?php echo $t['id']; ?>" class="map-trajet"></div>
 
-                    <?php 
-                    $currentDepartCity = $targetCity;
-                    $currentDepartCoords = $targetCoords;
-                    endforeach; 
-                    ?>
             </div>
         </div>
     <?php endforeach; ?>    
 </div>
 
-<script src="js/map.js"></script>
-
 <?php include_once __DIR__ . "/modules/footer.php"; ?>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    const roadTripData = <?php echo json_encode($jsMapData); ?>;
+</script>
+
+<script src="js/vuRoadTrip.js"></script>
+
 </body>
 </html>

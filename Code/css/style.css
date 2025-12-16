@@ -1502,22 +1502,264 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 
+/* ==============================
+  STYLE VU ROADTRIP (Modifications)
+============================== */
 
+#map-global {
+    width: 100%;
+    height: 450px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    z-index: 1;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+    overflow: hidden;
+}
 
+#map-global.hidden {
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    pointer-events: none;
+}
 
+.map-trajet {
+    width: 100%;
+    height: 350px; 
+    border-radius: 10px;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    z-index: 1;
+}
 
+.sous-etapes-container {
+    display: none; /* Caché */
+    padding: 20px;
+    background-color: var(--beige_visu);
+    border-top: 1px solid #ddd;
+    animation: slideDown 0.3s ease-out;
+}
 
+.sous-etapes-container.active {
+    display: block;
+}
 
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
+.trajet-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s;
+}
 
+.trajet-header:hover {
+    background-color: #eaeaea; 
+}
 
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
+.card-vu.active .toggle-icon {
+    transform: rotate(180deg);
+}
 
+/* ==============================
+  LAYOUT SIDE-BY-SIDE (Texte Gauche / Carte Droite)
+============================== */
 
+.sous-etapes-container {
+    display: none; 
+    padding: 20px;
+    background-color: var(--beige_visu);
+    border-top: 1px solid #ddd;
+}
 
+.sous-etapes-container.active {
+    display: flex !important;
+    gap: 20px;
+    align-items: flex-start;
+}
 
+.trajet-details-column {
+    flex: 1;
+    min-width: 0; /* Pour permettre le flex shrink */
+    max-width: 50%;
+    overflow-y: auto;
+}
 
+.map-trajet {
+    flex: 1;
+    min-width: 0;
+    height: 600px !important; /* Hauteur plus grande pour voir plus de détails */
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    position: sticky;
+    top: 20px; /* La carte reste en haut quand on scroll */
+}
 
+/* Styles spéciaux pour les cartes de départ et arrivée */
+.depart-card {
+    border-left: 4px solid #2E8B57 !important;
+    background: linear-gradient(to right, rgba(46, 139, 87, 0.1), var(--beige));
+}
 
+.arrivee-card {
+    border-left: 4px solid #BF092F !important;
+    background: linear-gradient(to right, rgba(191, 9, 47, 0.1), var(--beige));
+}
 
+.depart-card h3, .arrivee-card h3 {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
 
+/* Amélioration du conteneur de photos */
+.photos-section {
+    margin-top: 20px;
+}
 
+.photos-title {
+    color: var(--bleu_foncé_ecriture);
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.photos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.photos-container img {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.photos-container img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Style pour la description des sous-étapes */
+.sous-etape-description {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    border-left: 3px solid var(--bleu_clair);
+}
+
+.description-title {
+    color: var(--bleu_foncé_ecriture);
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.sous-etape-description .tinymce-content {
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+/* Style pour quand il n'y a pas de description */
+.sous-etape-description-empty {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(200, 200, 200, 0.1);
+    border-radius: 5px;
+}
+
+/* Style info de la sous-étape (heure, etc.) */
+.sous-etape-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: var(--bleu_foncé_ecriture);
+}
+
+.sous-etape-info span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ==============================
+   STYLES POUR LES SEGMENTS DE TRANSPORT
+============================== */
+
+.segment-transport {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    padding: 0 20px;
+}
+
+.segment-line {
+    width: 3px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--bleu_clair), var(--orange));
+    margin-right: 15px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.segment-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 15px;
+    background: rgba(57, 178, 165, 0.1);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--bleu_foncé_ecriture);
+    border: 1px solid rgba(57, 178, 165, 0.3);
+    transition: all 0.3s ease;
+}
+
+.segment-info.segment-calculated {
+    background: rgba(57, 178, 165, 0.15);
+    border-color: rgba(57, 178, 165, 0.5);
+}
+
+.segment-icon {
+    font-size: 1.2rem;
+}
+
+.segment-distance,
+.segment-time {
+    font-weight: 600;
+    color: var(--bleu_foncé);
+}
+
+.segment-separator {
+    color: var(--bleu_clair);
+    font-weight: bold;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.segment-info .segment-distance,
+.segment-info .segment-time {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.segment-info.segment-calculated .segment-distance,
+.segment-info.segment-calculated .segment-time {
+    animation: none;
+}
