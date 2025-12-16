@@ -371,18 +371,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
  
-        // C. Toggle affichage liste sous-�tapes
-        // => SUPPRIM� : On ne veut plus avoir � cliquer. La liste est toujours l�.
-        // Si vous voulez que la fl�che serve quand m�me � masquer au cas o�, d�commentez les lignes ci-dessous :
-        /*
-        if (target.closest('.toggleSousEtapes')) {
-            const ul = li.querySelector('.sousEtapesList');
-            ul.style.display = (ul.style.display === 'none') ? 'block' : 'none';
-            return;
-        }
-        */
- 
-        // D. Bouton "Modifier"
         if (target.classList.contains('modifierSousEtapes') || target.closest('.modifierSousEtapes')) {
             openSegmentEditor(index);
         }
@@ -722,6 +710,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             mi.src = e.target.src;
         }
     });
+
+    // ============================================================
+    // 9. FONCTIONS GLOBALES (Pour les onclick HTML)
+    // ============================================================
+
+    // On utilise "window.nomDeLaFonction" pour la rendre accessible au HTML
+    window.toggleSousEtapes = function(id) {
+        const container = document.getElementById('sous-etapes-' + id);
+        const card = document.querySelector(`.card-vu[data-trajet-id="${id}"]`);
+
+        if (container) {
+            container.classList.toggle('active');
+        }
+        
+        if (card) {
+            card.classList.toggle('active');
+        }
+    };
  
 });
  
