@@ -101,18 +101,14 @@ function getTransportIcon($type) {
                 </div>
 
                 <?php 
-                // Gestion des sous-étapes ou du trajet direct
                 $listeEtapes = (isset($etapes[$t['id']]) && count($etapes[$t['id']]) > 0) ? $etapes[$t['id']] : [];
                 
-                // Si pas de sous-étapes, on crée un tableau fictif pour faire le lien direct Départ -> Arrivée
                 if (empty($listeEtapes)) {
-                    // On simule une étape finale qui est l'arrivée
                     $isDirect = true;
                     $stepsToProcess = [['ville' => $arrive, 'type_transport' => $t['mode_transport'], 'is_arrival' => true]];
                 } else {
                     $isDirect = false;
                     $stepsToProcess = $listeEtapes;
-                    // On ajoute l'arrivée réelle à la fin pour le dernier tronçon
                     $stepsToProcess[] = ['ville' => $arrive, 'type_transport' => $t['mode_transport'], 'is_arrival' => true];
                 }
 
@@ -120,14 +116,11 @@ function getTransportIcon($type) {
                     $targetCity = $step['ville'];
                     $targetCoords = getCoordonneesDepuisCache($targetCity, $pdo);
                     
-                    // Récupération du mode
                     $mode = strtolower($step['type_transport'] ?? $t['mode_transport'] ?? 'voiture');
 
-                    // Récupération des préférences (priorité à la sous-étape, sinon au trajet global)
                     $sansAutoroute = $step['sans_autoroute'] ?? $t['sans_autoroute'] ?? 0;
                     $sansPeage = $step['sans_peage'] ?? $t['sans_peage'] ?? 0;
 
-                    // Construction des data-attributes
                     $dataAttrs = "";
                     if ($currentDepartCoords && $targetCoords) {
                         $dataAttrs = ' data-lat-dep="'.$currentDepartCoords['lat'].'"' .
@@ -135,7 +128,6 @@ function getTransportIcon($type) {
                                      ' data-lat-arr="'.$targetCoords['lat'].'"' .
                                      ' data-lon-arr="'.$targetCoords['lon'].'"' .
                                      ' data-mode="'.$mode.'"' .
-                                     // AJOUT DES NOUVEAUX ATTRIBUTS
                                      ' data-sans-autoroute="'.$sansAutoroute.'"' .
                                      ' data-sans-peage="'.$sansPeage.'"';
                     }

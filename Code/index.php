@@ -70,6 +70,10 @@ include_once __DIR__ . "/modules/header.php"
                             <option value="camping">🏕️ Campings</option>
                             <option value="hostel">🛏️ Auberges</option>
                         </optgroup>
+                        <optgroup label="⛰️ Chemins">
+                            <option value="ferrata">⛰️ Via ferrata</option>
+                            <option value="rando"> 🥾 Randonnées</option>
+                        </optgroup>
                         <optgroup label="⛽ Services">
                             <option value="fuel">⛽ Stations essence</option>
                             <option value="parking">🅿️ Parkings</option>
@@ -83,12 +87,15 @@ include_once __DIR__ . "/modules/header.php"
                             <option value="monument">🗿 Monuments</option>
                             <option value="viewpoint">🌄 Points de vue</option>
                             <option value="park">🌳 Parcs & Jardins</option>
+                            <option value="zoo">🐘 Zoo</option>
                             <option value="beach">🏖️ Plages</option>
                         </optgroup>
                         <optgroup label="🛒 Shopping">
                             <option value="supermarket">🛒 Supermarchés</option>
                             <option value="mall">🏬 Centres commerciaux</option>
                             <option value="convenience">🏪 Supérettes</option>
+                            <option value="shop_food">🛒 Nourriture</option>
+
                         </optgroup>
                         <optgroup label="🏥 Urgences">
                             <option value="hospital">🏥 Hôpitaux</option>
