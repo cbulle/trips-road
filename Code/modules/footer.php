@@ -33,7 +33,7 @@
         <li><a href="../page_link/cgu.php" class="deux">CGU</a></li>
         <li><a href="../page_link/politique.php" class="trois">Politique de confidentialité</a></li>
         <li><a href="../page_link/faq.php" class="quatre">FAQ</a></li>
-        <li><a href="" class="cinq">Copyright</a></li>
+        <li><a href="../Roadtrip.php" class="cinq">Road-Trip</a></li>
         <li><a href="../page_link/cookie.php" class="six">Gestion des cookies</a></li>
       </ul>
     </div>

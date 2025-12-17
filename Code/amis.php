@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/formulaire/form_amis.php' ;
-
+require_once __DIR__ . '/formulaire/form_amis.php';
 ?>
 
 <!DOCTYPE html>
@@ -10,6 +9,8 @@ require_once __DIR__ . '/formulaire/form_amis.php' ;
     <title>Mes amis - Trips & Roads</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/index.css">
+   
 </head>
 <body>
 
@@ -19,7 +20,9 @@ require_once __DIR__ . '/formulaire/form_amis.php' ;
     <div class="index_container">
         <h2>Mes Amis</h2>
         <?php if (isset($message)): ?>
-            <p class="message"><?= htmlspecialchars($message) ?></p>
+            <p class="message" style="text-align: center; color: var(--orange); font-weight: bold;">
+                <?= htmlspecialchars($message) ?>
+            </p>
         <?php endif; ?>
 
         <div class="container">
@@ -31,10 +34,21 @@ require_once __DIR__ . '/formulaire/form_amis.php' ;
                 </form>
 
                 <?php if ($utilisateurs): ?>
-                    <ul>
+                    <ul style="list-style: none; padding: 0;">
                         <?php foreach ($utilisateurs as $u): ?>
-                            <li>
-                                <?= htmlspecialchars($u['nom'] . ' ' . $u['prenom']) ?>
+                            <li class="ami-item">
+                                <div class="ami-info">
+                                    <?php if (!empty($u['photo_profil'])): ?>
+                                        <img src="/uploads/profils/<?= htmlspecialchars($u['photo_profil']) ?>" 
+                                             class="ami-photo" alt="Photo">
+                                    <?php else: ?>
+                                        <div class="ami-placeholder">
+                                            <?= strtoupper(substr($u['prenom'], 0, 1)) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <span><?= htmlspecialchars($u['nom'] . ' ' . $u['prenom']) ?></span>
+                                </div>
+                                
                                 <?php
                                 $stmt2 = $pdo->prepare("
                                     SELECT statut FROM amis 
@@ -43,12 +57,13 @@ require_once __DIR__ . '/formulaire/form_amis.php' ;
                                 $stmt2->execute([$utilisateur_id, $u['id'], $u['id'], $utilisateur_id]);
                                 $statut = $stmt2->fetchColumn();
                                 ?>
+                                
                                 <?php if (!$statut): ?>
                                     <a href="?add=<?= $u['id'] ?>"><button>Ajouter</button></a>
                                 <?php elseif ($statut === 'en_attente'): ?>
-                                    <span>Demande envoyée</span>
+                                    <span style="color: #666;">Demande envoyée</span>
                                 <?php elseif ($statut === 'accepte'): ?>
-                                    <span>Ami</span>
+                                    <span style="color: green;">Ami</span>
                                 <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
@@ -61,11 +76,32 @@ require_once __DIR__ . '/formulaire/form_amis.php' ;
             <div class="column">
                 <h3>Mes amis</h3>
                 <?php if ($amis): ?>
-                    <ul>
+                    <ul style="list-style: none; padding: 0;">
                         <?php foreach ($amis as $ami): ?>
-                            <li>
-                                <?= htmlspecialchars($ami['nom'] . ' ' . $ami['prenom']) ?>
-                                <a href="?delete=<?= $ami['id'] ?>"><button>Supprimer</button></a>
+                            <li class="ami-item">
+                                <div class="ami-info">
+                                    <?php if (!empty($ami['photo_profil'])): ?>
+                                        <img src="/uploads/profils/<?= htmlspecialchars($ami['photo_profil']) ?>" 
+                                             class="ami-photo" alt="Photo">
+                                    <?php else: ?>
+                                        <div class="ami-placeholder">
+                                            <?= strtoupper(substr($ami['prenom'], 0, 1)) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <span><?= htmlspecialchars($ami['nom'] . ' ' . $ami['prenom']) ?></span>
+                                </div>
+                                
+                                <div class="ami-actions">
+                                    <a href="/messagerie/debut_conv.php?ami_id=<?= $ami['id'] ?>" 
+                                       class="btn-message">
+                                        💬 Message
+                                    </a>
+                                    <a href="?delete=<?= $ami['id'] ?>" 
+                                       class="btn-supprimer"
+                                       onclick="return confirm('Voulez-vous vraiment supprimer cet ami ?');">
+                                        Supprimer
+                                    </a>
+                                </div>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -73,14 +109,31 @@ require_once __DIR__ . '/formulaire/form_amis.php' ;
                     <p>Vous n'avez pas encore d'amis.</p>
                 <?php endif; ?>
 
-                <h3>Demandes d'amis reçues</h3>
+                <h3 style="margin-top: 30px;">Demandes d'amis reçues</h3>
                 <?php if ($demandes): ?>
-                    <ul>
+                    <ul style="list-style: none; padding: 0;">
                         <?php foreach ($demandes as $demande): ?>
-                            <li>
-                                <?= htmlspecialchars($demande['nom'] . ' ' . $demande['prenom']) ?>
-                                <a href="?action=accepter&id=<?= $demande['id'] ?>"><button>Accepter</button></a>
-                                <a href="?action=refuser&id=<?= $demande['id'] ?>"><button>Refuser</button></a>
+                            <li class="ami-item">
+                                <div class="ami-info">
+                                    <?php if (!empty($demande['photo_profil'])): ?>
+                                        <img src="/uploads/profils/<?= htmlspecialchars($demande['photo_profil']) ?>" 
+                                             class="ami-photo" alt="Photo">
+                                    <?php else: ?>
+                                        <div class="ami-placeholder">
+                                            <?= strtoupper(substr($demande['prenom'], 0, 1)) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    <span><?= htmlspecialchars($demande['nom'] . ' ' . $demande['prenom']) ?></span>
+                                </div>
+                                
+                                <div class="ami-actions">
+                                    <a href="?action=accepter&id=<?= $demande['id'] ?>">
+                                        <button style="background: green; color: white;">Accepter</button>
+                                    </a>
+                                    <a href="?action=refuser&id=<?= $demande['id'] ?>">
+                                        <button style="background: var(--rouge); color: white;">Refuser</button>
+                                    </a>
+                                </div>
                             </li>
                         <?php endforeach; ?>
                     </ul>
