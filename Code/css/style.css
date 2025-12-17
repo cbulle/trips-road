@@ -1785,3 +1785,11 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 .segment-info.segment-calculated .segment-time {
     animation: none;
 }
+
+.tox-tinymce-aux {
+    z-index: 99999 !important;
+}
+
+.tox-tinymce {
+    min-height: 200px;
+}

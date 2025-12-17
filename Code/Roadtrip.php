@@ -4,7 +4,15 @@ include_once __DIR__ . '/bd/lec_bd.php';
 
 $id_utilisateur = $_SESSION['utilisateur']['id'] ?? null;
 
-$stmt = $pdo->prepare("SELECT * FROM roadtrip WHERE visibilite = 'public' ORDER BY id DESC");
+// --- MODIFICATION ICI : On fait une jointure pour récupérer le pseudo ---
+// On suppose que la clé étrangère dans 'roadtrip' est 'id_utilisateur'
+$sql = "SELECT r.*, u.pseudo 
+        FROM roadtrip r 
+        LEFT JOIN utilisateurs u ON r.id_utilisateur = u.id 
+        WHERE r.visibilite = 'public' 
+        ORDER BY r.id DESC";
+
+$stmt = $pdo->prepare($sql);
 $stmt->execute();
 $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -14,6 +22,8 @@ if ($id_utilisateur) {
     $stmt->execute(['id' => $id_utilisateur]);
     $favorisIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
+
+// (La requête séparée sur 'utilisateurs' n'est plus nécessaire ici, je l'ai retirée)
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +60,12 @@ if ($id_utilisateur) {
             <?php endif; ?>
 
             <h3><?= htmlspecialchars($rt['titre']) ?></h3>
+            
             <p><?= htmlspecialchars($rt['description']) ?></p>
+
+            <p class="creator-info">
+                Proposé par : <strong><?= htmlspecialchars($rt['pseudo'] ?? 'Utilisateur inconnu') ?></strong>
+            </p>
 
             <div class="roadtrip-buttons">
                 <a class="btn-view" href="public_road.php?id=<?= $rt['id'] ?>">

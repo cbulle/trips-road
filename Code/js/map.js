@@ -405,55 +405,115 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
  
     function addSousEtapeForm(data = {}) {
-        const uniqueId = 'editor-' + Date.now() + Math.random().toString(36).substring(2, 9);
+        const uniqueId = 'editor-' + Date.now() + Math.floor(Math.random() * 1000);
+
+        const templateSubEtape = document.getElementById('template-sub-etape');
         const clone = templateSubEtape.content.cloneNode(true);
         const div = clone.querySelector('.subEtape');
- 
+
         const inputNom = div.querySelector('.subEtapeNom');
         inputNom.value = data.nom || '';
- 
         div.querySelector('.subEtapeHeure').value = data.heure || '';
- 
+
         const textArea = div.querySelector('.subEtapeRemarque');
-        textArea.id = uniqueId;
+        textArea.id = uniqueId; 
         textArea.value = data.remarque || '';
- 
-        subEtapesContainer.appendChild(div);
-        initAutocomplete(inputNom);
- 
-        tinymce.init({
-            selector: `#${uniqueId}`,
-            plugins: 'table lists link image code charmap searchreplace wordcount', 
- 
-            toolbar: 'undo redo | styles | bold italic underline forecolor | alignleft aligncenter alignright | bullist numlist outdent indent | table link image | removeformat',
- 
-            menubar: false,
-            statusbar: false,
-            height: 300, 
-            branding: false,
- 
-            automatic_uploads: true,
-            file_picker_types: 'image',
-                        images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(blobInfo.blob());
-                reader.onload = () => {
-                    resolve(reader.result);
-                };
-                reader.onerror = (error) => {
-                    reject({ message: 'Erreur de lecture : ' + error.message, remove: true });
-                };
-            }),
- 
-            table_default_attributes: { border: '1' },
-            table_default_styles: { 'border-collapse': 'collapse', 'width': '100%' },
- 
-            image_dimensions: true
-        });
- 
+
+        document.getElementById('subEtapesContainer').appendChild(div);
+
+        if (typeof initAutocomplete === "function") {
+            initAutocomplete(inputNom);
+        }
+
+        setTimeout(() => {
+            tinymce.init({
+                selector: '#' + uniqueId,
+                base_url: '/js/tinymce',
+                suffix: '.min',
+                license_key: 'gpl',
+                promotion: false,
+                branding: false,
+                menubar: false,
+                statusbar: false,
+                min_height: 200,
+
+                plugins: 'image link lists table code help wordcount',
+                toolbar: 'undo redo | bold italic | bullist | link image',
+
+                image_title: true,
+                automatic_uploads: true,
+                images_upload_url: '../formulaire/traitementImageTiny.php', 
+                file_picker_types: 'image',
+
+                file_picker_callback: (cb, value, meta) => {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+
+                    input.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = (readerEvent) => {
+                            const img = new Image();
+                            img.src = readerEvent.target.result;
+
+                            img.onload = () => {
+                                const MAX_WIDTH = 1200;
+                                const MAX_HEIGHT = 1200;
+                                let width = img.width;
+                                let height = img.height;
+
+                                if (width > height) {
+                                    if (width > MAX_WIDTH) {
+                                        height *= MAX_WIDTH / width;
+                                        width = MAX_WIDTH;
+                                    }
+                                } else {
+                                    if (height > MAX_HEIGHT) {
+                                        width *= MAX_HEIGHT / height;
+                                        height = MAX_HEIGHT;
+                                    }
+                                }
+
+                                const canvas = document.createElement('canvas');
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+
+                                canvas.toBlob((blob) => {
+                                    const newFile = new File([blob], file.name, { 
+                                        type: 'image/jpeg', 
+                                        lastModified: Date.now() 
+                                    });
+
+                                    const id = 'blobid' + (new Date()).getTime();
+                                    const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+
+                                    const reader2 = new FileReader();
+                                    reader2.readAsDataURL(newFile);
+                                    reader2.onload = (e2) => {
+                                        const base64 = e2.target.result.split(',')[1];
+                                        const blobInfo = blobCache.create(id, newFile, base64);
+                                        blobCache.add(blobInfo);
+                                        
+                                        cb(blobInfo.blobUri(), { title: file.name });
+                                    };
+
+                                }, 'image/jpeg', 0.7); 
+                            };
+                        };
+                    });
+                    input.click();
+                }
+            });
+        }, 100);
+
         div.querySelector('.removeSubEtapeBtn').addEventListener('click', () => {
-            const editor = tinymce.get(uniqueId);
-            if (editor) editor.remove();
+            if (tinymce.get(uniqueId)) tinymce.get(uniqueId).remove();
             div.remove();
         });
     }
