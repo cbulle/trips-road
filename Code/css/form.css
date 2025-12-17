@@ -106,3 +106,64 @@ a#show-register, a#show-login {
   cursor: pointer;
   font-weight: 600;
 }
+
+.ami-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .ami-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ami-photo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .ami-placeholder {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--orange);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .ami-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-message {
+            background: var(--bleu_clair);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-message:hover {
+            background: var(--vert_btn);
+        }
+        .btn-supprimer {
+            background: var(--rouge);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-supprimer:hover {
+            background: #8B0000;
+        }

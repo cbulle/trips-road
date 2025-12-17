@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
             color: '#d35400'
         },
         bar: {
-            query: 'node["amenity"="bar"](around:2000,{lat},{lon});node["amenity"="pub"](around:2000,{lat},{lon});',
+            query: 'node["amenity"="bar"](around:2000,{lat},{lon});node["amenity"="pub"](around:2000,{lat},{lon});node["amenity"="biergarten"](around:2000,{lat},{lon});',
             icon: '🍺',
             color: '#9b59b6'
         },
@@ -48,12 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
             color: '#16a085'
         },
         fuel: {
-            query: 'node["amenity"="fuel"](around:2000,{lat},{lon});',
+            query: 'node["amenity"="fuel"](around:2000,{lat},{lon});node["amenity"="charging_station"](around:2000,{lat},{lon});',
             icon: '⛽',
             color: '#f39c12'
         },
         parking: {
-            query: 'node["amenity"="parking"](around:2000,{lat},{lon});',
+            query: 'node["amenity"="parking"](around:2000,{lat},{lon});node["amenity"="parking_entrance"](around:2000,{lat},{lon});node["amenity"="parking_space"](around:2000,{lat},{lon});',
             icon: '🅿️',
             color: '#34495e'
         },
@@ -77,13 +77,18 @@ document.addEventListener("DOMContentLoaded", function () {
             icon: '🎭',
             color: '#1abc9c'
         },
+        zoo: {
+            query: 'node["tourism"="zoo"](around:2000,{lat},{lon});',
+            icon: '🐘',
+            color: '#1abc9c'
+        },
         museum: {
-            query: 'node["tourism"="museum"](around:2000,{lat},{lon});node["tourism"="gallery"](around:2000,{lat},{lon});',
+            query: 'node["tourism"="museum"](around:2000,{lat},{lon});node["tourism"="gallery"](around:2000,{lat},{lon}); node["tourism"="aquarium"](around:2000,{lat},{lon});',    
             icon: '🏛️',
             color: '#8e44ad'
         },
         monument: {
-            query: 'node["historic"="monument"](around:2000,{lat},{lon});node["historic"="memorial"](around:2000,{lat},{lon});',
+            query: 'node["historic"="monument"](around:2000,{lat},{lon});node["historic"="memorial"](around:2000,{lat},{lon}); node["archaeological_site"="memorial"](around:2000,{lat},{lon}); node["historic"="building"](around:2000,{lat},{lon}); node["historic"="castle"](around:2000,{lat},{lon}); node["historic"="church"](around:2000,{lat},{lon});',
             icon: '🗿',
             color: '#95a5a6'
         },
@@ -112,13 +117,18 @@ document.addEventListener("DOMContentLoaded", function () {
             icon: '🏬',
             color: '#9b59b6'
         },
+        shop_food: {
+            query: 'node["shop"="butcher"](around:2000,{lat},{lon});node["shop"="deli"](around:2000,{lat},{lon});node["shop"="food"](around:2000,{lat},{lon});node["shop"="frozen_food"](around:2000,{lat},{lon});node["shop"="greengrocer"](around:2000,{lat},{lon});node["shop"="water"](around:2000,{lat},{lon});',
+            icon: '🛒',
+            color: '#21a892ff'
+        },
         convenience: {
             query: 'node["shop"="convenience"](around:2000,{lat},{lon});',
             icon: '🏪',
             color: '#16a085'
         },
         hospital: {
-            query: 'node["amenity"="hospital"](around:2000,{lat},{lon});node["amenity"="clinic"](around:2000,{lat},{lon});',
+            query: 'node["amenity"="hospital"](around:2000,{lat},{lon});node["amenity"="clinic"](around:2000,{lat},{lon});node["amenity"="doctors"](around:2000,{lat},{lon});',
             icon: '🏥',
             color: '#c0392b'
         },
@@ -126,6 +136,16 @@ document.addEventListener("DOMContentLoaded", function () {
             query: 'node["amenity"="police"](around:2000,{lat},{lon});',
             icon: '👮',
             color: '#2c3e50'
+        },
+        ferrata: {
+            query: 'node["highway"="via_ferrata"](around:2000,{lat},{lon});',
+            icon: '⛰️',
+            color: '#093b11ff'
+        },
+        rando: {
+            query: 'node["highway"="footway"](around:2000,{lat},{lon}); node["highway"="steps"](around:2000,{lat},{lon});node["highway"="path"](around:2000,{lat},{lon});',
+            icon: '🥾',
+            color: '#5c4404ff'
         }
     };
 
