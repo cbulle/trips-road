@@ -17,7 +17,6 @@ if (!$id_roadtrip) {
     exit;
 }
 
-// Vérifier que le road trip existe et est public
 $stmt = $pdo->prepare("SELECT id FROM roadtrip WHERE id = :id AND visibilite = 'public'");
 $stmt->execute(['id' => $id_roadtrip]);
 if (!$stmt->fetch()) {
@@ -52,5 +51,5 @@ try {
     $_SESSION['error'] = "Erreur lors de l'opération.";
 }
 
-header('Location: /' . $redirect);
+header('Location: /' . 'favoris.php');
 exit;

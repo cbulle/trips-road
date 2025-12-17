@@ -113,7 +113,7 @@ if ($conversation_id) {
                        class="conversation-item <?= ($conversation_id == $conv['id']) ? 'active' : '' ?>">
                         <div class="conv-avatar">
                             <?php if (!empty($conv['ami_photo'])): ?>
-                                <img src="/uploads/profils/<?= htmlspecialchars($conv['ami_photo']) ?>" 
+                                <img src="/uploads/pp/<?= htmlspecialchars($conv['ami_photo']) ?>" 
                                      alt="Photo de profil">
                             <?php else: ?>
                                 <div class="avatar-placeholder">
@@ -145,7 +145,7 @@ if ($conversation_id) {
                 <div class="chat-header">
                     <div class="chat-user-info">
                         <?php if (!empty($ami_info['ami_photo'])): ?>
-                            <img src="/uploads/profils/<?= htmlspecialchars($ami_info['ami_photo']) ?>" 
+                            <img src="/uploads/pp/<?= htmlspecialchars($ami_info['ami_photo']) ?>" 
                                  alt="Photo de profil">
                         <?php else: ?>
                             <div class="avatar-placeholder">
