@@ -131,7 +131,7 @@ if (searchBox && resultsTableBody) {
 }
 
 /*=======================================
-  Changement de th�me
+  Changement de th me
 =======================================*/
  
 const savedTheme = localStorage.getItem("theme");
