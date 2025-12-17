@@ -71,46 +71,101 @@
     table-layout: fixed;
 }
 
-.search-results td:first-child {
-    width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.search-results td {
-    
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.search-results th {
-    background-color: #f4f4f4;
-}
 
 
 
 
+
+
+
+
+/*-----------------------------*/
 #results-table {
-    position: absolute;
-    background-color: var(--orange);
-    width: 100%;
-    max-width: 300px;
-    z-index: 9999;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-collapse: collapse;
-    margin-top: 5px;
-    /*display: none;  Caché par défaut */
-}
+        position: absolute;
+        background-color: var(--white);
+        z-index: 99999 !important;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        max-height: 300px;
+        
+        /* Gestion du scroll */
+        overflow-y: auto;
+        overflow-x: hidden;
+        
+        display: none;
+        box-sizing: border rgb(232, 224, 224);
+        border-radius: 0 0 4px 4px;
+    }
 
-#results-table th {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    color: var(--noir);
-    background-color: var(--beige);
-}
+    #results-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        table-layout: fixed;
+    }
+
+    #results-table tr {
+        border-bottom: 1px solid #eee;
+        background: white;
+        cursor: pointer;
+        display: table-row;
+    }
+
+    #results-table td {
+        padding: 10px 15px;
+        color: #333;
+        font-size: 14px;
+        text-align: left;
+        vertical-align: middle;
+        overflow: hidden;
+    }
+
+    #results-table tr:hover {
+        background-color: #f0f8ff;
+    }
+
+    .trip-title { 
+        font-weight: bold; 
+        display: block;
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
+
+    .trip-author { 
+        font-size: 12px; 
+        color: #888; 
+        display: block; 
+        margin-top: 2px;
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
+
+    .tag-prive { color: #d9534f; font-size: 12px; font-weight: normal; margin-left: 5px; font-style: italic; }
+    .tag-amis { color: #28a745; font-size: 12px; font-weight: normal; margin-left: 5px; font-style: italic; }
+
+    /* --- CORRECTIF SCROLLBAR --- */
+    /* On force la barre à être grise et fine */
+    #results-table::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    /* Le rail (fond) doit être TRANSPARENT pour éviter le rectangle orange */
+    #results-table::-webkit-scrollbar-track {
+        background: transparent !important; 
+    }
+
+    /* Le pouce (ce qu'on bouge) */
+    #results-table::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 4px;
+    }
+
+    /* Le coin (intersection) doit aussi être transparent */
+    #results-table::-webkit-scrollbar-corner {
+        background: transparent !important;
+    }
 /* ==============================
   BURGER
 ============================== */

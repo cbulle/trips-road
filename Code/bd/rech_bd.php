@@ -1,27 +1,49 @@
 <?php
-// On inclut le fichier qui contient la variable $pdo
-require_once __DIR__ . '/lec_bd.php'; 
+require_once __DIR__ . '/lec_bd.php'; // Votre connexion $pdo
 
-// On démarre la session SI elle n'est pas déjà démarrée dans init.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $userId = $_SESSION['utilisateur']['id'] ?? null;
 
-// Requête SQL
-$sql = 'SELECT * FROM roadtrip WHERE visibilite = "public"';
-
-if ($userId !== null) {
-    $sql .= ' OR id_utilisateur = :userId';
-}
-
-$sql .= ' ORDER BY date_creation DESC';
+// --- REQUÊTE SQL INTELLIGENTE ---
+// Elle récupère :
+// 1. Les road trips Publics
+// 2. Vos propres road trips
+// 3. Les road trips "Amis" SI une relation 'accepte' existe dans la table 'amis'
+$sql = '
+    SELECT DISTINCT r.*, u.pseudo 
+    FROM roadtrip r
+    JOIN utilisateurs u ON r.id_utilisateur = u.id
+    WHERE 
+        r.visibilite = "public"
+        
+        OR (r.id_utilisateur = :userId)
+        
+        OR (
+            r.visibilite = "amis" 
+            AND EXISTS (
+                SELECT 1 FROM amis a 
+                WHERE a.statut = "accepte" 
+                AND (
+                    (a.id_utilisateur = :userId AND a.id_ami = r.id_utilisateur)
+                    OR 
+                    (a.id_utilisateur = r.id_utilisateur AND a.id_ami = :userId)
+                )
+            )
+        )
+    ORDER BY r.date_creation DESC
+';
 
 $stmt = $pdo->prepare($sql);
 
 if ($userId !== null) {
     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+} else {
+
+    $zero = 0;
+    $stmt->bindParam(':userId', $zero, PDO::PARAM_INT);
 }
 
 $stmt->execute();
@@ -32,7 +54,6 @@ $response = [
     "roadtrips" => $roadtrips
 ];
 
-// Envoi du JSON
 header('Content-Type: application/json');
 echo json_encode($response);
 exit;

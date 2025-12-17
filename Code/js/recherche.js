@@ -1,75 +1,133 @@
 /*=======================================
   Barre de recherche
 =======================================*/
- 
 let data = [];
-let userId = null; 
- 
+let userId = null;
+
+// --- CSS injecté (CORRIGÉ POUR LE BUG DU RECTANGLE ORANGE) ---
+const style = document.createElement('style');
+
+
+// --- Chargement ---
 fetch("../bd/rech_bd.php")
     .then(response => response.json())
     .then(json => {
-        userId = json.userId;  
-        data = json.roadtrips;  
- 
-        console.log("Connecté avec l'ID :", userId);
-        console.log("Liste des roadtrips chargés :", data);
+        userId = json.userId;
+        data = json.roadtrips;
+        console.log("✅ Données chargées :", data.length);
     })
-    .catch(error => console.error("Erreur fetch :", error));
- 
+    .catch(error => console.error("❌ Erreur fetch :", error));
+
 const searchBox = document.getElementById('searchInput');
-const resultsTableBody = document.querySelector('#results-table tbody');
- 
-if (searchBox && resultsTableBody) {
-    searchBox.addEventListener('input', function(event) {
-        const query = event.target.value.trim().toLowerCase();
-        resultsTableBody.innerHTML = '';
- 
-        if (query.length < 2) return;
- 
-        const filteredData = data.filter(item => {
-            const match = item.titre.toLowerCase().includes(query);
- 
-    const myId = userId; 
- 
-    const filteredData = data.filter(item => {
-        const matchTitle = item.titre.toLowerCase().includes(query);
-        if (!matchTitle) return false;
- 
- 
-        if (item.visibilite === "public") {
-            return true;
-        }
- 
- 
-        if (item.visibilite === "prive" && myId !== null && item.id_utilisateur == myId) {
-            return true;
-        }
- 
- 
-        return false;
-    });
- 
- 
-    if (filteredData.length > 0) {
-        filteredData.forEach(item => {
-            const row = document.createElement('tr');
- 
- 
-            const nomCell = document.createElement('td');
-            nomCell.textContent = item.titre + ' (Road-Trip)';
- 
- 
-            if (item.visibilite === 'prive') {
-                nomCell.textContent += ' (Privé)';
-                nomCell.style.fontStyle = 'italic';
-            }
- 
-            row.appendChild(nomCell);
-            resultsTableBody.appendChild(row);
-        });
+
+// Création du tableau s'il n'existe pas
+let resultsTable = document.getElementById('results-table');
+let resultsTableBody;
+
+if (!resultsTable) {
+    resultsTable = document.createElement('div');
+    resultsTable.id = 'results-table';
+    const innerTable = document.createElement('table');
+    resultsTableBody = document.createElement('tbody');
+    innerTable.appendChild(resultsTableBody);
+    resultsTable.appendChild(innerTable);
+    document.body.appendChild(resultsTable);
+} else {
+    resultsTableBody = resultsTable.querySelector('tbody');
+    if (resultsTable.parentElement !== document.body) {
+        document.body.appendChild(resultsTable);
     }
-});
+}
+
+if (searchBox && resultsTableBody) {
+
+    function positionnerTableau() {
+        const rect = searchBox.getBoundingClientRect();
+        resultsTable.style.top = (rect.bottom + window.scrollY) + "px";
+        resultsTable.style.left = (rect.left + window.scrollX) + "px";
+        resultsTable.style.width = rect.width + "px"; 
+    }
+
+    function effectuerRecherche() {
+        const query = searchBox.value.trim().toLowerCase();
+        resultsTableBody.innerHTML = '';
+
+        if (query.length < 2) {
+            resultsTable.style.display = 'none';
+            return;
+        }
+
+        const filteredData = data.filter(item => {
+            const matchTitle = item.titre.toLowerCase().includes(query);
+            if (!matchTitle) return false;
+            
+            // Le PHP a déjà fait le tri de sécurité, on accepte tout ce qui arrive
+            return true;
+        });
+
+        if (filteredData.length > 0) {
+            positionnerTableau();
+            resultsTable.style.display = 'block';
+            
+            filteredData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                row.addEventListener('mousedown', function(e) {
+                    window.location.href = "vuRoadTrip.php?id=" + item.id;
+                });
+
+                const cell = document.createElement('td');
+                
+                // TITRE + TAG
+                let html = `<span class="trip-title">${item.titre}`;
+                if (item.visibilite === 'prive') {
+                    html += `<span class="tag-prive">(Privé)</span>`;
+                } else if (item.visibilite === 'amis') {
+                    html += `<span class="tag-amis">(Amis)</span>`;
+                }
+                html += `</span>`;
+                
+                // AUTEUR
+                if (item.pseudo) {
+                    html += `<span class="trip-author">Proposé par : ${item.pseudo}</span>`;
+                }
+                
+                cell.innerHTML = html;
+                row.appendChild(cell);
+                resultsTableBody.appendChild(row);
+            }); 
+        } else {
+            positionnerTableau();
+            resultsTable.style.display = 'block';
+            const row = document.createElement('tr');
+            row.innerHTML = `<td style="color:#777; text-align:center;">Aucun résultat</td>`;
+            resultsTableBody.appendChild(row);
+        }
+    }
+
+    // --- ÉVÉNEMENTS ---
+    window.addEventListener('resize', () => {
+        if (resultsTable.style.display === 'block') positionnerTableau();
     });
+
+    searchBox.addEventListener('input', effectuerRecherche);
+
+    searchBox.addEventListener('focus', function() {
+        if (searchBox.value.trim().length >= 2) {
+            positionnerTableau();
+            resultsTable.style.display = 'block';
+            if (resultsTableBody.innerHTML === '') effectuerRecherche();
+        }
+    });
+
+    searchBox.addEventListener('blur', function() {
+        setTimeout(() => {
+            resultsTable.style.display = 'none';
+        }, 200);
+    });
+    
+} else {
+    console.error("❌ Erreur : Impossible de trouver #searchInput");
 }
 
 /*=======================================

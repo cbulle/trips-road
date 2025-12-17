@@ -10,5 +10,3 @@ if (empty($_SESSION['admin']) && !empty($_COOKIE['remember_login']) && !empty($_
         $_SESSION['admin'] = true;
     }
 }
-
-?>
