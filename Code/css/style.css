@@ -1,16 +1,16 @@
 :root {
   --bleu_clair : #39B2A5;
-  --bleu_foncé : #0B667D;
-  --bleu_foncé_ecriture : #0b0b0b;
+  --bleu_fonce : #0B667D;
+  --bleu_fonce_ecriture : #0b0b0b;
   --beige : #F2E9D6;
-  --beige_foncé : #E0C58B;
+  --beige_fonce : #E0C58B;
   --orange : #FF7F50;
   --orange_sombre: #FF7F50;
   --orange_malvoyant: #FF7F50;
   --vert_btn: #2E8B57;
   --vert : #2E8B57 ;
-  --gris_foncé: #22292b;
-  --gris_clair: #363535;
+  --gris_fonce: #22292b;
+  --gris_clair: #8b8a8a;
   --noir: #000000;
   --white: #FFFFFF;
   --rouge: #BF092F ;
@@ -25,12 +25,11 @@ html.dark {
   background-color: #132440;
   --orange: #2E8B57; 
   --vert_btn: #BF092F;
-  --bleu_foncé: #062a47;
+  --bleu_fonce: #062a47;
   --beige: #E0C58B;
-  --beige_foncé: #16476A;
-  --bleu_foncé_ecriture: rgb(212, 212, 212);
+  --beige_fonce: #16476A;
+  --bleu_fonce_ecriture: rgb(212, 212, 212);
   --beige_visu: #40a79c;
-  
   color: black;
 }
 
@@ -39,11 +38,33 @@ html.malvoyant {
   font-size: 20px;
 }
 
+ html.daltonien{
+    --bleu_clair: #4FB3BF;
+  --bleu_fonce: #1F4E79;
+  --bleu_fonce_ecriture: #0B0B0B;
+  --beige: #F4F1EC;
+  --beige_fonce: #D6C9A8;
+  --beige_visu: #F4F1EC;
+  --orange: #E69F00;
+  --orange_sombre: #FFB000;
+  --orange_malvoyant: #FFB000;
+  --vert_btn: #0072B2;
+  --vert: #0072B2;
+  --gris_fonce: #1F1F1F;
+  --gris_clair: #3A3A3A;
+  --noir: #000000;
+  --white: #FFFFFF;
+  --rouge: #8B1E3F;
+}
+
 html.SombreBtn {
   --orange_sombre: #2E8B57; 
 }
 
 html.MalvoyantBtn {
+  --orange_malvoyant: #2E8B57; 
+}
+html.DBtn {
   --orange_malvoyant: #2E8B57; 
 }
 
@@ -125,7 +146,7 @@ h1{
 ============================== */
 
 header {
-  background-color: var(--bleu_foncé);
+  background-color: var(--bleu_fonce);
   transition: all 0.5s ease;
 }
 
@@ -259,7 +280,7 @@ header nav > ul > div span {
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  background: var(--beige_foncé);
+  background: var(--beige_fonce);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
@@ -330,7 +351,7 @@ header nav > ul > div span {
 
 /* ==============================
    STYLE DU FORMULAIRE "AJOUTER UN TRAJET"
-   (Généré dynamiquement en JS)
+   (Genere dynamiquement en JS)
 ============================== */
 
 /* Conteneur de chaque champ */
@@ -342,7 +363,7 @@ header nav > ul > div span {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
     font-size: 1rem;
 }
 
@@ -353,7 +374,7 @@ header nav > ul > div span {
     border: 1px solid #ccc;
     background-color: #fff;
     box-sizing: border-box;
-    color: var(--gris_foncé);
+    color: var(--gris_fonce);
 }
 
 .new-block-input:focus {
@@ -366,16 +387,16 @@ header nav > ul > div span {
     margin-bottom: 15px;
     padding: 12px;
     background-color: var(--beige);
-    border: 1px solid var(--beige_foncé);
+    border: 1px solid var(--beige_fonce);
     border-radius: 15px;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 .new-block-static strong {
-    color: var(--bleu_foncé);
+    color: var(--bleu_fonce);
 }
 
 .new-block-actions {
@@ -437,7 +458,7 @@ header nav > ul > div span {
   margin: 0;
   cursor: pointer;
   font-size: 0.9rem;
-  color: var(--bleu_foncé_ecriture);
+  color: var(--bleu_fonce_ecriture);
 }
 
 .ui-menu-item-wrapper {
@@ -522,7 +543,7 @@ padding: 6px 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-between; 
-  background: var(--beige_foncé);
+  background: var(--beige_fonce);
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -622,7 +643,7 @@ padding: 6px 10px;
 .roadtrip-header {
   margin-bottom: 30px;
   padding: 20px;
-  background-color: var(--beige_foncé);
+  background-color: var(--beige_fonce);
   border-radius: 8px;
 }
 
@@ -665,7 +686,7 @@ padding: 6px 10px;
         .sous-etapes-container {
             display: none;
             padding: 20px;
-            background-color: var(--beige_foncé);
+            background-color: var(--beige_fonce);
         }
         
         .sous-etapes-container.active {
@@ -762,7 +783,7 @@ padding: 6px 10px;
   display: flex;
   align-items: center;
   padding: 20px;
-  background: var(--beige_foncé);
+  background: var(--beige_fonce);
   color: var(--orange);
   cursor: pointer;
   user-select: none;
@@ -816,7 +837,7 @@ padding: 6px 10px;
 .sous-etapes-container {
   display: none;
   padding: 20px;
-  background-color: var(--beige_foncé);
+  background-color: var(--beige_fonce);
 }
 
 .sous-etapes-container.active {
@@ -965,11 +986,11 @@ padding: 6px 10px;
 
 
 /* ==============================
-  AJOUT : STYLE POUR ÉLÉMENTS DYNAMIQUES (légende, sous-étapes, formulaires)
+  AJOUT : STYLE POUR eLeMENTS DYNAMIQUES (legende, sous-etapes, formulaires)
 ============================== */
 .sidebar #legend {
   margin-top: 20px;
-  background: var(--beige_foncé);
+  background: var(--beige_fonce);
   border-radius: 15px;
   padding: 10px 15px;
   box-shadow: 0 2px 6px var(--noir);
@@ -1014,7 +1035,7 @@ padding: 6px 10px;
 }
 
 .sousetape-item {
-  background: var(--beige_foncé);
+  background: var(--beige_fonce);
   padding: 8px;
   border-radius: 10px;
   margin-bottom: 5px;
@@ -1036,7 +1057,7 @@ padding: 6px 10px;
 
 #segmentFormContainer {
   display: none;
-  background: var(--beige_foncé);
+  background: var(--beige_fonce);
   padding: 15px;
   border-radius: 15px;
   box-shadow: 0 3px 8px var(--noir);
@@ -1122,7 +1143,7 @@ STYLE DE LA TIME LINE POUR AFFICHAGE DES ROAD TRIPS
   position: relative;
 }
 
-/* Flèche verticale */
+/* Fleche verticale */
 .timeline ul::before {
   content: '';
   position: absolute;
@@ -1135,7 +1156,7 @@ STYLE DE LA TIME LINE POUR AFFICHAGE DES ROAD TRIPS
   z-index: 0;
 }
 
-/* Pointe de la flèche en bas */
+/* Pointe de la fleche en bas */
 .timeline ul::after {
   content: '';
   position: absolute;
@@ -1224,7 +1245,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   margin-top: 10px;
   margin-bottom: 10px;
   padding-left: 25px;
-  color: var(--bleu_foncé_ecriture);
+  color: var(--bleu_fonce_ecriture);
 }
 
 .sous-etape-card li {
@@ -1247,14 +1268,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   padding: 10px;
   text-align: left;
   font-weight: bold;
-  border: 1px solid var(--bleu_foncé);
+  border: 1px solid var(--bleu_fonce);
 }
 
 .sous-etape-card td {
   padding: 10px;
   border: 1px solid #ddd;
-  color: var(--bleu_foncé_ecriture);
-  background-color: var(--beige_foncé); 
+  color: var(--bleu_fonce_ecriture);
+  background-color: var(--beige_fonce); 
 }
 
 .sous-etape-card tr:nth-child(even) td {
@@ -1270,7 +1291,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   REFATO JS ELEMENTS (Nouveaux Styles)
 ============================== */
 
-/* Styles pour la ligne d'ajout d'étape (JS: addEtape) */
+/* Styles pour la ligne d'ajout d'etape (JS: addEtape) */
 .etape-row {
   display: flex;
   align-items: center;
@@ -1342,7 +1363,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   padding: 5px;
 }
 
-/* Style image miniature légende */
+/* Style image miniature legende */
 .legend-thumb {
   max-width: 50px;
   max-height: 50px;
@@ -1370,7 +1391,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 .transport-btn {
     background-color: var(--beige);
-    border: 1px solid var(--beige_foncé);
+    border: 1px solid var(--beige_fonce);
     border-radius: 10px;
     cursor: pointer;
     font-size: 1.2rem;
@@ -1390,7 +1411,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 .transport-btn.active {
     background-color: var(--bleu_clair);
-    border-color: var(--bleu_foncé);
+    border-color: var(--bleu_fonce);
     color: white;
     opacity: 1;
     transform: scale(1.05);
@@ -1402,7 +1423,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border: none;
     cursor: pointer;
     font-size: 1.4rem;
-    color: var(--bleu_foncé); 
+    color: var(--bleu_fonce); 
     margin-right: 5px;
     transition: all 0.5s ease; 
     padding: 0 5px;
@@ -1422,7 +1443,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     margin: 10px 0 15px 0;
     border-radius: 15px;
     font-size: 0.95em;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
     box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
     animation: fadeIn 0.3s ease;
 }
@@ -1457,12 +1478,12 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 
 /* ==============================
-   STYLE CONTENU TINYMCE (Légende & Affichage)
+   STYLE CONTENU TINYMCE (Legende & Affichage)
 ============================== */
 
 .tinymce-content {
     font-size: 0.95rem;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
     line-height: 1.5;
     word-wrap: break-word; 
     overflow-wrap: break-word;
@@ -1535,7 +1556,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 .sous-etapes-container {
-    display: none; /* Caché */
+    display: none; /* Cache */
     padding: 20px;
     background-color: var(--beige_visu);
     border-top: 1px solid #ddd;
@@ -1595,14 +1616,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 .map-trajet {
     flex: 1;
     min-width: 0;
-    height: 600px !important; /* Hauteur plus grande pour voir plus de détails */
+    height: 600px !important; /* Hauteur plus grande pour voir plus de details */
     border-radius: 10px;
     border: 1px solid #ccc;
     position: sticky;
     top: 20px; /* La carte reste en haut quand on scroll */
 }
 
-/* Styles spéciaux pour les cartes de départ et arrivée */
+/* Styles speciaux pour les cartes de depart et arrivee */
 .depart-card {
     border-left: 4px solid #2E8B57 !important;
     background: linear-gradient(to right, rgba(46, 139, 87, 0.1), var(--beige));
@@ -1618,13 +1639,13 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     font-size: 1.1rem;
 }
 
-/* Amélioration du conteneur de photos */
+/* Amelioration du conteneur de photos */
 .photos-section {
     margin-top: 20px;
 }
 
 .photos-title {
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
     font-size: 1rem;
     margin-bottom: 10px;
     font-weight: 600;
@@ -1652,7 +1673,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* Style pour la description des sous-étapes */
+/* Style pour la description des sous-etapes */
 .sous-etape-description {
     margin-top: 15px;
     padding: 15px;
@@ -1662,7 +1683,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 .description-title {
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
     font-size: 1rem;
     margin-bottom: 10px;
     font-weight: 600;
@@ -1681,14 +1702,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border-radius: 5px;
 }
 
-/* Style info de la sous-étape (heure, etc.) */
+/* Style info de la sous-etape (heure, etc.) */
 .sous-etape-info {
     display: flex;
     gap: 15px;
     align-items: center;
     margin-top: 10px;
     font-size: 0.95rem;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
 }
 
 .sous-etape-info span {
@@ -1725,7 +1746,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     background: rgba(57, 178, 165, 0.1);
     border-radius: 20px;
     font-size: 0.9rem;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
     border: 1px solid rgba(57, 178, 165, 0.3);
     transition: all 0.3s ease;
 }
@@ -1742,7 +1763,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 .segment-distance,
 .segment-time {
     font-weight: 600;
-    color: var(--bleu_foncé);
+    color: var(--bleu_fonce);
 }
 
 .segment-separator {

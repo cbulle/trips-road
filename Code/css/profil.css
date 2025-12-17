@@ -13,7 +13,7 @@ main.profil {
 }
 
 .info_profil{
-  background-color: var(--beige_foncé);
+  background-color: var(--beige_fonce);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px var(--noir);
@@ -22,7 +22,7 @@ main.profil {
 }
 
 .form_modif {
-  background-color: var(--beige_foncé);
+  background-color: var(--beige_fonce);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px var(--noir);
@@ -40,7 +40,7 @@ main.profil {
 .form_modif label {
   display: block;
   font-size: 1rem;
-  color: var(--gris_foncé);
+  color: var(--gris_fonce);
   margin-bottom: 8px;
 }
 
@@ -55,7 +55,7 @@ main.profil {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
-  color: var(--gris_foncé);
+  color: var(--gris_fonce);
 }
 
 .form_modif input[type="password"],
@@ -69,7 +69,7 @@ main.profil {
 }
 
 .form_modif button {
-  background-color: var(--bleu_foncé); 
+  background-color: var(--bleu_fonce); 
   color: white;
   padding: 12px 30px;
   border: none;
@@ -97,7 +97,7 @@ main.profil {
 
 .profil ul li a {
   font-size: 1rem;
-  color: var(--bleu_foncé_ecriture);
+  color: var(--bleu_fonce_ecriture);
   text-decoration: none;
   transition: color 0.3s;
 }

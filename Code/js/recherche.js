@@ -139,6 +139,10 @@ const toggleSombre = document.getElementById("checkboxSombre");
  
 const savedMalvoyant = localStorage.getItem("Police");
 const toggleMalvoyant = document.getElementById("checkboxMalvoyant");
+
+const toggleDaltonien = document.getElementById("checkboxD");
+const savedMode = localStorage.getItem("modeDaltonien");
+
  
 if (savedTheme === "dark") {
     document.documentElement.classList.add("dark");
@@ -173,7 +177,7 @@ if (toggleMalvoyant) {
         if (toggleMalvoyant.checked) {
             document.documentElement.classList.add("malvoyant");
             document.documentElement.classList.add("MalvoyantBtn");
-            localStorage.setItem("Police", "malvoyant");
+            localStorage.setItem("Police", "voyant");
         } else {
             document.documentElement.classList.remove("malvoyant");
             document.documentElement.classList.remove("MalvoyantBtn");
@@ -181,6 +185,23 @@ if (toggleMalvoyant) {
         }
     });
 }
+
+
+if (savedMode === "on") {
+    document.documentElement.classList.add("daltonien");
+    toggleDaltonien.checked = true;
+}
+
+toggleDaltonien.addEventListener("change", () => {
+    if (toggleDaltonien.checked) {
+        document.documentElement.classList.add("daltonien");
+        localStorage.setItem("modeDaltonien", "on");
+    } else {
+        document.documentElement.classList.remove("daltonien");
+        localStorage.setItem("modeDaltonien", "off");
+    }
+});
+
 /*=======================================
   Formulaire d'inscription et de connexion
 =======================================*/

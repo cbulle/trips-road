@@ -20,7 +20,7 @@
 .conversations-list h2 {
     padding: 20px;
     margin: 0;
-    color: var(--bleu_foncé);
+    color: var(--bleu_fonce);
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -144,15 +144,17 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: white;
-}
+    background: var(--beige_fonce);
+}   
 
 .chat-header {
     padding: 20px;
     border-bottom: 1px solid #e0e0e0;
-    background: var(--beige_foncé);
+    background: var(--beige_fonce);
 }
-
+.aaaa{
+    color : var(--gris_fonce) ;
+}
 .chat-user-info {
     display: flex;
     align-items: center;
@@ -173,7 +175,7 @@
 .chat-user-info span {
     font-weight: bold;
     font-size: 18px;
-    color: var(--bleu_foncé);
+    color: var(--bleu_fonce);
 }
 
 .messages-container {
@@ -280,7 +282,7 @@
     height: 50px;
     border: none;
     background: var(--bleu_clair);
-    color: white;
+    color: var(--beige_visu);
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s;
@@ -301,7 +303,7 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #999;
+    color: var(--orange) ;
 }
 
 .no-chat-selected p {

@@ -33,6 +33,15 @@ require_once __DIR__ . '/modules/init.php';
                 <div class="slider round"></div>
             </label>
         </div>
+        <!-- Bouton Datolnien -->
+        <label for="checkboxD" id="btnDLabel">Mode daltonien :</label>
+<div class="btnD">
+  <label class="switch">
+    <input type="checkbox" id="checkboxD" aria-label="Activer le mode daltonien">
+    <span class="slider"></span>
+  </label>
+</div>
+
 
 
     <?php include __DIR__ . "/modules/footer.php" ?>

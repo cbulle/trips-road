@@ -16,19 +16,19 @@
 
 .main-index h2 {
     font-size: 2rem;
-    color: var(--bleu_foncé);
+    color: var(--bleu_fonce);
     margin-bottom: 1rem;
 }
 
 .main-index p {
     font-size: 1.1rem;
     margin-bottom: 2rem;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
 }
 
  .main-index button {
-    background-color: var(--bleu_foncé);
-    color: var(--beige_foncé);
+    background-color: var(--bleu_fonce);
+    color: var(--beige_fonce);
     border: none;
     padding: 1rem 2rem;
     font-size: 1.1rem;
@@ -44,16 +44,16 @@
 #mapContainer {
     margin: 2rem auto;
     padding: 1rem;
-    background-color: var(--beige_foncé);
+    background-color: var(--beige_fonce);
     border-radius: 8px;
-    box-shadow: 0 4px 8px var(--bleu_foncé_ecriture);
+    box-shadow: 0 4px 8px var(--bleu_fonce_ecriture);
     max-width: 1000px;
     text-align: center;
 }
 
 .main-index h3 {
     font-size: 1.5rem;
-    color: var(--bleu_foncé);
+    color: var(--bleu_fonce);
     margin-bottom: 1rem;
 }
 
@@ -69,7 +69,7 @@
 
 .index_container {
   padding: 30px;
-  background-color: var(--beige_foncé);
+  background-color: var(--beige_fonce);
 }
 
 .index_container>h1,.index_container> h2 {
