@@ -9,7 +9,7 @@
     max-width: 1000px;
     margin: 40px auto;
     padding: 20px;
-    background-color: var(--beige_foncé);
+    background-color: var(--beige_fonce);
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -28,9 +28,9 @@
 
 .cgu-container h2 {
     font-size: 1.8em;
-    color: var(--bleu_foncé);
+    color: var(--bleu_fonce);
     margin-bottom: 10px;
-    border-bottom: 2px solid var(--bleu_foncé);
+    border-bottom: 2px solid var(--bleu_fonce);
     padding-bottom: 5px;
 }
 
@@ -38,7 +38,7 @@
     font-size: 1em;
     margin-bottom: 15px;
     line-height: 1.8;
-    color: var(--bleu_foncé_ecriture);
+    color: var(--bleu_fonce_ecriture);
 }
 
 .cgu-container ul {

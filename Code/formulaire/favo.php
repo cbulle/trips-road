@@ -26,22 +26,18 @@ if (!$stmt->fetch()) {
 
 try {
     if ($action === 'remove') {
-        // Retirer des favoris
         $stmt = $pdo->prepare("DELETE FROM favoris WHERE id_utilisateur = :user_id AND id_roadtrip = :rt_id");
         $stmt->execute(['user_id' => $id_utilisateur, 'rt_id' => $id_roadtrip]);
         $_SESSION['message'] = "Road trip retiré de vos favoris.";
     } else {
-        // Toggle : vérifier si déjà en favori
         $stmt = $pdo->prepare("SELECT id FROM favoris WHERE id_utilisateur = :user_id AND id_roadtrip = :rt_id");
         $stmt->execute(['user_id' => $id_utilisateur, 'rt_id' => $id_roadtrip]);
         
         if ($stmt->fetch()) {
-            // Déjà en favori, on retire
             $stmt = $pdo->prepare("DELETE FROM favoris WHERE id_utilisateur = :user_id AND id_roadtrip = :rt_id");
             $stmt->execute(['user_id' => $id_utilisateur, 'rt_id' => $id_roadtrip]);
             $_SESSION['message'] = "Road trip retiré de vos favoris.";
         } else {
-            // Pas encore en favori, on ajoute
             $stmt = $pdo->prepare("INSERT INTO favoris (id_utilisateur, id_roadtrip) VALUES (:user_id, :rt_id)");
             $stmt->execute(['user_id' => $id_utilisateur, 'rt_id' => $id_roadtrip]);
             $_SESSION['message'] = "Road trip ajouté à vos favoris !";

@@ -129,3 +129,75 @@
 .btnMalvoyant .slider.round:before {
   border-radius: 50%;
 }
+
+/* ==============================
+  Bouton Mode Daltonien
+============================== */
+
+.btnD {
+  position: relative;
+  left: 47%;
+}
+
+.btnD .switch {
+  display: inline-block;
+  height: 34px;
+  width: 60px;
+  position: relative;
+}
+
+.btnD input {
+  display: none;
+}
+
+.btnD .slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background-color: var(--gris_clair);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.btnD .slider:before {
+  content: "";
+  position: absolute;
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--beige);
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.btnD input:checked + .slider {
+  background-color: var(--vert_btn);
+}
+
+.btnD input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+
+/* ==============================
+              Favoris
+============================== */
+
+ .btn-favori {
+            background: var(--orange_sombre);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-favori.active {
+            background: var(--rouge);
+        }
+        .btn-favori:hover {
+            background: var(--rouge);
+        }
+        .btn-favori.active:hover {
+            background: var(--rouge);
+        }

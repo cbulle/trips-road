@@ -2,7 +2,7 @@
   FOOTER
 ============================== */
 footer {
-  background-color: var(--bleu_foncé);
+  background-color: var(--bleu_fonce);
   padding: 20px 0;
   display: flex;
   justify-content: center; 

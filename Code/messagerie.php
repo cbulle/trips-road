@@ -94,6 +94,7 @@ if ($conversation_id) {
 <head>
     <meta charset="UTF-8">
     <title>Messagerie - Trips & Roads</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/messagerie.css">
 </head>
@@ -187,18 +188,14 @@ if ($conversation_id) {
                     <input type="hidden" name="destinataire_id" value="<?= $ami_info['ami_id'] ?>">
                     <textarea name="message" placeholder="Écrivez votre message..." required></textarea>
                     <button type="submit">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="white"/>
-                        </svg>
+                        <i class="material-icons">send</i>
                     </button>
                 </form>
             <?php else: ?>
                 <div class="no-chat-selected">
-                    <svg width="100" height="100" viewBox="0 0 24 24" fill="none">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" 
-                              stroke="#ccc" stroke-width="2"/>
-                    </svg>
-                    <p>Sélectionnez une conversation pour commencer</p>
+                        <i class="material-icons">chat_bubble</i>
+                   
+                   <p class="aaaa">Sélectionnez une conversation pour commencer</p>
                 </div>
             <?php endif; ?>
         </div>
