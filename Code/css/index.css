@@ -27,7 +27,7 @@
 }
 
  .main-index button {
-    background-color: var(--bleu_fonce);
+    background-color: var(--bleu_clair);
     color: var(--beige_fonce);
     border: none;
     padding: 1rem 2rem;
@@ -38,7 +38,7 @@
 }
 
 .main-index button:hover {
-    background-color: var(--bleu_clair);
+    background-color: var(--bleu_fonce);
 }
 
 #mapContainer {
