@@ -1793,3 +1793,86 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 .tox-tinymce {
     min-height: 200px;
 }
+
+.custom-marker-number {
+    background: transparent;
+    border: none;
+}
+
+.marker-pin {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    position: relative; 
+    z-index: 100;
+}
+
+.marker-offset-left {
+    margin-left: -18px !important;
+    margin-top: -10px !important;
+    z-index: 110 !important; 
+}
+.marker-offset-right {
+    margin-left: 18px !important;
+    margin-top: 10px !important;
+    z-index: 100 !important;
+}
+
+/* AJOUTS POUR LA LÉGENDE AVEC DATE */
+.legend-date-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.legend-date-container label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.legend-date-input {
+    border: 1px solid var(--bleu_clair);
+    border-radius: 5px;
+    padding: 4px;
+    font-family: inherit;
+    color: var(--bleu_fonce_ecriture);
+    background: white;
+}
+
+.status-selector-container {
+    background-color: var(--beige);
+    border: 2px solid var(--orange);
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.status-selector-container label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: var(--orange);
+}
+
+.status-selector-container select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--orange);
+    font-weight: bold;
+}
