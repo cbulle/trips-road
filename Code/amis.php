@@ -8,6 +8,7 @@ require_once __DIR__ . '/formulaire/form_amis.php';
     <meta charset="UTF-8">
     <title>Mes amis - Trips & Roads</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">    
     <link rel="stylesheet" href="css/form.css">
     <link rel="stylesheet" href="css/index.css">
    
@@ -39,7 +40,7 @@ require_once __DIR__ . '/formulaire/form_amis.php';
                             <li class="ami-item">
                                 <div class="ami-info">
                                     <?php if (!empty($u['photo_profil'])): ?>
-                                        <img src="/uploads/profils/<?= htmlspecialchars($u['photo_profil']) ?>" 
+                                        <img src="/uploads/pp/<?= htmlspecialchars($u['photo_profil']) ?>" 
                                              class="ami-photo" alt="Photo">
                                     <?php else: ?>
                                         <div class="ami-placeholder">
@@ -61,9 +62,9 @@ require_once __DIR__ . '/formulaire/form_amis.php';
                                 <?php if (!$statut): ?>
                                     <a href="?add=<?= $u['id'] ?>"><button>Ajouter</button></a>
                                 <?php elseif ($statut === 'en_attente'): ?>
-                                    <span style="color: #666;">Demande envoyée</span>
+                                    <span>Demande envoyée</span>
                                 <?php elseif ($statut === 'accepte'): ?>
-                                    <span style="color: green;">Ami</span>
+                                    <span >Ami</span>
                                 <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
@@ -81,7 +82,7 @@ require_once __DIR__ . '/formulaire/form_amis.php';
                             <li class="ami-item">
                                 <div class="ami-info">
                                     <?php if (!empty($ami['photo_profil'])): ?>
-                                        <img src="/uploads/profils/<?= htmlspecialchars($ami['photo_profil']) ?>" 
+                                        <img src="/uploads/pp/<?= htmlspecialchars($ami['photo_profil']) ?>" 
                                              class="ami-photo" alt="Photo">
                                     <?php else: ?>
                                         <div class="ami-placeholder">
@@ -94,12 +95,12 @@ require_once __DIR__ . '/formulaire/form_amis.php';
                                 <div class="ami-actions">
                                     <a href="/messagerie/debut_conv.php?ami_id=<?= $ami['id'] ?>" 
                                        class="btn-message">
-                                        💬 Message
+                                        <i class="material-icons" >chat</i> Message
                                     </a>
                                     <a href="?delete=<?= $ami['id'] ?>" 
                                        class="btn-supprimer"
                                        onclick="return confirm('Voulez-vous vraiment supprimer cet ami ?');">
-                                        Supprimer
+                                        <i class="material-icons">delete</i>Supprimer
                                     </a>
                                 </div>
                             </li>
@@ -116,7 +117,7 @@ require_once __DIR__ . '/formulaire/form_amis.php';
                             <li class="ami-item">
                                 <div class="ami-info">
                                     <?php if (!empty($demande['photo_profil'])): ?>
-                                        <img src="/uploads/profils/<?= htmlspecialchars($demande['photo_profil']) ?>" 
+                                        <img src="/uploads/pp/<?= htmlspecialchars($demande['photo_profil']) ?>" 
                                              class="ami-photo" alt="Photo">
                                     <?php else: ?>
                                         <div class="ami-placeholder">
@@ -128,10 +129,10 @@ require_once __DIR__ . '/formulaire/form_amis.php';
                                 
                                 <div class="ami-actions">
                                     <a href="?action=accepter&id=<?= $demande['id'] ?>">
-                                        <button style="background: green; color: white;">Accepter</button>
+                                        <button>Acepter</button>
                                     </a>
                                     <a href="?action=refuser&id=<?= $demande['id'] ?>">
-                                        <button style="background: var(--rouge); color: white;">Refuser</button>
+                                        <button>Refuser</button>
                                     </a>
                                 </div>
                             </li>

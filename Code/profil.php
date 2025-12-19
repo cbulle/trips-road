@@ -15,7 +15,6 @@ $user = $_SESSION['utilisateur'];
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/style.css"> 
-    <link rel="stylesheet" href="css/form.css">
     <link rel="stylesheet" href="css/profil.css">
 
     <title>Profil</title>
@@ -83,7 +82,9 @@ $user = $_SESSION['utilisateur'];
            value="<?= htmlspecialchars($user['date_naissance'] ?? "") ?>">
 
     <label for="image">Nouvelle photo de profil</label>
-    <input type="file" id="image" name="image" accept="image/*">
+    <input type="file" id="image" name="image" accept="image/*"
+        src="/uploads/pp/<?= htmlspecialchars($user['photo_profil']) ?>" 
+                                 alt="Photo de profil">>
 
 
     <button type="submit">Enregistrer les modifications</button>

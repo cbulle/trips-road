@@ -26,6 +26,7 @@ main.profil {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px var(--noir);
+  width : 1000  ;
   
 }
 
@@ -58,15 +59,6 @@ main.profil {
   color: var(--gris_fonce);
 }
 
-.form_modif input[type="password"],
-.form_modif input[type="text"],
-.form_modif input[type="email"],
-.form_modif input[type="tel"],
-.form_modif input[type="date"] {
-  width: 100%;
-  max-width: 350px;
-  margin-bottom: 15px;
-}
 
 .form_modif button {
   background-color: var(--bleu_fonce); 

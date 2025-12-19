@@ -193,7 +193,7 @@ if ($conversation_id) {
                 </form>
             <?php else: ?>
                 <div class="no-chat-selected">
-                        <i class="material-icons">chat_bubble</i>
+                        <i class="material-icons"id="chat_icon">chat_bubble</i>
                    
                    <p class="aaaa">Sélectionnez une conversation pour commencer</p>
                 </div>

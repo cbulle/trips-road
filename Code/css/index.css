@@ -27,7 +27,7 @@
 }
 
  .main-index button {
-    background-color: var(--bleu_fonce);
+    background-color: var(--bleu_clair);
     color: var(--beige_fonce);
     border: none;
     padding: 1rem 2rem;
@@ -38,7 +38,7 @@
 }
 
 .main-index button:hover {
-    background-color: var(--bleu_clair);
+    background-color: var(--bleu_fonce);
 }
 
 #mapContainer {
@@ -97,13 +97,13 @@
 
 .search-container input:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--bleu_clair);
     box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
 }
 
 .search-container button {
     padding: 12px 25px;
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: var(--bleu_clair);
     color: white;
     border: none;
     border-radius: 25px;
@@ -124,7 +124,7 @@
     left: 0;
     right: 60px;
     background: #ffffff;
-    border: 2px solid #3498db;
+    border: 2px solid var(--bleu_clair);
     border-radius: 10px;
     list-style: none;
     padding: 0;
@@ -147,7 +147,7 @@
 .searching-results li:hover {
     background: linear-gradient(to right, #ecf0f1, #ffffff);
     padding-left: 25px;
-    color: #2c3e50;
+    color: var(--bleu_fonce_ecriture);
     font-weight: 500;
 }
 
@@ -163,7 +163,7 @@
 }
 
 #mapContainer h3 {
-    color: #2c3e50;
+    color: var(--bleu_fonce_ecriture);
     font-size: 22px;
     margin-bottom: 20px;
 }
@@ -178,7 +178,7 @@
 .category-sidebar {
     min-width: 320px;
     max-width: 320px;
-    background: white;
+    background: var(--beige_visu);
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
@@ -192,7 +192,7 @@
     gap: 12px;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid #ecf0f1;
+    border-bottom: 2px solid var(--gris_clair);
 }
 
 .category-icon {
@@ -201,7 +201,7 @@
 
 .category-header h4 {
     margin: 0;
-    color: #2c3e50;
+    color: var(--bleu_fonce_ecriture);
     font-size: 20px;
     font-weight: 700;
 }
@@ -213,7 +213,7 @@
 .category-select-wrapper label {
     display: block;
     margin-bottom: 10px;
-    color: #34495e;
+    color: var(--bleu_fonce_ecriture);
     font-weight: 600;
     font-size: 14px;
 }
@@ -221,11 +221,11 @@
 .category-select {
     width: 100%;
     padding: 12px 15px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--gris_clair);
     border-radius: 10px;
     font-size: 15px;
-    color: #2c3e50;
-    background: white;
+    color: var(--bleu_fonce_ecriture);
+    background: var(--beige);
     cursor: pointer;
     transition: all 0.3s ease;
     appearance: none;
@@ -236,13 +236,13 @@
 }
 
 .category-select:hover {
-    border-color: #3498db;
+    border-color: var(--bleu_clair);
     box-shadow: 0 3px 10px rgba(52, 152, 219, 0.1);
 }
 
 .category-select:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: var(--bleu_clair);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
@@ -253,14 +253,13 @@
 .category-select optgroup {
     font-weight: 700;
     font-size: 14px;
-    color: #2c3e50;
-    background: #f8f9fa;
+    background: var(--bleu_clair);
 }
 
 /* Info box */
 .category-info {
-    background: linear-gradient(135deg, #e8f4f8, #f0f8ff);
-    border-left: 4px solid #3498db;
+    border: 2px solid var(--gris_clair);
+
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
@@ -269,39 +268,37 @@
 .info-text {
     margin: 0 0 10px 0;
     font-size: 13px;
-    color: #34495e;
+    color: var(--bleu_fonce_ecriture);
     line-height: 1.5;
 }
 
 .info-zone {
     margin: 0;
     font-size: 13px;
-    color: #34495e;
+    color: var(--bleu_fonce_ecriture);
 }
 
 .info-text strong,
 .info-zone strong {
-    color: #2c3e50;
+    color: var(--bleu_fonce_ecriture);
 }
 
 /* Bouton effacer */
 .clear-filter-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    color: white;
+    background: var(--rouge) ;
+    color: var(--bleu_fonce_ecriture);;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-size: 15px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.2);
 }
 
 .clear-filter-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
 }
 
 .clear-filter-btn:active {
@@ -407,6 +404,6 @@
 }
 
 .leaflet-popup-content h4 {
-    color: #2c3e50;
+    color: var(--bleu_fonce_ecriture);
     margin-bottom: 5px;
 }

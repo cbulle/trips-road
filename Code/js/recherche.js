@@ -142,6 +142,13 @@ const toggleMalvoyant = document.getElementById("checkboxMalvoyant");
 
 const toggleDaltonien = document.getElementById("checkboxD");
 const savedMode = localStorage.getItem("modeDaltonien");
+const savedType = localStorage.getItem("typeDaltonien");
+
+const daltonienTypes = {
+    protanopia: 'protanopia',
+    deutéranopia: 'deuteranopia',
+    tritanopia: 'tritanopia',
+};
 
  
 if (savedTheme === "dark") {
@@ -189,15 +196,24 @@ if (toggleMalvoyant) {
 
 if (savedMode === "on") {
     document.documentElement.classList.add("daltonien");
+    if (savedType) {
+        document.documentElement.classList.add(savedType);
+    }
     toggleDaltonien.checked = true;
 }
 
 toggleDaltonien.addEventListener("change", () => {
+    const selectedType = document.querySelector('input[name="daltonism-type"]:checked').value;
     if (toggleDaltonien.checked) {
         document.documentElement.classList.add("daltonien");
+        document.documentElement.classList.add(selectedType);
         localStorage.setItem("modeDaltonien", "on");
+        localStorage.setItem("typeDaltonien", selectedType);
     } else {
         document.documentElement.classList.remove("daltonien");
+        document.documentElement.classList.remove(daltonienTypes.protanopia);
+        document.documentElement.classList.remove(daltonienTypes.deutéranopia);
+        document.documentElement.classList.remove(daltonienTypes.tritanopia);
         localStorage.setItem("modeDaltonien", "off");
     }
 });
@@ -205,26 +221,23 @@ toggleDaltonien.addEventListener("change", () => {
 /*=======================================
   Formulaire d'inscription et de connexion
 =======================================*/
- 
+
+
+
 function showLogin() {
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.style.display = 'block';
-        document.getElementById('registerForm').style.display = 'none';
-        document.getElementById('btnLogin').classList.add('active');
-        document.getElementById('btnRegister').classList.remove('active');
-    }
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('btnLogin').classList.add('active');
+    document.getElementById('btnRegister').classList.remove('active');
 }
- 
+
 function showRegister() {
-    const regForm = document.getElementById('registerForm');
-    if (regForm) {
-        document.getElementById('loginForm').style.display = 'none';
-        regForm.style.display = 'block';
-        document.getElementById('btnLogin').classList.remove('active');
-        document.getElementById('btnRegister').classList.add('active');
-    }
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('btnLogin').classList.remove('active');
+    document.getElementById('btnRegister').classList.add('active');
 }
+
  
 function openModal() {
     const modal = document.querySelector('.formulaire'); 
@@ -232,10 +245,10 @@ function openModal() {
         modal.style.display = 'block';
     }
 }
- 
+
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.formulaire')) {
-        openModal();
-        showLogin(); 
-    }
+    openModal();
+    showRegister();
 });
+
+ 
