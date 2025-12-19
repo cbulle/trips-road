@@ -324,3 +324,34 @@ async function calculerSegment(segment) {
         timeEl.textContent = 'Err';
     }
 }
+    /*==================================
+    Mes road 
+    ================================*/
+
+function closeShareModal() {
+    document.getElementById('shareModal').classList.remove('active');
+    // Retirer le paramètre de l'URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+function copyShareUrl() {
+    const input = document.getElementById('shareUrl');
+    navigator.clipboard.writeText(input.value).then(() => {
+        const success = document.getElementById('copySuccess');
+        success.style.display = 'block';
+        
+        setTimeout(() => {
+            success.style.display = 'none';
+        }, 3000);
+    }).catch(err => {
+        console.error('Erreur lors de la copie du texte : ', err);
+    });
+}
+
+// Fermer le modal en cliquant à l'extérieur
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('shareModal');
+    if (modal && !modal.contains(event.target)) {
+        closeShareModal();
+    }
+});

@@ -16,7 +16,6 @@ if (!$ami_id) {
 }
 
 try {
-    // Vérifier si une conversation existe déjà
     $stmt = $pdo->prepare("
         SELECT id FROM conversations 
         WHERE (user1_id = :u1 AND user2_id = :u2) OR (user1_id = :u2 AND user2_id = :u1)
@@ -27,7 +26,6 @@ try {
     if ($conv) {
         $conversation_id = $conv['id'];
     } else {
-        // Créer une nouvelle conversation
         $stmt = $pdo->prepare("INSERT INTO conversations (user1_id, user2_id) VALUES (:u1, :u2)");
         $stmt->execute(['u1' => $id_utilisateur, 'u2' => $ami_id]);
         $conversation_id = $pdo->lastInsertId();

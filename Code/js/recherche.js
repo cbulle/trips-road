@@ -205,26 +205,23 @@ toggleDaltonien.addEventListener("change", () => {
 /*=======================================
   Formulaire d'inscription et de connexion
 =======================================*/
- 
+
+
+
 function showLogin() {
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.style.display = 'block';
-        document.getElementById('registerForm').style.display = 'none';
-        document.getElementById('btnLogin').classList.add('active');
-        document.getElementById('btnRegister').classList.remove('active');
-    }
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('btnLogin').classList.add('active');
+    document.getElementById('btnRegister').classList.remove('active');
 }
- 
+
 function showRegister() {
-    const regForm = document.getElementById('registerForm');
-    if (regForm) {
-        document.getElementById('loginForm').style.display = 'none';
-        regForm.style.display = 'block';
-        document.getElementById('btnLogin').classList.remove('active');
-        document.getElementById('btnRegister').classList.add('active');
-    }
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    document.getElementById('btnLogin').classList.remove('active');
+    document.getElementById('btnRegister').classList.add('active');
 }
+
  
 function openModal() {
     const modal = document.querySelector('.formulaire'); 
@@ -232,10 +229,10 @@ function openModal() {
         modal.style.display = 'block';
     }
 }
- 
+
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.formulaire')) {
-        openModal();
-        showLogin(); 
-    }
+    openModal();
+    showRegister();
 });
+
+ 

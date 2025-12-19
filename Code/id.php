@@ -69,13 +69,18 @@ include_once __DIR__ . "/modules/header.php"
                     tout moment revenir sur vos choix sur la page modifier mes préférences dans votre espace client.
                     </p>
             </form>
+
+
             <form id="loginForm" class="form-box" action = "formulaire/form_connect.php" method = "post">
                 <h2 id="register-title">Connexion</h2>
+                
                 <label for="email">Adresse email</label>
                 <input type="email" id="email" name="email" required>
+                
                 <label for="password">Mot de passe</label>
                 <input type="password" id="password" name="password" required>
                 <input type="checkbox" name= "remember" id="remember">
+                
                 <label for="remember"> Se souvenir de moi</label>
                 <button type="submit">Se connecter</button>
             </form>
@@ -86,6 +91,5 @@ include_once __DIR__ . "/modules/header.php"
 <?php     
 include_once __DIR__ . "/modules/footer.php"
 ?>
-<script src = "js/map.js"></script>
 </body>
 </html>

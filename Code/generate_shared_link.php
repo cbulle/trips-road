@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../modules/init.php';
-include_once __DIR__ . '/../bd/lec_bd.php';
+require_once __DIR__ . '/modules/init.php';
+include_once __DIR__ . '/bd/lec_bd.php';
 
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /id.php');
