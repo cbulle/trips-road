@@ -2,22 +2,18 @@
 document.addEventListener('DOMContentLoaded', async () => {
  
     // ============================================================
-    // 1. INITIALISATION DE LA CARTE & VARIABLES GLOBALES
+    // 1. INITIALISATION DE LA CARTE & VARIABLES
     // ============================================================
  
     let map = L.map('map').setView([46.5, 2.5], 6);
  
-    // Couches de tuiles
-    var lightLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '@ OpenStreetMap'
     }).addTo(map);
  
-    // Variables d'�tat
-    let segments = [];      // Stocke les objets segments (ligne, infos, sous-�tapes)
-    const markers = {};     // Stocke les r�f�rences des marqueurs pour nettoyage
- 
-    // �tat "Bloc par Bloc"
+    let segments = []; 
+    const markers = {}; 
     let currentStartCity = (typeof USER_DEFAULT_CITY !== 'undefined') ? USER_DEFAULT_CITY : ""; 
     let currentStartCoords = null; 
  
@@ -28,54 +24,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
  
     const segmentColors = [
-        'blue', 'green', 'orange', 'red', 'purple', 'brown', 'pink', 'teal', 'indigo'
+        '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9'
     ];
  
-    const europeViewbox = [-25.0, 35.0, 30.0, 71.0];
- 
-    // --- GESTION INITIALE VILLE UTILISATEUR ---
-    if (currentStartCity) {
-        getCoordonnees(currentStartCity).then(coords => {
-            if (coords) {
-                currentStartCoords = coords;
-                addMarker(currentStartCity, currentStartCoords, "ville", `Départ RoadTrip : ${currentStartCity}`);
-                map.setView(currentStartCoords, 10);
-            } else {
-                console.warn("Ville par défaut introuvable via l'API. Reset.");
-                currentStartCity = ""; 
-            }
-        });
-    }
- 
     // ============================================================
-    // 2. FONCTIONS UTILITAIRES (G�ocodage, Markers, Autocomplete)
+    // 2. GESTION DU STATUT & VISIBILITÉ (UI Logic)
     // ============================================================
- 
-    function getNomSimple(nomComplet) {
-        if (!nomComplet) return '';
-        return nomComplet.split(',')[0].trim(); 
+    const statusSelect = document.getElementById('roadtripStatut');
+    const visibilitySelect = document.getElementById('roadtripVisibilite');
+
+    function updateVisibilityState() {
+        if (statusSelect.value === 'brouillon') {
+            // Si brouillon, forcer Privé et désactiver
+            visibilitySelect.value = 'prive';
+            visibilitySelect.disabled = true;
+        } else {
+            // Si terminé, activer le choix
+            visibilitySelect.disabled = false;
+        }
     }
- 
+    
+    if(statusSelect && visibilitySelect) {
+        statusSelect.addEventListener('change', updateVisibilityState);
+        updateVisibilityState(); // Init
+    }
+
+
+    // ============================================================
+    // 3. FONCTIONS UTILITAIRES
+    // ============================================================
+    
     async function getCoordonnees(ville) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&viewbox=${europeViewbox.join(',')}&bounded=1&limit=1&accept-language=fr`;
+        // ... (Code existant inchangé) ...
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr`;
         try {
             const resp = await fetch(url);
             const data = await resp.json();
             if (data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
             return null;
-        } catch (e) {
-            console.error(e);
-            return null;
-        }
+        } catch (e) { return null; }
     }
- 
+    
     function addMarker(lieu, coords, type, popupContent) {
         const marker = L.marker(coords).addTo(map).bindPopup(popupContent);
         if (!markers[lieu]) markers[lieu] = [];
-        markers[lieu].push({ marker, type, text: popupContent });
+        markers[lieu].push({ marker, type });
         return marker;
     }
- 
+
+    function getNomSimple(nom) { return nom ? nom.split(',')[0].trim() : ''; }
+
     function initAutocomplete(element) {
         if (!element) return;
         $(element).autocomplete({
@@ -86,65 +84,138 @@ document.addEventListener('DOMContentLoaded', async () => {
                     method: "GET",
                     data: { q: request.term },
                     success: function(data) {
-                        response($.map(data, function(item) {
-                            return { label: item.nom_ville, value: item.nom_ville }
-                        }));
+                        response($.map(data, function(item) { return { label: item.nom_ville, value: item.nom_ville } }));
                     },
                     error: function() { response([]); }
                 });
             },
-            minLength: 3,
-            delay: 600,
-            select: function(event, ui) { $(element).val(ui.item.value); }
+            minLength: 3
         });
     }
- 
+
     // ============================================================
-    // 3. LOGIQUE D'AJOUT DE BLOCS (SEGMENTS)
+    // 4. LOGIQUE DATES INTELLIGENTES
+    // ============================================================
+    
+    function updateDateConstraints() {
+        // Parcours tous les inputs date de la légende dans l'ordre
+        const dateInputs = document.querySelectorAll('.legend-date-input');
+        
+        for (let i = 0; i < dateInputs.length; i++) {
+            const currentInput = dateInputs[i];
+            
+            // Si ce n'est pas le premier, on définit son MIN basé sur la date du précédent
+            if (i > 0) {
+                const prevInput = dateInputs[i - 1];
+                if (prevInput.value) {
+                    currentInput.min = prevInput.value;
+                    
+                    // Si la date actuelle est antérieure au min, on la reset ou on l'aligne
+                    if (currentInput.value && currentInput.value < prevInput.value) {
+                        currentInput.value = prevInput.value;
+                    }
+                }
+            }
+            
+            // Ajout d'un écouteur pour propager le changement
+            currentInput.addEventListener('change', updateDateConstraints);
+        }
+    }
+
+
+    // ============================================================
+    // 5. CHARGEMENT MODE ÉDITION
+    // ============================================================
+
+    if (typeof MODE_EDITION !== 'undefined' && MODE_EDITION === true && EXISTING_TRAJETS) {
+        console.log("Mode édition activé. Chargement des trajets...");
+        await loadExistingRoadTrip();
+    } else {
+        // Mode création standard : Marker sur ville départ user
+        if (currentStartCity) {
+            getCoordonnees(currentStartCity).then(coords => {
+                if (coords) {
+                    currentStartCoords = coords;
+                    addMarker(currentStartCity, currentStartCoords, "ville", `Départ : ${currentStartCity}`);
+                    map.setView(currentStartCoords, 10);
+                }
+            });
+        }
+    }
+
+    async function loadExistingRoadTrip() {
+        // Pour chaque trajet existant, on le reconstruit
+        // On doit le faire séquentiellement pour garder l'ordre
+        for (let i = 0; i < EXISTING_TRAJETS.length; i++) {
+            const t = EXISTING_TRAJETS[i];
+            
+            // Récup coordonnées (normalement on devrait les avoir stockées, mais on les re-fetch pour être sûr)
+            const startCoords = await getCoordonnees(t.depart);
+            const endCoords = await getCoordonnees(t.arrivee);
+            
+            if (startCoords && endCoords) {
+                // Créer le segment
+                // Note : On passe la date ici pour qu'elle soit mise dans l'input
+                await _ajouterSegmentEntre(t.depart, startCoords, t.arrivee, endCoords, segments.length, strategies['Voiture'], t);
+                
+                // Mettre à jour la variable globale pour le prochain ajout manuel
+                currentStartCity = t.arrivee;
+                currentStartCoords = endCoords;
+                
+                // Ajouter marqueurs
+                addMarker(t.depart, startCoords, "ville", t.depart);
+                addMarker(t.arrivee, endCoords, "ville", t.arrivee);
+                
+                // Traiter les sous-étapes
+                const currentSeg = segments[segments.length - 1]; // Le dernier ajouté
+                if (t.sousEtapes && t.sousEtapes.length > 0) {
+                     // On remplit le tableau du segment
+                     currentSeg.sousEtapes = t.sousEtapes;
+                     // On ajoute les marqueurs sur la carte
+                     for (const se of t.sousEtapes) {
+                         const c = await getCoordonnees(se.nom);
+                         if(c) addMarker(se.nom, c, "sous_etape", `<b>${se.nom}</b><br>${se.heure}`);
+                     }
+                     // On met à jour l'affichage HTML de la liste
+                     updateLegendHtml(segments.length - 1);
+                }
+            }
+        }
+        
+        // Centrer la carte
+        if (segments.length > 0) {
+            const group = new L.featureGroup(segments.map(s => s.line));
+            map.fitBounds(group.getBounds());
+        }
+    }
+
+
+    // ============================================================
+    // 6. AJOUT DE SEGMENTS
     // ============================================================
  
-    const newBlockFormContainer = document.getElementById('newBlockForm');
     const btnAddSegment = document.getElementById('btnAddSegment');
+    const newBlockFormContainer = document.getElementById('newBlockForm');
  
     if (btnAddSegment) {
         btnAddSegment.addEventListener('click', () => {
             btnAddSegment.style.display = 'none'; 
- 
             let html = '';
-            let needStartInput = false;
- 
+            
             if (!currentStartCoords) {
-                needStartInput = true;
-                html += `
-                    <div class="new-block-field">
-                        <label class="new-block-label">Ville de Départ :</label>
-                        <input type="text" id="inputStartBlock" class="etape new-block-input" placeholder="Ex: Paris">
-                    </div>
-                `;
+                html += `<div class="new-block-field"><label class="new-block-label">Départ :</label><input type="text" id="inputStartBlock" class="new-block-input"></div>`;
             } else {
-                html += `
-                    <div class="new-block-static">
-                        <strong>Départ :</strong> <span>${currentStartCity}</span>
-                    </div>
-                `;
+                html += `<div class="new-block-static"><strong>Départ :</strong> ${currentStartCity}</div>`;
             }
  
-            html += `
-                <div class="new-block-field">
-                    <label class="new-block-label">Ville d'Arrivée :</label>
-                    <input type="text" id="inputEndBlock" class="etape new-block-input" placeholder="Ex: Lyon">
-                </div>
- 
-                <div class="new-block-actions">
-                    <button id="btnCancelBlock" class="btn-block-action btn-block-cancel">Annuler</button>
-                    <button id="btnValidateBlock" class="btn-block-action btn-block-validate">Valider le trajet</button>
-                </div>
-            `;
+            html += `<div class="new-block-field"><label class="new-block-label">Arrivée :</label><input type="text" id="inputEndBlock" class="new-block-input"></div>
+                     <div class="new-block-actions">
+                        <button id="btnCancelBlock" class="btn-block-action btn-block-cancel">Annuler</button>
+                        <button id="btnValidateBlock" class="btn-block-action btn-block-validate">Valider</button>
+                     </div>`;
  
             newBlockFormContainer.innerHTML = html;
-            newBlockFormContainer.style.display = 'block';
- 
-            if (needStartInput) initAutocomplete(document.getElementById('inputStartBlock'));
+            if (!currentStartCoords) initAutocomplete(document.getElementById('inputStartBlock'));
             initAutocomplete(document.getElementById('inputEndBlock'));
  
             document.getElementById('btnCancelBlock').addEventListener('click', () => {
@@ -153,278 +224,219 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
  
             document.getElementById('btnValidateBlock').addEventListener('click', async () => {
-                const btnVal = document.getElementById('btnValidateBlock');
-                btnVal.disabled = true;
-                btnVal.textContent = "Calcul...";
- 
+                const btn = document.getElementById('btnValidateBlock');
+                btn.disabled = true; btn.textContent = "Calcul...";
+                
+                let startName = currentStartCity, startCoords = currentStartCoords;
                 const inputStart = document.getElementById('inputStartBlock');
-                const inputEnd = document.getElementById('inputEndBlock');
- 
-                let startName = currentStartCity;
-                let startCoords = currentStartCoords;
- 
+                
                 if (inputStart) {
                     startName = inputStart.value.trim();
-                    if (!startName) { alert("Veuillez saisir un départ."); btnVal.disabled = false; return; }
- 
                     startCoords = await getCoordonnees(startName);
-                    if (!startCoords) { alert(`Ville de départ introuvable : ${startName}`); btnVal.disabled = false; return; }
- 
-                    addMarker(startName, startCoords, "ville", `Départ : ${startName}`);
+                    if(!startCoords) { alert('Départ introuvable'); btn.disabled=false; return; }
+                    addMarker(startName, startCoords, "ville", startName);
                 }
- 
-                const endName = inputEnd.value.trim();
-                if (!endName) { alert("Veuillez saisir une arrivée."); btnVal.disabled = false; return; }
- 
+                
+                const endName = document.getElementById('inputEndBlock').value.trim();
                 const endCoords = await getCoordonnees(endName);
-                if (!endCoords) { alert(`Ville d'arrivée introuvable : ${endName}`); btnVal.disabled = false; return; }
- 
+                if(!endCoords) { alert('Arrivée introuvable'); btn.disabled=false; return; }
+                
                 await _ajouterSegmentEntre(startName, startCoords, endName, endCoords, segments.length, strategies['Voiture']);
- 
-                addMarker(endName, endCoords, "ville", `étape : ${endName}`);
- 
+                addMarker(endName, endCoords, "ville", endName);
+                
                 currentStartCity = endName;
                 currentStartCoords = endCoords;
- 
+                
                 newBlockFormContainer.innerHTML = '';
                 btnAddSegment.style.display = 'block';
- 
-                const allCoords = segments.flatMap(s => [s.startCoord, s.endCoord]);
-                if(allCoords.length) map.fitBounds(allCoords, { padding: [50, 50] });
             });
         });
     }
- 
-    // ============================================================
-    // 4. CREATION ET GESTION DES SEGMENTS (ITIN�RAIRES)
-    // ============================================================
- 
-    async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy) {
+
+    // Fonction interne pour créer le segment visuel et logique
+    // Paramètre 'existingData' optionnel pour pré-remplir (date, mode...)
+    async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy, existingData = null) {
         const coordString = `${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}`;
         const url = `https://router.project-osrm.org/route/v1/${strategy.profile}/${coordString}?overview=full&geometries=geojson`;
  
         try {
             const resp = await fetch(url);
             const data = await resp.json();
- 
-            let geoData, dist, dur;
- 
-            if (data.code === 'Ok') {
-                geoData = data.routes[0].geometry;
-                dist = (data.routes[0].distance / 1000).toFixed(1);
-                dur = Math.floor(data.routes[0].duration / 60);
-            } else {
-                geoData = {
-                    "type": "LineString",
-                    "coordinates": [ [startCoords[1], startCoords[0]], [endCoords[1], endCoords[0]] ]
-                };
-                dist = 0; dur = 0; 
-            }
- 
-            const couleurSegment = segmentColors[index % segmentColors.length];
- 
-            const line = L.geoJSON(geoData, { 
-                color: couleurSegment, 
-                weight: 5, 
-                opacity: 0.8 
-            }).addTo(map);
- 
-            const startNameSimple = getNomSimple(startName);
-            const endNameSimple = getNomSimple(endName);
+            let geoData = (data.code === 'Ok') ? data.routes[0].geometry : { "type": "LineString", "coordinates": [[startCoords[1], startCoords[0]], [endCoords[1], endCoords[0]]] };
+            
+            const color = segmentColors[index % segmentColors.length];
+            const line = L.geoJSON(geoData, { color: color, weight: 5 }).addTo(map);
  
             segments.push({
-                line,
-                startName, startCoord: startCoords,
-                endName, endCoord: endCoords,
-                distance: dist, 
-                duration: dur,
-                couleurSegment,
+                line, startName, startCoord: startCoords, endName, endCoord: endCoords,
+                couleurSegment: color,
                 sousEtapes: [],
-                startNameSimple, 
-                endNameSimple,
-                modeTransport: 'Voiture', 
-                options: {}
+                startNameSimple: getNomSimple(startName),
+                endNameSimple: getNomSimple(endName),
+                modeTransport: existingData ? existingData.mode : 'Voiture',
+                options: {},
+                date: existingData ? existingData.date_trajet : '' // Stockage date
             });
  
-            // Ajout visuel dans la liste l�gende
-            const templateLegend = document.getElementById('template-legend-item');
-            const clone = templateLegend.content.cloneNode(true);
+            // AJOUT DOM LÉGENDE
+            const template = document.getElementById('template-legend-item');
+            const clone = template.content.cloneNode(true);
             const li = clone.querySelector('li');
             li.dataset.index = index;
- 
-            clone.querySelector('.legend-color-indicator').style.background = couleurSegment;
- 
-            // Titre du segment (on garde la fl�che pour le style mais elle ne masque plus rien)
-            const toggleBtn = clone.querySelector('.toggleSousEtapes');
-            toggleBtn.dataset.index = index;
-            toggleBtn.innerHTML = `${startNameSimple} → ${endNameSimple} <strong style="margin-left:5px; color: ${couleurSegment}; border: none;">▼</strong>`;
-            // Optionnel : D�sactiver le curseur pointeur si on ne veut pas que �a ait l'air cliquable
-            toggleBtn.style.cursor = "default"; 
- 
+            
+            clone.querySelector('.legend-color-indicator').style.background = color;
+            clone.querySelector('.toggleSousEtapes').innerHTML = `${getNomSimple(startName)} → ${getNomSimple(endName)}`;
+            
+            // Gestion DATE
+            const dateInput = clone.querySelector('.legend-date-input');
+            if(existingData && existingData.date_trajet) {
+                dateInput.value = existingData.date_trajet;
+            }
+            // Au changement de date, on met à jour l'objet segment et les contraintes
+            dateInput.addEventListener('change', (e) => {
+                segments[index].date = e.target.value;
+                updateDateConstraints();
+            });
+
             clone.querySelector('.modifierSousEtapes').dataset.index = index;
- 
-            // --- MODIFICATION ICI : On force l'affichage imm�diat de la liste ---
-            const ul = clone.querySelector('.sousEtapesList');
-            ul.dataset.index = index;
-            ul.style.display = 'block'; // Force visible
- 
-            // Remplissage imm�diat de la liste
-            let listHtml = `<li><strong>Départ:</strong> ${startNameSimple}</li>`;
-            // Pas de sous-�tapes au moment de la cr�ation
-            listHtml += `<li><strong>Arrivée:</strong> ${endNameSimple}</li>`;
-            ul.innerHTML = listHtml;
- 
             document.getElementById('legendList').appendChild(clone);
- 
-        } catch (e) {
-            console.error("Erreur création segment :", e);
-        }
+            
+            updateDateConstraints(); // Appliquer contraintes min/max
+            updateLegendHtml(index); // Afficher texte de base
+
+        } catch (e) { console.error(e); }
     }
- 
+
     async function updateRouteSegment(index, mode, options = {}) {
         const seg = segments[index];
         if (!seg) return;
- 
+
         seg.modeTransport = mode; 
         seg.options = options;
- 
-        let urlBase = 'https://routing.openstreetmap.de/routed-car/route/v1/driving/';
-        if (mode === 'Velo') urlBase = 'https://routing.openstreetmap.de/routed-bike/route/v1/driving/';
-        else if (mode === 'Marche') urlBase = 'https://routing.openstreetmap.de/routed-foot/route/v1/driving/';
- 
+
+        // 1. Choix du profil OSRM selon le mode
+        let profile = 'driving';
+        if (mode === 'Velo') profile = 'cycling';
+        else if (mode === 'Marche') profile = 'walking';
+
+        // 2. Construction de la liste des points : [Départ, ...Sous-étapes, Arrivée]
         let coordsList = [seg.startCoord];
+
         if (seg.sousEtapes && seg.sousEtapes.length > 0) {
             for (const sub of seg.sousEtapes) {
-                const subCoords = await getCoordonnees(sub.nom);
-                if (subCoords) coordsList.push(subCoords);
+                // On s'assure d'avoir les coordonnées
+                if (!sub.coords) {
+                    sub.coords = await getCoordonnees(sub.nom);
+                }
+                if (sub.coords) {
+                    coordsList.push(sub.coords);
+                }
             }
         }
+
         coordsList.push(seg.endCoord);
- 
+
+        // 3. Construction de l'URL pour l'API
+        // Format OSRM : lon,lat;lon,lat;...
         const coordString = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
-        let url = `${urlBase}${coordString}?overview=full&geometries=geojson`;
- 
-        if (mode === 'Voiture' || mode === 'driving') {
-            const excludes = [];
-            if (options.excludeTolls) excludes.push('toll');
-            if (options.excludeMotorways) excludes.push('motorway');
-            if (excludes.length > 0) url += `&exclude=${excludes.join(',')}`;
-        }
- 
+        let url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+
+        // Ajout des options (péages, autoroutes...)
+        const excludes = [];
+        if (options.excludeTolls) excludes.push('toll');
+        if (options.excludeMotorways) excludes.push('motorway');
+        if (excludes.length > 0) url += `&exclude=${excludes.join(',')}`;
+
         try {
             const resp = await fetch(url);
             const data = await resp.json();
- 
+
             if (data.code !== 'Ok') {
-                alert("Impossible de calculer le trajet avec ces options.");
+                console.warn("Erreur calcul itinéraire", data);
                 return;
             }
- 
+
+            // 4. Mise à jour visuelle sur la carte
+            // On supprime l'ancienne ligne
             if (seg.line) map.removeLayer(seg.line);
- 
+
+            // On crée la nouvelle ligne passant par les points
             seg.line = L.geoJSON(data.routes[0].geometry, { 
                 color: seg.couleurSegment, 
                 weight: 5, 
                 opacity: 0.8 
             }).addTo(map);
- 
-            seg.distance = (data.routes[0].distance / 1000).toFixed(1);
-            seg.duration = Math.floor(data.routes[0].duration / 60);
- 
+
         } catch (e) {
             console.error("Erreur updateRouteSegment :", e);
         }
     }
- 
- 
+
+
     // ============================================================
-    // 5. GESTION DES �V�NEMENTS DE LA LISTE (L�GENDE)
+    // 7. ÉDITEUR SOUS-ÉTAPES (AVEC HEURE OBLIGATOIRE)
     // ============================================================
- 
-    document.getElementById('legendList').addEventListener('click', (e) => {
-        const target = e.target;
-        const li = target.closest('li'); 
-        if (!li) return;
- 
-        const index = parseInt(li.dataset.index);
- 
-        // A. Clic sur bouton Transport
-        const btnTransport = target.closest('.transport-btn');
-        if (btnTransport) {
-            li.querySelectorAll('.transport-btn').forEach(b => b.classList.remove('active'));
-            btnTransport.classList.add('active');
- 
-            const checkboxPeage = li.querySelector('input[data-pref="exclude-tolls"]');
-            const checkboxAutoroute = li.querySelector('input[data-pref="exclude-motorways"]');
- 
-            updateRouteSegment(index, btnTransport.dataset.mode, { 
-                excludeTolls: checkboxPeage ? checkboxPeage.checked : false, 
-                excludeMotorways: checkboxAutoroute ? checkboxAutoroute.checked : false 
-            });
-            return;
-        }
- 
-        // B. Bouton Settings (Roue dent�e - on garde le toggle pour �a car c'est des options secondaires)
-        if (target.closest('.settings-btn')) {
-            const prefsDiv = li.querySelector('.route-preferences');
-            prefsDiv.style.display = (prefsDiv.style.display === 'none') ? 'block' : 'none';
-            return;
-        }
- 
-        if (target.classList.contains('modifierSousEtapes') || target.closest('.modifierSousEtapes')) {
-            openSegmentEditor(index);
-        }
-    });
- 
- 
-    // ============================================================
-    // 6. �DITEUR DE SOUS-�TAPES (SIDEBAR & TINYMCE)
-    // ============================================================
- 
+
     let currentSegmentIndex = null;
     const subEtapesContainer = document.getElementById('subEtapesContainer');
-    const segmentDateInput = document.getElementById('segmentDate');
-    const templateSubEtape = document.getElementById('template-sub-etape');
- 
+    
+    // Fonction helper pour mettre à jour le HTML de la liste (légende)
+    function updateLegendHtml(index) {
+        const seg = segments[index];
+        const li = document.querySelector(`li[data-index="${index}"]`);
+        if(!li) return;
+        
+        const ul = li.querySelector('.sousEtapesList');
+        let html = `<li><strong>Départ:</strong> ${seg.startNameSimple}</li>`;
+        
+        if(seg.sousEtapes && seg.sousEtapes.length > 0) {
+            seg.sousEtapes.forEach(se => {
+                html += `<li style="margin-top:5px; border-left:2px solid ${seg.couleurSegment}; padding-left:5px;">
+                            📍 ${getNomSimple(se.nom)} 
+                            <small>(${se.heure})</small>
+                         </li>`;
+            });
+        }
+        
+        html += `<li><strong>Arrivée:</strong> ${seg.endNameSimple}</li>`;
+        ul.innerHTML = html;
+    }
+
+    // Ouverture editeur
+    document.getElementById('legendList').addEventListener('click', (e) => {
+        if (e.target.classList.contains('modifierSousEtapes')) {
+            const idx = e.target.dataset.index;
+            openSegmentEditor(idx);
+        }
+    });
+
     function openSegmentEditor(index) {
         currentSegmentIndex = index;
         const seg = segments[index];
- 
-        document.getElementById('segmentTitle').textContent = `Modifier : ${seg.startNameSimple} → ${seg.endNameSimple}`;
- 
-        const container = document.getElementById('segmentFormContainer');
-        container.style.display = 'block';
-        document.querySelector('.sidebar').style.width = '300px'; 
- 
+        
+        document.getElementById('segmentFormContainer').style.display = 'block';
         subEtapesContainer.innerHTML = '';
-        segmentDateInput.value = seg.date || '';
- 
-        if (seg.sousEtapes) {
-            seg.sousEtapes.forEach(se => addSousEtapeForm(se));
-        }
+        
+        if (seg.sousEtapes) seg.sousEtapes.forEach(se => addSousEtapeForm(se));
     }
- 
+    
+    // Ajout d'une ligne de formulaire sous-étape
     function addSousEtapeForm(data = {}) {
-        const uniqueId = 'editor-' + Date.now() + Math.floor(Math.random() * 1000);
-
-        const templateSubEtape = document.getElementById('template-sub-etape');
-        const clone = templateSubEtape.content.cloneNode(true);
+        const uniqueId = 'editor-' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const clone = document.getElementById('template-sub-etape').content.cloneNode(true);
         const div = clone.querySelector('.subEtape');
-
-        const inputNom = div.querySelector('.subEtapeNom');
-        inputNom.value = data.nom || '';
+        
+        div.querySelector('.subEtapeNom').value = data.nom || '';
         div.querySelector('.subEtapeHeure').value = data.heure || '';
-
-        const textArea = div.querySelector('.subEtapeRemarque');
-        textArea.id = uniqueId; 
-        textArea.value = data.remarque || '';
-
-        document.getElementById('subEtapesContainer').appendChild(div);
-
-        if (typeof initAutocomplete === "function") {
-            initAutocomplete(inputNom);
-        }
-
+        
+        const txt = div.querySelector('.subEtapeRemarque');
+        txt.id = uniqueId; 
+        txt.value = data.remarque || '';
+        
+        subEtapesContainer.appendChild(div);
+        initAutocomplete(div.querySelector('.subEtapeNom'));
+        
+        // Init TinyMCE avec configuration complète
         setTimeout(() => {
             tinymce.init({
                 selector: '#' + uniqueId,
@@ -442,7 +454,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 image_title: true,
                 automatic_uploads: true,
-                images_upload_url: '../formulaire/traitementImageTiny.php', 
+                images_upload_url: '/formulaire/traitementImageTiny.php', 
                 file_picker_types: 'image',
 
                 file_picker_callback: (cb, value, meta) => {
@@ -509,354 +521,580 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                     input.click();
                 }
+            }).then(editors => {
+                // Si on a du contenu existant, on l'ajoute
+                if (data.remarque && editors.length > 0) {
+                    editors[0].setContent(data.remarque);
+                }
             });
         }, 100);
 
         div.querySelector('.removeSubEtapeBtn').addEventListener('click', () => {
-            if (tinymce.get(uniqueId)) tinymce.get(uniqueId).remove();
+            tinymce.get(uniqueId)?.remove();
             div.remove();
         });
     }
- 
+
     document.getElementById('addSubEtape').addEventListener('click', () => addSousEtapeForm());
- 
+    
     document.getElementById('closeSegmentForm').addEventListener('click', () => {
         document.getElementById('segmentFormContainer').style.display = 'none';
-        document.querySelector('.sidebar').style.width = '450px'; 
     });
- 
-    // --- ENREGISTREMENT DU SEGMENT MODIFIÉ ---
+
     document.getElementById('saveSegment').addEventListener('click', async () => {
-        if (currentSegmentIndex === null) return;
- 
         const seg = segments[currentSegmentIndex];
-        seg.date = segmentDateInput.value;
-        seg.sousEtapes = [];
- 
+        const newSubs = [];
         const divs = document.querySelectorAll('.subEtape');
- 
+        
+        let error = false;
+
         for (const div of divs) {
             const nom = div.querySelector('.subEtapeNom').value.trim();
-            if (!nom) continue;
- 
             const heure = div.querySelector('.subEtapeHeure').value;
-            const textId = div.querySelector('.subEtapeRemarque').id;
- 
-            // On récupère tout le contenu HTML (texte + images base64)
-            const remarque = tinymce.get(textId) ? tinymce.get(textId).getContent() : "";
- 
-            // NOTE : On ne traite plus les .subEtapePhoto ici
- 
-            // On sauvegarde le HTML complet (qui contient les images) dans l'objet
-            seg.sousEtapes.push({ nom, remarque, heure });
- 
-            // Gestion des marqueurs sur la carte (inchangé)
+            const idInfo = div.querySelector('.subEtapeRemarque').id;
+            const remarque = tinymce.get(idInfo) ? tinymce.get(idInfo).getContent() : '';
+            
+            if(!nom) continue;
+            if(!heure) {
+                alert("L'heure est obligatoire pour toutes les sous-étapes.");
+                error = true;
+                break;
+            }
+
             const coords = await getCoordonnees(nom);
-            if (coords) {
-                const nomSimple = getNomSimple(nom);
-                let txt = `<b>${nomSimple}</b>`;
-                if(remarque) txt += `<div class="tinymce-content" style="max-height:200px; overflow:auto;">${remarque}</div>`;
-                addMarker(nom, coords, "sous_etape", txt);
-            }
-        }
- 
-        await updateRouteSegment(currentSegmentIndex, seg.modeTransport || 'Voiture', seg.options || {});
- 
-        // Mise à jour visuelle de la LÉGENDE
-        const li = document.querySelector(`li[data-index="${currentSegmentIndex}"]`);
-        if (li) {
-            const ul = li.querySelector('.sousEtapesList');
-            if (ul) {
-                let listHtml = `<li style="margin-bottom:10px;"><strong>Départ:</strong> ${seg.startNameSimple}</li>`;
- 
-                if(seg.sousEtapes && seg.sousEtapes.length > 0) {
-                    seg.sousEtapes.forEach(se => {
-                        const nomSimple = getNomSimple(se.nom);
- 
-                        // ICI : On injecte le HTML proprement avec la classe CSS
-                        listHtml += `
-                        <li style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                            <div style="font-weight:bold; color:var(--bleu_foncé); font-size:1.1em; margin-bottom:5px;">
-                                 ${nomSimple} 
-                                <span style="font-size:0.8em;color:var(--gris_clair); font-weight:normal;">${se.heure ? ' ('+se.heure+')' : ''}</span>
-                            </div>
- 
-                            <div class="tinymce-content">
-                                ${se.remarque}
-                            </div>
-                        </li>`;
-                    });
-                }
- 
-                listHtml += `<li style="margin-top:15px; border-top:2px solid #ddd; padding-top:10px;"><strong>Arrivée:</strong> ${seg.endNameSimple}</li>`;
-                ul.innerHTML = listHtml;
-            }
-        }
- 
-        alert("Segment mis à jour !");
-        document.getElementById('segmentFormContainer').style.display = 'none';
-        document.querySelector('.sidebar').style.width = '450px';
-    });
- 
- 
- 
-    // ============================================================
-    // 7. SAUVEGARDE FINALE DU ROADTRIP (DB)
-    // ============================================================
- 
-    async function saveCoordsToDB(ville, lat, lon) {
-        try {
-            const response = await fetch('../include/geocode.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nom: ville, lat: lat, lon: lon })
-            });
-            const result = await response.json();
-            return result.success;
-        } catch (e) {
-            console.error("Erreur DB Geo:", e);
-            return false;
-        }
-    }
- 
-    function compresserImage(file, quality = 0.6, maxWidth = 1200) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onerror = () => reject(new Error("Erreur lecture"));
-            reader.onload = e => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onerror = () => reject(new Error("Erreur image"));
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ratio = img.width / img.height;
-                    if (img.width > maxWidth) {
-                        canvas.width = maxWidth;
-                        canvas.height = maxWidth / ratio;
-                    } else {
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                    }
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    canvas.toBlob(blob => {
-                        if (blob) resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
-                        else reject(new Error("Erreur compression"));
-                    }, "image/jpeg", quality);
-                };
-            };
-        });
-    }
- 
-    document.getElementById('saveRoadtrip').addEventListener('click', async () => {
-        const titre = document.getElementById('roadtripTitle').value.trim();
-        const description = document.getElementById('roadtripDescription').value.trim();
-        const visibilite = document.getElementById('roadtripVisibilite').value;
-        let photoCover = document.getElementById('roadtripPhoto').files[0];
- 
-        if (!titre || !description) {
-            alert("Veuillez remplir le titre et la description.");
-            return;
-        }
- 
-        if (segments.length === 0) {
-            alert("Veuillez créer au moins un trajet.");
-            return;
-        }
- 
-        // Liste des villes uniques pour g�ocodage DB
-        const villesSet = new Set();
-        segments.forEach(s => {
-            villesSet.add(s.startName);
-            villesSet.add(s.endName);
-            if(s.sousEtapes) s.sousEtapes.forEach(sub => villesSet.add(sub.nom));
-        });
- 
-        const villesGeo = [];
-        for (const ville of villesSet) {
-            const coords = await getCoordonnees(ville);
-            if (coords) {
-                const saved = await saveCoordsToDB(ville, coords[0], coords[1]);
-                if (saved) {
-                    villesGeo.push({ nom: ville, lat: coords[0], lon: coords[1] });
-                }
-            }
-        }
- 
-        // Structure Trajets
-        const trajets = segments.map((seg, sIdx) => ({
-    depart: seg.startName,
-    arrivee: seg.endName,
-    mode: seg.modeTransport || 'Voiture',
-    sansAutoroute: seg.options ? seg.options.excludeMotorways : false,
-    sansPeage: seg.options ? seg.options.excludeTolls : false,
-    date: seg.date || null,
-    sousEtapes: seg.sousEtapes.map((se) => ({
-        nom: se.nom,
-        remarque: se.remarque, // Contient le HTML avec les images <img src="data:image...">
-        heure: se.heure
-        // photos: []  <-- On retire ça
-        }))
-    }));
- 
-    const formData = new FormData();
-    formData.append('titre', titre);
-    formData.append('description', description);
-    formData.append('visibilite', visibilite);
-    formData.append('villes', JSON.stringify(villesGeo));
-    formData.append('trajets', JSON.stringify(trajets)); // Le HTML lourd passe ici
- 
-    if (photoCover) {
-        photoCover = await compresserImage(photoCover);
-        formData.append('photo_cover', photoCover);
-    }
- 
-        segments.forEach((seg, sIdx) => {
-            seg.sousEtapes.forEach((se, seIdx) => {
-                if (se.photos && se.photos.length) {
-                    se.photos.forEach((f, i) => {
-                        formData.append(`file_s${sIdx}_se${seIdx}_${i}`, f);
-                    });
-                }
-            });
-        });
- 
-        const saveBtn = document.getElementById('saveRoadtrip');
-        const oldText = saveBtn.textContent;
-        saveBtn.textContent = 'Sauvegarde...';
-        saveBtn.disabled = true;
- 
-        try {
-            const response = await fetch('../formulaire/saveRoadtrip.php', {
-                method: 'POST',
-                body: formData
-            });
-            const text = await response.text();
- 
-            let result;
-            try { result = JSON.parse(text); } 
-            catch (e) { throw new Error("Réponse serveur invalide: " + text); }
- 
-            if (result.success) {
-                alert('RoadTrip sauvegardé avec succès !');
-                window.location.href = `../mesRoadTrips.php`;
-            } else {
-                alert(result.message || 'Erreur lors de la sauvegarde.');
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Erreur technique lors de la sauvegarde.');
-        } finally {
-            saveBtn.textContent = oldText;
-            saveBtn.disabled = false;
-        }
-    });
- 
-    // ============================================================
-    // 8. FONCTIONNALITES ACCESSOIRES (Lightbox, etc)
-    // ============================================================
- 
-    const modal = document.getElementById('imageModal');
-    if (modal) {
-        modal.addEventListener('click', () => modal.style.display = 'none');
-    }
- 
-    document.addEventListener('click', e => {
-        if (e.target.classList.contains('popup-photo')) {
-            const m = document.getElementById('imageModal');
-            const mi = document.getElementById('imageModalContent');
-            m.style.display = 'block';
-            mi.src = e.target.src;
-        }
-    });
 
-    // ============================================================
-    // 9. FONCTIONS GLOBALES (Pour les onclick HTML)
-    // ============================================================
-
-    // On utilise "window.nomDeLaFonction" pour la rendre accessible au HTML
-    window.toggleSousEtapes = function(id) {
-        const container = document.getElementById('sous-etapes-' + id);
-        const card = document.querySelector(`.card-vu[data-trajet-id="${id}"]`);
-
-        if (container) {
-            container.classList.toggle('active');
+            newSubs.push({ 
+                nom: nom, 
+                heure: heure, 
+                remarque: remarque,
+                coords: coords 
+            });
+            if(coords) addMarker(nom, coords, "sous_etape", `<b>${nom}</b><br>${heure}`);
         }
         
-        if (card) {
-            card.classList.toggle('active');
-        }
-    };
- 
-});
- 
+        if(error) return;
 
- 
+        seg.sousEtapes = newSubs;
 
- 
-/*========================================================================
-  CALCUL ASYNCHRONE DES DISTANCES ET TEMPS ENTRE DEUX POINTS
-========================================================================*/
- 
-document.addEventListener("DOMContentLoaded", function() {
-    const elements = document.querySelectorAll('.js-calculate-distance');
-    if (elements.length === 0) return;
- 
-    console.log("Démarrage calcul distances (avec préférences)...");
- 
-    elements.forEach(function(el, i) {
-        setTimeout(function() {
-            const latDep = el.dataset.latDep;
-            const lonDep = el.dataset.lonDep;
-            const latArr = el.dataset.latArr;
-            const lonArr = el.dataset.lonArr;
-            let mode = el.dataset.mode || 'voiture';
- 
-            const sansAutoroute = el.dataset.sansAutoroute === "1";
-            const sansPeage = el.dataset.sansPeage === "1";
- 
-            const distEl = el.querySelector('.result-distance');
-            const timeEl = el.querySelector('.result-time');
- 
-            if (!latDep || !lonDep || !latArr || !lonArr) {
-                distEl.innerHTML = "N/A"; 
-                timeEl.innerHTML = "N/A"; 
+        await updateRouteSegment(currentSegmentIndex, seg.modeTransport || 'Voiture', seg.options || {});
+        
+        updateLegendHtml(currentSegmentIndex);
+        document.getElementById('segmentFormContainer').style.display = 'none';
+    });
+
+
+    // ============================================================
+    // 8. SAUVEGARDE FINALE
+    // ============================================================
+
+    document.getElementById('saveRoadtrip').addEventListener('click', async (e) => {
+        // Validation basique
+        if(segments.length === 0) { alert('Aucun trajet !'); return; }
+        
+        const titre = document.getElementById('roadtripTitle').value;
+        const statut = document.getElementById('roadtripStatut').value;
+        
+        // VERIFICATION : Dates des trajets
+        for (let i = 0; i < segments.length; i++) {
+            // On récupère la valeur depuis l'input DOM car l'utilisateur a pu le changer
+            const li = document.querySelector(`li[data-index="${i}"]`);
+            const dateInput = li.querySelector('.legend-date-input');
+            
+            if (!dateInput.value) {
+                alert(`Attention : La date du trajet ${i+1} n'est pas renseignée !`);
                 return;
             }
- 
-            const profiles = { 'voiture': 'car', 'velo': 'bike', 'marche': 'foot' };
-            const profile = profiles[mode.toLowerCase()] || 'car';
- 
-            let url = `https://router.project-osrm.org/route/v1/${profile}/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
- 
-            const excludes = [];
-            if (sansPeage) excludes.push('toll');
-            if (sansAutoroute) excludes.push('motorway');
- 
-            if (excludes.length > 0) {
-                url += `&exclude=${excludes.join(',')}`;
+            segments[i].date = dateInput.value;
+        }
+
+        // Préparation FormData
+        const formData = new FormData();
+        
+        // Gestion ID pour Modification
+        const editId = e.target.dataset.id;
+        if (editId) formData.append('id_roadtrip', editId);
+
+        formData.append('titre', titre);
+        formData.append('description', document.getElementById('roadtripDescription').value);
+        formData.append('visibilite', document.getElementById('roadtripVisibilite').value);
+        formData.append('statut', statut); // Ajout du statut
+        
+        const photo = document.getElementById('roadtripPhoto').files[0];
+        if(photo) formData.append('photo_cover', photo);
+
+        // Construction objet Trajets propre
+        const trajetsData = segments.map(s => ({
+            depart: s.startName,
+            arrivee: s.endName,
+            mode: s.modeTransport,
+            date: s.date, // Nouvelle donnée obligatoire
+            sousEtapes: s.sousEtapes // Contient nom, heure, remarque
+        }));
+        
+        formData.append('trajets', JSON.stringify(trajetsData));
+        
+        // Villes pour géocodage
+        const villesGeo = [];
+        segments.forEach(s => {
+            if(!villesGeo.includes(s.startName)) villesGeo.push(s.startName);
+            if(!villesGeo.includes(s.endName)) villesGeo.push(s.endName);
+            s.sousEtapes.forEach(se => {
+                if(!villesGeo.includes(se.nom)) villesGeo.push(se.nom);
+            });
+        });
+        formData.append('villes', JSON.stringify(villesGeo));
+
+        // Envoi
+        const btn = document.getElementById('saveRoadtrip');
+        const oldTxt = btn.textContent;
+        btn.textContent = "Sauvegarde...";
+        btn.disabled = true;
+
+        try {
+            const resp = await fetch('/formulaire/saveRoadtrip.php', { method: 'POST', body: formData });
+            const json = await resp.json();
+            
+            if(json.success) {
+                alert("RoadTrip sauvegardé !");
+                window.location.href = "/mesRoadTrips.php";
+            } else {
+                alert("Erreur: " + json.message);
             }
- 
-            fetch(url)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
-                        const route = data.routes[0];
-                        distEl.innerHTML = `<strong>${(route.distance / 1000).toFixed(1).replace('.', ',')} km</strong>`;
-                        const h = Math.floor(route.duration / 3600);
-                        const m = Math.floor((route.duration % 3600) / 60);
-                        timeEl.innerHTML = (h > 0 ? `${h}h ` : "") + `${m}min`;
-                    } else {
-                        distEl.innerHTML = "-"; 
-                        timeEl.innerHTML = "-";
-                    }
-                })
-                .catch(() => {
-                    distEl.innerHTML = "<span class='error-data'>Err</span>";
-                    timeEl.innerHTML = "<span class='error-data'>Err</span>";
-                });
-        }, i * 1500);
+        } catch(e) { console.error(e); alert("Erreur technique"); }
+        finally { btn.textContent = oldTxt; btn.disabled = false; }
     });
 });
- 
+
+    async function _ajouterSegmentEntre(startN, startC, endN, endC, index, strategy, existingData = null) {
+        const color = segmentColors[index % segmentColors.length];
+        const line = L.polyline([startC, endC], { color, weight: 5 }).addTo(map);
+        
+        const modeTransport = existingData?.mode || 'Voiture';
+        
+        const seg = {
+            line,
+            startName: startN,
+            endName: endN,
+            startCoords: startC,
+            endCoords: endC,
+            color,
+            modeTransport: modeTransport,
+            options: {},
+            sousEtapes: [],
+            date: existingData?.date || '' 
+        };
+        
+        segments.push(seg);
+        
+        const legendItem = createLegendItem(seg, index);
+        document.getElementById('legendList').appendChild(legendItem);
+        
+        // Mise à jour des dates
+        updateDateConstraints();
+        
+        // Charger l'itinéraire
+        await updateRouteSegment(index, modeTransport, seg.options);
+    }
+
+    function createLegendItem(seg, index) {
+        const template = document.getElementById('template-legend-item').content.cloneNode(true);
+        const li = template.querySelector('li');
+        li.setAttribute('data-index', index);
+        
+        const colorIndicator = li.querySelector('.legend-color-indicator');
+        colorIndicator.style.backgroundColor = seg.color;
+        
+        const toggleBtn = li.querySelector('.legend-toggle-btn');
+        toggleBtn.textContent = `${seg.startName} → ${seg.endName}`;
+        
+        // Date
+        const dateInput = li.querySelector('.legend-date-input');
+        if(seg.date) dateInput.value = seg.date;
+        
+        // Transport
+        const transportBtns = li.querySelectorAll('.transport-btn');
+        transportBtns.forEach(btn => {
+            if(btn.dataset.mode === seg.modeTransport) btn.classList.add('active');
+            else btn.classList.remove('active');
+            
+            btn.addEventListener('click', async () => {
+                transportBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                seg.modeTransport = btn.dataset.mode;
+                await updateRouteSegment(index, btn.dataset.mode, seg.options);
+            });
+        });
+        
+        // Options route
+        const settingsBtn = li.querySelector('.settings-btn');
+        const routePref = li.querySelector('.route-preferences');
+        settingsBtn.addEventListener('click', () => {
+            routePref.style.display = routePref.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        const prefCheckboxes = li.querySelectorAll('.pref-checkbox');
+        prefCheckboxes.forEach(cb => {
+            cb.addEventListener('change', async () => {
+                const pref = cb.dataset.pref;
+                seg.options[pref] = cb.checked;
+                await updateRouteSegment(index, seg.modeTransport, seg.options);
+            });
+        });
+        
+        // Toggle sous-étapes
+        toggleBtn.addEventListener('click', () => {
+            const ul = li.querySelector('.sousEtapesList');
+            ul.style.display = ul.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // Bouton Modifier Sous-Étapes
+        const btnModifier = li.querySelector('.modifierSousEtapes');
+        btnModifier.addEventListener('click', () => {
+            openSegmentForm(index);
+        });
+        
+        return li;
+    }
+
+    async function updateRouteSegment(index, mode, options) {
+        const seg = segments[index];
+        const strat = strategies[mode] || strategies['Voiture'];
+        
+        let waypoints = [seg.startCoords];
+        seg.sousEtapes.forEach(se => {
+            if (se.coords) waypoints.push(se.coords);
+        });
+        waypoints.push(seg.endCoords);
+        
+        let opts = [];
+        if (options['exclude-tolls']) opts.push('exclude=toll');
+        if (options['exclude-motorways']) opts.push('exclude=motorway');
+        const optsStr = opts.length ? '&' + opts.join('&') : '';
+        
+        const coords = waypoints.map(c => c[1] + ',' + c[0]).join(';');
+        const url = `https://router.project-osrm.org/route/v1/${strat.profile}/${coords}?overview=full&geometries=geojson${optsStr}`;
+        
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (data.routes && data.routes[0]) {
+                const route = data.routes[0];
+                const geom = route.geometry.coordinates.map(c => [c[1], c[0]]);
+                map.removeLayer(seg.line);
+                seg.line = L.polyline(geom, { color: seg.color, weight: 5 }).addTo(map);
+            }
+        } catch(e) { console.error("Erreur OSRM:", e); }
+    }
+
+    function updateLegendHtml(index) {
+        const seg = segments[index];
+        const li = document.querySelector(`li[data-index="${index}"]`);
+        if(!li) return;
+        
+        const ul = li.querySelector('.sousEtapesList');
+        ul.innerHTML = '';
+        seg.sousEtapes.forEach((se, i) => {
+            const liSub = document.createElement('li');
+            liSub.innerHTML = `<strong>${se.nom}</strong> à ${se.heure}`;
+            if(se.remarque) {
+                const remarkDiv = document.createElement('div');
+                remarkDiv.innerHTML = se.remarque;
+                remarkDiv.style.fontSize = '0.85em';
+                remarkDiv.style.marginTop = '4px';
+                liSub.appendChild(remarkDiv);
+            }
+            ul.appendChild(liSub);
+        });
+    }
+
+
+    // ============================================================
+    // 7. FORMULAIRE SOUS-ÉTAPES
+    // ============================================================
+    
+    let currentSegmentIndex = null;
+    
+    function openSegmentForm(index) {
+        currentSegmentIndex = index;
+        const seg = segments[index];
+        
+        document.getElementById('segmentTitle').textContent = `${seg.startName} → ${seg.endName}`;
+        const container = document.getElementById('subEtapesContainer');
+        container.innerHTML = '';
+        
+        // Charger sous-étapes existantes
+        if(seg.sousEtapes && seg.sousEtapes.length > 0) {
+            seg.sousEtapes.forEach(se => {
+                addSubEtapeRow(se.nom, se.heure, se.remarque);
+            });
+        } else {
+            addSubEtapeRow();
+        }
+        
+        document.getElementById('segmentFormContainer').style.display = 'block';
+    }
+
+    function addSubEtapeRow(nom = '', heure = '', remarque = '') {
+        const template = document.getElementById('template-sub-etape').content.cloneNode(true);
+        const div = template.querySelector('.subEtape');
+        
+        div.querySelector('.subEtapeNom').value = nom;
+        div.querySelector('.subEtapeHeure').value = heure;
+        
+        const textarea = div.querySelector('.subEtapeRemarque');
+        const uniqueId = 'remarque_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        textarea.id = uniqueId;
+        
+        div.querySelector('.removeSubEtapeBtn').addEventListener('click', () => {
+            // Détruire l'éditeur TinyMCE avant de supprimer l'élément
+            if (tinymce.get(uniqueId)) {
+                tinymce.get(uniqueId).remove();
+            }
+            div.remove();
+        });
+        
+        initAutocomplete(div.querySelector('.subEtapeNom'));
+        document.getElementById('subEtapesContainer').appendChild(div);
+        
+        // Initialiser TinyMCE pour ce textarea
+        setTimeout(() => {
+            tinymce.init({
+                selector: '#' + uniqueId,
+                base_url: '/js/tinymce',
+                suffix: '.min',
+                license_key: 'gpl',
+                promotion: false,
+                branding: false,
+                menubar: false,
+                statusbar: false,
+                min_height: 200,
+
+                plugins: 'image link lists table code help wordcount',
+                toolbar: 'undo redo | bold italic | bullist | link image',
+
+                image_title: true,
+                automatic_uploads: true,
+                images_upload_url: '/formulaire/traitementImageTiny.php', 
+                file_picker_types: 'image',
+
+                file_picker_callback: (cb, value, meta) => {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+
+                    input.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = (readerEvent) => {
+                            const img = new Image();
+                            img.src = readerEvent.target.result;
+
+                            img.onload = () => {
+                                const MAX_WIDTH = 1200;
+                                const MAX_HEIGHT = 1200;
+                                let width = img.width;
+                                let height = img.height;
+
+                                if (width > height) {
+                                    if (width > MAX_WIDTH) {
+                                        height *= MAX_WIDTH / width;
+                                        width = MAX_WIDTH;
+                                    }
+                                } else {
+                                    if (height > MAX_HEIGHT) {
+                                        width *= MAX_HEIGHT / height;
+                                        height = MAX_HEIGHT;
+                                    }
+                                }
+
+                                const canvas = document.createElement('canvas');
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+
+                                canvas.toBlob((blob) => {
+                                    const newFile = new File([blob], file.name, { 
+                                        type: 'image/jpeg', 
+                                        lastModified: Date.now() 
+                                    });
+
+                                    const id = 'blobid' + (new Date()).getTime();
+                                    const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+
+                                    const reader2 = new FileReader();
+                                    reader2.readAsDataURL(newFile);
+                                    reader2.onload = (e2) => {
+                                        const base64 = e2.target.result.split(',')[1];
+                                        const blobInfo = blobCache.create(id, newFile, base64);
+                                        blobCache.add(blobInfo);
+                                        
+                                        cb(blobInfo.blobUri(), { title: file.name });
+                                    };
+
+                                }, 'image/jpeg', 0.7); 
+                            };
+                        };
+                    });
+                    input.click();
+                }
+            }).then(editors => {
+                // Si on a du contenu existant, on l'ajoute
+                if (remarque && editors.length > 0) {
+                    editors[0].setContent(remarque);
+                }
+            });
+        }, 100);
+    }
+
+    document.getElementById('closeSegmentForm').addEventListener('click', () => {
+        document.getElementById('segmentFormContainer').style.display = 'none';
+    });
+
+    document.getElementById('addSubEtape').addEventListener('click', () => {
+        addSubEtapeRow();
+    });
+
+    document.getElementById('saveSegment').addEventListener('click', async () => {
+        if(currentSegmentIndex === null) return;
+        const seg = segments[currentSegmentIndex];
+        
+        // Supprimer marqueurs sous-étapes anciens
+        seg.sousEtapes.forEach(se => {
+            if(markers[se.nom]) {
+                markers[se.nom].forEach(m => {
+                    if(m.type === 'sous_etape') map.removeLayer(m.marker);
+                });
+                delete markers[se.nom];
+            }
+        });
+        
+        const subDivs = document.querySelectorAll('#subEtapesContainer .subEtape');
+        const newSubs = [];
+        let error = false;
+        
+        for(const div of subDivs) {
+            const nom = getNomSimple(div.querySelector('.subEtapeNom').value.trim());
+            const heure = div.querySelector('.subEtapeHeure').value;
+            
+            // Récupérer le contenu de TinyMCE
+            const textareaId = div.querySelector('.subEtapeRemarque').id;
+            const editor = tinymce.get(textareaId);
+            const remarque = editor ? editor.getContent() : '';
+            
+            if(!nom || !heure) {
+                alert("Nom et heure requis");
+                error = true;
+                break;
+            }
+            
+            const coords = await getCoordonnees(nom);
+            newSubs.push({
+                nom: nom,
+                heure: heure,
+                remarque: remarque,
+                coords: coords 
+            });
+            if(coords) addMarker(nom, coords, "sous_etape", `<b>${nom}</b><br>${heure}`);
+        }
+        
+        if(error) return;
+
+        seg.sousEtapes = newSubs;
+
+        await updateRouteSegment(currentSegmentIndex, seg.modeTransport || 'Voiture', seg.options || {});
+        
+        updateLegendHtml(currentSegmentIndex);
+        document.getElementById('segmentFormContainer').style.display = 'none';
+    });
+
+
+    // ============================================================
+    // 8. SAUVEGARDE FINALE
+    // ============================================================
+
+    document.getElementById('saveRoadtrip').addEventListener('click', async (e) => {
+        // Validation basique
+        if(segments.length === 0) { alert('Aucun trajet !'); return; }
+        
+        const titre = document.getElementById('roadtripTitle').value;
+        const statut = document.getElementById('roadtripStatut').value;
+        
+        // VERIFICATION : Dates des trajets
+        for (let i = 0; i < segments.length; i++) {
+            // On récupère la valeur depuis l'input DOM car l'utilisateur a pu le changer
+            const li = document.querySelector(`li[data-index="${i}"]`);
+            const dateInput = li.querySelector('.legend-date-input');
+            
+            if (!dateInput.value) {
+                alert(`Attention : La date du trajet ${i+1} n'est pas renseignée !`);
+                return;
+            }
+            segments[i].date = dateInput.value;
+        }
+
+        // Préparation FormData
+        const formData = new FormData();
+        
+        // Gestion ID pour Modification
+        const editId = e.target.dataset.id;
+        if (editId) formData.append('id_roadtrip', editId);
+
+        formData.append('titre', titre);
+        formData.append('description', document.getElementById('roadtripDescription').value);
+        formData.append('visibilite', document.getElementById('roadtripVisibilite').value);
+        formData.append('statut', statut);
+        
+        const photo = document.getElementById('roadtripPhoto').files[0];
+        if(photo) formData.append('photo_cover', photo);
+
+        // Construction objet Trajets propre
+        const trajetsData = segments.map(s => ({
+            depart: s.startName,
+            arrivee: s.endName,
+            mode: s.modeTransport,
+            date: s.date,
+            sousEtapes: s.sousEtapes
+        }));
+        
+        formData.append('trajets', JSON.stringify(trajetsData));
+        
+        // Villes pour géocodage
+        const villesGeo = [];
+        segments.forEach(s => {
+            if(!villesGeo.includes(s.startName)) villesGeo.push(s.startName);
+            if(!villesGeo.includes(s.endName)) villesGeo.push(s.endName);
+            s.sousEtapes.forEach(se => {
+                if(!villesGeo.includes(se.nom)) villesGeo.push(se.nom);
+            });
+        });
+        formData.append('villes', JSON.stringify(villesGeo));
+
+        // Envoi
+        const btn = document.getElementById('saveRoadtrip');
+        const oldTxt = btn.textContent;
+        btn.textContent = "Sauvegarde...";
+        btn.disabled = true;
+
+        try {
+            const resp = await fetch('/formulaire/saveRoadtrip.php', { method: 'POST', body: formData });
+            const json = await resp.json();
+            
+            if(json.success) {
+                alert("RoadTrip sauvegardé !");
+                window.location.href = "/mesRoadTrips.php";
+            } else {
+                alert("Erreur: " + json.message);
+            }
+        } catch(e) { 
+            console.error(e); 
+            alert("Erreur technique"); 
+        }
+        finally { 
+            btn.textContent = oldTxt; 
+            btn.disabled = false; 
+        }
+    });

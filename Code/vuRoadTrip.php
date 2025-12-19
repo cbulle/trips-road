@@ -89,6 +89,8 @@ function getTransportIcon($type) {
     <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($roadTrip['titre']); ?></title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -253,12 +255,11 @@ function getTransportIcon($type) {
 <?php include_once __DIR__ . "/modules/footer.php"; ?>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 <script>
     const roadTripData = <?php echo json_encode($jsMapData); ?>;
 </script>
-
 <script src="js/vuRoadTrip.js"></script>
-
 </body>
 </html>

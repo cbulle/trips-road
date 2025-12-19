@@ -91,5 +91,6 @@ include_once __DIR__ . "/modules/header.php"
 <?php     
 include_once __DIR__ . "/modules/footer.php"
 ?>
+<script src = "js/recherche.js"></script>
 </body>
 </html>
