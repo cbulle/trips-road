@@ -1,183 +1,149 @@
-/*============================
-  Accessibilité :
+/* ==========================================
+   PAGE ACCESSIBILITÉ - STYLE GLOBAL
+   ========================================== */
 
-  Bouton Mode Nuit
-============================== */
-
-
-.btnSombre>h2 {
-  text-align: center;
-
-}
-#btnSombreLabel {
-  text-align: center;
-}
-.btnSombre{
-  position:relative;
-  left:47%;
-}
-.btnSombre .switch {
-  display: inline-block;
-  height: 34px;
-  position: relative;
-  width: 60px;
+.cont_access {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
 }
 
-.btnSombre .switch input {
-  display:none;
+.AccessForm {
+    background-color: var(--beige_fonce);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: background-color 0.5s ease;
 }
 
-.btnSombre .slider {
-  background-color: var(--orange_sombre);
-  bottom: 0;
-  cursor: pointer;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: .4s;
+#login-title {
+    color: var(--bleu_fonce);
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 2rem;
+    border-bottom: 2px solid var(--orange);
+    padding-bottom: 10px;
 }
 
-  .btnSombre>.slider.SombreBtn {
-  background-color: var(--vert_btn);
+/* Conteneur pour chaque réglage (Label + Switch) */
+.access-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.btnSombre .slider:before {
-  background-color: var(--beige);
-  bottom: 4px;
-  content: "";
-  height: 26px;
-  left: 4px;
-  position: absolute;
-  transition: .4s;
-  width: 26px;
+.access-item label {
+    font-weight: bold;
+    color: var(--bleu_fonce_ecriture);
+    cursor: pointer;
 }
 
+/* ==========================================
+   STYLE DES SLIDERS (SWITCH)
+   ========================================== */
 
-
-.btnSombre input:checked + .slider:before {
-  transform: translateX(26px);
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
 }
 
-.btnSombre .slider.round {
-  border-radius: 34px;
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-.btnSombre .slider.round:before {
-  border-radius: 50%;
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gris_clair);
+    transition: .4s;
+    border-radius: 34px;
 }
 
-/* ==============================
-  Bouton Mode Malvoyant
-============================== */
-
-.btnMalvoyant>h2 {
-  text-align: center;
-
-}
-#btnMalvoyantLabel {
-  text-align: center;
-}
-.btnMalvoyant{
-  position:relative;
-  left:47%;
-}
-.btnMalvoyant .switch {
-  display: inline-block;
-  height: 34px;
-  position: relative;
-  width: 60px;
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--white);
+    transition: .4s;
+    border-radius: 50%;
 }
 
-.btnMalvoyant .switch input {
-  display:none;
+/* États activés utilisant tes variables */
+input:checked + .slider {
+    background-color: var(--vert_btn);
 }
 
-.btnMalvoyant .slider {
-  background-color: var(--orange_malvoyant);
-  bottom: 0;
-  cursor: pointer;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: .4s;
-}
-.btnMalvoyant>.slider.MalvoyantBtn {
-  background-color: var(--vert_btn);
+#checkboxSombre:checked + .slider {
+    background-color: var(--bleu_fonce);
 }
 
-.btnMalvoyant .slider:before {
-  background-color: var(--beige);
-  bottom: 4px;
-  content: "";
-  height: 26px;
-  left: 4px;
-  position: absolute;
-  transition: .4s;
-  width: 26px;
+#checkboxMalvoyant:checked + .slider {
+    background-color: var(--orange_malvoyant);
 }
 
-.btnMalvoyant input:checked + .slider:before {
-  transform: translateX(26px);
+input:checked + .slider:before {
+    transform: translateX(26px);
 }
 
-.btnMalvoyant .slider.round {
-  border-radius: 34px;
+/* ==========================================
+   OPTIONS DU MODE DALTONIEN
+   ========================================= */
+
+.daltonism-container {
+    margin-top: 10px;
+    padding: 15px;
+    background: var(--beige);
+    border-radius: 12px;
+    border-left: 5px solid var(--bleu_clair);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.btnMalvoyant .slider.round:before {
-  border-radius: 50%;
+.daltonism-container label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: var(--bleu_fonce_ecriture);
+    cursor: pointer;
+    padding: 5px;
+    transition: background 0.3s;
 }
 
-/* ==============================
-  Bouton Mode Daltonien
-============================== */
-
-.btnD {
-  position: relative;
-  left: 47%;
+.daltonism-container label:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
 }
 
-.btnD .switch {
-  display: inline-block;
-  height: 34px;
-  width: 60px;
-  position: relative;
+.daltonism-container input[type="radio"] {
+    accent-color: var(--orange);
+    width: 18px;
+    height: 18px;
 }
 
-.btnD input {
-  display: none;
-}
-
-.btnD .slider {
-  position: absolute;
-  inset: 0;
-  cursor: pointer;
-  background-color: var(--gris_clair);
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.btnD .slider:before {
-  content: "";
-  position: absolute;
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: var(--beige);
-  transition: .4s;
-  border-radius: 50%;
-}
-
-.btnD input:checked + .slider {
-  background-color: var(--vert_btn);
-}
-
-.btnD input:checked + .slider:before {
-  transform: translateX(26px);
-}
 
 
 /* ==============================
