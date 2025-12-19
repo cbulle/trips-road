@@ -33,13 +33,31 @@ require_once __DIR__ . '/modules/init.php';
                 <div class="slider round"></div>
             </label>
         </div>
-        <!-- Bouton Datolnien -->
-        <label for="checkboxD" id="btnDLabel">Mode daltonien :</label>
+        <!-- Formulaire pour choisir le mode daltonien et son type -->
+<label for="checkboxD" id="btnDLabel">Mode daltonien :</label>
 <div class="btnD">
   <label class="switch">
     <input type="checkbox" id="checkboxD" aria-label="Activer le mode daltonien">
     <span class="slider"></span>
   </label>
+</div>
+
+<div>
+  <label for="protanopia">
+    <input type="radio" name="daltonism-type" value="protanopia" id="protanopia" <?php echo (isset($_COOKIE['typeDaltonien']) && $_COOKIE['typeDaltonien'] == 'protanopia') ? 'checked' : ''; ?>>
+    Protanopie 
+  </label>
+  <label for="deuteranopia">
+    <input type="radio" name="daltonism-type" value="deuteranopia" id="deuteranopia" <?php echo (isset($_COOKIE['typeDaltonien']) && $_COOKIE['typeDaltonien'] == 'deuteranopia') ? 'checked' : ''; ?>>
+    Deutéranopie 
+  </label>
+  <label for="tritanopia">
+    <input type="radio" name="daltonism-type" value="tritanopia" id="tritanopia" <?php echo (isset($_COOKIE['typeDaltonien']) && $_COOKIE['typeDaltonien'] == 'tritanopia') ? 'checked' : ''; ?>>
+    Tritanopie 
+  </label>
+  
+</div>
+
 </div>
 
 

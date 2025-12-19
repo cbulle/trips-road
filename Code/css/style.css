@@ -38,23 +38,67 @@ html.malvoyant {
   font-size: 20px;
 }
 
- html.daltonien{
-    --bleu_clair: #4FB3BF;
+/* Mode daltonien générique */
+html.daltonien {
+  --bleu_clair: #4FB3BF;
   --bleu_fonce: #1F4E79;
   --bleu_fonce_ecriture: #0B0B0B;
   --beige: #F4F1EC;
   --beige_fonce: #D6C9A8;
-  --beige_visu: #F4F1EC;
   --orange: #E69F00;
-  --orange_sombre: #FFB000;
-  --orange_malvoyant: #FFB000;
+  --orange_sombre: #B87400;
   --vert_btn: #0072B2;
-  --vert: #0072B2;
   --gris_fonce: #1F1F1F;
   --gris_clair: #3A3A3A;
   --noir: #000000;
   --white: #FFFFFF;
   --rouge: #8B1E3F;
+}
+
+/* Protanopie (rouge-vert) */
+html.daltonien.protanopia {
+  --orange: #D27E00;
+  --vert_btn: #006FA6;
+  --gris_fonce: #3A3A3A;
+  --bleu_clair: #4FB3BF;
+  --rouge: #8B1E3F;
+}
+
+/* Deutéranopie (rouge-vert) */
+html.daltonien.deuteranopia {
+  --orange: #E69F00;
+  --vert_btn: #006FA6;
+  --gris_fonce: #1F1F1F;
+  --bleu_clair: #4FB3BF;
+  --rouge: #8B1E3F;
+}
+
+/* Tritanopie (bleu-jaune) */
+html.daltonien.tritanopia {
+  --orange: #F4A100;
+  --vert_btn: #006FA6;
+  --gris_fonce: #22292b;
+  --bleu_clair: #0095CC;
+  --rouge: #8B1E3F;
+}
+
+/* Mode normal */
+html.daltonien.normal {
+  --orange: #FF7F50;
+  --vert_btn: #2E8B57;
+  --gris_fonce: #22292b;
+  --bleu_clair: #39B2A5;
+  --rouge: #BF092F;
+}
+
+.icon-send path {
+  fill: var(--white);
+  transition: fill 0.3s ease;
+}
+
+/* Mode daltonien */
+html.daltonien .icon-send path {
+  fill: var(--vert_btn);
 }
 
 html.SombreBtn {
@@ -64,9 +108,7 @@ html.SombreBtn {
 html.MalvoyantBtn {
   --orange_malvoyant: #2E8B57; 
 }
-html.DBtn {
-  --orange_malvoyant: #2E8B57; 
-}
+
 
 
 /* ==============================

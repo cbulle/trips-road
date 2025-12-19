@@ -142,6 +142,13 @@ const toggleMalvoyant = document.getElementById("checkboxMalvoyant");
 
 const toggleDaltonien = document.getElementById("checkboxD");
 const savedMode = localStorage.getItem("modeDaltonien");
+const savedType = localStorage.getItem("typeDaltonien");
+
+const daltonienTypes = {
+    protanopia: 'protanopia',
+    deutéranopia: 'deuteranopia',
+    tritanopia: 'tritanopia',
+};
 
  
 if (savedTheme === "dark") {
@@ -189,15 +196,24 @@ if (toggleMalvoyant) {
 
 if (savedMode === "on") {
     document.documentElement.classList.add("daltonien");
+    if (savedType) {
+        document.documentElement.classList.add(savedType);
+    }
     toggleDaltonien.checked = true;
 }
 
 toggleDaltonien.addEventListener("change", () => {
+    const selectedType = document.querySelector('input[name="daltonism-type"]:checked').value;
     if (toggleDaltonien.checked) {
         document.documentElement.classList.add("daltonien");
+        document.documentElement.classList.add(selectedType);
         localStorage.setItem("modeDaltonien", "on");
+        localStorage.setItem("typeDaltonien", selectedType);
     } else {
         document.documentElement.classList.remove("daltonien");
+        document.documentElement.classList.remove(daltonienTypes.protanopia);
+        document.documentElement.classList.remove(daltonienTypes.deutéranopia);
+        document.documentElement.classList.remove(daltonienTypes.tritanopia);
         localStorage.setItem("modeDaltonien", "off");
     }
 });
