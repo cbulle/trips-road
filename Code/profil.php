@@ -28,7 +28,6 @@ $user = $_SESSION['utilisateur'];
         <div class="user-brief">
             <?php
             $photoProfil = !empty($_SESSION['utilisateur']['photo_profil']) ? htmlspecialchars($_SESSION['utilisateur']['photo_profil']) : "User.png";
-            // Petit fix chemin pour l'affichage (logique simplifiée pour l'exemple)
             $photoUrl = (file_exists(__DIR__ . "/uploads/pp/$photoProfil")) ? "/uploads/pp/$photoProfil" : "img/User.png";
             ?>
             <div class="avatar-circle small" style="background-image: url('<?= $photoUrl ?>');"></div>

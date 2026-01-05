@@ -1,8 +1,3 @@
-:root {    
-    --radius-s: 8px;
-    --radius-m: 12px;
-    --shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
-}
 @media (min-width: 768px) {
 body {
     background-color: var(--beige); 
@@ -16,12 +11,14 @@ body {
     grid-template-columns: 280px 1fr; /* Sidebar fixe, contenu flexible */
     gap: 30px;
     align-items: start;
+    font-size: 1.2rem;
 }
 
-/* --- Sidebar (Menu Gauche) --- */
+/* --- Sidebar --- */
 .profil-sidebar {
-    background: transparent;
-    padding-right: 20px;
+    background: var(--beige_fonce);
+    padding : 20px;
+    border-radius: 13px;
 }
 
 .user-brief {
@@ -32,7 +29,7 @@ body {
 .user-brief h3 {
     margin-top: 10px;
     color: var(--bleu_fonce);
-    font-size: 1.1rem;
+    font-size: 1.33rem;
 }
 
 .profil-nav ul {
@@ -49,7 +46,7 @@ body {
     padding: 12px 15px;
     text-decoration: none;
     color: var(--gris_fonce);
-    border-radius: var(--radius-s);
+    border-radius: 8px;
     font-weight: 500;
     transition: all 0.3s ease;
 }
@@ -77,9 +74,9 @@ body {
     color: var(--white);
 }
 
-/* --- Contenu Principal (Carte Blanche) --- */
+/* --- Contenu Principal  --- */
 .profil-content {
-    background-color: var(--white);
+    background-color: var(--beige_fonce);
     padding: 40px;
     border-radius: 13px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);;
@@ -93,7 +90,6 @@ body {
 
 .card-header p {
     color: var(--gris_clair);
-    font-size: 0.95rem;
     margin-bottom: 30px;
 }
 
@@ -139,12 +135,11 @@ body {
 
 .btn-upload {
     cursor: pointer;
-    font-size: 0.9rem;
     color: var(--bleu_clair);
     font-weight: 600;
     padding: 5px 10px;
     border: 1px solid var(--bleu_clair);
-    border-radius: var(--radius-s);
+    border-radius: 8px;
     transition: background 0.3s;
 }
 
@@ -153,9 +148,9 @@ body {
     color: var(--white);
 }
 
-/* --- Formulaire & Grille --- */
+/* --- Formulaire & grille --- */
 .form-section h2 {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     color: var(--bleu_fonce_ecriture);
     margin-bottom: 20px;
     border-left: 4px solid var(--orange);
@@ -179,7 +174,6 @@ body {
 }
 
 label {
-    font-size: 0.85rem;
     font-weight: 600;
     color: var(--gris_fonce);
     margin-bottom: 8px;
@@ -192,7 +186,7 @@ input[type="tel"],
 input[type="date"] {
     padding: 12px;
     border: 1px solid #e1e1e1;
-    border-radius: var(--radius-s);
+    border-radius: 8px;
     font-size: 0.95rem;
     background-color: #f9f9f9;
     transition: border-color 0.3s, background 0.3s;
@@ -225,9 +219,9 @@ input:focus {
     color: var(--white);
     border: none;
     padding: 14px 28px;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    border-radius: var(--radius-s);
+    border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
 }
@@ -238,7 +232,8 @@ input:focus {
 }
 
 }
-/* --- Responsive Mobile --- */
+
+/* --- Responsive pour le mobile --- */
 @media (max-width: 768px) {
     .profil-container {
         grid-template-columns: 1fr; 
