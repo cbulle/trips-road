@@ -34,9 +34,7 @@
             </li>
 
             <li class="title">
-                <a href="/index.php" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>
-                    Trips & Roads
-                </a>
+                <a href="/index.php" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>Trips & Roads</a>
             </li>
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
