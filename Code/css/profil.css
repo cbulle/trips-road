@@ -102,3 +102,23 @@ main.profil {
   text-decoration: none;
 }
 
+/*===============================
+Mes roads 
+===============================*/
+ .loading-data { color: #999; font-size: 0.9em; font-style: italic; }
+        .error-data { color: red; font-size: 0.8em; }
+        .share-header {
+            background: linear-gradient(135deg, var(--bleu_clair), var(--bleu_foncé));
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .share-header h1 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        .share-info {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }

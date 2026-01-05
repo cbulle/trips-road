@@ -312,7 +312,6 @@ function copyShareUrl() {
     });
 }
 
-// Fermer le modal en cliquant à l'extérieur
 document.addEventListener('click', function(event) {
     const modal = document.getElementById('shareModal');
     if (modal && !modal.contains(event.target)) {
