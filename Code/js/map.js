@@ -26,6 +26,130 @@ document.addEventListener('DOMContentLoaded', async () => {
     const segmentColors = [
         '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9'
     ];
+
+    // ============================================================
+    // 1b. CHARGEMENT DES FAVORIS SUR LA CARTE
+    // ============================================================
+    
+    // Icône spécifique pour les favoris (Étoile dorée)
+    const favoriteIcon = L.divIcon({
+        html: '<div style="font-size: 24px; color: #f1c40f; text-shadow: 0 0 3px black;">⭐</div>',
+        className: 'fav-marker-icon',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -15]
+    });
+
+    async function loadMapFavorites() {
+        try {
+            const resp = await fetch('/fonctions/get_lieux_favoris.php');
+            const favoris = await resp.json();
+
+            favoris.forEach(fav => {
+                const lat = parseFloat(fav.latitude);
+                const lon = parseFloat(fav.longitude);
+                
+                const marker = L.marker([lat, lon], { icon: favoriteIcon }).addTo(map);
+                
+                // Création de la popup avec des boutons d'action
+                const container = document.createElement('div');
+                container.style.textAlign = 'center';
+                
+                container.innerHTML = `
+                    <strong style="color:#d35400">${fav.nom_lieu}</strong><br>
+                    <small>${fav.categorie}</small><br>
+                    <div style="margin-top:10px; display:flex; flex-direction:column; gap:5px;">
+                        <button class="btn-fav-action btn-start" style="background:#27ae60; color:white; border:none; padding:5px; cursor:pointer; border-radius:3px;">🚩 Définir comme Départ</button>
+                        <button class="btn-fav-action btn-end" style="background:#c0392b; color:white; border:none; padding:5px; cursor:pointer; border-radius:3px;">🏁 Définir comme Arrivée</button>
+                        <button class="btn-fav-action btn-step" style="background:#2980b9; color:white; border:none; padding:5px; cursor:pointer; border-radius:3px;">📍 Ajouter comme Étape</button>
+                    </div>
+                `;
+
+                // --- ACTION : DÉFINIR COMME DÉPART ---
+                container.querySelector('.btn-start').addEventListener('click', () => {
+                    // Si le formulaire d'ajout de segment n'est pas ouvert, on l'ouvre
+                    const btnAdd = document.getElementById('btnAddSegment');
+                    if (btnAdd && btnAdd.style.display !== 'none') {
+                        btnAdd.click();
+                    }
+                    
+                    // Remplir le champ "Départ"
+                    setTimeout(() => {
+                        const inputStart = document.getElementById('inputStartBlock');
+                        if (inputStart) {
+                            inputStart.value = fav.nom_lieu;
+                            // On stocke les coordonnées manuellement pour éviter d'avoir à refaire une recherche API
+                            // Astuce : on simule le comportement de l'autocomplétion ou on met à jour la variable globale
+                            currentStartCity = fav.nom_lieu;
+                            currentStartCoords = [lat, lon];
+                            // Flash visuel pour confirmer
+                            inputStart.style.backgroundColor = '#d5f5e3';
+                        } else {
+                            // Cas où le départ est déjà fixé (2ème segment), on ne peut pas le changer ici facilement
+                            alert("Le départ est déjà fixé par l'arrivée du segment précédent.");
+                        }
+                    }, 100);
+                    marker.closePopup();
+                });
+
+                // --- ACTION : DÉFINIR COMME ARRIVÉE ---
+                container.querySelector('.btn-end').addEventListener('click', () => {
+                     // Si le formulaire n'est pas ouvert, on l'ouvre
+                    const btnAdd = document.getElementById('btnAddSegment');
+                    if (btnAdd && btnAdd.style.display !== 'none') {
+                        btnAdd.click();
+                    }
+
+                    setTimeout(() => {
+                        const inputEnd = document.getElementById('inputEndBlock');
+                        if (inputEnd) {
+                            inputEnd.value = fav.nom_lieu;
+                            inputEnd.style.backgroundColor = '#d5f5e3';
+                            // Note: Le clic sur "Valider" fera la recherche de coordonnées via l'API, 
+                            // mais comme le nom est exact, ça marchera. 
+                        }
+                    }, 100);
+                    marker.closePopup();
+                });
+
+                // --- ACTION : AJOUTER COMME SOUS-ÉTAPE ---
+                container.querySelector('.btn-step').addEventListener('click', () => {
+                    const formContainer = document.getElementById('segmentFormContainer');
+                    
+                    // Vérifier si l'éditeur de sous-étapes est ouvert
+                    if (formContainer.style.display === 'block') {
+                        // Ajouter une ligne dans le formulaire
+                        // On appelle la fonction addSubEtapeForm existante (définie plus bas dans ton code)
+                        // On doit s'assurer que addSubEtapeForm est accessible ou déplacée dans le scope
+                        
+                        // Petite astuce : on cherche le bouton "Ajouter une étape" du DOM et on simule un clic, 
+                        // puis on remplit le dernier champ créé.
+                        document.getElementById('addSubEtape').click();
+                        
+                        setTimeout(() => {
+                            const allInputs = document.querySelectorAll('.subEtapeNom');
+                            const lastInput = allInputs[allInputs.length - 1];
+                            if(lastInput) {
+                                lastInput.value = fav.nom_lieu;
+                                lastInput.style.backgroundColor = '#d6eaf8';
+                            }
+                        }, 50);
+                        
+                        marker.closePopup();
+                    } else {
+                        alert("Veuillez d'abord ouvrir le mode modification d'un trajet (cliquez sur 'Modifier les étapes' dans la légende) pour ajouter ce favori.");
+                    }
+                });
+
+                marker.bindPopup(container);
+            });
+        } catch (e) {
+            console.error("Erreur chargement favoris", e);
+        }
+    }
+
+    // Lancer le chargement
+    loadMapFavorites();
  
     // ============================================================
     // 2. GESTION DU STATUT & VISIBILITÉ (UI Logic)
