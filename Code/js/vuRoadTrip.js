@@ -1,22 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // On lance la carte globale
     initGlobalMap();
+    // On lance le calcul des distances/temps pour l'affichage texte
     calculerTousLesSegments();
 });
 
 const mapInstances = {};
-
 const colorsPalette = [
     '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', 
     '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', 
-    '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', 
-    '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080'
+    '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000'
 ];
 
 /**
- * 1. GESTION DE LA CARTE GLOBALE (AVEC CLUSTERS)
+ * Récupère les données proprement (Array ou Object)
+ */
+function getTrajetData(id) {
+    if (!roadTripData) return null;
+    if (Array.isArray(roadTripData)) {
+        // Le double égal (==) est important pour matcher string "12" et int 12
+        return roadTripData.find(t => t.id == id);
+    } else {
+        return roadTripData[id];
+    }
+}
+
+/**
+ * 1. CARTE GLOBALE (D'ENSEMBLE)
  */
 async function initGlobalMap() {
     if (!document.getElementById('map-global')) return;
+    if (typeof roadTripData === 'undefined' || !roadTripData) return;
 
     const map = L.map('map-global');
     
@@ -24,33 +38,42 @@ async function initGlobalMap() {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // --- NOUVEAU : Création du groupe de clusters ---
-    // On désactive le zoom au clic sur un cluster si on veut (spiderfyOnMaxZoom: false)
-    // Ici on laisse par défaut.
     const markersCluster = L.markerClusterGroup({
-        maxClusterRadius: 50, // Rayon en pixels pour regrouper (plus petit = moins de regroupement)
+        maxClusterRadius: 40,
         spiderfyOnMaxZoom: true,
         showCoverageOnHover: false,
         zoomToBoundsOnClick: true
     });
-
-    // On ajoute le groupe vide à la carte
     map.addLayer(markersCluster);
 
     const bounds = [];
     let colorIndex = 0;
+    const allTrajets = Object.values(roadTripData);
 
-    for (const id in roadTripData) {
-        const data = roadTripData[id];
+    for (const data of allTrajets) {
+        // Sécurité : si pas de coordonnées, on passe au suivant sans planter
+        if (!data.hasCoords) {
+            console.warn(`Trajet ${data.id} ignoré : coordonnées manquantes.`);
+            continue;
+        }
+
         data.color = colorsPalette[colorIndex % colorsPalette.length];
+        
+        try {
+            // On dessine le trajet
+            await drawRoute(map, data, data.color, false, true, markersCluster);
 
-        // On passe le groupe de cluster à la fonction drawRoute
-        await drawRoute(map, data, data.color, false, true, markersCluster);
-
-        bounds.push([data.depart.lat, data.depart.lon]);
-        bounds.push([data.arrivee.lat, data.arrivee.lon]);
-        if (data.sousEtapes && data.sousEtapes.length > 0) {
-            data.sousEtapes.forEach(se => bounds.push([se.lat, se.lon]));
+            // On ajoute les points aux limites pour centrer la carte
+            bounds.push([parseFloat(data.depart.lat), parseFloat(data.depart.lon)]);
+            bounds.push([parseFloat(data.arrivee.lat), parseFloat(data.arrivee.lon)]);
+            
+            if (data.sousEtapes && data.sousEtapes.length > 0) {
+                data.sousEtapes.forEach(se => {
+                    bounds.push([parseFloat(se.lat), parseFloat(se.lon)]);
+                });
+            }
+        } catch (err) {
+            console.error("Erreur affichage trajet global:", err);
         }
         colorIndex++;
     }
@@ -63,41 +86,99 @@ async function initGlobalMap() {
 }
 
 /**
- * 2. CARTE INDIVIDUELLE (SANS CLUSTERS)
+ * 2. CARTE INDIVIDUELLE (VISUALISATION SEULE)
  */
 async function initStepMap(id) {
-    if (mapInstances[id]) {
-        setTimeout(() => mapInstances[id].invalidateSize(), 100);
+    const data = getTrajetData(id);
+    const divId = 'map-trajet-' + id;
+    const divElement = document.getElementById(divId);
+    
+    if (!divElement) return;
+
+    // CAS 1 : Pas de données JS du tout (ne devrait plus arriver avec le fix PHP)
+    if (!data) {
+        divElement.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">Données introuvables.</div>';
         return;
     }
 
-    const divId = 'map-trajet-' + id;
-    if (!document.getElementById(divId)) return;
+    // CAS 2 : Données présentes, mais pas de coordonnées (lat/lon null)
+    if (!data.hasCoords) {
+        divElement.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:center; height:100%; background:#f8f9fa; color:#888; text-align:center; padding:10px;">
+                <div>
+                    <span style="font-size:24px;">🌍</span><br>
+                    <strong>Coordonnées en attente</strong><br>
+                    <small>Les lieux "${data.depart.nom}" ou "${data.arrivee.nom}" n'ont pas encore été géolocalisés.</small>
+                </div>
+            </div>`;
+        // On s'assure que le conteneur est visible
+        divElement.style.display = 'block';
+        return;
+    }
 
-    const data = roadTripData[id];
-    
+    // Si la carte existe déjà, on la redimensionne juste
+    if (mapInstances[id]) {
+        setTimeout(() => {
+            mapInstances[id].invalidateSize();
+            if(data.layerGroup) {
+                 mapInstances[id].fitBounds(data.layerGroup.getBounds(), { padding: [30, 30] });
+            }
+        }, 100);
+        return;
+    }
+
+    // Initialisation normale de la carte
     const map = L.map(divId);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     mapInstances[id] = map;
+    
     const color = data.color || '#0B667D';
 
-    // Ici on passe null pour le clusterGroup car on veut voir tous les points
-    await drawRoute(map, data, color, true, false, null);
+    setTimeout(async () => {
+        map.invalidateSize();
+        await drawRoute(map, data, color, true, false, null);
+    }, 50);
 }
 
 /**
- * 3. DESSINER UNE ROUTE & MARQUEURS
- * @param {Object} clusterGroup (Optionnel) Si fourni, on ajoute les marqueurs dedans au lieu de la carte
+ * 3. FONCTION DE DESSIN (CŒUR DU SYSTÈME)
  */
 async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
-    const latDep = data.depart.lat;
-    const lonDep = data.depart.lon;
-    const latArr = data.arrivee.lat;
-    const lonArr = data.arrivee.lon;
+    // 1. Conversion sécurisée
+    const latDep = parseFloat(data.depart.lat);
+    const lonDep = parseFloat(data.depart.lon);
+    const latArr = parseFloat(data.arrivee.lat);
+    const lonArr = parseFloat(data.arrivee.lon);
 
+    // Sécurité anti-crash : Si une coordonnée est invalide (NaN), on arrête
+    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) {
+        console.error("Coordonnées invalides pour le trajet:", data.titre);
+        return;
+    }
+
+    let stepCounter = 1;
+
+    // Création des marqueurs
+    createNumberedMarker(map, latDep, lonDep, stepCounter++, color, `<b>Départ:</b> ${data.depart.nom}`, useOffset ? 'left' : null, clusterGroup);
+
+    if (data.sousEtapes && data.sousEtapes.length > 0) {
+        data.sousEtapes.forEach((se) => {
+            const sLat = parseFloat(se.lat);
+            const sLon = parseFloat(se.lon);
+            if (!isNaN(sLat) && !isNaN(sLon)) {
+                let popupContent = `<b>📍 ${se.nom}</b>`;
+                if (se.heure) popupContent += `<br>🕐 ${se.heure}`;
+                createNumberedMarker(map, sLat, sLon, stepCounter++, color, popupContent, null, clusterGroup);
+            }
+        });
+    }
+
+    createNumberedMarker(map, latArr, lonArr, stepCounter, color, `<b>Arrivée:</b> ${data.arrivee.nom}`, useOffset ? 'right' : null, clusterGroup);
+
+    // 2. Calcul itinéraire OSRM
     let profile = 'driving';
     if (data.mode === 'velo' || data.mode === 'vélo') profile = 'cycling';
     if (data.mode === 'marche' || data.mode === 'à pied') profile = 'walking';
@@ -105,49 +186,16 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
     let coordinates = `${lonDep},${latDep}`;
     if (data.sousEtapes && data.sousEtapes.length > 0) {
         data.sousEtapes.forEach(se => {
-            coordinates += `;${se.lon},${se.lat}`;
+             // On s'assure de ne pas mettre de NaN dans l'URL
+             const sLat = parseFloat(se.lat);
+             const sLon = parseFloat(se.lon);
+             if(!isNaN(sLat) && !isNaN(sLon)) {
+                 coordinates += `;${sLon},${sLat}`;
+             }
         });
     }
     coordinates += `;${lonArr},${latArr}`;
 
-    let stepCounter = 1;
-
-    // --- CRÉATION DES MARQUEURS ---
-    // Note: On passe 'clusterGroup' à la fonction helper
-
-    // A. DÉPART
-    createNumberedMarker(
-        map, latDep, lonDep, stepCounter++, color, 
-        `<b>Départ:</b> ${data.depart.nom}`, 
-        useOffset ? 'left' : null,
-        clusterGroup
-    );
-
-    // B. SOUS-ÉTAPES
-    if (data.sousEtapes && data.sousEtapes.length > 0) {
-        data.sousEtapes.forEach((se) => {
-            let popupContent = `<b>📍 ${se.nom}</b>`;
-            if (se.heure) popupContent += `<br>🕐 ${se.heure}`;
-            if (se.remarque) {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = se.remarque;
-                const txt = tempDiv.textContent || "";
-                popupContent += `<br><em>${txt.substring(0,80)}...</em>`;
-            }
-
-            createNumberedMarker(map, se.lat, se.lon, stepCounter++, color, popupContent, null, clusterGroup);
-        });
-    }
-
-    // C. ARRIVÉE
-    createNumberedMarker(
-        map, latArr, lonArr, stepCounter, color, 
-        `<b>Arrivée:</b> ${data.arrivee.nom}`, 
-        useOffset ? 'right' : null,
-        clusterGroup
-    );
-
-    // --- TRACÉ LIGNE (La ligne ne va JAMAIS dans le cluster, toujours sur la map) ---
     const url = `https://router.project-osrm.org/route/v1/${profile}/${coordinates}?overview=full&geometries=geojson`;
 
     try {
@@ -158,30 +206,35 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
         if (json.code === 'Ok') {
             geoData = json.routes[0].geometry;
         } else {
+            console.warn("OSRM fallback (ligne droite) pour:", data.titre);
             geoData = {
                 "type": "LineString",
                 "coordinates": [[lonDep, latDep], [lonArr, latArr]]
             };
         }
 
-        const layer = L.geoJSON(geoData, {
-            style: { color: color, weight: 6, opacity: 0.8 }
+        const routeLayer = L.geoJSON(geoData, {
+            style: { color: color, weight: 5, opacity: 0.8 }
         }).addTo(map);
 
+        data.layerGroup = routeLayer;
+
         if (fitBounds) {
-            map.fitBounds(layer.getBounds(), { padding: [30, 30] });
+            map.fitBounds(routeLayer.getBounds(), { padding: [30, 30] });
         }
 
     } catch (e) {
-        console.error("Erreur API OSRM", e);
+        console.error("Erreur trace route:", e);
+        // Fallback ligne droite visuelle
+        const line = L.polyline([[latDep, lonDep], [latArr, lonArr]], {color: color}).addTo(map);
+        if (fitBounds) map.fitBounds(line.getBounds());
     }
 }
 
-/**
- * Helper modifié pour gérer le Cluster
- */
 function createNumberedMarker(map, lat, lon, number, color, popupText, offsetDirection, clusterGroup) {
-    
+    // Sécurité ultime
+    if (isNaN(lat) || isNaN(lon)) return;
+
     let offsetClass = '';
     if (offsetDirection === 'left') offsetClass = 'marker-offset-left';
     if (offsetDirection === 'right') offsetClass = 'marker-offset-right';
@@ -196,8 +249,6 @@ function createNumberedMarker(map, lat, lon, number, color, popupText, offsetDir
 
     const marker = L.marker([lat, lon], { icon: icon }).bindPopup(popupText);
 
-    // LOGIQUE CLÉ : Si un groupe de cluster existe (Carte globale), on ajoute dedans.
-    // Sinon (Carte étape), on ajoute direct à la map.
     if (clusterGroup) {
         clusterGroup.addLayer(marker);
     } else {
@@ -205,9 +256,9 @@ function createNumberedMarker(map, lat, lon, number, color, popupText, offsetDir
     }
 }
 
-// ... Le reste du code (toggleTrajet, calculs...) reste identique ...
-// Copie-colle la fin de ton fichier précédent à partir de "window.toggleTrajet" ici.
-// Ou si tu veux je te remets le bloc complet ci-dessous :
+/* ============================================================
+   UI & INTERACTION
+   ============================================================ */
 
 window.toggleTrajet = function(id) {
     const container = document.getElementById('sous-etapes-' + id);
@@ -219,14 +270,21 @@ window.toggleTrajet = function(id) {
     const isActive = container.classList.contains('active');
 
     if (isActive) {
+        // Fermeture
         container.classList.remove('active');
         card.classList.remove('active');
         checkAndToggleGlobalMap();
     } else {
+        // Ouverture
         container.classList.add('active');
         card.classList.add('active');
+        
         if (mapGlobal) mapGlobal.style.display = 'none';
-        setTimeout(() => { initStepMap(id); }, 200);
+
+        // IMPORTANT : On attend que l'animation CSS (slide down) commence
+        setTimeout(() => { 
+            initStepMap(id); 
+        }, 300);
     }
 };
 
@@ -234,17 +292,27 @@ function checkAndToggleGlobalMap() {
     const mapGlobal = document.getElementById('map-global');
     if (!mapGlobal) return;
     const activeCards = document.querySelectorAll('.card-vu.active');
+    
     if (activeCards.length === 0) {
         mapGlobal.style.display = 'block';
+        // Petit fix si la carte globale a besoin de se redessiner
+        const map = L.DomUtil.get('map-global');
+        if(map && map._leaflet_id) {
+             // Optionnel : map.invalidateSize() si le conteneur a changé
+        }
     } else {
         mapGlobal.style.display = 'none';
     }
 }
 
+/* ============================================================
+   CALCULS TEXTUELS
+   ============================================================ */
 function calculerTousLesSegments() {
     const segments = document.querySelectorAll('.segment-info');
     segments.forEach((segment, index) => {
-        setTimeout(() => { calculerSegment(segment); }, index * 500);
+        // Petit délai pour ne pas spammer l'API
+        setTimeout(() => { calculerSegment(segment); }, index * 300);
     });
 }
 
@@ -258,8 +326,8 @@ async function calculerSegment(segment) {
     const distEl = segment.querySelector('.segment-distance');
     const timeEl = segment.querySelector('.segment-time');
     
-    if (!latDep || !lonDep || !latArr || !lonArr) {
-        distEl.textContent = 'N/A'; timeEl.textContent = 'N/A'; return;
+    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) {
+        distEl.textContent = '-'; timeEl.textContent = '-'; return;
     }
     
     const profiles = { 'voiture': 'driving', 'velo': 'cycling', 'vélo': 'cycling', 'marche': 'walking', 'à pied': 'walking' };
@@ -273,49 +341,25 @@ async function calculerSegment(segment) {
         if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
             const route = data.routes[0];
             const distanceKm = (route.distance / 1000).toFixed(1);
-            distEl.textContent = `${distanceKm} km`;
+            
             const durationSec = route.duration;
             const heures = Math.floor(durationSec / 3600);
             const minutes = Math.floor((durationSec % 3600) / 60);
-            let tempsTexte = (heures > 0) ? `${heures}h${minutes > 0 ? minutes.toString().padStart(2, '0') : ''}` : `${minutes}min`;
+            let tempsTexte = "";
+            
+            if (heures > 0) {
+                tempsTexte = `${heures}h${minutes.toString().padStart(2, '0')}`;
+            } else {
+                tempsTexte = `${minutes} min`;
+            }
+            
+            distEl.textContent = `${distanceKm} km`;
             timeEl.textContent = tempsTexte;
             segment.classList.add('segment-calculated');
         } else {
-            distEl.textContent = '—'; timeEl.textContent = '—';
+            distEl.textContent = '?'; timeEl.textContent = '?';
         }
     } catch (error) {
-        console.error('Erreur calcul segment:', error);
-        distEl.textContent = 'Err'; timeEl.textContent = 'Err';
+        distEl.textContent = ''; timeEl.textContent = '';
     }
 }
-    /*==================================
-    Mes road 
-    ================================*/
-
-function closeShareModal() {
-    document.getElementById('shareModal').classList.remove('active');
-    // Retirer le paramètre de l'URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-}
-
-function copyShareUrl() {
-    const input = document.getElementById('shareUrl');
-    navigator.clipboard.writeText(input.value).then(() => {
-        const success = document.getElementById('copySuccess');
-        success.style.display = 'block';
-        
-        setTimeout(() => {
-            success.style.display = 'none';
-        }, 3000);
-    }).catch(err => {
-        console.error('Erreur lors de la copie du texte : ', err);
-    });
-}
-
-// Fermer le modal en cliquant à l'extérieur
-document.addEventListener('click', function(event) {
-    const modal = document.getElementById('shareModal');
-    if (modal && !modal.contains(event.target)) {
-        closeShareModal();
-    }
-});

@@ -3,6 +3,38 @@ require_once __DIR__ . '/modules/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
 include_once __DIR__ . '/fonctions/InfoItineraire.php';
 
+function geocoderVilleEnDirect($nomVille) {
+    if (empty($nomVille)) return null;
+
+    $query = urlencode($nomVille);
+    $url = "https://nominatim.openstreetmap.org/search?q={$query}&format=json&limit=1";
+
+    // Utilisation de cURL (plus robuste que file_get_contents)
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, "MonAppRoadTrip/1.0");
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout de 5 secondes max
+    
+    // Désactiver la vérification SSL si vous êtes en local (WAMP/XAMPP) et que ça bloque
+    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
+
+    $json = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode === 200 && $json) {
+        $data = json_decode($json, true);
+        if (!empty($data) && isset($data[0])) {
+            return [
+                'lat' => $data[0]['lat'],
+                'lon' => $data[0]['lon']
+            ];
+        }
+    }
+    return null;
+}
+
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /id.php');
     exit;
@@ -41,37 +73,60 @@ foreach ($trajets as $trajet) {
     
     $etapes[$trajet['id']] = $sousEtapes;
 
-    // Coordonnées pour la carte JS
-    $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
-    $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
+    // --- GESTION DES COORDONNÉES (Cache + Fallback API) ---
 
-    if ($coordsDep && $coordsArr) {
-        // Préparer les coordonnées des sous-étapes pour la carte
-        $sousEtapesCoords = [];
-        foreach ($sousEtapes as $se) {
-            if (!empty($se['ville'])) {
-                $coords = getCoordonneesDepuisCache($se['ville'], $pdo);
-                if ($coords) {
-                    $sousEtapesCoords[] = [
-                        'lat' => $coords['lat'],
-                        'lon' => $coords['lon'],
-                        'nom' => $se['ville'],
-                        'heure' => $se['heure'] ?? '',
-                        'remarque' => $se['description'] ?? ''
-                    ];
-                }
+    // 1. Départ
+    $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
+    if (!$coordsDep) {
+        $coordsDep = geocoderVilleEnDirect($trajet['depart']);
+    }
+
+    // 2. Arrivée
+    $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
+    if (!$coordsArr) {
+        $coordsArr = geocoderVilleEnDirect($trajet['arrivee']);
+    }
+
+    // 3. Sous-étapes
+    $sousEtapesCoords = [];
+    foreach ($sousEtapes as $se) {
+        if (!empty($se['ville'])) {
+            $coords = getCoordonneesDepuisCache($se['ville'], $pdo);
+            // Si pas en cache, on cherche en direct
+            if (!$coords) {
+                $coords = geocoderVilleEnDirect($se['ville']);
+            }
+
+            if ($coords) {
+                $sousEtapesCoords[] = [
+                    'lat' => $coords['lat'],
+                    'lon' => $coords['lon'],
+                    'nom' => $se['ville'],
+                    'heure' => $se['heure'] ?? '',
+                    'remarque' => $se['description'] ?? ''
+                ];
             }
         }
-
-        $jsMapData[$trajet['id']] = [
-            'id' => $trajet['id'],
-            'titre' => $trajet['titre'],
-            'mode' => strtolower($trajet['mode_transport']),
-            'depart' => ['lat' => $coordsDep['lat'], 'lon' => $coordsDep['lon'], 'nom' => $trajet['depart']],
-            'arrivee' => ['lat' => $coordsArr['lat'], 'lon' => $coordsArr['lon'], 'nom' => $trajet['arrivee']],
-            'sousEtapes' => $sousEtapesCoords // Ajout des sous-étapes
-        ];
     }
+
+    // Construction des données JS (On envoie même si coordsDep est null pour ne pas planter le JS)
+    $jsMapData[] = [ 
+        'id' => $trajet['id'],
+        'titre' => $trajet['titre'],
+        'mode' => strtolower($trajet['mode_transport']),
+        'depart' => [
+            'lat' => $coordsDep ? $coordsDep['lat'] : null, 
+            'lon' => $coordsDep ? $coordsDep['lon'] : null, 
+            'nom' => $trajet['depart']
+        ],
+        'arrivee' => [
+            'lat' => $coordsArr ? $coordsArr['lat'] : null, 
+            'lon' => $coordsArr ? $coordsArr['lon'] : null, 
+            'nom' => $trajet['arrivee']
+        ],
+        'sousEtapes' => $sousEtapesCoords,
+        'hasCoords' => ($coordsDep && $coordsArr) ? true : false
+    ];
 }
 
 function getTransportIcon($type) {
@@ -133,27 +188,12 @@ function getTransportIcon($type) {
                     <?php 
                     $listeEtapes = $etapes[$t['id']] ?? [];
                     
-                    // MODIFICATION : Construire la timeline complète avec DEPART + SOUS-ETAPES + ARRIVEE
+                    // Construction de la timeline
                     $timeline = [];
+                    $timeline[] = ['ville' => $t['depart'], 'is_departure' => true];
+                    foreach ($listeEtapes as $etape) { $timeline[] = $etape; }
+                    $timeline[] = ['ville' => $t['arrivee'], 'is_arrival' => true];
                     
-                    // 1. Ajout du DÉPART
-                    $timeline[] = [
-                        'ville' => $t['depart'], 
-                        'is_departure' => true
-                    ];
-                    
-                    // 2. Ajout des SOUS-ÉTAPES
-                    foreach ($listeEtapes as $etape) {
-                        $timeline[] = $etape;
-                    }
-                    
-                    // 3. Ajout de l'ARRIVÉE
-                    $timeline[] = [
-                        'ville' => $t['arrivee'], 
-                        'is_arrival' => true
-                    ];
-                    
-                    // Affichage de toute la timeline
                     for ($i = 0; $i < count($timeline); $i++) :
                         $step = $timeline[$i];
                         $villeNom = $step['ville'] ?? $step['nom'] ?? 'Étape';
@@ -164,20 +204,15 @@ function getTransportIcon($type) {
                             <div class="sous-etape-header">
                                 <h3>
                                     <?php 
-                                    if ($isDeparture) {
-                                        echo '🚀 Départ : ';
-                                    } elseif ($isArrival) {
-                                        echo '🏁 Arrivée : ';
-                                    } else {
-                                        echo '📍 ';
-                                    }
+                                    if ($isDeparture) echo '🚀 Départ : ';
+                                    elseif ($isArrival) echo '🏁 Arrivée : ';
+                                    else echo '📍 ';
                                     echo htmlspecialchars($villeNom); 
                                     ?>
                                 </h3>
                             </div>
 
                             <?php if (!$isDeparture && !$isArrival): ?>
-                                <!-- Affichage des sous-étapes normales -->
                                 <div class="sous-etape-info">    
                                     <?php if (!empty($step['heure'])) : ?>
                                         <span>🕐 <?php echo htmlspecialchars($step['heure']); ?></span>
@@ -190,11 +225,6 @@ function getTransportIcon($type) {
                                         <div class="tinymce-content">
                                             <?php echo $step['description']; ?> 
                                         </div>
-                                    </div>
-                                <?php else: ?>
-                                    <!-- Debug : afficher si la description est vide -->
-                                    <div class="sous-etape-description-empty">
-                                        <p style="color: #999; font-style: italic;">Aucune description pour cette étape</p>
                                     </div>
                                 <?php endif; ?>
 
@@ -212,14 +242,15 @@ function getTransportIcon($type) {
                         </div>
                         
                         <?php 
-                        // NOUVEAU : Affichage du segment de transport vers la prochaine étape
+                        // Affichage du segment de transport
                         if ($i < count($timeline) - 1) :
                             $nextStep = $timeline[$i + 1];
                             $nextVilleNom = $nextStep['ville'] ?? $nextStep['nom'] ?? 'Étape';
                             
-                            // Récupérer les coordonnées
-                            $coordsFrom = getCoordonneesDepuisCache($villeNom, $pdo);
-                            $coordsTo = getCoordonneesDepuisCache($nextVilleNom, $pdo);
+                            // On tente de récupérer les coords pour le calcul de distance
+                            // Si pas en cache, on réutilise le fallback API (pas idéal pour perf mais fonctionnel)
+                            $coordsFrom = getCoordonneesDepuisCache($villeNom, $pdo) ?: geocoderVilleEnDirect($villeNom);
+                            $coordsTo = getCoordonneesDepuisCache($nextVilleNom, $pdo) ?: geocoderVilleEnDirect($nextVilleNom);
                             
                             if ($coordsFrom && $coordsTo) :
                         ?>

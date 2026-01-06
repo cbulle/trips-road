@@ -15,6 +15,7 @@ $modeEdition = false;
 $roadTripData = null;
 $existingTrajets = [];
 $existingVilles = [];
+$isPublished = false;
 
 if (isset($_GET['id'])) {
     $id_rt = $_GET['id'];
@@ -26,31 +27,48 @@ if (isset($_GET['id'])) {
     $roadTripData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($roadTripData) {
-        $modeEdition = true;
+      // **VÉRIFIER SI LE ROADTRIP EST DÉJÀ PUBLIÉ**
+      if ($roadTripData['statut'] === 'termine') {
+        $isPublished = true;
+        // Rediriger vers la page de visualisation
+        header('Location: /vuRoadTrip.php?id=' . $id_rt);
+        exit;
+      }
+      
+      $modeEdition = true;
 
-        // Récupérer Trajets
-        $stmtT = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero ASC");
-        $stmtT->execute([$id_rt]);
-        $rawTrajets = $stmtT->fetchAll(PDO::FETCH_ASSOC);
+      // Récupérer Trajets
+      $stmtT = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero ASC");
+      $stmtT->execute([$id_rt]);
+      $rawTrajets = $stmtT->fetchAll(PDO::FETCH_ASSOC);
 
-        // Récupérer Sous-étapes pour chaque trajet
-        foreach ($rawTrajets as $t) {
-            $stmtS = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero ASC");
-            $stmtS->execute([$t['id']]);
-            $sousEtapes = $stmtS->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Formatage pour JS
-            $t['sousEtapes'] = array_map(function($se) {
-                return [
-                    'nom' => $se['ville'],
-                    'heure' => $se['heure'],
-                    'remarque' => $se['description'] // HTML TinyMCE
-                ];
-            }, $sousEtapes);
+      // Récupérer Sous-étapes pour chaque trajet
+      foreach ($rawTrajets as $t) {
+          $stmtS = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero ASC");
+          $stmtS->execute([$t['id']]);
+          $sousEtapes = $stmtS->fetchAll(PDO::FETCH_ASSOC);
+          
+          // Construction de l'objet Trajet complet pour JS
+          $trajetComplet = $t;
+          
+          // S'assurer que la date est au format YYYY-MM-DD pour l'input HTML date
+          if(isset($t['date']) && !isset($t['date_trajet'])) {
+              $trajetComplet['date_trajet'] = date('Y-m-d', strtotime($t['date']));
+          } elseif(isset($t['date_trajet'])) {
+              $trajetComplet['date_trajet'] = date('Y-m-d', strtotime($t['date_trajet']));
+          }
 
-            $existingTrajets[] = $t;
-        }
-    }
+          $trajetComplet['sousEtapes'] = array_map(function($se) {
+              return [
+                  'nom' => $se['ville'],
+                  'heure' => $se['heure'], // Format HH:MM
+                  'remarque' => $se['description'] // HTML TinyMCE
+              ];
+          }, $sousEtapes);
+
+          $existingTrajets[] = $trajetComplet;
+      }
+  }
 }
 ?>
 
