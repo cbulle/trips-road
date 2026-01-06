@@ -77,7 +77,6 @@
   color: var(--orange);
 }
 
-/* Styles pour la section de recherche */
 .search-container {
     position: relative;
     margin: 20px auto;
@@ -155,7 +154,6 @@
     border-bottom: none;
 }
 
-/* Container de la carte avec sidebar */
 #mapContainer {
     margin: 30px auto;
     max-width: 1400px;
@@ -174,7 +172,6 @@
     align-items: flex-start;
 }
 
-/* Sidebar des catégories */
 .category-sidebar {
     min-width: 320px;
     max-width: 320px;
@@ -256,7 +253,6 @@
     background: var(--bleu_clair);
 }
 
-/* Info box */
 .category-info {
     border: 2px solid var(--gris_clair);
 
@@ -283,7 +279,6 @@
     color: var(--bleu_fonce_ecriture);
 }
 
-/* Bouton effacer */
 .clear-filter-btn {
     width: 100%;
     padding: 12px;
@@ -305,13 +300,11 @@
     transform: translateY(0);
 }
 
-/* Carte */
 #userMap {
     position: relative;
     cursor: crosshair;
 }
 
-/* Animations */
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -332,7 +325,10 @@
     }
 }
 
-/* Styles responsive */
+/*=========================
+Responsive
+=========================*/
+
 @media (max-width: 1200px) {
     .map-wrapper {
         flex-direction: column;
@@ -392,7 +388,10 @@
     }
 }
 
-/* Style pour les popups Leaflet personnalisées */
+
+
+
+
 .leaflet-popup-content-wrapper {
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);

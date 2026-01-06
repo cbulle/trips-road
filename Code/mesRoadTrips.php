@@ -71,7 +71,6 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 <?php endif; ?>
 
-<!-- Modal de partage -->
 <?php if ($show_share && $share_url): ?>
 <div class="share-modal active" id="shareModal">
     <div class="share-modal-content">

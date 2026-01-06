@@ -9,7 +9,6 @@
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
-/* Liste des conversations */
 .conversations-list {
     width: 350px;
     border-right: 1px solid #e0e0e0;
@@ -139,7 +138,6 @@
     color: rgba(255,255,255,0.9);
 }
 
-/* Zone de chat */
 .chat-area {
     flex: 1;
     display: flex;
@@ -251,7 +249,6 @@
     text-align: right;
 }
 
-/* Formulaire d'envoi */
 .message-form {
     display: flex;
     padding: 20px;
@@ -296,7 +293,6 @@
     transform: scale(1.05);
 }
 
-/* Pas de conversation sélectionnée */
 .no-chat-selected {
     display: flex;
     flex-direction: column;
@@ -311,7 +307,9 @@
     font-size: 18px;
 }
 
-/* Responsive */
+/*=========================
+Responsive
+=========================*/
 @media (max-width: 768px) {
     .messagerie-container {
         flex-direction: column;
