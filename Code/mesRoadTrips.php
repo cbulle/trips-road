@@ -37,11 +37,24 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="roadtrip-grid">
     <?php foreach ($roadtrips as $rt): ?>
         <div class="roadtrip-card">
+            
+            <?php 
+                // Logique pour le statut
+                $estTermine = (isset($rt['statut']) && $rt['statut'] === 'termine');
+                $classeCss = $estTermine ? 'statut-termine' : 'statut-brouillon';
+                $texteStatut = $estTermine ? 'Terminé' : 'Brouillon';
+            ?>
 
             <?php if (!empty($rt['photo'])): ?>
                 <img src="/uploads/roadtrips/<?= htmlspecialchars($rt['photo']) ?>" 
                      alt="Photo du road trip" class="roadtrip-photo">
             <?php endif; ?>
+
+            <div style="padding: 10px 10px 0 10px;">
+                <span class="badge-statut <?= $classeCss ?>">
+                    <?= $texteStatut ?>
+                </span>
+            </div>
 
             <h3><?= htmlspecialchars($rt['titre']) ?></h3>
             <p><?= htmlspecialchars($rt['description']) ?></p>
@@ -51,9 +64,11 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <i class="material-icons">visibility</i>Voir
                 </a>
 
+                <?php if(!$estTermine): ?>
                 <a class="btn-edit" href="creationRoadTrip.php?id=<?= $rt['id'] ?>">
                     <i class="material-icons">edit</i> 
                 </a>
+                <?php endif; ?>
                 
                 <a class="btn-share" href="generate_shared_link.php?id=<?= $rt['id'] ?>">
                     <i class="material-icons">share</i>                   
@@ -71,7 +86,6 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 <?php endif; ?>
 
-<!-- Modal de partage -->
 <?php if ($show_share && $share_url): ?>
 <div class="share-modal active" id="shareModal">
     <div class="share-modal-content">

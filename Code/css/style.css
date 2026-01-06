@@ -575,8 +575,6 @@ padding: 6px 10px;
   STYLE AFFICHAGE ROAD TRIP D'UN USER
 ============================== */
 
-
-
 .roadtrip-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -618,6 +616,33 @@ padding: 6px 10px;
 .roadtrip-card a:hover {
   background: var(--vert);
 }
+
+/* --- AJOUT POUR LES BADGES DE STATUT --- */
+.badge-statut {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Couleur pour le mode Brouillon (Jaune/Orange ou Gris) */
+.statut-brouillon {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* Couleur pour le mode Terminé (Vert) */
+.statut-termine {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+/* --------------------------------------- */
 
 .roadtrip-buttons {
   display: flex;
@@ -1921,4 +1946,3 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border: 1px solid var(--orange);
     font-weight: bold;
 }
-
