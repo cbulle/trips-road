@@ -69,7 +69,7 @@ if ($id_utilisateur) {
 
             <div class="roadtrip-buttons">
                 <a class="btn-view" href="public_road.php?id=<?= $rt['id'] ?>">
-                    Voir
+                    <i class="material-icons">visibility</i>
                 </a>
                 
                 <?php if ($id_utilisateur): ?>
@@ -77,7 +77,7 @@ if ($id_utilisateur) {
                     <a class="btn-favori <?= $isFavori ? 'active' : '' ?>" 
                        href="/formulaire/favo.php?id=<?= $rt['id'] ?>&redirect=Roadtrip.php">
                         <i class="material-icons">favorite</i>
-                        <?= $isFavori ? 'Favoris' : 'Ajouter' ?>
+                        
                     </a>
                 <?php endif; ?>
             </div>
