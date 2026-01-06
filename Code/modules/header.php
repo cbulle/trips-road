@@ -70,7 +70,7 @@
 
                     <span class="profil-box"> 
                          
-                            <?php
+                             <?php
                             if (isset($_SESSION['utilisateur']['photo_profil']) && !empty($_SESSION['utilisateur']['photo_profil'])) {
                                 $photoProfil = htmlspecialchars($_SESSION['utilisateur']['photo_profil']);
                             
@@ -78,7 +78,7 @@
                                 $photoProfil = "User.png"; 
                                 
                             }
-                            $serverPathUploads = __DIR__ . "/../uploads/pp/$photoProfil";                            
+                            $serverPathUploads = __DIR__ . "/../uploads/pp/$photoProfil";                       
                             if (!file_exists($serverPathUploads)) {
                                 $photoPath = __DIR__ . "/../img/$photoProfil"; 
                                 

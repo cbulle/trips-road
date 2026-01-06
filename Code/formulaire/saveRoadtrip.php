@@ -186,8 +186,8 @@ try {
             $nom = $se['nom'] ?? '';
             sauvegarderVilleDansCache($nom, $se['lat'] ?? null, $se['lon'] ?? null, $pdo);
 
-            $stmt = $pdo->prepare("INSERT INTO sous_etape (numero, ville, description, trajet_id, heure) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$j + 1, $nom, $se['remarque'] ?? '', $trajetId, $se['heure'] ?? null]);
+            $stmt = $pdo->prepare("INSERT INTO sous_etape (numero, ville, description, trajet_id, type_transport, heure) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$j + 1, $nom, $se['remarque'] ?? '', $trajetId, $mode, $se['heure'] ?? null]);
         }
     }
 
