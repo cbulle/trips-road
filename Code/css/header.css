@@ -183,19 +183,30 @@
 
 
 .ul_burger {
-  position: fixed;
-  top:0px;
+  position: absolute; /* Changé de 'fixed' à 'absolute' pour défiler avec la page */
+  top: 140px;
   left: -100%;
   width: 385px;
-  height: 100%;
+  
+  /* On s'assure que le fond couvre au moins toute la hauteur de l'écran */
+  min-height: 100vh; 
+  height: 100%; 
+  
   background-color: var(--bleu_fonce);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  
+  /* Changé de 'center' à 'flex-start' pour aligner les éléments en haut */
+  justify-content: flex-start; 
+  
   gap: 20px;
   padding-right: 30px;
   padding-left: 10px;
+  
   transition: left 0.4s ease;
+  
+  /* S'assure que le menu passe par dessus le contenu mais reste dans le flux */
+  z-index: 1000; 
 }
 
 .ul_burger>li>a {
