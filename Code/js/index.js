@@ -288,13 +288,42 @@ document.addEventListener("DOMContentLoaded", function () {
                         ? `${element.tags['addr:street']} ${element.tags['addr:housenumber'] || ''}`
                         : 'Adresse non disponible';
 
-                    marker.bindPopup(`
-                        <div style="min-width: 150px;">
-                            <h4 style="margin: 0 0 5px 0;">${filter.icon} ${name}</h4>
-                            <p style="margin: 0; font-size: 12px; color: #666;">${address}</p>
-                        </div>
-                    `);
+                    // Création du contenu de la popup via DOM pour gérer les événements proprement
+                    const popupDiv = document.createElement('div');
+                    popupDiv.style.minWidth = "160px";
 
+                    const titleEl = document.createElement('h4');
+                    titleEl.style.margin = "0 0 5px 0";
+                    titleEl.textContent = `${filter.icon} ${name}`;
+                    popupDiv.appendChild(titleEl);
+
+                    const addrEl = document.createElement('p');
+                    addrEl.style.margin = "0 0 10px 0";
+                    addrEl.style.fontSize = "12px";
+                    addrEl.style.color = "#666";
+                    addrEl.textContent = address;
+                    popupDiv.appendChild(addrEl);
+
+                    // Ajout du bouton Favoris si l'utilisateur est connecté
+                    // (currentUserId est défini dans index.php)
+                    if (typeof currentUserId !== 'undefined' && currentUserId !== null) {
+                        const favBtn = document.createElement('button');
+                        favBtn.innerHTML = '<i class="far fa-star"></i> Favoris'; // FontAwesome si dispo, sinon mettre "☆ Favoris"
+                        favBtn.className = "btn-fav-poi"; 
+                        favBtn.style.cssText = "width: 100%; padding: 5px; cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 4px; color: #f39c12; font-weight: bold; transition: all 0.2s;";
+                        
+                        // Effet hover simple
+                        favBtn.onmouseover = () => { favBtn.style.background = "#fff8e1"; };
+                        favBtn.onmouseout = () => { favBtn.style.background = "#fff"; };
+
+                        favBtn.onclick = function() {
+                            toggleLieuFavori(favBtn, name, address, element.lat, element.lon, filterType);
+                        };
+
+                        popupDiv.appendChild(favBtn);
+                    }
+
+                    marker.bindPopup(popupDiv);
                     currentMarkers.push(marker);
                 }
             });
@@ -408,4 +437,48 @@ document.addEventListener("DOMContentLoaded", function () {
             searchInput.dispatchEvent(new Event('input'));
         }
     });
+
+    function toggleLieuFavori(btn, nom, adresse, lat, lon, categorie) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ ...";
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('nom', nom);
+        formData.append('adresse', adresse);
+        formData.append('lat', lat);
+        formData.append('lon', lon);
+        formData.append('categorie', categorie);
+
+        fetch('/formulaire/fav_lieu.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            btn.disabled = false;
+            if (data.success) {
+                if (data.action === 'added') {
+                    btn.innerHTML = '<i class="fas fa-star"></i> En favoris'; // Étoile pleine
+                    btn.style.background = "#f39c12";
+                    btn.style.color = "white";
+                    alert(data.message);
+                } else {
+                    btn.innerHTML = '<i class="far fa-star"></i> Favoris'; // Étoile vide
+                    btn.style.background = "#fff";
+                    btn.style.color = "#f39c12";
+                    alert(data.message);
+                }
+            } else {
+                btn.innerHTML = originalText;
+                alert("Erreur : " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+            alert("Une erreur est survenue.");
+        });
+    }
 });
