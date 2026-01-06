@@ -10,12 +10,11 @@ if (!$token) {
     exit;
 }
 
-// Vérifier le token et récupérer le road trip
 $stmt = $pdo->prepare("
     SELECT r.*, u.nom, u.prenom, rp.nb_vues
     FROM roadtrip_partages rp
     INNER JOIN roadtrip r ON rp.id_roadtrip = r.id
-    INNER JOIN utilisateur u ON r.id_utilisateur = u.id
+    INNER JOIN utilisateurs u ON r.id_utilisateur = u.id
     WHERE rp.token = :token
 ");
 $stmt->execute(['token' => $token]);
@@ -26,18 +25,15 @@ if (!$roadTrip) {
     exit;
 }
 
-// Incrémenter le compteur de vues
 $stmt = $pdo->prepare("UPDATE roadtrip_partages SET nb_vues = nb_vues + 1 WHERE token = :token");
 $stmt->execute(['token' => $token]);
 
 $id_roadtrip = $roadTrip['id'];
 
-// Récupérer les trajets
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Récupérer les sous-étapes
 $etapes = [];
 foreach ($trajets as $trajet) {
     $stmt = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero");
@@ -69,25 +65,8 @@ function getTransportIcon($type) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .loading-data { color: #999; font-size: 0.9em; font-style: italic; }
-        .error-data { color: red; font-size: 0.8em; }
-        .share-header {
-            background: linear-gradient(135deg, var(--bleu_clair), var(--bleu_foncé));
-            color: white;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .share-header h1 {
-            color: white;
-            margin-bottom: 10px;
-        }
-        .share-info {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-    </style>
+    <link rel="stylesheet" href="css/profil.css">
+   
 </head>
 <body>
 

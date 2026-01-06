@@ -11,7 +11,7 @@ function getCoordonneesDepuisCache($ville, $pdo) {
         ];
     }
     
-    return false; // aucune coordonnée trouvée
+    return false; 
 }
 
 function calculerDistanceOSRM($coordDepart, $coordArrivee, $modeTransport = 'voiture') {

@@ -11,7 +11,6 @@ $id_utilisateur = $_SESSION['utilisateur']['id'];
 $show_share = $_GET['show_share'] ?? null;
 $share_url = $_SESSION['share_url'] ?? null;
 
-// --- Récupération des road trips ---
 $stmt = $pdo->prepare("SELECT * FROM roadtrip WHERE id_utilisateur = :id ORDER BY id DESC");
 $stmt->execute(['id' => $id_utilisateur]);
 $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
