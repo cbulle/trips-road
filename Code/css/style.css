@@ -1,7 +1,7 @@
 :root {
   --bleu_clair : #39B2A5;
   --bleu_fonce : #0B667D;
-  --bleu_fonce_ecriture : #0b0b0b;
+  --bleu_fonce_ecriture : #0b0050;
   --beige : #F2E9D6;
   --beige_fonce : #E0C58B;
   --orange : #FF7F50;
@@ -1921,3 +1921,4 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border: 1px solid var(--orange);
     font-weight: bold;
 }
+
