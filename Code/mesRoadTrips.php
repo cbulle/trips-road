@@ -51,7 +51,7 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <i class="material-icons">visibility</i>Voir
                 </a>
 
-                <a class="btn-edit" href="roadtrip_edit.php?id=<?= $rt['id'] ?>">
+                <a class="btn-edit" href="creationRoadTrip.php?id=<?= $rt['id'] ?>">
                     <i class="material-icons">edit</i> 
                 </a>
                 

@@ -28,7 +28,7 @@
 
  .main-index button {
     background-color: var(--bleu_clair);
-    color: var(--beige_fonce);
+    color: var(--noir);
     border: none;
     padding: 1rem 2rem;
     font-size: 1.1rem;
@@ -407,3 +407,4 @@
     color: var(--bleu_fonce_ecriture);
     margin-bottom: 5px;
 }
+
