@@ -1,7 +1,7 @@
 :root {
   --bleu_clair : #39B2A5;
   --bleu_fonce : #0B667D;
-  --bleu_fonce_ecriture : #0b0b0b;
+  --bleu_fonce_ecriture : #0b0050;
   --beige : #F2E9D6;
   --beige_fonce : #E0C58B;
   --orange : #FF7F50;
@@ -121,7 +121,9 @@ html.MalvoyantBtn {
   padding: 0;
 }
 
-
+main{
+    flex: 1; 
+}
 
 html {
   height: 100%;
@@ -134,9 +136,10 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
-
+    min-height: 100vh; 
+    display: flex;    
+    flex-direction: column; 
+    margin: 0;         
 }
 
 footer {
@@ -1918,3 +1921,4 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border: 1px solid var(--orange);
     font-weight: bold;
 }
+
