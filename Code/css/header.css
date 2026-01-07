@@ -1,3 +1,6 @@
+header {
+  min-height: 150px;
+}
 
 /* ==============================
   BAR DE RECHERCHE
@@ -284,3 +287,8 @@ header>nav>input:checked ~ label>span::after{
   transition: 1s;
 }
 
+@media (max-width: 1024px) {
+  li>a>span{
+    opacity: 0;
+  }
+}

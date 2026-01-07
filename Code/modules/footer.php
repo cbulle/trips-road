@@ -29,7 +29,7 @@
       </div>
 
       <ul class="footer-links">
-        <li><a href="../page_link/contact.php" class="un">A propos / Contact </a></li>
+        <li><a href="../page_link/contact.php" class="un"> Contact </a></li>
         <li><a href="../page_link/cgu.php" class="deux">CGU</a></li>
         <li><a href="../page_link/politique.php" class="trois">Politique de confidentialité</a></li>
         <li><a href="../page_link/faq.php" class="quatre">FAQ</a></li>
