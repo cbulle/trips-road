@@ -2,12 +2,14 @@
   FOOTER
 ============================== */
 footer {
+  transition: all 0.5s ease;
   background-color: var(--bleu_fonce);
   padding: 20px 0;
   display: flex;
   justify-content: center; 
   margin-top: auto;
   flex-grow: 1;
+  max-height: 175px;
 }
 
 
@@ -80,3 +82,5 @@ footer .footer-links>li>a:hover {
   color: var(--orange);
   font-size: 1.4rem;
 }
+
+

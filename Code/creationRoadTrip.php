@@ -101,7 +101,7 @@ if (isset($_GET['id'])) {
   <body>
     <?php include_once __DIR__ . "/modules/header.php" ?>
     
-    <h1><?php echo $modeEdition ? "Modifier mon RoadTrip" : "Créer un RoadTrip"; ?></h1>
+    <h1 class="TitreRT"><?php echo $modeEdition ? "Modifier mon RoadTrip" : "Créer un RoadTrip"; ?></h1>
 
     <div class="main-container">
       <div class="sidebar">

@@ -1,7 +1,7 @@
 :root {
   --bleu_clair : #39B2A5;
   --bleu_fonce : #0B667D;
-  --bleu_fonce_ecriture : #0b0050;
+  --bleu_fonce_ecriture : #0b0b0b;
   --beige : #F2E9D6;
   --beige_fonce : #E0C58B;
   --orange : #FF7F50;
@@ -55,7 +55,6 @@ html.daltonien {
   --rouge: #8B1E3F;
 }
 
-/* Protanopie (rouge-vert) */
 html.daltonien.protanopia {
   --orange: #D27E00;
   --vert_btn: #006FA6;
@@ -64,7 +63,6 @@ html.daltonien.protanopia {
   --rouge: #8B1E3F;
 }
 
-/* Deutéranopie (rouge-vert) */
 html.daltonien.deuteranopia {
   --orange: #E69F00;
   --vert_btn: #006FA6;
@@ -73,7 +71,6 @@ html.daltonien.deuteranopia {
   --rouge: #8B1E3F;
 }
 
-/* Tritanopie (bleu-jaune) */
 html.daltonien.tritanopia {
   --orange: #F4A100;
   --vert_btn: #006FA6;
@@ -82,7 +79,6 @@ html.daltonien.tritanopia {
   --rouge: #8B1E3F;
 }
 
-/* Mode normal */
 html.daltonien.normal {
   --orange: #FF7F50;
   --vert_btn: #2E8B57;
@@ -96,7 +92,6 @@ html.daltonien.normal {
   transition: fill 0.3s ease;
 }
 
-/* Mode daltonien */
 html.daltonien .icon-send path {
   fill: var(--vert_btn);
 }
@@ -142,9 +137,6 @@ body {
     margin: 0;         
 }
 
-footer {
-  transition: all 0.5s ease;
-}
 
 h1{
   color: var(--orange);
@@ -202,7 +194,7 @@ header nav > ul {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding-top: 60px;
+  padding-top: 50px;
   list-style: none;
 }
 
@@ -319,6 +311,13 @@ header nav > ul > div span {
   padding: 0 20px 20px 20px;
 }
 
+.TitreRT{
+  color: var(--beige);
+  background-color: var(--bleu_clair);
+  padding : 15px;  
+}
+
+
 .sidebar {
   width: 460px;
   display: flex;
@@ -356,7 +355,7 @@ header nav > ul > div span {
 }
 
 .sidebar #saveContainer {
-  margin-top: 480px;
+  margin-top: 10px;
 }
 
 .sidebar #addEtape:hover,
@@ -1945,4 +1944,12 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border-radius: 10px;
     border: 1px solid var(--orange);
     font-weight: bold;
+}
+
+
+
+@media (max-width: 1024px) {
+  .sidebar{
+    width: 30%;
+  }
 }

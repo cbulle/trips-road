@@ -15,7 +15,6 @@ if (!$id_roadtrip) {
     exit;
 }
 
-// Vérifier que le road trip appartient à l'utilisateur
 $stmt = $pdo->prepare("SELECT id FROM roadtrip WHERE id = :id AND id_utilisateur = :user_id");
 $stmt->execute(['id' => $id_roadtrip, 'user_id' => $id_utilisateur]);
 if (!$stmt->fetch()) {
@@ -24,7 +23,6 @@ if (!$stmt->fetch()) {
 }
 
 try {
-    // Vérifier si un lien existe déjà
     $stmt = $pdo->prepare("SELECT token FROM roadtrip_partages WHERE id_roadtrip = :id");
     $stmt->execute(['id' => $id_roadtrip]);
     $existing = $stmt->fetch();
@@ -32,14 +30,12 @@ try {
     if ($existing) {
         $token = $existing['token'];
     } else {
-        // Générer un nouveau token unique
         $token = bin2hex(random_bytes(32));
         
         $stmt = $pdo->prepare("INSERT INTO roadtrip_partages (id_roadtrip, token) VALUES (:id, :token)");
         $stmt->execute(['id' => $id_roadtrip, 'token' => $token]);
     }
     
-    // Construire l'URL de partage
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
     $shareUrl = $protocol . '://' . $host . '/shared.php?t=' . $token;

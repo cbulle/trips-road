@@ -3,8 +3,6 @@ require_once __DIR__ . '/modules/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
 include_once __DIR__ . '/fonctions/InfoItineraire.php';
 
-// Pas besoin d'être connecté pour voir un road trip public, 
-// mais on garde la session si elle existe.
 $id_roadtrip = $_GET['id'] ?? null;
 
 if (!$id_roadtrip) {
@@ -12,7 +10,6 @@ if (!$id_roadtrip) {
     exit;
 }
 
-// 1. Récupération Roadtrip (Vérification PUBLIC)
 $stmt = $pdo->prepare("SELECT * FROM roadtrip WHERE id = ? AND visibilite = 'public'");
 $stmt->execute([$id_roadtrip]);
 $roadTrip = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -26,22 +23,18 @@ if (!$roadTrip) {
     exit; 
 }
 
-// 2. Récupération Trajets
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $etapes = [];
-$jsMapData = []; // Tableau qui sera envoyé au JS pour les cartes
+$jsMapData = []; 
 
-// 3. Boucle de préparation des données (Identique à vuRoadTrip.php)
 foreach ($trajets as $trajet) {
-    // Récup sous-étapes
     $stmt = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero");
     $stmt->execute([$trajet['id']]);
     $sousEtapes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Récup photos
     foreach ($sousEtapes as &$se) {
         $stmtPhoto = $pdo->prepare("SELECT * FROM sous_etape_photos WHERE sous_etape_id = ?");
         $stmtPhoto->execute([$se['id']]);
@@ -51,12 +44,10 @@ foreach ($trajets as $trajet) {
     
     $etapes[$trajet['id']] = $sousEtapes;
 
-    // Coordonnées pour la carte JS
     $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
     $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
 
     if ($coordsDep && $coordsArr) {
-        // Préparer les coordonnées des sous-étapes pour la carte
         $sousEtapesCoords = [];
         foreach ($sousEtapes as $se) {
             if (!empty($se['ville'])) {

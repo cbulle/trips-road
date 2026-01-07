@@ -61,7 +61,7 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="roadtrip-buttons">
                 <a class="btn-view" href="vuRoadTrip.php?id=<?= $rt['id'] ?>">
-                    <i class="material-icons">visibility</i>Voir
+                    <i class="material-icons">visibility</i>
                 </a>
 
                 <?php if(!$estTermine): ?>

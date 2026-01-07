@@ -10,7 +10,6 @@ if (!isset($_SESSION['utilisateur']['id'])) {
 $id_utilisateur = $_SESSION['utilisateur']['id'];
 $conversation_id = $_GET['conv'] ?? null;
 
-// Récupérer les conversations de l'utilisateur
 $stmt = $pdo->prepare("
     SELECT 
         c.*,
@@ -41,15 +40,12 @@ $stmt = $pdo->prepare("
 $stmt->execute(['user_id' => $id_utilisateur]);
 $conversations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Si une conversation est sélectionnée, récupérer les messages
 $messages = [];
 $ami_info = null;
 if ($conversation_id) {
-    // Marquer les messages comme lus
     $stmt = $pdo->prepare("UPDATE messages SET lu = 1 WHERE conversation_id = :conv_id AND destinataire_id = :user_id");
     $stmt->execute(['conv_id' => $conversation_id, 'user_id' => $id_utilisateur]);
     
-    // Récupérer les messages
     $stmt = $pdo->prepare("
         SELECT m.*, u.nom, u.prenom, u.photo_profil
         FROM messages m
@@ -60,7 +56,6 @@ if ($conversation_id) {
     $stmt->execute(['conv_id' => $conversation_id]);
     $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Récupérer les infos de l'ami
     $stmt = $pdo->prepare("
         SELECT 
             CASE 

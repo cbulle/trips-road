@@ -32,7 +32,6 @@
     padding-bottom: 10px;
 }
 
-/* Conteneur pour chaque réglage (Label + Switch) */
 .access-item {
     display: flex;
     justify-content: space-between;
@@ -90,7 +89,6 @@
     border-radius: 50%;
 }
 
-/* États activés utilisant tes variables */
 input:checked + .slider {
     background-color: var(--vert_btn);
 }
