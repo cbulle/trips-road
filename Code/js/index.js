@@ -149,6 +149,58 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+
+    // --- GESTION DES FAVORIS SUR LA HOME ---
+    
+    const homeFavIcon = L.divIcon({
+        html: '<div style="font-size: 24px; color: #f1c40f; text-shadow: 0 0 3px black;">⭐</div>',
+        className: 'fav-marker-icon',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -15]
+    });
+
+    function loadHomeFavorites() {
+        // Vérifie si l'utilisateur est connecté (variable définie dans index.php)
+        if (typeof currentUserId === 'undefined' || currentUserId === null) return;
+
+        fetch('/fonctions/get_lieux_favoris.php')
+            .then(resp => resp.json())
+            .then(data => {
+                data.forEach(fav => {
+                    const lat = parseFloat(fav.latitude);
+                    const lon = parseFloat(fav.longitude);
+                    
+                    const marker = L.marker([lat, lon], { icon: homeFavIcon }).addTo(map);
+                    
+                    const popupDiv = document.createElement('div');
+                    popupDiv.innerHTML = `
+                        <b>${fav.nom_lieu}</b><br>
+                        <span style="font-size:0.9em; color:#666">${fav.adresse || ''}</span><br>
+                        <i style="font-size:0.8em; color:#888">${fav.categorie}</i>
+                        <br><br>
+                    `;
+                    
+                    // Bouton pour retirer des favoris directement depuis l'étoile
+                    const btnRemove = document.createElement('button');
+                    btnRemove.innerText = "❌ Retirer des favoris";
+                    btnRemove.style.cssText = "background:#ffeded; color:#c0392b; border:1px solid #c0392b; border-radius:3px; cursor:pointer; font-size:11px; padding:3px 8px;";
+                    
+                    btnRemove.onclick = function() {
+                        if(confirm("Retirer ce lieu de vos favoris ?")) {
+                            toggleLieuFavori(btnRemove, fav.nom_lieu, fav.adresse, lat, lon, fav.categorie);
+                            // On retire le marqueur visuellement si l'opération réussit
+                            setTimeout(() => { map.removeLayer(marker); }, 500); 
+                        }
+                    };
+                    
+                    popupDiv.appendChild(btnRemove);
+                    marker.bindPopup(popupDiv);
+                });
+            })
+            .catch(e => console.error("Erreur chargement favoris home", e));
+    }
+
     // Créer une icône personnalisée
     function createCustomIcon(emoji, color) {
         return L.divIcon({
@@ -164,20 +216,20 @@ document.addEventListener("DOMContentLoaded", function () {
     function initializeMap(coords) {
         map = L.map('userMap').setView(coords, 13);
 
-        // Ajouter la couche OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
         }).addTo(map);
 
-        // Ajouter un marqueur pour la position actuelle
         addUserMarker(coords);
 
-        // Gestionnaire de clic sur la carte
         map.on('click', function(e) {
             const clickedCoords = [e.latlng.lat, e.latlng.lng];
             updateUserPosition(clickedCoords);
         });
+
+        // --- AJOUTER CETTE LIGNE ICI ---
+        loadHomeFavorites(); 
     }
 
     // Mettre à jour la position de l'utilisateur
