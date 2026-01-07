@@ -48,7 +48,6 @@ include_once __DIR__ . "/modules/header.php"
         <h3>📍 Carte interactive</h3>
         
         <div class="map-wrapper">
-            <!-- Menu déroulant des catégories -->
             <div class="category-sidebar">
                 <div class="category-header">
                     <span class="category-icon">🗺️</span>
@@ -114,7 +113,6 @@ include_once __DIR__ . "/modules/header.php"
                 </button>
             </div>
 
-            <!-- Carte Leaflet -->
             <div id="userMap" style="height: 600px; flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
         </div>
     </div>

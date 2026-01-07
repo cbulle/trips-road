@@ -48,7 +48,7 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="roadtrip-buttons">
                 <a class="btn-view" href="vuRoadTrip.php?id=<?= $rt['id'] ?>">
-                    <i class="material-icons">visibility</i>Voir
+                    <i class="material-icons">visibility</i>
                 </a>
 
                 <a class="btn-edit" href="creationRoadTrip.php?id=<?= $rt['id'] ?>">
@@ -71,7 +71,6 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 <?php endif; ?>
 
-<!-- Modal de partage -->
 <?php if ($show_share && $share_url): ?>
 <div class="share-modal active" id="shareModal">
     <div class="share-modal-content">
