@@ -1,7 +1,7 @@
 :root {
   --bleu_clair : #39B2A5;
   --bleu_fonce : #0B667D;
-  --bleu_fonce_ecriture : #0b0050;
+  --bleu_fonce_ecriture : #0b0b0b;
   --beige : #F2E9D6;
   --beige_fonce : #E0C58B;
   --orange : #FF7F50;
@@ -142,9 +142,6 @@ body {
     margin: 0;         
 }
 
-footer {
-  transition: all 0.5s ease;
-}
 
 h1{
   color: var(--orange);
@@ -202,7 +199,7 @@ header nav > ul {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding-top: 60px;
+  padding-top: 50px;
   list-style: none;
 }
 
@@ -319,6 +316,13 @@ header nav > ul > div span {
   padding: 0 20px 20px 20px;
 }
 
+.TitreRT{
+  color: var(--beige);
+  background-color: var(--bleu_clair);
+  padding : 15px;  
+}
+
+
 .sidebar {
   width: 460px;
   display: flex;
@@ -356,7 +360,7 @@ header nav > ul > div span {
 }
 
 .sidebar #saveContainer {
-  margin-top: 480px;
+  margin-top: 10px;
 }
 
 .sidebar #addEtape:hover,
@@ -1922,3 +1926,10 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     font-weight: bold;
 }
 
+
+
+@media (max-width: 1024px) {
+  .sidebar{
+    width: 30%;
+  }
+}
