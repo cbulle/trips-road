@@ -38,6 +38,9 @@ html.malvoyant {
   font-size: 20px;
 }
 
+
+
+
 /* Mode daltonien générique */
 html.daltonien {
   --bleu_clair: #4FB3BF;
@@ -142,6 +145,10 @@ h1{
   color: var(--orange);
   text-align: center;
 }
+
+button, input, select, textarea, label{
+    font-size: 20px;
+  }
 
 /*===================================
           Photo-Profil 
@@ -395,7 +402,6 @@ header nav > ul > div span {
 
 /* ==============================
    STYLE DU FORMULAIRE "AJOUTER UN TRAJET"
-   (Genere dynamiquement en JS)
 ============================== */
 
 /* Conteneur de chaque champ */
