@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+    let userFavorites = [];
+    try {
+        const respFav = await fetch('/fonctions/get_lieux_favoris.php');
+        if(respFav.ok) {
+            userFavorites = await respFav.json();
+        }
+    } catch (e) {
+        console.log("Erreur chargement favoris", e);
+    }
+
     // ============================================================
     // 0. FONCTION DE COMPRESSION D'IMAGE (CÔTÉ CLIENT)
     // ============================================================
@@ -381,35 +391,114 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error(e); }
     }
 
+    // Fonction utilitaire pour créer le select des favoris
+    // 1. Fonction pour le menu Départ / Arrivée
+    function createFavSelectForInput(targetInputId) {
+        if (!userFavorites || userFavorites.length === 0) return null;
+
+        const select = document.createElement('select');
+        // MODIFICATION ICI : padding ajusté et border-radius 15px pour correspondre aux inputs
+        select.style.cssText = "width: 100%; margin-bottom: 10px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 15px; background-color: #fff; color: #555; font-size: 1rem; cursor: pointer;";
+        
+        let optionsHtml = '<option value="">⭐ Choisir un favori...</option>';
+        userFavorites.forEach(fav => {
+            const icon = (fav.categorie === 'restaurant') ? '🍽️' : 
+                         (fav.categorie === 'hotel') ? '🏨' : '📍';
+            optionsHtml += `<option value="${fav.nom_lieu}">${icon} ${fav.nom_lieu}</option>`;
+        });
+        select.innerHTML = optionsHtml;
+
+        select.addEventListener('change', function() {
+            const input = document.getElementById(targetInputId);
+            if(input && this.value) {
+                input.value = this.value;
+                input.style.backgroundColor = '#e8f8f5';
+                setTimeout(() => { input.style.backgroundColor = ''; }, 500);
+            }
+        });
+
+        return select;
+    }
+
     const btnAddSegment = document.getElementById('btnAddSegment');
     const newBlockFormContainer = document.getElementById('newBlockForm');
  
     if (btnAddSegment) {
         btnAddSegment.addEventListener('click', () => {
             btnAddSegment.style.display = 'none'; 
-            let html = !currentStartCoords ? `<div class="new-block-field"><label class="new-block-label">Départ :</label><input type="text" id="inputStartBlock" class="new-block-input"></div>` : `<div class="new-block-static"><strong>Départ :</strong> ${currentStartCity}</div>`;
-            html += `<div class="new-block-field"><label class="new-block-label">Arrivée :</label><input type="text" id="inputEndBlock" class="new-block-input"></div><div class="new-block-actions"><button id="btnCancelBlock" class="btn-block-action btn-block-cancel">Annuler</button><button id="btnValidateBlock" class="btn-block-action btn-block-validate">Valider</button></div>`;
+            let html = '';
+            
+            // Construction du HTML (inchangé)
+            if (!currentStartCoords) {
+                html += `<div class="new-block-field"><label class="new-block-label">Départ :</label><input type="text" id="inputStartBlock" class="new-block-input"></div>`;
+            } else {
+                html += `<div class="new-block-static"><strong>Départ :</strong> ${currentStartCity}</div>`;
+            }
+ 
+            html += `<div class="new-block-field"><label class="new-block-label">Arrivée :</label><input type="text" id="inputEndBlock" class="new-block-input"></div>
+                     <div class="new-block-actions">
+                        <button id="btnCancelBlock" class="btn-block-action btn-block-cancel">Annuler</button>
+                        <button id="btnValidateBlock" class="btn-block-action btn-block-validate">Valider</button>
+                     </div>`;
+ 
             newBlockFormContainer.innerHTML = html;
-            if (!currentStartCoords) initAutocomplete(document.getElementById('inputStartBlock'));
-            initAutocomplete(document.getElementById('inputEndBlock'));
-            document.getElementById('btnCancelBlock').onclick = () => { newBlockFormContainer.innerHTML = ''; btnAddSegment.style.display = 'block'; };
-            document.getElementById('btnValidateBlock').onclick = async () => {
-                const btn = document.getElementById('btnValidateBlock'); btn.disabled = true; btn.textContent = "Calcul...";
+
+            // --- MODIFICATION : AJOUT DES MENUS DÉROULANTS ---
+            
+            // 1. Menu pour le DÉPART (seulement si c'est le tout premier trajet)
+            const inputStart = document.getElementById('inputStartBlock');
+            if (inputStart) {
+                const selectStart = createFavSelectForInput('inputStartBlock');
+                if (selectStart) {
+                    inputStart.parentNode.insertBefore(selectStart, inputStart);
+                }
+                initAutocomplete(inputStart);
+            }
+            
+            // 2. Menu pour l'ARRIVÉE (toujours présent)
+            const inputEnd = document.getElementById('inputEndBlock');
+            if (inputEnd) {
+                const selectEnd = createFavSelectForInput('inputEndBlock');
+                if (selectEnd) {
+                    inputEnd.parentNode.insertBefore(selectEnd, inputEnd);
+                }
+                initAutocomplete(inputEnd);
+            }
+            // ---------------------------------------------------
+ 
+            // Gestion des boutons Annuler / Valider (Code existant conservé)
+            document.getElementById('btnCancelBlock').addEventListener('click', () => {
+                newBlockFormContainer.innerHTML = '';
+                btnAddSegment.style.display = 'block';
+            });
+ 
+            document.getElementById('btnValidateBlock').addEventListener('click', async () => {
+                const btn = document.getElementById('btnValidateBlock');
+                btn.disabled = true; btn.textContent = "Calcul...";
+                
                 let startName = currentStartCity, startCoords = currentStartCoords;
-                if (document.getElementById('inputStartBlock')) {
-                    startName = document.getElementById('inputStartBlock').value.trim();
+                const inputStartEl = document.getElementById('inputStartBlock');
+                
+                if (inputStartEl) {
+                    startName = inputStartEl.value.trim();
                     startCoords = await getCoordonnees(startName);
-                    if(!startCoords) { alert('Départ introuvable'); btn.disabled=false; return; }
+                    if(!startCoords) { alert('Départ introuvable'); btn.disabled=false; btn.textContent = "Valider"; return; }
                     addMarker(startName, startCoords, "ville", startName);
                 }
+                
                 const endName = document.getElementById('inputEndBlock').value.trim();
                 const endCoords = await getCoordonnees(endName);
-                if(!endCoords) { alert('Arrivée introuvable'); btn.disabled=false; return; }
+                if(!endCoords) { alert('Arrivée introuvable'); btn.disabled=false; btn.textContent = "Valider"; return; }
+                
                 await _ajouterSegmentEntre(startName, startCoords, endName, endCoords, segments.length, strategies['Voiture']);
                 addMarker(endName, endCoords, "ville", endName);
-                currentStartCity = endName; currentStartCoords = endCoords;
-                newBlockFormContainer.innerHTML = ''; btnAddSegment.style.display = 'block';
-            };
+                
+                currentStartCity = endName;
+                currentStartCoords = endCoords;
+                
+                newBlockFormContainer.innerHTML = '';
+                btnAddSegment.style.display = 'block';
+            });
         });
     }
 
@@ -559,21 +648,146 @@ document.addEventListener('DOMContentLoaded', async () => {
         else addSousEtapeForm();
     }
     
+    // Ajout d'une ligne de formulaire sous-étape
     function addSousEtapeForm(data = {}) {
         const uniqueId = 'editor-' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         const clone = document.getElementById('template-sub-etape').content.cloneNode(true);
         const div = clone.querySelector('.subEtape');
-        div.querySelector('.subEtapeNom').value = data.nom || '';
+        
+        const inputNom = div.querySelector('.subEtapeNom'); 
+        inputNom.value = data.nom || '';
         div.querySelector('.subEtapeHeure').value = data.heure || '';
+        
+        // --- CRÉATION DU SELECT FAVORIS ---
+        if (userFavorites.length > 0) {
+            const selectFav = document.createElement('select');
+            // MODIFICATION ICI : même style harmonisé
+            selectFav.style.cssText = "width: 100%; margin-bottom: 10px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 15px; background-color: #fff; color: #555; font-size: 1rem; cursor: pointer;";
+            
+            let optionsHtml = '<option value="">⭐ Insérer un favori...</option>';
+            userFavorites.forEach(fav => {
+                const icon = (fav.categorie === 'restaurant') ? '🍽️' : 
+                             (fav.categorie === 'hotel') ? '🏨' : '📍';
+                optionsHtml += `<option value="${fav.nom_lieu}">${icon} ${fav.nom_lieu}</option>`;
+            });
+            
+            selectFav.innerHTML = optionsHtml;
+            
+            selectFav.addEventListener('change', function() {
+                if(this.value) {
+                    inputNom.value = this.value;
+                    inputNom.style.backgroundColor = '#e8f8f5';
+                    setTimeout(() => { inputNom.style.backgroundColor = ''; }, 500);
+                }
+            });
+            
+            inputNom.parentNode.insertBefore(selectFav, inputNom);
+        }
+        // ---------------------------------------------
+
         const txt = div.querySelector('.subEtapeRemarque');
         txt.id = uniqueId; 
-        div.querySelector('.removeSubEtapeBtn').onclick = () => { if(tinymce.get(uniqueId)) tinymce.get(uniqueId).remove(); div.remove(); };
+        txt.value = data.remarque || '';
+        
         subEtapesContainer.appendChild(div);
-        initAutocomplete(div.querySelector('.subEtapeNom'));
+        initAutocomplete(inputNom); 
+        
+        // ... (Le reste du code TinyMCE ne change pas) ...
         setTimeout(() => {
-            tinymce.init({ selector: '#' + uniqueId, base_url: '/js/tinymce', suffix: '.min', license_key: 'gpl', promotion: false, branding: false, menubar: false, statusbar: false, min_height: 150, plugins: 'image link lists', toolbar: 'undo redo | bold italic | bullist | link image', })
-            .then(editors => { if (data.remarque && editors.length > 0) editors[0].setContent(data.remarque); });
+            tinymce.init({
+                selector: '#' + uniqueId,
+                base_url: '/js/tinymce',
+                suffix: '.min',
+                license_key: 'gpl',
+                promotion: false,
+                branding: false,
+                menubar: false,
+                statusbar: false,
+                min_height: 200,
+
+                plugins: 'image link lists table code help wordcount',
+                toolbar: 'undo redo | bold italic | bullist | link image',
+
+                image_title: true,
+                automatic_uploads: true,
+                images_upload_url: '/formulaire/traitementImageTiny.php', 
+                file_picker_types: 'image',
+
+                file_picker_callback: (cb, value, meta) => {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+
+                    input.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = (readerEvent) => {
+                            const img = new Image();
+                            img.src = readerEvent.target.result;
+
+                            img.onload = () => {
+                                const MAX_WIDTH = 1200;
+                                const MAX_HEIGHT = 1200;
+                                let width = img.width;
+                                let height = img.height;
+
+                                if (width > height) {
+                                    if (width > MAX_WIDTH) {
+                                        height *= MAX_WIDTH / width;
+                                        width = MAX_WIDTH;
+                                    }
+                                } else {
+                                    if (height > MAX_HEIGHT) {
+                                        width *= MAX_HEIGHT / height;
+                                        height = MAX_HEIGHT;
+                                    }
+                                }
+
+                                const canvas = document.createElement('canvas');
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+
+                                canvas.toBlob((blob) => {
+                                    const newFile = new File([blob], file.name, { 
+                                        type: 'image/jpeg', 
+                                        lastModified: Date.now() 
+                                    });
+
+                                    const id = 'blobid' + (new Date()).getTime();
+                                    const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+
+                                    const reader2 = new FileReader();
+                                    reader2.readAsDataURL(newFile);
+                                    reader2.onload = (e2) => {
+                                        const base64 = e2.target.result.split(',')[1];
+                                        const blobInfo = blobCache.create(id, newFile, base64);
+                                        blobCache.add(blobInfo);
+                                        
+                                        cb(blobInfo.blobUri(), { title: file.name });
+                                    };
+
+                                }, 'image/jpeg', 0.7); 
+                            };
+                        };
+                    });
+                    input.click();
+                }
+            }).then(editors => {
+                if (data.remarque && editors.length > 0) {
+                    editors[0].setContent(data.remarque);
+                }
+            });
         }, 100);
+
+        div.querySelector('.removeSubEtapeBtn').addEventListener('click', () => {
+            tinymce.get(uniqueId)?.remove();
+            div.remove();
+        });
     }
 
     document.getElementById('addSubEtape').onclick = () => addSousEtapeForm();
