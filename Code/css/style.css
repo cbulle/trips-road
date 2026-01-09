@@ -1953,8 +1953,57 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     font-weight: bold;
 }
 
+
+
+/* ==============================
+   RESPONSIVE (TABLETTE & MOBILE)
+   Passage en colonne : Formulaire en haut, Carte en bas
+============================== */
 @media (max-width: 1024px) {
-  .sidebar{
-    width: 30%;
+
+  .main-container {
+    flex-direction: column; 
+    padding: 10px;
+    gap: 0;
+  }
+
+  .sidebar {
+    width: 100%; 
+    max-width: 100%;
+    margin-bottom: 20px; 
+    box-sizing: border-box;
+    order: 1; 
+  }
+
+  .segment-form-container, 
+  #segmentFormContainer {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    order: 2; /
+  }
+
+  .map-container {
+    width: 100%;
+    position: relative; 
+    top: auto;
+    order: 3; 
+    z-index: 1;
+  }
+
+  #map {
+    height: 60vh; 
+    min-height: 400px; 
+    border-radius: 10px;
+  }
+
+  .sidebar select, 
+  .sidebar input, 
+  .sidebar textarea,
+  .sidebar button ,
+  .sidebar label,
+  .sidebar #legend h3, 
+  h1.TitreRT, h3{
+    font-size: 2.5rem; 
   }
 }

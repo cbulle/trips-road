@@ -137,7 +137,7 @@ if (isset($_GET['id'])) {
             </select>
           </div>
 
-          <label style="font-size:0.9em;">Visibilité (si terminé) :</label>
+          <label>Visibilité (si terminé) :</label>
           <select id="roadtripVisibilite" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
             <option value="prive" <?php echo ($modeEdition && $roadTripData['visibilite'] == 'prive') ? 'selected' : ''; ?>>🔒 Privé (Moi seul)</option>
             <option value="amis" <?php echo ($modeEdition && $roadTripData['visibilite'] == 'amis') ? 'selected' : ''; ?>>👥 Amis</option>
