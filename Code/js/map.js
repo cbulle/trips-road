@@ -79,9 +79,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentStartCoords = null; 
 
     const strategies = {
-        Voiture: { profile: 'driving' },
-        Velo: { profile: 'cycling' },
-        Marche: { profile: 'walking' }
+        'Voiture': 'driving',
+        'Velo': 'cycling',
+        'Marche': 'walking'
     };
  
     const segmentColors = [
@@ -310,6 +310,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy, existingData = null) {
         const modeTransport = existingData ? existingData.mode : 'Voiture';
+        console.log(modeTransport);
         const currentProfile = strategies[modeTransport] ? strategies[modeTransport].profile : strategy.profile;
 
         let coordsList = [startCoords];
@@ -358,13 +359,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const transportBtns = clone.querySelectorAll('.transport-btn');
             transportBtns.forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.dataset.mode === segData.modeTransport) btn.classList.add('active');
                 btn.addEventListener('click', async () => {
+                    // Récupérer le mode depuis l'attribut data-mode du bouton cliqué
+                    const nouveauMode = btn.dataset.mode; 
+                    
+                    // UI : changer le bouton actif
                     transportBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    segments[index].modeTransport = btn.dataset.mode;
-                    await updateRouteSegment(index, btn.dataset.mode, segments[index].options);
+
+                    // IMPORTANT : Appeler la mise à jour avec le nouveau mode
+                    console.log("Passage au mode :", nouveauMode); // Pour tes tests
+                    await updateRouteSegment(index, nouveauMode, segments[index].options);
                 });
             });
 
@@ -416,34 +421,62 @@ document.addEventListener('DOMContentLoaded', async () => {
         const seg = segments[index];
         if (!seg) return;
 
-        if (seg.line) map.removeLayer(seg.line);
+        // Mapping des serveurs spécifiques pour chaque mode (plus fiable que le profil seul)
+        const servers = {
+            'Voiture': 'https://routing.openstreetmap.de/routed-car',
+            'Velo': 'https://routing.openstreetmap.de/routed-bike',
+            'Marche': 'https://routing.openstreetmap.de/routed-foot'
+        };
+        
+        const baseUrl = servers[mode] || servers['Voiture'];
 
-        let profile = 'driving'; 
-        if (mode === 'Velo') profile = 'cycling';
-        if (mode === 'Marche') profile = 'walking';
-
-        let coordsList = [seg.startCoord];
+        // Préparation des coordonnées (Long,Lat pour OSRM)
+        let points = [seg.startCoord];
         if (seg.sousEtapes) {
-            seg.sousEtapes.forEach(se => { if(se.coords) coordsList.push(se.coords); });
+            seg.sousEtapes.forEach(se => { if(se.coords) points.push(se.coords); });
         }
-        coordsList.push(seg.endCoord);
-        const coordString = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
-        const url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+        points.push(seg.endCoord);
+        const coordString = points.map(p => `${p[1]},${p[0]}`).join(';');
+
+        const url = `${baseUrl}/route/v1/driving/${coordString}?overview=full&geometries=geojson&continue_straight=true`;
 
         try {
             const resp = await fetch(url);
             const data = await resp.json();
+            
             if (data.code === 'Ok') {
                 const route = data.routes[0];
+
+                // 1. SUPPRESSION RADICALE : On retire l'ancienne ligne de la carte
+                if (seg.line) {
+                    map.removeLayer(seg.line);
+                }
+
+                // 2. MISE À JOUR DES DONNÉES
                 seg.distance = route.distance;
                 seg.duration = route.duration;
-                seg.legs = route.legs;
-                seg.line = L.geoJSON(route.geometry, { color: seg.couleurSegment, weight: 5 }).addTo(map);
-                updateLegendHtml(index);
-            }
-        } catch (e) { console.error("Erreur d'itinéraire", e); }
-    }
+                seg.modeTransport = mode;
 
+                // 3. CRÉATION DE LA NOUVELLE LIGNE
+                // On change le style (pointillés pour vélo/marche) pour vérifier visuellement
+                const lineStyle = {
+                    color: seg.couleurSegment,
+                    weight: 6,
+                    opacity: 0.8,
+                    dashArray: mode !== 'Voiture' ? '10, 10' : null // Pointillés si pas voiture
+                };
+
+                seg.line = L.geoJSON(route.geometry, lineStyle).addTo(map);
+
+                // 4. MISE À JOUR DE LA LÉGENDE
+                updateLegendHtml(index);
+                
+                console.log(`Succès ! Mode: ${mode}, Route mise à jour.`);
+            }
+        } catch (e) {
+            console.error("Erreur de mise à jour de la route :", e);
+        }
+    }
     // ============================================================
     // 7. ÉDITEUR SOUS-ÉTAPES ET LÉGENDE (MODIFIÉ)
     // ============================================================

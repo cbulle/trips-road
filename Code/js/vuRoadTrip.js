@@ -146,28 +146,23 @@ async function initStepMap(id) {
 /**
  * 3. FONCTION DE DESSIN (CŒUR DU SYSTÈME)
  */
+/**
+ * 3. FONCTION DE DESSIN (MISE À JOUR AVEC ROUTAGE SPÉCIFIQUE)
+ */
 async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
-    // 1. Conversion sécurisée
     const latDep = parseFloat(data.depart.lat);
     const lonDep = parseFloat(data.depart.lon);
     const latArr = parseFloat(data.arrivee.lat);
     const lonArr = parseFloat(data.arrivee.lon);
 
-    // Sécurité anti-crash : Si une coordonnée est invalide (NaN), on arrête
-    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) {
-        console.error("Coordonnées invalides pour le trajet:", data.titre);
-        return;
-    }
+    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) return;
 
     let stepCounter = 1;
-
-    // Création des marqueurs
     createNumberedMarker(map, latDep, lonDep, stepCounter++, color, `<b>Départ:</b> ${data.depart.nom}`, useOffset ? 'left' : null, clusterGroup);
 
     if (data.sousEtapes && data.sousEtapes.length > 0) {
         data.sousEtapes.forEach((se) => {
-            const sLat = parseFloat(se.lat);
-            const sLon = parseFloat(se.lon);
+            const sLat = parseFloat(se.lat); const sLon = parseFloat(se.lon);
             if (!isNaN(sLat) && !isNaN(sLon)) {
                 let popupContent = `<b>📍 ${se.nom}</b>`;
                 if (se.heure) popupContent += `<br>🕐 ${se.heure}`;
@@ -175,59 +170,50 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
             }
         });
     }
-
     createNumberedMarker(map, latArr, lonArr, stepCounter, color, `<b>Arrivée:</b> ${data.arrivee.nom}`, useOffset ? 'right' : null, clusterGroup);
 
-    // 2. Calcul itinéraire OSRM
-    let profile = 'driving';
-    if (data.mode === 'velo' || data.mode === 'vélo') profile = 'cycling';
-    if (data.mode === 'marche' || data.mode === 'à pied') profile = 'walking';
-
+    // --- LOGIQUE DE ROUTAGE ADAPTÉE ---
+    const servers = {
+        'voiture': 'https://routing.openstreetmap.de/routed-car',
+        'velo': 'https://routing.openstreetmap.de/routed-bike',
+        'vélo': 'https://routing.openstreetmap.de/routed-bike',
+        'marche': 'https://routing.openstreetmap.de/routed-foot',
+        'à pied': 'https://routing.openstreetmap.de/routed-foot'
+    };
+    
+    const baseUrl = servers[data.mode] || servers['voiture'];
     let coordinates = `${lonDep},${latDep}`;
-    if (data.sousEtapes && data.sousEtapes.length > 0) {
+    if (data.sousEtapes) {
         data.sousEtapes.forEach(se => {
-             // On s'assure de ne pas mettre de NaN dans l'URL
-             const sLat = parseFloat(se.lat);
-             const sLon = parseFloat(se.lon);
-             if(!isNaN(sLat) && !isNaN(sLon)) {
-                 coordinates += `;${sLon},${sLat}`;
-             }
+            if(!isNaN(parseFloat(se.lat))) coordinates += `;${se.lon},${se.lat}`;
         });
     }
     coordinates += `;${lonArr},${latArr}`;
 
-    const url = `https://router.project-osrm.org/route/v1/${profile}/${coordinates}?overview=full&geometries=geojson`;
+    // On utilise "driving" comme action sur ces serveurs car le profil est déjà dans l'URL du serveur
+    const url = `${baseUrl}/route/v1/driving/${coordinates}?overview=full&geometries=geojson`;
 
     try {
         const response = await fetch(url);
         const json = await response.json();
-        let geoData;
-
+        
         if (json.code === 'Ok') {
-            geoData = json.routes[0].geometry;
-        } else {
-            console.warn("OSRM fallback (ligne droite) pour:", data.titre);
-            geoData = {
-                "type": "LineString",
-                "coordinates": [[lonDep, latDep], [lonArr, latArr]]
-            };
+            const routeLayer = L.geoJSON(json.routes[0].geometry, {
+                style: { 
+                    color: color, 
+                    weight: 5, 
+                    opacity: 0.8,
+                    // Style : pointillés pour vélo/marche pour bien les différencier
+                    dashArray: (data.mode !== 'voiture') ? '10, 10' : null 
+                }
+            }).addTo(map);
+
+            data.layerGroup = routeLayer;
+            if (fitBounds) map.fitBounds(routeLayer.getBounds(), { padding: [30, 30] });
         }
-
-        const routeLayer = L.geoJSON(geoData, {
-            style: { color: color, weight: 5, opacity: 0.8 }
-        }).addTo(map);
-
-        data.layerGroup = routeLayer;
-
-        if (fitBounds) {
-            map.fitBounds(routeLayer.getBounds(), { padding: [30, 30] });
-        }
-
     } catch (e) {
         console.error("Erreur trace route:", e);
-        // Fallback ligne droite visuelle
-        const line = L.polyline([[latDep, lonDep], [latArr, lonArr]], {color: color}).addTo(map);
-        if (fitBounds) map.fitBounds(line.getBounds());
+        L.polyline([[latDep, lonDep], [latArr, lonArr]], {color: color, weight: 2, dashArray: '5,5'}).addTo(map);
     }
 }
 
@@ -321,46 +307,39 @@ async function calculerSegment(segment) {
     const lonDep = parseFloat(segment.dataset.lonDep);
     const latArr = parseFloat(segment.dataset.latArr);
     const lonArr = parseFloat(segment.dataset.lonArr);
-    const mode = segment.dataset.mode || 'voiture';
+    const mode = (segment.dataset.mode || 'voiture').toLowerCase();
     
     const distEl = segment.querySelector('.segment-distance');
     const timeEl = segment.querySelector('.segment-time');
     
-    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) {
-        distEl.textContent = '-'; timeEl.textContent = '-'; return;
-    }
-    
-    const profiles = { 'voiture': 'driving', 'velo': 'cycling', 'vélo': 'cycling', 'marche': 'walking', 'à pied': 'walking' };
-    const profile = profiles[mode.toLowerCase()] || 'driving';
-    const url = `https://router.project-osrm.org/route/v1/${profile}/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
+    // Utilisation des serveurs spécialisés pour la précision du temps
+    const servers = {
+        'voiture': 'https://routing.openstreetmap.de/routed-car',
+        'velo': 'https://routing.openstreetmap.de/routed-bike',
+        'vélo': 'https://routing.openstreetmap.de/routed-bike',
+        'marche': 'https://routing.openstreetmap.de/routed-foot',
+        'à pied': 'https://routing.openstreetmap.de/routed-foot'
+    };
+    const baseUrl = servers[mode] || servers['voiture'];
+    const url = `${baseUrl}/route/v1/driving/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
     
     try {
         const response = await fetch(url);
         const data = await response.json();
         
-        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+        if (data.code === 'Ok' && data.routes.length > 0) {
             const route = data.routes[0];
             const distanceKm = (route.distance / 1000).toFixed(1);
-            
             const durationSec = route.duration;
             const heures = Math.floor(durationSec / 3600);
             const minutes = Math.floor((durationSec % 3600) / 60);
-            let tempsTexte = "";
-            
-            if (heures > 0) {
-                tempsTexte = `${heures}h${minutes.toString().padStart(2, '0')}`;
-            } else {
-                tempsTexte = `${minutes} min`;
-            }
             
             distEl.textContent = `${distanceKm} km`;
-            timeEl.textContent = tempsTexte;
+            timeEl.textContent = heures > 0 ? `${heures}h${minutes.toString().padStart(2, '0')}` : `${minutes} min`;
             segment.classList.add('segment-calculated');
-        } else {
-            distEl.textContent = '?'; timeEl.textContent = '?';
         }
     } catch (error) {
-        distEl.textContent = ''; timeEl.textContent = '';
+        console.error("Erreur calcul segment:", error);
     }
 }
     /*==================================
