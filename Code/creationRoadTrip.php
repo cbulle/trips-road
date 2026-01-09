@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/modules/init.php';
+require_once __DIR__ . '/include/init.php';
 include_once __DIR__ . '/bd/lec_bd.php'; // Pour charger les données si mode édition
 
 // Vérification connexion

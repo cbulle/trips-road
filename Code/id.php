@@ -81,7 +81,7 @@ include_once __DIR__ . "/modules/header.php"
                 <input type="password" id="password" name="password" required>
                 <input type="checkbox" name= "remember" id="remember">
                 
-                <label for="remember"> Se souvenir de moi</label>
+                <label> <input type="checkbox" name="remember_me" value="1"> Se souvenir de moi</label>
                 <button type="submit">Se connecter</button>
             </form>
         </div>

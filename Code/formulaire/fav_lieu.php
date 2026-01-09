@@ -1,7 +1,7 @@
 <?php
 // Code/formulaire/fav_lieu.php
 
-require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../include/init.php';
 // Ajout de la connexion à la base de données (indispensable)
 require_once __DIR__ . '/../bd/lec_bd.php'; 
 
