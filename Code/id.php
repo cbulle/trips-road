@@ -79,9 +79,12 @@ include_once __DIR__ . "/modules/header.php"
                 
                 <label for="password">Mot de passe</label>
                 <input type="password" id="password" name="password" required>
-                <input type="checkbox" name= "remember" id="remember">
-                
+                              
                 <label> <input type="checkbox" name="remember_me" value="1"> Se souvenir de moi</label>
+                <div class="forgot-password">
+        <a href="fonctions/oublie.php">Mot de passe oublié ?</a>
+    </div>
+                
                 <button type="submit">Se connecter</button>
             </form>
         </div>
