@@ -190,8 +190,10 @@ if (isset($_GET['id'])) {
           </div>
           
           <div class="legend-date-container">
-            <label>Date du trajet :</label>
-            <input type="date" class="legend-date-input" required>
+              <label>Départ le :</label>
+              <input type="date" class="legend-date-input" required>
+              <label>à :</label>
+              <input type="time" class="legend-time-input" value="08:00" required>
           </div>
 
           <div class="route-preferences" style="display: none;">
@@ -215,7 +217,7 @@ if (isset($_GET['id'])) {
             <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom">
             <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)"></textarea>
             
-            <label style="font-size:0.8em; font-weight:bold;">Heure de passage :</label>
+            <label style="font-size:0.8em; font-weight:bold;">Temps passé sur place (estimation)</label>
             <input type="time" class="subEtapeHeure" required>
             
             <button class="removeSubEtapeBtn sub-etape-remove-btn">✖</button>

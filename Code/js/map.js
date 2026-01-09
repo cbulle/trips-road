@@ -487,29 +487,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateLegendHtml(index) {
         const seg = segments[index];
         const li = document.querySelector(`li[data-index="${index}"]`);
-        if(!li) return;
-        
-        const distKm = (seg.distance / 1000).toFixed(1);
-        const timeStr = formatDuration(seg.duration);
-        let statsHtml = `<div style="font-size:0.85em; color:#666; margin-bottom:5px;">📏 ${distKm} km | ⏱️ ${timeStr}</div>`;
+        if(!li || !seg.heure_depart) return;
 
         const ul = li.querySelector('.sousEtapesList');
         let html = ``;
-        let lastTime = null;
+        
+        // 1. Heure de départ initiale (ex: "08:00")
+        let currentClock = seg.heure_depart; 
 
-        if(seg.sousEtapes && seg.sousEtapes.length > 0) {
-            seg.sousEtapes.forEach(se => {
-                html += `<li style="margin-top:5px; border-left:2px solid ${seg.couleurSegment}; padding-left:5px;">
-                            📍 ${getNomSimple(se.nom)} <small>(${se.heure})</small></li>`;
-                lastTime = se.heure;
+        // Fonction utilitaire pour ajouter du temps (secondes) à une heure (HH:mm)
+        function addTime(startTime, secondsToAdd) {
+            const [h, m] = startTime.split(':').map(Number);
+            const date = new Date();
+            date.setHours(h, m, 0);
+            date.setSeconds(date.getSeconds() + secondsToAdd);
+            return date.getHours().toString().padStart(2, '0') + ":" + 
+                date.getMinutes().toString().padStart(2, '0');
+        }
+
+        // Fonction utilitaire pour convertir "HH:mm" en secondes
+        function durationToSeconds(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return (h * 3600) + (m * 60);
+        }
+
+        if(seg.legs) {
+            // Parcours des sous-étapes et des "legs" (tronçons entre 2 points)
+            seg.legs.forEach((leg, i) => {
+                // On ajoute le temps de trajet du tronçon
+                currentClock = addTime(currentClock, leg.duration);
+                
+                if (i < seg.sousEtapes.length) {
+                    const se = seg.sousEtapes[i];
+                    html += `<li style="margin-top:5px; border-left:2px solid ${seg.couleurSegment}; padding-left:5px;">
+                                <b>Arrivée à ${getNomSimple(se.nom)} : ${currentClock}</b><br>
+                                <small>Pause de ${se.heure}h</small></li>`;
+                    
+                    // On ajoute le temps de pause passé sur place
+                    currentClock = addTime(currentClock, durationToSeconds(se.heure));
+                    html += `<li style="list-style:none; font-size:0.8em; color:gray;">(Départ prévu à ${currentClock})</li>`;
+                }
             });
         }
 
-        if (lastTime && seg.legs) {
-            const lastLegDuration = seg.legs[seg.legs.length - 1].duration;
-            const eta = calculateETA(lastTime, lastLegDuration);
-            html += `<li style="margin-top:5px; font-weight:bold; color:#2c3e50;">🏁 Arrivée : ${eta}</li>`;
-        }
+        const distKm = (seg.distance / 1000).toFixed(1);
+        const totalTimeStr = formatDuration(seg.duration);
+        let statsHtml = `<div style="font-size:0.85em; color:#666; margin-bottom:5px;">📏 ${distKm} km | ⏱️ ${totalTimeStr} de route</div>`;
+        
+        html += `<li style="margin-top:5px; font-weight:bold; color:#2c3e50;">🏁 Arrivée finale : ${currentClock}</li>`;
+        
         ul.innerHTML = statsHtml + html;
     }
 
@@ -601,7 +627,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const trajetsData = segments.map(s => ({
                 depart: s.startName, departLat: s.startCoord[0], departLon: s.startCoord[1],
                 arrivee: s.endName, arriveeLat: s.endCoord[0], arriveeLon: s.endCoord[1],
-                mode: s.modeTransport, date: s.date, sousEtapes: s.sousEtapes
+                mode: s.modeTransport, date: s.date, sousEtapes: s.sousEtapes,
+                heure_depart: document.querySelector(`li[data-index="${segments.indexOf(s)}"] .legend-time-input`).value
             }));
             formData.append('trajets', JSON.stringify(trajetsData));
 

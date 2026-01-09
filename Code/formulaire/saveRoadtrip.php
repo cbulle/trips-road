@@ -174,12 +174,13 @@ try {
         $arrivee = $trajet['arrivee'] ?? '';
         $mode = $trajet['mode'] ?? 'Voiture';
         $date_trajet = $trajet['date'] ?? null;
+        $heure_depart = $trajet['heure_depart'] ?? '08:00';
 
         sauvegarderVilleDansCache($depart, $trajet['departLat'] ?? null, $trajet['departLon'] ?? null, $pdo);
         sauvegarderVilleDansCache($arrivee, $trajet['arriveeLat'] ?? null, $trajet['arriveeLon'] ?? null, $pdo);
 
-        $stmt = $pdo->prepare("INSERT INTO trajet (numero, titre, depart, arrivee, mode_transport, date_trajet, road_trip_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$i + 1, "$depart → $arrivee", $depart, $arrivee, $mode, $date_trajet, $roadTripId]);
+        $stmt = $pdo->prepare("INSERT INTO trajet (numero, titre, depart, arrivee, mode_transport, date_trajet, heure_depart, road_trip_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$i + 1, "$depart → $arrivee", $depart, $arrivee, $mode, $date_trajet, $heure_depart, $roadTripId]);
         $trajetId = $pdo->lastInsertId();
 
         foreach ($trajet['sousEtapes'] ?? [] as $j => $se) {

@@ -1953,3 +1953,74 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     width: 30%;
   }
 }
+/* ==============================
+   STYLES POUR LES HORAIRES
+============================== */
+
+.horaire-info {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    border-left: 3px solid var(--bleu_clair);
+}
+
+.horaire-depart,
+.horaire-calcule {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.horaire-depart strong,
+.horaire-calcule strong {
+    color: var(--bleu_fonce);
+    font-size: 1.1rem;
+}
+
+.horaire-loader {
+    color: var(--gris_clair);
+    font-style: italic;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.horaire-depart-etape {
+    display: block;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(57, 178, 165, 0.3);
+    font-size: 0.9rem;
+    color: var(--vert);
+}
+
+/* Style spécifique pour les horaires d'arrivée finale */
+.arrivee-card .horaire-calcule strong {
+    color: var(--rouge);
+    font-size: 1.2rem;
+}
+
+/* Style pour le temps sur place */
+.pause-duree {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(46, 139, 87, 0.1);
+    border-radius: 15px;
+    border: 1px solid rgba(46, 139, 87, 0.2);
+    font-size: 0.9rem;
+}
+
+.pause-duree strong {
+    color: var(--vert);
+}
+
+/* Animation pour le chargement */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.horaire-calcule:not(.horaire-loader) {
+    animation: fadeIn 0.3s ease-out;
+}

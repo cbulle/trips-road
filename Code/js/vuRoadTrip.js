@@ -291,55 +291,117 @@ function checkAndToggleGlobalMap() {
     }
 }
 
+
 /* ============================================================
-   CALCULS TEXTUELS
+   CALCULS TEXTUELS ET HORAIRES
    ============================================================ */
 function calculerTousLesSegments() {
-    const segments = document.querySelectorAll('.segment-info');
-    segments.forEach((segment, index) => {
+    // Pour chaque trajet (card-vu)
+    const cards = document.querySelectorAll('.card-vu');
+    cards.forEach((card, cardIndex) => {
         // Petit délai pour ne pas spammer l'API
-        setTimeout(() => { calculerSegment(segment); }, index * 300);
+        setTimeout(() => { calculerHorairesTrajet(card); }, cardIndex * 500);
     });
 }
 
-async function calculerSegment(segment) {
-    const latDep = parseFloat(segment.dataset.latDep);
-    const lonDep = parseFloat(segment.dataset.lonDep);
-    const latArr = parseFloat(segment.dataset.latArr);
-    const lonArr = parseFloat(segment.dataset.lonArr);
-    const mode = (segment.dataset.mode || 'voiture').toLowerCase();
+async function calculerHorairesTrajet(card) {
+    const trajetId = card.id.replace('card-', '');
+    const dataTrajet = getTrajetData(trajetId);
     
-    const distEl = segment.querySelector('.segment-distance');
-    const timeEl = segment.querySelector('.segment-time');
+    if (!dataTrajet || !dataTrajet.hasCoords) {
+        console.warn(`Trajet ${trajetId} : coordonnées manquantes`);
+        return;
+    }
+
+    // Récupérer toutes les sous-étapes cards dans l'ordre
+    const etapeCards = card.querySelectorAll('.sous-etape-card');
     
-    // Utilisation des serveurs spécialisés pour la précision du temps
-    const servers = {
-        'voiture': 'https://routing.openstreetmap.de/routed-car',
-        'velo': 'https://routing.openstreetmap.de/routed-bike',
-        'vélo': 'https://routing.openstreetmap.de/routed-bike',
-        'marche': 'https://routing.openstreetmap.de/routed-foot',
-        'à pied': 'https://routing.openstreetmap.de/routed-foot'
-    };
-    const baseUrl = servers[mode] || servers['voiture'];
-    const url = `${baseUrl}/route/v1/driving/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
-    
+    // Construire la liste des coordonnées : Départ -> Sous-étapes -> Arrivée
+    let coordsPath = `${dataTrajet.depart.lon},${dataTrajet.depart.lat}`;
+    if (dataTrajet.sousEtapes && dataTrajet.sousEtapes.length > 0) {
+        dataTrajet.sousEtapes.forEach(se => {
+            coordsPath += `;${se.lon},${se.lat}`;
+        });
+    }
+    coordsPath += `;${dataTrajet.arrivee.lon},${dataTrajet.arrivee.lat}`;
+
+    // Choisir le bon profil de routage selon le mode de transport
+    let profile = 'car';
+    if (dataTrajet.mode === 'velo' || dataTrajet.mode === 'vélo') profile = 'bike';
+    if (dataTrajet.mode === 'marche' || dataTrajet.mode === 'à pied') profile = 'foot';
+
+    const url = `https://router.project-osrm.org/route/v1/${profile}/${coordsPath}?overview=false&steps=false`;
+
     try {
         const response = await fetch(url);
         const data = await response.json();
-        
-        if (data.code === 'Ok' && data.routes.length > 0) {
+
+        if (data.code === 'Ok' && data.routes && data.routes[0]) {
             const route = data.routes[0];
-            const distanceKm = (route.distance / 1000).toFixed(1);
-            const durationSec = route.duration;
-            const heures = Math.floor(durationSec / 3600);
-            const minutes = Math.floor((durationSec % 3600) / 60);
+            let currentClock = dataTrajet.heure_depart || '08:00';
             
-            distEl.textContent = `${distanceKm} km`;
-            timeEl.textContent = heures > 0 ? `${heures}h${minutes.toString().padStart(2, '0')}` : `${minutes} min`;
-            segment.classList.add('segment-calculated');
+            // Parcourir les "legs" (tronçons entre les points)
+            route.legs.forEach((leg, legIndex) => {
+                const durationSeconds = leg.duration;
+                const distanceKm = (leg.distance / 1000).toFixed(1);
+                
+                // Ajouter le temps de route à l'heure actuelle
+                currentClock = addTime(currentClock, durationSeconds);
+                
+                // Trouver la carte correspondante (legIndex + 1 car 0 = départ)
+                const targetCard = etapeCards[legIndex + 1];
+                
+                if (targetCard) {
+                    const horaireSpan = targetCard.querySelector('.horaire-calcule');
+                    const isDeparture = targetCard.dataset.isDeparture === '1';
+                    const isArrival = targetCard.dataset.isArrival === '1';
+                    
+                    if (horaireSpan && !isDeparture) {
+                        if (isArrival) {
+                            horaireSpan.innerHTML = `🏁 Arrivée : <strong>${currentClock}</strong>`;
+                        } else {
+                            horaireSpan.innerHTML = `⏰ Arrivée : <strong>${currentClock}</strong>`;
+                            
+                            // Ajouter le temps de pause pour le calcul suivant
+                            const pauseDuration = targetCard.dataset.pause || '00:00';
+                            const departTime = addTime(currentClock, durationToSeconds(pauseDuration));
+                            
+                            // Afficher aussi l'heure de départ de cette étape
+                            if (pauseDuration !== '00:00') {
+                                horaireSpan.innerHTML += `<br><span class="horaire-depart-etape">🚀 Départ : <strong>${departTime}</strong></span>`;
+                                currentClock = departTime;
+                            }
+                        }
+                    }
+                }
+                
+                // Mettre à jour aussi le segment de transport correspondant
+                const segments = card.querySelectorAll('.segment-info');
+                if (segments[legIndex]) {
+                    const segmentInfo = segments[legIndex];
+                    segmentInfo.querySelector('.segment-distance').textContent = distanceKm + " km";
+                    
+                    // Calculer le temps de trajet en heures et minutes
+                    const hours = Math.floor(durationSeconds / 3600);
+                    const minutes = Math.floor((durationSeconds % 3600) / 60);
+                    let timeText = '';
+                    if (hours > 0) timeText += hours + 'h ';
+                    timeText += minutes + 'min';
+                    
+                    segmentInfo.querySelector('.segment-time').textContent = timeText;
+                    segmentInfo.classList.add('segment-calculated');
+                }
+            });
         }
     } catch (error) {
-        console.error("Erreur calcul segment:", error);
+        console.error("Erreur calcul horaires:", error);
+        // En cas d'erreur, afficher un message sur les horaires
+        etapeCards.forEach(card => {
+            const horaireSpan = card.querySelector('.horaire-calcule');
+            if (horaireSpan) {
+                horaireSpan.innerHTML = '<span style="color: #999;">⚠️ Calcul indisponible</span>';
+            }
+        });
     }
 }
     /*==================================
@@ -372,3 +434,21 @@ document.addEventListener('click', function(event) {
         closeShareModal();
     }
 });
+
+function addTime(startTime, secondsToAdd) {
+    if(!startTime) return "--:--";
+    const [h, m] = startTime.split(':').map(Number);
+    const date = new Date();
+    date.setHours(h, m, 0);
+    date.setSeconds(date.getSeconds() + secondsToAdd);
+    return date.getHours().toString().padStart(2, '0') + ":" + 
+           date.getMinutes().toString().padStart(2, '0');
+}
+
+// Fonction utilitaire pour convertir "HH:mm:ss" ou "HH:mm" en secondes
+function durationToSeconds(timeStr) {
+    if(!timeStr) return 0;
+    const parts = timeStr.split(':').map(Number);
+    if(parts.length === 3) return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
+    return (parts[0] * 3600) + (parts[1] * 60);
+}

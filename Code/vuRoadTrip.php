@@ -15,9 +15,6 @@ function geocoderVilleEnDirect($nomVille) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_USERAGENT, "MonAppRoadTrip/1.0");
     curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout de 5 secondes max
-    
-    // Désactiver la vérification SSL si vous êtes en local (WAMP/XAMPP) et que ça bloque
-    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 
     $json = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -124,6 +121,7 @@ foreach ($trajets as $trajet) {
             'lon' => $coordsArr ? $coordsArr['lon'] : null, 
             'nom' => $trajet['arrivee']
         ],
+        'heure_depart' => $trajet['heure_depart'],
         'sousEtapes' => $sousEtapesCoords,
         'hasCoords' => ($coordsDep && $coordsArr) ? true : false
     ];
@@ -190,17 +188,29 @@ function getTransportIcon($type) {
                     
                     // Construction de la timeline
                     $timeline = [];
-                    $timeline[] = ['ville' => $t['depart'], 'is_departure' => true];
+                    $timeline[] = [
+                        'ville' => $t['depart'], 
+                        'is_departure' => true,
+                        'heure_depart' => $t['heure_depart'] ?? null
+                    ];
                     foreach ($listeEtapes as $etape) { $timeline[] = $etape; }
-                    $timeline[] = ['ville' => $t['arrivee'], 'is_arrival' => true];
+                    $timeline[] = [
+                        'ville' => $t['arrivee'], 
+                        'is_arrival' => true
+                    ];
                     
                     for ($i = 0; $i < count($timeline); $i++) :
                         $step = $timeline[$i];
                         $villeNom = $step['ville'] ?? $step['nom'] ?? 'Étape';
                         $isDeparture = isset($step['is_departure']);
                         $isArrival = isset($step['is_arrival']);
+                        $pauseDuration = $step['heure'] ?? '00:00';
                     ?>
-                        <div class="sous-etape-card <?php echo $isDeparture ? 'depart-card' : ($isArrival ? 'arrivee-card' : ''); ?>">
+                        <div class="sous-etape-card <?php echo $isDeparture ? 'depart-card' : ($isArrival ? 'arrivee-card' : ''); ?>" 
+                             data-is-departure="<?php echo $isDeparture ? '1' : '0'; ?>"
+                             data-is-arrival="<?php echo $isArrival ? '1' : '0'; ?>"
+                             data-pause="<?php echo htmlspecialchars($pauseDuration); ?>"
+                             data-step-index="<?php echo $i; ?>">
                             <div class="sous-etape-header">
                                 <h3>
                                     <?php 
@@ -210,12 +220,23 @@ function getTransportIcon($type) {
                                     echo htmlspecialchars($villeNom); 
                                     ?>
                                 </h3>
+                                
+                                <!-- Horaires calculés (sera rempli par JS) -->
+                                <div class="horaire-info">
+                                    <?php if ($isDeparture && !empty($t['heure_depart'])): ?>
+                                        <span class="horaire-depart">🕐 Départ : <strong><?php echo htmlspecialchars($t['heure_depart']); ?></strong></span>
+                                    <?php else: ?>
+                                        <span class="horaire-calcule" data-type="<?php echo $isArrival ? 'arrivee' : 'etape'; ?>">
+                                            <span class="horaire-loader">⏱️ Calcul...</span>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
 
                             <?php if (!$isDeparture && !$isArrival): ?>
                                 <div class="sous-etape-info">    
                                     <?php if (!empty($step['heure'])) : ?>
-                                        <span>🕐 <?php echo htmlspecialchars($step['heure']); ?></span>
+                                        <span class="pause-duree">⏰ Temps sur place : <strong><?php echo htmlspecialchars($step['heure']); ?></strong></span>
                                     <?php endif; ?>
                                 </div>
                                 
