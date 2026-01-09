@@ -75,7 +75,6 @@ header {
     table-layout: fixed;
 }
 
-/*-----------------------------*/
 #results-table {
         position: absolute;
         background-color: var(--white);
@@ -84,7 +83,7 @@ header {
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         max-height: 300px;
         
-        /* Gestion du scroll */
+
         overflow-y: auto;
         overflow-x: hidden;
         
@@ -141,24 +140,20 @@ header {
     .tag-prive { color: #d9534f; font-size: 12px; font-weight: normal; margin-left: 5px; font-style: italic; }
     .tag-amis { color: #28a745; font-size: 12px; font-weight: normal; margin-left: 5px; font-style: italic; }
 
-    /* --- CORRECTIF SCROLLBAR --- */
-    /* On force la barre à être grise et fine */
+    
     #results-table::-webkit-scrollbar {
         width: 8px;
     }
     
-    /* Le rail (fond) doit être TRANSPARENT pour éviter le rectangle orange */
     #results-table::-webkit-scrollbar-track {
         background: transparent !important; 
     }
 
-    /* Le pouce (ce qu'on bouge) */
     #results-table::-webkit-scrollbar-thumb {
         background-color: #ccc;
         border-radius: 4px;
     }
 
-    /* Le coin (intersection) doit aussi être transparent */
     #results-table::-webkit-scrollbar-corner {
         background: transparent !important;
     }
@@ -282,4 +277,42 @@ header>nav>input:checked ~ label>span::after{
   li>a>span{
     opacity: 0;
   }
+}
+
+@media (max-width: 768px) {
+  #link_access {
+    display: none;
+  }
+   #link_access {
+    display: none;
+  }
+  #link_Chat{
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .profil-photo {
+    position: relative;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    overflow: hidden;
+    object-fit: cover;
+    border: 2px solid var(--beige_visu);
+    bottom: 40px;
+    right: -9px;
+}
+
+.title>a{
+  position: relative;
+  left: 50px;
+}
+.nav-item span{
+  font-size: 0.7rem;
+  position: relative;
+  bottom: 100px;
+}
+
+
 }

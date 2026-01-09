@@ -13,7 +13,7 @@
 <header>
     <nav>
         <ul>
-            <li class="nav-item">
+            <li class="nav-item" >
                 <div class="bar_rech">
                     <input type="search" id="searchInput" class="search-input" placeholder="Recherche..." autocomplete="off">
                     <table class="search-results" id="results-table">
@@ -26,34 +26,34 @@
                 </div>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" id="link_access">
                 <a href="/accessibilite.php">
                     <i class="material-icons">settings_accessibility</i>
                     <span>Paramètres</span>
                 </a>
             </li>
 
-            <li class="title">
+            <li class="title" id="link_Titre">
                 <a href="/index.php" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>Trips & Roads</a>
             </li>
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
 
-                <li class="nav-item">
+                <li class="nav-item" id="link_Chat">
                     <a href="/messagerie.php">
                         <i class="material-icons">chat_bubble</i>
                         <span>Messagerie</span>
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" id="link_Amis">
                     <a href="/amis.php">
                         <i class="material-icons">group</i>
                         <span>Amis</span>
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" id="link_Crea">
                     <a href="/creationRoadTrip.php" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
                         <i class="material-icons">add_box</i>
                         <span>Créer un Road-Trip</span>
@@ -63,7 +63,7 @@
             <?php endif; ?>
 
             
-            <li class="nav-item">
+            <li class="nav-item" id="link_PP">
                 <?php if (isset($_SESSION['utilisateur'])): ?>
 
                     <span class="profil-box"> 
