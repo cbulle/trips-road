@@ -1947,7 +1947,46 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   background-color: white;
 }
 
+/* ==============================
+  STYLE AUTOCOMPLETE PHOTO/CSS
+============================== */
+.ui-autocomplete {
+    background: var(--white) !important;
+    border: 2px solid var(--bleu_clair) !important;
+    border-radius: 15px !important; /* Harmonisé avec sidebar */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    z-index: 9999 !important;
+    max-width: 400px;
+}
 
+.ui-menu-item-content {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.ui-menu-item-name {
+    font-weight: bold;
+    color: var(--bleu_fonce);
+    font-size: 0.95rem;
+}
+
+.ui-menu-item-details {
+    font-size: 0.75rem;
+    color: var(--gris_clair);
+    margin-top: 2px;
+}
+
+.ui-menu-item:hover, .ui-state-active {
+    background-color: var(--beige) !important;
+    border: none !important;
+}
+
+.ui-menu-item:hover .ui-menu-item-name, 
+.ui-state-active .ui-menu-item-name {
+    color: var(--orange) !important;
+}
 
 @media (max-width: 1024px) {
   .sidebar{

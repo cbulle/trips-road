@@ -3,6 +3,20 @@ require_once __DIR__ . '/modules/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
 include_once __DIR__ . '/fonctions/InfoItineraire.php';
 
+function getCoordonneesDepuisFavoris($nomLieu, $id_utilisateur, $pdo) {
+    $stmt = $pdo->prepare("SELECT latitude, longitude FROM lieux_favoris WHERE nom_lieu = :nom AND id_utilisateur = :uid LIMIT 1");
+    $stmt->execute(['nom' => $nomLieu, 'uid' => $id_utilisateur]);
+    $favori = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($favori) {
+        return [
+            'lat' => $favori['latitude'],
+            'lon' => $favori['longitude']
+        ];
+    }
+    return null;
+}
+
 function geocoderVilleEnDirect($nomVille) {
     if (empty($nomVille)) return null;
 
@@ -72,14 +86,22 @@ foreach ($trajets as $trajet) {
 
     // --- GESTION DES COORDONNÉES (Cache + Fallback API) ---
 
+    // --- GESTION DES COORDONNÉES (Favoris + Cache + API) ---
+
     // 1. Départ
-    $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
+    $coordsDep = getCoordonneesDepuisFavoris($trajet['depart'], $id_utilisateur, $pdo);
+    if (!$coordsDep) {
+        $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
+    }
     if (!$coordsDep) {
         $coordsDep = geocoderVilleEnDirect($trajet['depart']);
     }
 
     // 2. Arrivée
-    $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
+    $coordsArr = getCoordonneesDepuisFavoris($trajet['arrivee'], $id_utilisateur, $pdo);
+    if (!$coordsArr) {
+        $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
+    }
     if (!$coordsArr) {
         $coordsArr = geocoderVilleEnDirect($trajet['arrivee']);
     }
@@ -88,8 +110,15 @@ foreach ($trajets as $trajet) {
     $sousEtapesCoords = [];
     foreach ($sousEtapes as $se) {
         if (!empty($se['ville'])) {
-            $coords = getCoordonneesDepuisCache($se['ville'], $pdo);
-            // Si pas en cache, on cherche en direct
+            // Priorité 1 : Les favoris
+            $coords = getCoordonneesDepuisFavoris($se['ville'], $id_utilisateur, $pdo);
+            
+            // Priorité 2 : Le cache des villes
+            if (!$coords) {
+                $coords = getCoordonneesDepuisCache($se['ville'], $pdo);
+            }
+            
+            // Priorité 3 : Géocodage en direct
             if (!$coords) {
                 $coords = geocoderVilleEnDirect($se['ville']);
             }
@@ -105,7 +134,6 @@ foreach ($trajets as $trajet) {
             }
         }
     }
-
     // Construction des données JS (On envoie même si coordsDep est null pour ne pas planter le JS)
     $jsMapData[] = [ 
         'id' => $trajet['id'],

@@ -208,13 +208,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================================
     
     async function getCoordonnees(ville) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr`;
+        /* List of the countries avalaible for research of a city (the API will only search the name in those
+        country) All europe is here*/
+        const europeCodes = [
+            "fr","be","ch","lu", // France, Belguim, Switzerland, Luxemburg
+            "de","at","li", // Germany, Austria, Liechtenstein
+            "it","sm","va", // Italy, San-Marino, Vatican city
+            "es","pt","ad", // Spain, Portugal, Andorra
+            "gb","ie", // Great Britain, Ireland
+            "nl","dk","no","se","fi","is", // Netherlands, Danemark, Norway, Sweden, Finland, Iceland
+            "pl","cz","sk","hu", // Poland, Czech Republic, Slovakia, Hungary
+            "ee","lv","lt", // Estonia, latvia, lethuania
+            "ro","bg","gr","cy","mt", // Romania, Bulgaria, Greece, Cyprus, Malta
+            "si","hr","ba","rs","me","al","mk","xk", // Slovenia, Croatia, Bosnia, Serbia, Montenegro, Albania, North Macedonia, Kosovo
+            "ua","md","by","ge","am","az" // Ukraine, Moldova, Belarus, Georgia, Armenia, Azerbaidjan
+        ].join(',');
+
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr&countrycodes=${europeCodes}`;
+        
         try {
             const resp = await fetch(url);
             const data = await resp.json();
             if (data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
             return null;
-        } catch (e) { return null; }
+        } catch (e) { 
+            console.error("Erreur de géocodage:", e);
+            return null; 
+        }
     }
     
     function addMarker(lieu, coords, type, popupContent) {
@@ -228,21 +248,75 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function initAutocomplete(element) {
         if (!element) return;
+
         $(element).autocomplete({
             source: function(request, response) {
+                // On ajoute &location_bias pour privilégier l'Europe et des filtres de pays si besoin
+                // Ici, on utilise surtout la puissance de filtrage de Photon via les paramètres de requête
+                const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(request.term)}&lang=fr&limit=15`;
+                
                 $.ajax({
-                    url: './fonctions/recherche_villes.php',
-                    dataType: "json",
+                    url: url,
                     method: "GET",
-                    data: { q: request.term },
                     success: function(data) {
-                        response($.map(data, function(item) { return { label: item.nom_ville, value: item.nom_ville } }));
-                    },
-                    error: function() { response([]); }
+                        let suggestions = [];
+                        let seen = new Set();
+
+                        // Liste des codes pays européens pour filtrer les résultats reçus
+                        const europeanCountryCodes = [
+                            "FR","BE","CH","LU","DE","AT","LI","IT","SM","VA","ES","PT","AD",
+                            "GB","IE","NL","DK","NO","SE","FI","IS","PL","CZ","SK","HU","EE",
+                            "LV","LT","RO","BG","GR","CY","MT","SI","HR","BA","RS","ME","AL",
+                            "MK","XK","UA","MD","BY","GE","AM","AZ"
+                        ];
+
+                        data.features.forEach(item => {
+                            const p = item.properties;
+                            const countryCode = p.countrycode; // Photon renvoie le code pays (ex: "FR", "US")
+
+                            // FILTRE : On ne garde que si le pays est dans notre liste européenne
+                            if (!europeanCountryCodes.includes(countryCode)) {
+                                return; 
+                            }
+
+                            const name = p.name || "";
+                            const city = p.city || p.town || "";
+                            const postcode = p.postcode || "";
+                            const country = p.country || "";
+                            
+                            const uniqueKey = `${name}-${city}-${postcode}-${country}`.toLowerCase();
+
+                            if (!seen.has(uniqueKey) && suggestions.length < 8) {
+                                seen.add(uniqueKey);
+                                const fullLabel = [name, city, postcode, country].filter(Boolean).join(", ");
+                                
+                                suggestions.push({
+                                    label: `<div class="ui-menu-item-content">
+                                                <span class="ui-menu-item-name">${name}</span>
+                                                <span class="ui-menu-item-details">${fullLabel}</span>
+                                            </div>`,
+                                    value: fullLabel, // On met le label complet pour éviter l'ambiguïté au clic
+                                    full_name: fullLabel,
+                                    lat: item.geometry.coordinates[1],
+                                    lon: item.geometry.coordinates[0]
+                                });
+                            }
+                        });
+                        response(suggestions);
+                    }
                 });
             },
-            minLength: 3
-        });
+            minLength: 3,
+            select: function(event, ui) {
+                $(this).val(ui.item.full_name);
+                $(this).attr('data-full-name', ui.item.full_name);
+                $(this).attr('data-lat', ui.item.lat);
+                $(this).attr('data-lon', ui.item.lon);
+                return false;
+            }
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            return $("<li>").append($("<div>").html(item.label)).appendTo(ul);
+        };
     }
 
     function updateDateConstraints() {
@@ -476,25 +550,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const btn = document.getElementById('btnValidateBlock');
                 btn.disabled = true; btn.textContent = "Calcul...";
                 
-                let startName = currentStartCity, startCoords = currentStartCoords;
+                let startName, startCoords;
                 const inputStartEl = document.getElementById('inputStartBlock');
                 
                 if (inputStartEl) {
+                    const lat = inputStartEl.getAttribute('data-lat');
+                    const lon = inputStartEl.getAttribute('data-lon');
+                    
                     startName = inputStartEl.value.trim();
-                    startCoords = await getCoordonnees(startName);
-                    if(!startCoords) { alert('Départ introuvable'); btn.disabled=false; btn.textContent = "Valider"; return; }
+                    startCoords = (lat && lon) ? [parseFloat(lat), parseFloat(lon)] : await getCoordonnees(startName);
+                    
+                    if(!startCoords) { alert('Départ introuvable'); btn.disabled=false; return; }
                     addMarker(startName, startCoords, "ville", startName);
+                } else {
+                    startName = currentStartCity;
+                    startCoords = currentStartCoords;
                 }
                 
-                const endName = document.getElementById('inputEndBlock').value.trim();
-                const endCoords = await getCoordonnees(endName);
-                if(!endCoords) { alert('Arrivée introuvable'); btn.disabled=false; btn.textContent = "Valider"; return; }
+                const inputEndEl = document.getElementById('inputEndBlock');
+                const eLat = inputEndEl.getAttribute('data-lat');
+                const eLon = inputEndEl.getAttribute('data-lon');
+                const endName = inputEndEl.value.trim();
+                
+                const endCoords = (eLat && eLon) ? [parseFloat(eLat), parseFloat(eLon)] : await getCoordonnees(endName);
+                
+                if(!endCoords) { alert('Arrivée introuvable'); btn.disabled=false; return; }
                 
                 await _ajouterSegmentEntre(startName, startCoords, endName, endCoords, segments.length, strategies['Voiture']);
                 addMarker(endName, endCoords, "ville", endName);
                 
                 currentStartCity = endName;
-                currentStartCoords = endCoords;
+                currentStartCoords = endCoords; // On garde les coordonnées réelles pour le prochain trajet
                 
                 newBlockFormContainer.innerHTML = '';
                 btnAddSegment.style.display = 'block';
@@ -692,7 +778,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         subEtapesContainer.appendChild(div);
         initAutocomplete(inputNom); 
         
-        // ... (Le reste du code TinyMCE ne change pas) ...
         setTimeout(() => {
             tinymce.init({
                 selector: '#' + uniqueId,
