@@ -1939,11 +1939,12 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 .status-selector-container select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 10px;
-    border: 1px solid var(--orange);
-    font-weight: bold;
+  width: 100%;
+  padding: 10px 14px; /* Ajusté pour correspondre aux inputs */
+  border-radius: 15px; /* Ajusté à 15px */
+  border: 1px solid var(--orange);
+  font-weight: bold;
+  background-color: white;
 }
 
 
