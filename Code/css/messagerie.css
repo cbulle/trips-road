@@ -1,4 +1,4 @@
-@media (min-width: 425px) {
+@media (min-width: 768px){
 button, input, select, textarea, label, p{
     font-size: 20px;
   }
@@ -312,6 +312,13 @@ button, input, select, textarea, label, p{
     font-size: 18px;
 }
 
+/*=======================
+Icône amis 
+========================*/
+#chat_icon{
+  font-size : 90px ;
+}
+}
 /*=========================
 Responsive
 =========================*/
@@ -331,17 +338,13 @@ Responsive
     }
 }
 
-/*=======================
-Icône amis 
-========================*/
-#chat_icon{
-  font-size : 90px ;
-}
-}
-/* A REVOIR CA NE MARCHE PAS ENCORE */
+
+
+/* A REVOIR CA NE MARCHE PAS ENCORE */  
 @media (max-width: 425px) {
-  .conv-name{
-    font-size: 20px;
-  }
+  .conv-name {
+    font-weight: bold;
+    font-size: 30px;
+}
 
 }
