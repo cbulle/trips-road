@@ -17,19 +17,23 @@ function jsonError($message) {
 }
 
 /**
- * Fonction pour sauvegarder les coordonnées dans le cache
+ * Fonction pour sauvegarder les coordonnées dans le cache (Table lieux_geocodes)
+ * CORRECTION : On utilise 'lieux_geocodes' pour que la page de visualisation retrouve les infos.
  */
 function sauvegarderVilleDansCache($nomVille, $lat, $lon, $pdo) {
     if (empty($nomVille) || empty($lat) || empty($lon)) return;
     try {
-        $stmt = $pdo->prepare("SELECT id FROM cache_coordonnees WHERE ville = ?");
+        // On vérifie si la ville existe déjà dans la table lieux_geocodes
+        $stmt = $pdo->prepare("SELECT id FROM lieux_geocodes WHERE nom = ?");
         $stmt->execute([$nomVille]);
+        
         if (!$stmt->fetch()) {
-            $stmtInsert = $pdo->prepare("INSERT INTO cache_coordonnees (ville, lat, lon) VALUES (?, ?, ?)");
+            // Insertion avec les colonnes attendues par vuRoadTrip.php (nom, lat, lon, date_last_use)
+            $stmtInsert = $pdo->prepare("INSERT INTO lieux_geocodes (nom, lat, lon, date_last_use) VALUES (?, ?, ?, NOW())");
             $stmtInsert->execute([$nomVille, (string)$lat, (string)$lon]);
         }
     } catch (Exception $e) {
-        // On ignore les erreurs de cache
+        // On ignore les erreurs (doublons, etc) pour ne pas bloquer
     }
 }
 
@@ -137,8 +141,6 @@ try {
         }
 
         // Nettoyage complet des trajets/sous-étapes existants pour les recréer proprement
-        // Les photos TinyMCE physiques ne sont PAS supprimées ici, juste les liens en base.
-        // Le scan ci-dessous recréera les liens pour les images encore présentes dans le texte.
         $pdo->prepare("DELETE sep FROM sous_etape_photos sep INNER JOIN sous_etape se ON sep.sous_etape_id = se.id INNER JOIN trajet t ON se.trajet_id = t.id WHERE t.road_trip_id = ?")->execute([$roadTripId]);
         $pdo->prepare("DELETE se FROM sous_etape se INNER JOIN trajet t ON se.trajet_id = t.id WHERE t.road_trip_id = ?")->execute([$roadTripId]);
         $pdo->prepare("DELETE FROM trajet WHERE road_trip_id = ?")->execute([$roadTripId]);
@@ -160,6 +162,7 @@ try {
         $date_trajet = $trajet['date'] ?? null;
         $heure_depart = $trajet['heure_depart'] ?? '08:00';
 
+        // SAUVEGARDE DES COORDONNÉES DÉPART/ARRIVÉE DANS LE CACHE
         sauvegarderVilleDansCache($depart, $trajet['departLat'] ?? null, $trajet['departLon'] ?? null, $pdo);
         sauvegarderVilleDansCache($arrivee, $trajet['arriveeLat'] ?? null, $trajet['arriveeLon'] ?? null, $pdo);
 
@@ -171,20 +174,18 @@ try {
             $nom = $se['nom'] ?? '';
             $descriptionSousEtape = $se['remarque'] ?? ''; // Contenu HTML de TinyMCE
             
+            // SAUVEGARDE DES COORDONNÉES SOUS-ÉTAPE DANS LE CACHE
             sauvegarderVilleDansCache($nom, $se['lat'] ?? null, $se['lon'] ?? null, $pdo);
 
             $stmt = $pdo->prepare("INSERT INTO sous_etape (numero, ville, description, trajet_id, type_transport, heure) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([$j + 1, $nom, $descriptionSousEtape, $trajetId, $mode, $se['heure'] ?? null]);
             $sousEtapeId = $pdo->lastInsertId();
 
-            // --- NOUVEAU : Scan des images TinyMCE ---
-            // On cherche les images qui ont le format rt_img_... dans le dossier uploads/sousetapes/
+            // --- Scan des images TinyMCE ---
             $pattern = '/\/uploads\/sousetapes\/(rt_img_[a-zA-Z0-9_]+\.(?:jpg|jpeg|png|gif|webp))/i';
             
             if (preg_match_all($pattern, $descriptionSousEtape, $matches)) {
-                // $matches[1] contient les noms de fichiers
                 $imagesTrouvees = array_unique($matches[1]);
-                
                 if (!empty($imagesTrouvees)) {
                     $stmtImg = $pdo->prepare("INSERT INTO sous_etape_photos (sous_etape_id, photo) VALUES (?, ?)");
                     foreach ($imagesTrouvees as $nomImage) {
@@ -202,3 +203,4 @@ try {
     if ($pdo->inTransaction()) $pdo->rollBack();
     jsonError("Erreur Serveur: " . $e->getMessage());
 }
+?>

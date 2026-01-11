@@ -262,10 +262,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     function initAutocomplete(element) {
         if (!element) return;
 
+        element.addEventListener('input', function() {
+            this.removeAttribute('data-lat');
+            this.removeAttribute('data-lon');
+            this.removeAttribute('data-full-name');
+            this.style.backgroundColor = ''; 
+        });
+        // -----------------------------------------------------------------------
+
         $(element).autocomplete({
             source: function(request, response) {
-                // On ajoute &location_bias pour privilégier l'Europe et des filtres de pays si besoin
-                // Ici, on utilise surtout la puissance de filtrage de Photon via les paramètres de requête
+                // Appel API Photon
                 const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(request.term)}&lang=fr&limit=15`;
                 
                 $.ajax({
@@ -275,7 +282,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         let suggestions = [];
                         let seen = new Set();
 
-                        // Liste des codes pays européens pour filtrer les résultats reçus
+                        // Liste des codes pays européens pour le filtrage
                         const europeanCountryCodes = [
                             "FR","BE","CH","LU","DE","AT","LI","IT","SM","VA","ES","PT","AD",
                             "GB","IE","NL","DK","NO","SE","FI","IS","PL","CZ","SK","HU","EE",
@@ -285,7 +292,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                         data.features.forEach(item => {
                             const p = item.properties;
-                            const countryCode = p.countrycode; // Photon renvoie le code pays (ex: "FR", "US")
+                            const countryCode = p.countrycode; 
 
                             // FILTRE : On ne garde que si le pays est dans notre liste européenne
                             if (!europeanCountryCodes.includes(countryCode)) {
@@ -308,7 +315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                                 <span class="ui-menu-item-name">${name}</span>
                                                 <span class="ui-menu-item-details">${fullLabel}</span>
                                             </div>`,
-                                    value: fullLabel, // On met le label complet pour éviter l'ambiguïté au clic
+                                    value: fullLabel, 
                                     full_name: fullLabel,
                                     lat: item.geometry.coordinates[1],
                                     lon: item.geometry.coordinates[0]
@@ -325,6 +332,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 $(this).attr('data-full-name', ui.item.full_name);
                 $(this).attr('data-lat', ui.item.lat);
                 $(this).attr('data-lon', ui.item.lon);
+                
+                $(this).css('backgroundColor', '#e8f8f5');
+                
                 return false;
             }
         }).data("ui-autocomplete")._renderItem = function(ul, item) {
@@ -901,17 +911,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('saveSegment').onclick = async () => {
         const seg = segments[currentSegmentIndex];
         const newSubs = [];
+        // On récupère toutes les divs subEtape
         for (const div of document.querySelectorAll('.subEtape')) {
-            const nom = div.querySelector('.subEtapeNom').value.trim();
+            const inputNom = div.querySelector('.subEtapeNom'); // On cible l'élément input direct
+            const nom = inputNom.value.trim();
             const heure = div.querySelector('.subEtapeHeure').value;
-            const remarque = tinymce.get(div.querySelector('.subEtapeRemarque').id).getContent();
+            // Récupération contenu TinyMCE
+            const idEditor = div.querySelector('.subEtapeRemarque').id;
+            const remarque = tinymce.get(idEditor) ? tinymce.get(idEditor).getContent() : "";
+            
             if(!nom || !heure) continue;
-            const coords = await getCoordonnees(nom);
+
+            // --- CORRECTION ICI ---
+            let coords = null;
+            const latAttr = inputNom.getAttribute('data-lat');
+            const lonAttr = inputNom.getAttribute('data-lon');
+
+            // 1. Si Photon a déjà donné les coords (via le clic autocomplétion), on les utilise !
+            if (latAttr && lonAttr) {
+                coords = [parseFloat(latAttr), parseFloat(lonAttr)];
+            } else {
+                // 2. Sinon (saisie manuelle sans clic), on demande à Nominatim
+                coords = await getCoordonnees(nom);
+            }
+            // ----------------------
+
             if(coords) {
                 newSubs.push({ nom, heure, remarque, coords, lat: coords[0], lon: coords[1] });
                 addMarker(nom, coords, "sous_etape", `<b>${nom}</b><br>${heure}`);
+            } else {
+                alert(`Impossible de localiser : ${nom}. Veuillez sélectionner une suggestion dans la liste.`);
             }
         }
+        
         seg.sousEtapes = newSubs;
         await updateRouteSegment(currentSegmentIndex, seg.modeTransport || 'Voiture');
         document.getElementById('segmentFormContainer').style.display = 'none';
