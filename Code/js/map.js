@@ -794,23 +794,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
             tinymce.init({
                 selector: '#' + uniqueId,
+                
                 base_url: '/js/tinymce',
                 suffix: '.min',
                 license_key: 'gpl',
-                promotion: false,
-                branding: false,
+                
+                height: 300,
                 menubar: false,
                 statusbar: false,
-                min_height: 200,
+                language: 'fr_FR', 
 
                 plugins: 'image link lists table code help wordcount',
-                toolbar: 'undo redo | bold italic | bullist | link image',
+                toolbar: 'undo redo | bold italic | bullist numlist | link image | table | code',
 
+                /* --- GESTION DES IMAGES --- */
                 image_title: true,
                 automatic_uploads: true,
+                // L'URL de ton script PHP créé à l'étape 1
                 images_upload_url: '/formulaire/traitementImageTiny.php', 
                 file_picker_types: 'image',
+                
+                // Empêche TinyMCE de convertir les URLs en relatif "../uploads" qui casseraient sur d'autres pages
+                relative_urls: false, 
+                remove_script_host: false,
+                convert_urls: true,
 
+                // Callback pour la compression et l'upload
                 file_picker_callback: (cb, value, meta) => {
                     const input = document.createElement('input');
                     input.setAttribute('type', 'file');
@@ -827,11 +836,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                             img.src = readerEvent.target.result;
 
                             img.onload = () => {
+                                // Paramètres de compression
                                 const MAX_WIDTH = 1200;
                                 const MAX_HEIGHT = 1200;
                                 let width = img.width;
                                 let height = img.height;
 
+                                // Calcul du redimensionnement
                                 if (width > height) {
                                     if (width > MAX_WIDTH) {
                                         height *= MAX_WIDTH / width;
@@ -844,40 +855,36 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     }
                                 }
 
+                                // Création du Canvas pour dessiner l'image redimensionnée
                                 const canvas = document.createElement('canvas');
                                 canvas.width = width;
                                 canvas.height = height;
                                 const ctx = canvas.getContext('2d');
                                 ctx.drawImage(img, 0, 0, width, height);
 
+                                // Conversion en Blob (Fichier compressé)
+                                // Le 0.7 correspond à 70% de qualité JPEG
                                 canvas.toBlob((blob) => {
                                     const newFile = new File([blob], file.name, { 
                                         type: 'image/jpeg', 
                                         lastModified: Date.now() 
                                     });
 
+                                    // Ajout au cache de TinyMCE pour déclencher l'upload automatique
                                     const id = 'blobid' + (new Date()).getTime();
                                     const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                                    const blobInfo = blobCache.create(id, newFile, blob);
+                                    
+                                    blobCache.add(blobInfo);
 
-                                    const reader2 = new FileReader();
-                                    reader2.readAsDataURL(newFile);
-                                    reader2.onload = (e2) => {
-                                        const base64 = e2.target.result.split(',')[1];
-                                        const blobInfo = blobCache.create(id, newFile, base64);
-                                        blobCache.add(blobInfo);
-                                        
-                                        cb(blobInfo.blobUri(), { title: file.name });
-                                    };
-
+                                    // Appelle le callback pour afficher l'image (en base64) en attendant l'upload réel
+                                    cb(blobInfo.blobUri(), { title: file.name });
+                                    
                                 }, 'image/jpeg', 0.7); 
                             };
                         };
                     });
                     input.click();
-                }
-            }).then(editors => {
-                if (data.remarque && editors.length > 0) {
-                    editors[0].setContent(data.remarque);
                 }
             });
         }, 100);

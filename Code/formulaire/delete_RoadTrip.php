@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../modules/init.php';
 include_once __DIR__ . '/../bd/lec_bd.php';
 
+// Vérification de sécurité
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /id.php');
     exit;
@@ -15,11 +16,7 @@ if (!isset($_GET['id'])) {
 
 $id_roadtrip = intval($_GET['id']);
 
-$stmt = $pdo->prepare("
-    SELECT id, photo 
-    FROM roadtrip 
-    WHERE id = :id AND id_utilisateur = :uid
-");
+$stmt = $pdo->prepare("SELECT id, photo FROM roadtrip WHERE id = :id AND id_utilisateur = :uid");
 $stmt->execute([
     'id' => $id_roadtrip,
     'uid' => $id_utilisateur
@@ -28,17 +25,15 @@ $stmt->execute([
 $roadtrip = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$roadtrip) {
-    die("Accès refusé : ce road trip ne vous appartient pas.");
+    die("Accès refusé : ce road trip n'existe pas ou ne vous appartient pas.");
 }
 
 if (!empty($roadtrip['photo'])) {
     $cheminImageRt = __DIR__ . '/../uploads/roadtrips/' . $roadtrip['photo'];
-    
     if (file_exists($cheminImageRt)) {
         unlink($cheminImageRt);
     }
 }
-
 
 $sqlPhotos = "
     SELECT sep.photo
@@ -52,6 +47,7 @@ $stmt = $pdo->prepare($sqlPhotos);
 $stmt->execute(['id_rt' => $id_roadtrip]);
 $photosSousEtapes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
+// 4. Suppression physique des photos des sous-étapes
 foreach ($photosSousEtapes as $photoNom) {
     if (!empty($photoNom)) {
         $cheminPhoto = __DIR__ . '/../uploads/sousetapes/' . $photoNom;
@@ -61,10 +57,9 @@ foreach ($photosSousEtapes as $photoNom) {
     }
 }
 
-
 $delete = $pdo->prepare("DELETE FROM roadtrip WHERE id = :id");
 $delete->execute(['id' => $id_roadtrip]);
 
-// Retour à la liste des road trips
-header("Location: /../mesRoadTrips.php?deleted=1");
+// Retour à la liste avec un message
+header("Location: /../mesRoadTrips.php?msg=supprime");
 exit;

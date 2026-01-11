@@ -1,76 +1,56 @@
 <?php
-// 1. Démarrer la tamporisation de sortie
-// Cela empêche PHP d'envoyer quoi que ce soit au navigateur pour l'instant
-ob_start();
+require_once __DIR__ . '/../modules/init.php';
 
-// Configuration des erreurs (silence absolu)
-ini_set('display_errors', 0);
-error_reporting(0);
+header('Content-Type: application/json');
 
-try {
-    // -----------------------------------------------------------------------
-    // TA LOGIQUE D'UPLOAD
-    // -----------------------------------------------------------------------
+if (isset($_FILES['file'])) {
+    $file = $_FILES['file'];
     
-    // Définition du dossier (Chemin absolu)
-    $targetDir = __DIR__ . '/images_roadtrip/';
-    
-    // URL Web (A ADAPTER si ton projet est dans un sous-dossier !)
-    // Exemple : si ton site est localhost/monSite/, mets '/monSite/uploads/images_roadtrip/'
-    $targetUrlPath = '/uploads/images_roadtrip/'; 
-
-    if (!file_exists($targetDir)) {
-        if (!mkdir($targetDir, 0777, true)) {
-            throw new Exception("Impossible de créer le dossier.");
-        }
-    }
-
-    reset($_FILES);
-    $temp = current($_FILES);
-
-    if (!isset($temp['tmp_name']) || empty($temp['tmp_name'])) {
-        throw new Exception("Aucun fichier reçu.");
-    }
-
     // Vérification extension
-    $ext = pathinfo($temp['name'], PATHINFO_EXTENSION);
-    if (!in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
-        throw new Exception("Format invalide.");
-    }
-    
-    // Nommage et déplacement
-    $fileName = date('Ymd_His') . '_' . uniqid() . '.' . $ext;
-    $targetFile = $targetDir . $fileName;
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $extensionsAutorisees = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
-    if (move_uploaded_file($temp['tmp_name'], $targetFile)) {
-        $response = ['location' => $targetUrlPath . $fileName];
+    if (!in_array($extension, $extensionsAutorisees)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Extension non autorisée.']);
+        exit;
+    }
+
+    $nouveauNom = "rt_img_" . uniqid() . "_" . bin2hex(random_bytes(4)) . "." . $extension;
+    
+    // Chemin PHYSIQUE (pour enregistrer le fichier sur le disque)
+    $dossierCible = __DIR__ . '/../uploads/sousetapes/';
+    if (!is_dir($dossierCible)) {
+        mkdir($dossierCible, 0755, true);
+    }
+    $cheminFinal = $dossierCible . $nouveauNom;
+
+    if (move_uploaded_file($file['tmp_name'], $cheminFinal)) {
+        
+        // --- CALCUL DU CHEMIN WEB (URL) CORRIGÉ ---
+        $scriptPath = $_SERVER['SCRIPT_NAME'];
+        $webRoot = dirname(dirname($scriptPath));
+        
+        // CORRECTION : Si le site est à la racine, dirname renvoie "/" ou "\".
+        // On le vide pour éviter le double slash "//uploads"
+        if ($webRoot === '/' || $webRoot === '\\') {
+            $webRoot = '';
+        }
+        
+        // On construit l'URL
+        $location = $webRoot . '/uploads/sousetapes/' . $nouveauNom;
+        
+        // Nettoyage des backslashes éventuels sur Windows
+        $location = str_replace('\\', '/', $location);
+
+        echo json_encode(['location' => $location]);
+
     } else {
-        throw new Exception("Erreur lors de l'écriture du fichier.");
+        http_response_code(500);
+        echo json_encode(['error' => 'Impossible de sauvegarder le fichier.']);
     }
-
-    // -----------------------------------------------------------------------
-    // LE NETTOYAGE FINAL (La partie magique)
-    // -----------------------------------------------------------------------
-
-    // On efface tout ce qui a pu être écrit avant (espaces, warnings, etc.)
-    ob_end_clean(); 
-    
-    // On envoie les bons headers
-    header('Content-Type: application/json');
-    http_response_code(200);
-    
-    // On envoie UNIQUEMENT le JSON
-    echo json_encode($response);
-
-} catch (Exception $e) {
-    // En cas d'erreur, on nettoie aussi
-    ob_end_clean();
-    
-    header('Content-Type: application/json');
-    http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+} else {
+    http_response_code(400);
+    echo json_encode(['error' => 'Aucun fichier reçu.']);
 }
-
-// On coupe tout immédiatement pour éviter qu'un saut de ligne traîne à la fin du fichier
-exit;
 ?>

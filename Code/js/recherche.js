@@ -248,7 +248,7 @@ function openModal() {
 
 document.addEventListener('DOMContentLoaded', function() {
     openModal();
-    showRegister();
+    showLogin();
 });
 
  
