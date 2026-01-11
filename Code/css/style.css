@@ -314,7 +314,8 @@ header nav > ul > div span {
 .TitreRT{
   color: var(--beige);
   background-color: var(--bleu_clair);
-  padding : 15px;  
+  padding : 15px;
+  margin-bottom: 15px; 
 }
 
 

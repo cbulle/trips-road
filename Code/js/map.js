@@ -95,7 +95,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
  
     const segmentColors = [
-        '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9'
+        '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9', // Tes couleurs originales
+        '#16A085', 
+        '#E67E22', 
+        '#8E44AD', 
+        '#2C3E50', 
+        '#C0392B', 
+        '#27AE60', 
+        '#F1C40F', 
+        '#E74C3C', 
+        '#34495E', 
+        '#9B59B6', 
+        '#1ABC9C', 
+        '#7F8C8D', 
+        '#D35400'  
     ];
 
     // ============================================================
