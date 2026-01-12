@@ -308,7 +308,7 @@ header nav > ul > div span {
 .ul_burger {
   position: absolute; 
   top: 140px;
-  left: -100%;
+  left: -150%;
   width: 385px;
   min-height: 100vh; 
   height: 100%;   
@@ -426,7 +426,9 @@ header>nav>input:checked ~ label>span::after{
   transform: translate(-50%, -50%);
 } 
   
-  
+
+
+
   .profil-photo {
     position: relative;
     width: 35px;
@@ -440,6 +442,7 @@ header>nav>input:checked ~ label>span::after{
 }
 
 .title>a{
+  font-size: 2rem;
   position: relative;
   left: 50px;
 }

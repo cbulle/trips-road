@@ -104,9 +104,7 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 endif; 
 ?>
 
-<script>
-src ="profil.js"
-</script>
+<script src ="/js/profil.js"></script>
 <?php include_once __DIR__ . "/modules/footer.php"; ?>
 
 </body>

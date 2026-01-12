@@ -1,10 +1,8 @@
 <?php
-// Code/favoris.php
 
 require_once __DIR__ . '/include/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
 
-// 1. Vérification connexion
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /id.php');
     exit;
@@ -12,7 +10,6 @@ if (!isset($_SESSION['utilisateur']['id'])) {
 
 $id_utilisateur = $_SESSION['utilisateur']['id'];
 
-// 2. Traitement de la suppression d'un LIEU
 if (isset($_GET['delete_lieu'])) {
     $id_lieu_a_supprimer = intval($_GET['delete_lieu']);
     try {
@@ -23,7 +20,6 @@ if (isset($_GET['delete_lieu'])) {
     } catch (Exception $e) { }
 }
 
-// 3. Récupération des ROAD TRIPS favoris
 $stmtRT = $pdo->prepare("
     SELECT r.*, u.nom, u.prenom, f.date_ajout
     FROM favoris f
@@ -35,7 +31,6 @@ $stmtRT = $pdo->prepare("
 $stmtRT->execute(['id_user' => $id_utilisateur]);
 $favorisRT = $stmtRT->fetchAll(PDO::FETCH_ASSOC);
 
-// 4. Récupération des LIEUX favoris
 $stmtLieux = $pdo->prepare("
     SELECT * FROM lieux_favoris 
     WHERE id_utilisateur = :id_user 
@@ -62,26 +57,8 @@ function getIconForCategory($cat) {
     <title>Mes Favoris - Trips & Roads</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/accessibilite.css">
+    <link rel="stylesheet" href="/css/favoris.css">
     <script src="https://kit.fontawesome.com/d76759a8b0.js" crossorigin="anonymous"></script>
-    <style>
-        /* Styles spécifiques aux cartes de lieux */
-        .separator { margin: 40px 0; border: 0; border-top: 1px solid #ddd; }
-        .lieu-card { border-left: 5px solid var(--orange); }
-        .category-badge { 
-            background: #eee; padding: 2px 8px; border-radius: 12px; 
-            font-size: 0.8rem; display: inline-block; margin-bottom: 5px;
-        }
-        .address-text { font-style: italic; color: #666; font-size: 0.9rem; margin-bottom: 10px; }
-        .btn-map { background-color: #3498db; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; margin-right: 5px;}
-        .btn-map:hover { background-color: #2980b9; }
-        
-        /* Ajustement titre pour coller à la charte (ex: font-family du site) */
-        h2.section-title {
-            color: var(--bleu_fonce_ecriture); /* Utilisation de la variable du thème */
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
 <body>
 <?php include_once __DIR__ . "/modules/header.php"; ?>

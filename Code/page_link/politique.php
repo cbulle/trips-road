@@ -2,24 +2,25 @@
 require_once __DIR__ . '/../include/init.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Politique de Confidentialité - Trips & Road</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/form.css">
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Politique de Confidentialité - Trips & Road</title>
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/form.css">
+        <link rel="stylesheet" href="../css/page_link.css">
 
-</head>
-<body>
-   
-<?php     
-include_once __DIR__ . "/../modules/header.php";
-?>
+    </head>
+    <body>
+    
+    <?php     
+    include_once __DIR__ . "/../modules/header.php";
+    ?>
 
-<main>
-    <div class="cgu-container">
-        <h1>Politique de Confidentialité</h1>
+    <main>
+        <div class="cgu-container">
+            <h1>Politique de Confidentialité</h1>
 
         <section>
             <h2>1. Préambule et Engagement</h2>
@@ -118,10 +119,5 @@ include_once __DIR__ . "/../modules/header.php";
     </div>
 </main>
 
-<script src = "/../js/map.js" ></script>
-<?php     
-include_once __DIR__ . "/../modules/footer.php";
-?>
-
-</body>
-</html>
+    </body>
+    </html>

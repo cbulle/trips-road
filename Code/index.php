@@ -2,8 +2,6 @@
 require_once __DIR__ . '/include/init.php';
 $userId = $_SESSION['utilisateur']['id'] ?? null;
 ?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -21,9 +19,6 @@ $userId = $_SESSION['utilisateur']['id'] ?? null;
     ?>
     <link rel="stylesheet" href="css/index.css"> 
     <link rel="stylesheet" href="css/style.css"> 
-    
-
-
 </head>
 <body>
    

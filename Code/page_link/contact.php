@@ -90,7 +90,7 @@ include_once __DIR__ . "/../modules/header.php";
 </main>
 
 
-<script src = "/../js/map.js" ></script>
+<script src = "/../js/recherche.js" ></script>
 <?php     
 include_once __DIR__ . "/../modules/footer.php";
 ?>
