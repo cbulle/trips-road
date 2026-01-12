@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../include/init.php';
 require_once __DIR__ . '/../bd/lec_bd.php';
 
 $error = null; 
@@ -34,9 +34,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
 
 
-            if ($remember) {
-                setcookie('remember_login', $email, time() + (7 * 24 * 60 * 60), '/');
-            }
+            if (isset($_POST['remember_me'])) {
+    // 1. Générer deux tokens aléatoires
+    $selector = bin2hex(random_bytes(10)); // Sert d'ID public pour le cookie
+    $validator = bin2hex(random_bytes(32)); // Sert de mot de passe pour le cookie
+    
+    // 2. Créer le cookie : format "selecteur:validateur"
+    // Expire dans 30 jours
+    setcookie("remember_me", $selector . ":" . $validator, time() + (86400 * 30), "/", "", true, true); 
+    // Note: les derniers true, true activent Secure (HTTPS) et HttpOnly (anti-XSS)
+
+    // 3. Stocker le hash du validateur en BDD
+    $hashed_validator = hash('sha256', $validator);
+    $expiry = date('Y-m-d H:i:s', time() + (86400 * 30));
+
+    $ins = $pdo->prepare("INSERT INTO user_tokens (selector, hashed_validator, user_id, expires_at) VALUES (?, ?, ?, ?)");
+    $ins->execute([$selector, $hashed_validator, $user['id'], $expiry]);
+}
 
             header("Location: ../index.php");
             exit;

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/modules/init.php';
+require_once __DIR__ . '/include/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
 
 if (!isset($_SESSION['utilisateur']['id'])) {
@@ -90,15 +90,15 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="share-modal active" id="shareModal">
     <div class="share-modal-content">
         <span class="share-modal-close" onclick="closeShareModal()">&times;</span>
-        <h2 style="color: var(--bleu_foncé); margin-bottom: 15px;">Partager votre road trip</h2>
-        <p>Copiez ce lien pour partager votre road trip avec n'importe qui :</p>
+        <h2>Partager votre road trip</h2>
+        <p>Copiez ce lien pour partager votre road trip :</p>
         
         <div class="share-url-container">
             <input type="text" class="share-url-input" id="shareUrl" value="<?= htmlspecialchars($share_url) ?>" readonly>
             <button class="copy-btn" onclick="copyShareUrl()">Copier</button>
         </div>
         
-        <div class="copy-success" id="copySuccess">✓ Lien copié !</div>
+        <div class="copy-success" id="copySuccess">Lien copié !</div>
         
     </div>
 </div>
@@ -108,7 +108,7 @@ endif;
 ?>
 
 <script>
-src ="vuRoadTrip.js"
+src ="profil.js"
 </script>
 <?php include_once __DIR__ . "/modules/footer.php"; ?>
 

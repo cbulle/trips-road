@@ -131,7 +131,7 @@ if (searchBox && resultsTableBody) {
 }
 
 /*=======================================
-  Changement de th me
+  Changement de theme
 =======================================*/
  
 const savedTheme = localStorage.getItem("theme");
@@ -218,37 +218,6 @@ toggleDaltonien.addEventListener("change", () => {
     }
 });
 
-/*=======================================
-  Formulaire d'inscription et de connexion
-=======================================*/
 
-
-
-function showLogin() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
-    document.getElementById('btnLogin').classList.add('active');
-    document.getElementById('btnRegister').classList.remove('active');
-}
-
-function showRegister() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
-    document.getElementById('btnLogin').classList.remove('active');
-    document.getElementById('btnRegister').classList.add('active');
-}
-
- 
-function openModal() {
-    const modal = document.querySelector('.formulaire'); 
-    if (modal) {
-        modal.style.display = 'block';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    openModal();
-    showLogin();
-});
 
  

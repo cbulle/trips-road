@@ -1,7 +1,7 @@
 <?php
 // Code/fonctions/get_lieux_favoris.php
 
-require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../include/init.php';
 require_once __DIR__ . '/../bd/lec_bd.php';
 
 header('Content-Type: application/json');

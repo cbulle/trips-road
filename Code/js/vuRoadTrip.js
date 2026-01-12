@@ -404,9 +404,6 @@ async function calculerHorairesTrajet(card) {
         });
     }
 }
-    /*==================================
-    Mes road 
-    ================================*/
 
 function closeShareModal() {
     document.getElementById('shareModal').classList.remove('active');

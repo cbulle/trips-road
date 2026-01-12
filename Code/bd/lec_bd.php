@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ .'/../include/init.php';
+//include_once __DIR__ .'/../include/init.php';
 $dsn = 'mysql:dbname=p2301500;host=iutbg-lamp.univ-lyon1.fr';
 $user = 'p2301500';
 $password = '12301500';

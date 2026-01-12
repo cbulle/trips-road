@@ -1,10 +1,17 @@
 <?php
-require_once __DIR__ . '/modules/init.php' ;
-session_unset();   
-session_destroy(); 
+require_once 'include/init.php';
 
-//setcookie('remember_login', '', time() - 3600, '/');
-//setcookie('remember_password', '', time() - 3600, '/');
+if (isset($_COOKIE['remember_me'])) {
+    $parts = explode(':', $_COOKIE['remember_me']);
+    if(count($parts) === 2) {
+        $selector = $parts[0];
+        $stmt = $pdo->prepare("DELETE FROM user_tokens WHERE selector = ?");
+        $stmt->execute([$selector]);
+    }
+    setcookie("remember_me", "", time() - 3600, "/", "", true, true);
+}
 
+session_destroy();
 header("Location: index.php");
 exit;
+
