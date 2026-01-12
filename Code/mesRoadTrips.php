@@ -39,7 +39,6 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="roadtrip-card">
             
             <?php 
-                // Logique pour le statut
                 $estTermine = (isset($rt['statut']) && $rt['statut'] === 'termine');
                 $classeCss = $estTermine ? 'statut-termine' : 'statut-brouillon';
                 $texteStatut = $estTermine ? 'Terminé' : 'Brouillon';
@@ -64,11 +63,9 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <i class="material-icons">visibility</i>
                 </a>
 
-                <?php if(!$estTermine): ?>
                 <a class="btn-edit" href="creationRoadTrip.php?id=<?= $rt['id'] ?>">
                     <i class="material-icons">edit</i> 
                 </a>
-                <?php endif; ?>
                 
                 <a class="btn-share" href="generate_shared_link.php?id=<?= $rt['id'] ?>">
                     <i class="material-icons">share</i>                   
