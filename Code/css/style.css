@@ -30,7 +30,7 @@ html.dark {
   --beige_fonce: #16476A;
   --bleu_fonce_ecriture: rgb(212, 212, 212);
   --beige_visu: #40a79c;
-  --noir : #FFFFFF
+  --noir : #FFFFFF;
   color: black;
 }
 
@@ -1169,7 +1169,6 @@ STYLE DE LA TIME LINE POUR AFFICHAGE DES ROAD TRIPS
 }
 
 strong {
-  color: #333;
   font-size: 16px;
 }
 
