@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../include/init.php';
 ?>
 
 <!DOCTYPE html>
@@ -21,66 +21,75 @@ include_once __DIR__ . "/../modules/header.php";
         <h1>Gestion des Cookies</h1>
 
         <section>
-            <h2>1. Introduction</h2>
-            <p>Cette page explique comment nous utilisons les cookies sur le site "Trips & Roads". Nous respectons votre vie privée et nous engageons à vous fournir des informations transparentes sur l'utilisation des cookies et autres technologies similaires.</p>
+            <h2>1. Qu'est-ce qu'un cookie ?</h2>
+            <p>Un cookie est un petit fichier texte déposé sur votre terminal (ordinateur, tablette ou mobile) lors de la visite d'un site web. Il permet au site de mémoriser certaines informations vous concernant, comme votre statut de connexion ou vos préférences d'affichage, pour une durée limitée.</p>
         </section>
 
         <section>
-            <h2>2. Qu'est-ce qu'un cookie ?</h2>
-            <p>Un cookie est un petit fichier texte déposé sur votre appareil (ordinateur, smartphone, etc.) lorsque vous visitez notre site. Il permet de stocker certaines informations relatives à votre navigation afin d'améliorer votre expérience utilisateur et de personnaliser le contenu.</p>
-        </section>
-
-        <section>
-            <h2>3. Types de cookies utilisés</h2>
-            <p>Nous utilisons plusieurs types de cookies sur notre site, chacun ayant un but spécifique :</p>
+            <h2>2. Pourquoi utilisons-nous des cookies ?</h2>
+            <p>Chez <strong>Trips & Road</strong>, nous utilisons des cookies pour des raisons purement techniques et fonctionnelles. Nous ne faisons <strong>pas de publicité ciblée</strong> et ne revendons pas vos données de navigation.</p>
+            <p>Nos cookies servent principalement à :</p>
             <ul>
-                <li><strong>Cookies de session</strong> : Ces cookies sont temporaires et sont supprimés dès que vous quittez notre site ou fermez votre navigateur. Ils sont utilisés pour gérer votre session de navigation, comme par exemple, pour mémoriser vos choix de langue ou votre connexion.</li>
-                <li><strong>Cookies de préférence</strong> : Ces cookies sont utilisés pour mémoriser vos préférences, comme la langue de navigation ou la taille de la police, afin d’améliorer votre expérience lors de vos futures visites.</li>
-                <li><strong>Cookies analytiques</strong> : Ces cookies nous permettent de recueillir des données anonymes sur l’utilisation de notre site (pages visitées, temps passé sur chaque page, etc.). Ces informations nous aident à améliorer nos services et à optimiser l’expérience utilisateur.</li>
-                <li><strong>Cookies publicitaires</strong> : Ces cookies servent à vous présenter des publicités adaptées à vos centres d'intérêt. Ils peuvent être utilisés par nos partenaires publicitaires pour afficher des annonces pertinentes sur notre site ou sur d’autres sites que vous visitez.</li>
+                <li>Vous maintenir connecté lorsque vous naviguez de page en page.</li>
+                <li>Sécuriser votre compte (éviter qu'une autre personne n'utilise votre session).</li>
+                <li>Vous reconnaître lors de votre prochaine visite (si vous avez coché "Se souvenir de moi").</li>
             </ul>
         </section>
 
         <section>
-            <h2>4. Consentement à l'utilisation des cookies</h2>
-            <p>Lorsque vous accédez à notre site pour la première fois, nous vous demandons de consentir à l'utilisation des cookies via une bannière d'information. Vous pouvez accepter ou refuser les cookies, ou bien configurer vos préférences en matière de cookies. Si vous acceptez, nous déposerons les cookies sur votre appareil pour les fins spécifiées dans cette politique.</p>
+            <h2>3. Liste des cookies utilisés</h2>
+            <table class="cookie-table">
+                <thead>
+                    <tr>
+                        <th>Nom du Cookie</th>
+                        <th>Type / Finalité</th>
+                        <th>Durée de vie</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>PHPSESSID</strong></td>
+                        <td><strong>Essentiel.</strong> Identifiant unique de votre session. Permet de savoir que vous êtes connecté lorsque vous changez de page.</td>
+                        <td>Fin de la session (fermeture du navigateur)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>remember_me</strong></td>
+                        <td><strong>Fonctionnel.</strong> Permet la reconnexion automatique sans ressaisir le mot de passe (si l'option a été cochée).</td>
+                        <td>30 jours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cache / LocalStorage</strong></td>
+                        <td><strong>Performance.</strong> Nous stockons temporairement les données cartographiques (OpenStreetMap) pour accélérer l'affichage de la carte.</td>
+                        <td>Variable</td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
 
         <section>
-            <h2>5. Gestion des cookies</h2>
-            <p>Vous pouvez gérer vos préférences en matière de cookies à tout moment. Pour cela, vous pouvez :</p>
+            <h2>4. Cookies tiers (Partenaires)</h2>
+            <p>Notre site utilise des services externes pour l'affichage des cartes et le calcul d'itinéraires. Ces services peuvent déposer leurs propres cookies techniques :</p>
             <ul>
-                <li>Accepter tous les cookies en cliquant sur le bouton "Accepter" dans la bannière de cookies.</li>
-                <li>Refuser certains types de cookies en accédant aux paramètres de votre navigateur et en bloquant les cookies non essentiels.</li>
-                <li>Supprimer les cookies déjà enregistrés dans votre navigateur via les paramètres de ce dernier.</li>
+                <li><strong>OpenStreetMap & Leaflet :</strong> Utilisés pour l'affichage visuel des cartes.</li>
+                <li><strong>Nominatim & OSRM :</strong> Utilisés pour la recherche de lieux et le calcul de trajets.</li>
             </ul>
-            <p>Notez que si vous refusez certains cookies, certaines fonctionnalités de notre site pourraient être limitées.</p>
         </section>
 
         <section>
-            <h2>6. Cookies tiers</h2>
-            <p>Nous pouvons permettre à des partenaires tiers (par exemple, des services d'analyse ou des régies publicitaires) d'utiliser leurs propres cookies sur notre site. Ces cookies sont soumis à leurs propres politiques de confidentialité, et nous vous encourageons à les consulter pour obtenir plus d'informations sur la manière dont ces partenaires utilisent les cookies.</p>
-        </section>
-
-        <section>
-            <h2>7. Vos droits concernant les cookies</h2>
-            <p>Conformément à la législation en vigueur, vous avez les droits suivants concernant l'utilisation des cookies :</p>
+            <h2>5. Comment gérer vos préférences ?</h2>
+            <p>La plupart des navigateurs acceptent les cookies par défaut. Vous pouvez toutefois configurer votre navigateur pour refuser les cookies ou supprimer ceux déjà installés. Voici comment faire selon votre navigateur :</p>
             <ul>
-                <li><strong>Accès</strong> : Vous pouvez accéder aux cookies qui ont été déposés sur votre appareil.</li>
-                <li><strong>Rectification</strong> : Vous avez le droit de modifier vos préférences en matière de cookies à tout moment.</li>
-                <li><strong>Suppression</strong> : Vous pouvez supprimer les cookies enregistrés sur votre appareil via les paramètres de votre navigateur.</li>
+                <li><a href="https://support.google.com/chrome/answer/95647?hl=fr" target="_blank">Google Chrome</a></li>
+                <li><a href="https://support.mozilla.org/fr/kb/protection-renforcee-contre-pistage-firefox-ordinateur" target="_blank">Mozilla Firefox</a></li>
+                <li><a href="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac" target="_blank">Safari</a></li>
+                <li><a href="https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank">Microsoft Edge</a></li>
             </ul>
-            <p>Pour toute question concernant la gestion des cookies, vous pouvez nous contacter à l'adresse suivante : <strong>contact@tripsandroads.com</strong>.</p>
+            <p><em>Attention : Le refus des cookies techniques (comme PHPSESSID) vous empêchera de vous connecter à votre compte Membre.</em></p>
         </section>
 
         <section>
-            <h2>8. Modifications de la politique sur les cookies</h2>
-            <p>Nous nous réservons le droit de modifier cette politique sur les cookies à tout moment. En cas de modification substantielle, nous vous en informerons par email ou via une notification sur le site. Nous vous encourageons à consulter cette page régulièrement pour rester informé de nos pratiques en matière de gestion des cookies.</p>
-        </section>
-
-        <section>
-            <h2>9. Contact</h2>
-            <p>Si vous avez des questions concernant cette politique sur les cookies, vous pouvez nous contacter par email à l'adresse suivante : <strong>contact@tripsandroads.com</strong>.</p>
+            <h2>6. Contact</h2>
+            <p>Pour toute question relative à notre utilisation des cookies, vous pouvez nous contacter via notre <a href="contact.php" style="color:#BF092F;">formulaire de contact</a> ou consulter notre <a href="politique.php" style="color:#BF092F;">Politique de Confidentialité</a>.</p>
         </section>
     </div>
 </main>
