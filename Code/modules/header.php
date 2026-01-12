@@ -13,7 +13,7 @@
 <header>
     <nav>
         <ul>
-            <li class="nav-item" >
+            <li class="nav-item">
                 <div class="bar_rech">
                     <input type="search" id="searchInput" class="search-input" placeholder="Recherche..." autocomplete="off">
                     <table class="search-results" id="results-table">
@@ -90,7 +90,7 @@
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
                         </span>
-                    <li class = "nav-item">                     
+                    <li class = "nav-item" id="link_Deco">                     
                     <a class = "pp_logout" href="/logout.php">
                         <i class="material-icons">logout</i>
                         <span>Déconnexion</span>

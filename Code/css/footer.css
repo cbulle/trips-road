@@ -124,6 +124,14 @@ footer .footer-links > li > a:hover {
   
   footer .footer-links > li > a {
     transform-origin: center;
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+}
+
+@media(max-width: 426px){
+  
+  
+  footer .footer-links > li > a {
+    font-size: 1.5rem;
   }
 }
