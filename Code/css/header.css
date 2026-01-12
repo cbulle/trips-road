@@ -308,7 +308,7 @@ header nav > ul > div span {
 .ul_burger {
   position: absolute; 
   top: 140px;
-  left: -100%;
+  left: -150%;
   width: 385px;
   min-height: 100vh; 
   height: 100%;   
