@@ -8,10 +8,11 @@ body {
     margin: 40px auto;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: 280px 1fr; /* Sidebar fixe, contenu flexible */
+    grid-template-columns: 280px 1fr;
     gap: 30px;
     align-items: start;
     font-size: 1.2rem;
+    color: var(--noir);
 }
 
 /* --- Sidebar --- */
@@ -19,6 +20,7 @@ body {
     background: var(--beige_fonce);
     padding : 20px;
     border-radius: 13px;
+    height: 600px;
 }
 
 .user-brief {
@@ -28,8 +30,9 @@ body {
 
 .user-brief h3 {
     margin-top: 10px;
-    color: var(--bleu_fonce);
+    color: var(--bleu_fonce_ecriture);
     font-size: 1.33rem;
+    
 }
 
 .profil-nav ul {
@@ -45,10 +48,12 @@ body {
     display: block;
     padding: 12px 15px;
     text-decoration: none;
-    color: var(--gris_fonce);
+    color: var(--bleu_fonce_ecriture);
     border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     font-weight: 500;
     transition: all 0.3s ease;
+    text-align: center;
 }
 
 .profil-nav a:hover {
@@ -83,7 +88,7 @@ body {
 }
 
 .card-header h1 {
-    color: var(--bleu_fonce);
+    color: var(--bleu_fonce_ecriture);
     margin-bottom: 5px;
     font-size: 1.8rem;
 }
@@ -175,7 +180,7 @@ body {
 
 label {
     font-weight: 600;
-    color: var(--gris_fonce);
+    color: var(--bleu_fonce_ecriture);
     margin-bottom: 8px;
 }
 
