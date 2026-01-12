@@ -86,7 +86,8 @@ require_once __DIR__ . '/formulaire/form_amis.php';
                                              class="ami-photo" alt="Photo">
                                     <?php else: ?>
                                         <div class="ami-placeholder">
-                                            <?= strtoupper(substr($ami['prenom'], 0, 1)) ?>
+                                            <?= strtoupper(substr($ami['prenom'], 0, 1)),
+                                                strtoupper(substr($ami['nom'], 0, 1)) ?>
                                         </div>
                                     <?php endif; ?>
                                     <span><?= htmlspecialchars($ami['nom'] . ' ' . $ami['prenom']) ?></span>
