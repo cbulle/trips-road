@@ -59,3 +59,23 @@ document.addEventListener('click', function(event) {
         closeShareModal();
     }
 });
+
+/*==================================
+    partage du lien MesRoadTrips
+================================*/
+
+function closeShareModal() {
+    document.getElementById('shareModal').style.display = 'none';
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+function copyShareUrl() {
+    const copyText = document.getElementById("shareUrl");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); 
+    navigator.clipboard.writeText(copyText.value).then(() => {
+        const successMsg = document.getElementById("copySuccess");
+        successMsg.style.display = "block";
+        setTimeout(() => { successMsg.style.display = "none"; }, 2000);
+    });
+}
