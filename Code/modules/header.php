@@ -123,7 +123,8 @@
                 <li><a href="../favoris.php">Favoris</a></li>
                 <li><a href="../historique.php">Historique</a></li>
                 <li><a href="../profil.php">Paramètres de compte</a></li>
-                <li><a href="..//page_link/faq.php">Aide / FAQ</a></li>
+                <li><a href="../page_link/faq.php">Aide / FAQ</a></li>
+                <li><a href="../historique.php">Historique</a></li>               
                 <li><a href="../page_link/contact.php">À propos / Contact</a></li>
                 <li><a href="/logout.php">Déconnexion</a></li>
 

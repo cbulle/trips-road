@@ -3,60 +3,95 @@ require_once __DIR__ . '/include/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
 include_once __DIR__ . '/fonctions/InfoItineraire.php';
 
-$id_roadtrip = $_GET['id'] ?? null;
+// --- FONCTIONS DE GÉOCODAGE (Version optimisée) ---
 
-// On suppose que tu as récupéré l'ID du road trip dans une variable, par exemple $roadtrip_id ou $_GET['id']
-$current_roadtrip_id = $_GET['id'] ?? null;
+function getCoordonneesDepuisFavoris($nomLieu, $id_utilisateur, $pdo) {
+    $stmt = $pdo->prepare("SELECT latitude, longitude FROM lieux_favoris WHERE nom_lieu = :nom AND id_utilisateur = :uid LIMIT 1");
+    $stmt->execute(['nom' => $nomLieu, 'uid' => $id_utilisateur]);
+    $favori = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Enregistrement dans l'historique si l'utilisateur est connecté et que l'ID existe
-if ($current_roadtrip_id && isset($_SESSION['utilisateur']['id'])) {
-    try {
-        $uid = $_SESSION['utilisateur']['id'];
-        
-        // 1. On supprime une éventuelle ancienne visite de ce même road trip pour cet utilisateur
-        // (Pour éviter les doublons et faire remonter le road trip en haut de liste)
-        $stmtHistory = $pdo->prepare("DELETE FROM historique WHERE id_utilisateur = :uid AND id_roadtrip = :rid");
-        $stmtHistory->execute(['uid' => $uid, 'rid' => $current_roadtrip_id]);
-        
-        // 2. On insère la nouvelle visite avec la date actuelle
-        $stmtHistory = $pdo->prepare("INSERT INTO historique (id_utilisateur, id_roadtrip, date_visite) VALUES (:uid, :rid, NOW())");
-        $stmtHistory->execute(['uid' => $uid, 'rid' => $current_roadtrip_id]);
-        
-    } catch (Exception $e) {
-        // On ne bloque pas l'affichage de la page si l'historique plante
+    if ($favori) {
+        return [
+            'lat' => $favori['latitude'],
+            'lon' => $favori['longitude']
+        ];
     }
+    return null;
 }
 
-if (!$id_roadtrip) {
-    header('Location: /index.php');
-    exit;
+function geocoderVilleEnDirect($nomVille, $pdo) {
+    if (empty($nomVille)) return null;
+
+    $query = urlencode($nomVille);
+    $url = "https://nominatim.openstreetmap.org/search?q={$query}&format=json&limit=1&accept-language=fr";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, "SaeRoadTripApp_PublicView");
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    // Fix SSL pour compatibilité maximale
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    $json = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode === 200 && $json) {
+        $data = json_decode($json, true);
+        if (!empty($data) && isset($data[0])) {
+            $lat = $data[0]['lat'];
+            $lon = $data[0]['lon'];
+            try {
+                $stmt = $pdo->prepare("INSERT IGNORE INTO lieux_geocodes (nom, lat, lon, date_last_use) VALUES (?, ?, ?, NOW())");
+                $stmt->execute([trim($nomVille), $lat, $lon]);
+            } catch (Exception $e) {}
+            return ['lat' => $lat, 'lon' => $lon];
+        }
+    }
+    return null;
 }
 
-$stmt = $pdo->prepare("SELECT * FROM roadtrip WHERE id = ? AND visibilite = 'public'");
+// --- LOGIQUE DE RÉCUPÉRATION ---
+
+$id_roadtrip = $_GET['id'] ?? null;
+if (!$id_roadtrip) { header("Location: index.php"); exit; }
+
+// 1. Récupération Roadtrip avec vérification "Public"
+// On récupère aussi le pseudo de l'auteur
+$sql = "SELECT r.*, u.pseudo, u.photo_profil 
+        FROM roadtrip r 
+        JOIN utilisateurs u ON r.id_utilisateur = u.id 
+        WHERE r.id = ?";
+$stmt = $pdo->prepare($sql);
 $stmt->execute([$id_roadtrip]);
 $roadTrip = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$roadTrip) { 
-    echo "<div style='text-align:center; margin-top:50px; color:#BF092F;'>
-            <h2>Oups !</h2>
-            <p>Ce Road Trip est introuvable ou n'est pas public.</p>
-            <a href='/index.php'>Retour à l'accueil</a>
-          </div>"; 
-    exit; 
+if (!$roadTrip) { die("Road trip introuvable."); }
+
+// Sécurité : Si ce n'est pas public et que je ne suis pas l'auteur -> Dehors
+$isMyRoadTrip = (isset($_SESSION['utilisateur']['id']) && $_SESSION['utilisateur']['id'] == $roadTrip['id_utilisateur']);
+if ($roadTrip['visibilite'] !== 'public' && !$isMyRoadTrip) {
+    die("Ce road trip est privé.");
 }
 
+// 2. Récupération Trajets
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $etapes = [];
-$jsMapData = []; 
+$jsMapData = [];
 
+// 3. Boucle de préparation des données (IDENTIQUE A VUROADTRIP)
 foreach ($trajets as $trajet) {
+    // Récup sous-étapes
     $stmt = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero");
     $stmt->execute([$trajet['id']]);
     $sousEtapes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // Récup photos pour chaque sous-étape
     foreach ($sousEtapes as &$se) {
         $stmtPhoto = $pdo->prepare("SELECT * FROM sous_etape_photos WHERE sous_etape_id = ?");
         $stmtPhoto->execute([$se['id']]);
@@ -66,35 +101,53 @@ foreach ($trajets as $trajet) {
     
     $etapes[$trajet['id']] = $sousEtapes;
 
+    // Géocodage Départ / Arrivée
+    // Note: En mode public, on n'utilise pas les favoris du visiteur pour géocoder les points de l'auteur.
+    // On tape directement dans le Cache ou l'API.
+    
     $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
-    $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
+    if (!$coordsDep) $coordsDep = geocoderVilleEnDirect($trajet['depart'], $pdo);
 
-    if ($coordsDep && $coordsArr) {
-        $sousEtapesCoords = [];
-        foreach ($sousEtapes as $se) {
-            if (!empty($se['ville'])) {
-                $coords = getCoordonneesDepuisCache($se['ville'], $pdo);
-                if ($coords) {
-                    $sousEtapesCoords[] = [
-                        'lat' => $coords['lat'],
-                        'lon' => $coords['lon'],
-                        'nom' => $se['ville'],
-                        'heure' => $se['heure'] ?? '',
-                        'remarque' => $se['description'] ?? ''
-                    ];
-                }
+    $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
+    if (!$coordsArr) $coordsArr = geocoderVilleEnDirect($trajet['arrivee'], $pdo);
+
+    // Géocodage Sous-étapes
+    $sousEtapesCoords = [];
+    foreach ($sousEtapes as $se) {
+        if (!empty($se['ville'])) {
+            $coords = getCoordonneesDepuisCache($se['ville'], $pdo);
+            if (!$coords) $coords = geocoderVilleEnDirect($se['ville'], $pdo);
+
+            if ($coords) {
+                $sousEtapesCoords[] = [
+                    'lat' => $coords['lat'],
+                    'lon' => $coords['lon'],
+                    'nom' => $se['ville'],
+                    'heure' => $se['heure'] ?? '',
+                    'remarque' => $se['description'] ?? ''
+                ];
             }
         }
-
-        $jsMapData[$trajet['id']] = [
-            'id' => $trajet['id'],
-            'titre' => $trajet['titre'],
-            'mode' => strtolower($trajet['mode_transport']),
-            'depart' => ['lat' => $coordsDep['lat'], 'lon' => $coordsDep['lon'], 'nom' => $trajet['depart']],
-            'arrivee' => ['lat' => $coordsArr['lat'], 'lon' => $coordsArr['lon'], 'nom' => $trajet['arrivee']],
-            'sousEtapes' => $sousEtapesCoords 
-        ];
     }
+
+    $jsMapData[] = [ 
+        'id' => $trajet['id'],
+        'titre' => $trajet['titre'],
+        'mode' => strtolower($trajet['mode_transport']),
+        'depart' => [
+            'lat' => $coordsDep ? $coordsDep['lat'] : null, 
+            'lon' => $coordsDep ? $coordsDep['lon'] : null, 
+            'nom' => $trajet['depart']
+        ],
+        'arrivee' => [
+            'lat' => $coordsArr ? $coordsArr['lat'] : null, 
+            'lon' => $coordsArr ? $coordsArr['lon'] : null, 
+            'nom' => $trajet['arrivee']
+        ],
+        'heure_depart' => $trajet['heure_depart'],
+        'sousEtapes' => $sousEtapesCoords,
+        'hasCoords' => ($coordsDep && $coordsArr) ? true : false
+    ];
 }
 
 function getTransportIcon($type) {
@@ -110,13 +163,20 @@ function getTransportIcon($type) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($roadTrip['titre']); ?></title>
-    
+    <title><?php echo htmlspecialchars($roadTrip['titre']); ?> - Trips & Roads</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    
     <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .tinymce-content img { max-width: 100%; height: auto; }
+        .photos-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .popup-photo { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; cursor: pointer; transition: transform 0.2s; }
+        .popup-photo:hover { transform: scale(1.1); }
+        .author-info { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-style: italic; color: #666; }
+        .author-pp { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+    </style>
 </head>
 <body>
 
@@ -125,15 +185,16 @@ function getTransportIcon($type) {
 <div class="roadtrip-vu">
     <div class="roadtrip-header">
         <h1><?php echo htmlspecialchars($roadTrip['titre']); ?></h1>
-        <p><?php echo nl2br(htmlspecialchars($roadTrip['description'])); ?></p>
-        <div style="margin-top:10px;">
-            <span style="background:#2E8B57; color:white; padding:5px 10px; border-radius:15px; font-size:0.9em;">
-                🌍 Road Trip Public
-            </span>
+        <div class="author-info">
+            <?php if(!empty($roadTrip['photo_profil'])): ?>
+                <img src="uploads/pp/<?php echo htmlspecialchars($roadTrip['photo_profil']); ?>" class="author-pp" alt="Auteur">
+            <?php endif; ?>
+            <span>Proposé par <strong><?php echo htmlspecialchars($roadTrip['pseudo']); ?></strong></span>
         </div>
+        <p><?php echo nl2br($roadTrip['description']); ?></p>
     </div>
 
-    <h2>Vue d'ensemble du Road Trip 🌍</h2>
+    <h2>Vue d'ensemble 🌍</h2>
     <div id="map-global"></div>
     
     <?php foreach ($trajets as $t) : ?>
@@ -142,7 +203,6 @@ function getTransportIcon($type) {
             <div class="trajet-header" onclick="toggleTrajet(<?php echo $t['id']; ?>)">
                 <div class="trajet-info">
                     <h2 class="trajet-titre"><?php echo htmlspecialchars($t['depart'] . ' ➝ ' . $t['arrivee']); ?></h2>
-                    
                     <div class="trajet-details">
                         <?php if (!empty($t['date_trajet'])) : ?>
                             <div class="trajet-detail-item">
@@ -162,19 +222,24 @@ function getTransportIcon($type) {
                 <div class="trajet-details-column">
                     <?php 
                     $listeEtapes = $etapes[$t['id']] ?? [];
-
+                    // Construction Timeline
                     $timeline = [];
-                    $timeline[] = ['ville' => $t['depart'], 'is_departure' => true];
+                    $timeline[] = ['ville' => $t['depart'], 'is_departure' => true, 'heure_depart' => $t['heure_depart'] ?? null];
                     foreach ($listeEtapes as $etape) { $timeline[] = $etape; }
-                    $timeline[] = ['ville' => $t['arrivee'], 'is_arrival' => true]; 
+                    $timeline[] = ['ville' => $t['arrivee'], 'is_arrival' => true];
                     
                     for ($i = 0; $i < count($timeline); $i++) :
                         $step = $timeline[$i];
                         $villeNom = $step['ville'] ?? $step['nom'] ?? 'Étape';
                         $isDeparture = isset($step['is_departure']);
                         $isArrival = isset($step['is_arrival']);
+                        $pauseDuration = $step['heure'] ?? '00:00';
                     ?>
-                        <div class="sous-etape-card <?php echo $isDeparture ? 'depart-card' : ($isArrival ? 'arrivee-card' : ''); ?>">
+                        <div class="sous-etape-card <?php echo $isDeparture ? 'depart-card' : ($isArrival ? 'arrivee-card' : ''); ?>" 
+                             data-is-departure="<?php echo $isDeparture ? '1' : '0'; ?>"
+                             data-is-arrival="<?php echo $isArrival ? '1' : '0'; ?>"
+                             data-pause="<?php echo htmlspecialchars($pauseDuration); ?>"
+                             data-step-index="<?php echo $i; ?>">
                             <div class="sous-etape-header">
                                 <h3>
                                     <?php 
@@ -184,12 +249,21 @@ function getTransportIcon($type) {
                                     echo htmlspecialchars($villeNom); 
                                     ?>
                                 </h3>
+                                <div class="horaire-info">
+                                    <?php if ($isDeparture && !empty($t['heure_depart'])): ?>
+                                        <span class="horaire-depart">🕐 Départ : <strong><?php echo htmlspecialchars($t['heure_depart']); ?></strong></span>
+                                    <?php else: ?>
+                                        <span class="horaire-calcule" data-type="<?php echo $isArrival ? 'arrivee' : 'etape'; ?>">
+                                            <span class="horaire-loader">⏱️ Calcul...</span>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
 
                             <?php if (!$isDeparture && !$isArrival): ?>
                                 <div class="sous-etape-info">    
                                     <?php if (!empty($step['heure'])) : ?>
-                                        <span>🕐 <?php echo htmlspecialchars($step['heure']); ?></span>
+                                        <span class="pause-duree">⏰ Temps sur place : <strong><?php echo htmlspecialchars($step['heure']); ?></strong></span>
                                     <?php endif; ?>
                                 </div>
                                 
@@ -216,12 +290,13 @@ function getTransportIcon($type) {
                         </div>
                         
                         <?php 
+                        // Segment de transport
                         if ($i < count($timeline) - 1) :
                             $nextStep = $timeline[$i + 1];
                             $nextVilleNom = $nextStep['ville'] ?? $nextStep['nom'] ?? 'Étape';
                             
-                            $coordsFrom = getCoordonneesDepuisCache($villeNom, $pdo);
-                            $coordsTo = getCoordonneesDepuisCache($nextVilleNom, $pdo);
+                            $coordsFrom = getCoordonneesDepuisCache($villeNom, $pdo) ?: geocoderVilleEnDirect($villeNom, $pdo);
+                            $coordsTo = getCoordonneesDepuisCache($nextVilleNom, $pdo) ?: geocoderVilleEnDirect($nextVilleNom, $pdo);
                             
                             if ($coordsFrom && $coordsTo) :
                         ?>
@@ -243,21 +318,13 @@ function getTransportIcon($type) {
                             endif;
                         endif; 
                         ?>
-                        
                     <?php endfor; ?>
                 </div> 
                 
                 <div id="map-trajet-<?php echo $t['id']; ?>" class="map-trajet"></div>
-
             </div>
         </div>
     <?php endforeach; ?>    
-</div>
-
-<div id="imageModal" class="image-modal">
-    <div class="image-modal-content">
-        <img id="imageModalContent" style="width:100%; height:auto; border-radius:10px;">
-    </div>
 </div>
 
 <?php include_once __DIR__ . "/modules/footer.php"; ?>
@@ -266,25 +333,9 @@ function getTransportIcon($type) {
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 <script>
+    // Passage des données PHP vers JS
     const roadTripData = <?php echo json_encode($jsMapData); ?>;
-    
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('popup-photo')) {
-            const modal = document.getElementById('imageModal');
-            const img = document.getElementById('imageModalContent');
-            if(modal && img) {
-                modal.style.display = 'block';
-                img.src = e.target.src;
-            }
-        }
-        const modal = document.getElementById('imageModal');
-        if(modal && e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
 </script>
-
-<script src="js/vuRoadTrip.js"></script>
-
+<script src="js/roadtrip.js"></script> 
 </body>
 </html>

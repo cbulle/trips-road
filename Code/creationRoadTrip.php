@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php'; // Pour charger les données si mode édition
+include_once __DIR__ . '/bd/lec_bd.php'; 
 
 // Vérification connexion
 if (!isset($_SESSION['utilisateur']['id'])) {
@@ -15,7 +15,8 @@ $modeEdition = false;
 $roadTripData = null;
 $existingTrajets = [];
 $existingVilles = [];
-$isPublished = false;
+// $isPublished n'est plus nécessaire pour bloquer l'édition, on le garde juste pour l'info si besoin
+$isPublished = false; 
 
 if (isset($_GET['id'])) {
     $id_rt = $_GET['id'];
@@ -27,12 +28,12 @@ if (isset($_GET['id'])) {
     $roadTripData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($roadTripData) {
-      // **VÉRIFIER SI LE ROADTRIP EST DÉJÀ PUBLIÉ**
+      
+      // --- MODIFICATION ICI ---
+      // J'ai supprimé le bloc qui redirigeait vers vuRoadTrip.php si le statut était 'termine'.
+      // Maintenant, on peut éditer peu importe le statut.
       if ($roadTripData['statut'] === 'termine') {
         $isPublished = true;
-        // Rediriger vers la page de visualisation
-        header('Location: /vuRoadTrip.php?id=' . $id_rt);
-        exit;
       }
       
       $modeEdition = true;
@@ -48,10 +49,8 @@ if (isset($_GET['id'])) {
           $stmtS->execute([$t['id']]);
           $sousEtapes = $stmtS->fetchAll(PDO::FETCH_ASSOC);
           
-          // Construction de l'objet Trajet complet pour JS
           $trajetComplet = $t;
           
-          // S'assurer que la date est au format YYYY-MM-DD pour l'input HTML date
           if(isset($t['date']) && !isset($t['date_trajet'])) {
               $trajetComplet['date_trajet'] = date('Y-m-d', strtotime($t['date']));
           } elseif(isset($t['date_trajet'])) {
@@ -61,8 +60,8 @@ if (isset($_GET['id'])) {
           $trajetComplet['sousEtapes'] = array_map(function($se) {
               return [
                   'nom' => $se['ville'],
-                  'heure' => $se['heure'], // Format HH:MM
-                  'remarque' => $se['description'] // HTML TinyMCE
+                  'heure' => $se['heure'],
+                  'remarque' => $se['description'] 
               ];
           }, $sousEtapes);
 
@@ -82,16 +81,12 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="/css/style.css">
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- TinyMCE Open Source -->
     <script src="/js/tinymce/tinymce.min.js"></script>
-    
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
 
     <script>
         const USER_DEFAULT_CITY = "<?php echo htmlspecialchars($defaultCity); ?>";
-        // Injection des données PHP vers JS pour l'édition
         const MODE_EDITION = <?php echo $modeEdition ? 'true' : 'false'; ?>;
         const EXISTING_ROADTRIP = <?php echo $modeEdition ? json_encode($roadTripData) : 'null'; ?>;
         const EXISTING_TRAJETS = <?php echo $modeEdition ? json_encode($existingTrajets) : '[]'; ?>;
@@ -109,7 +104,6 @@ if (isset($_GET['id'])) {
         <div id="legend" style="display: block;">
           <h3>Itinéraire :</h3>
           <ul id="legendList" style="list-style:none; padding:0;"></ul>
-          
           <div id="newBlockForm"></div>
         </div>
 
@@ -120,7 +114,7 @@ if (isset($_GET['id'])) {
         <hr>
 
         <div id="saveContainer">
-          <h3>Sauvegarde</h3>
+          <h3>Sauvegarde & Paramètres</h3>
           
           <input type="text" id="roadtripTitle" placeholder="Titre du RoadTrip" 
                  value="<?php echo $modeEdition ? htmlspecialchars($roadTripData['titre']) : ''; ?>"
@@ -130,19 +124,22 @@ if (isset($_GET['id'])) {
                     style="width:100%;box-sizing:border-box;margin-bottom:6px;"><?php echo $modeEdition ? htmlspecialchars($roadTripData['description']) : ''; ?></textarea>
           
           <div class="status-selector-container">
-            <label for="roadtripStatut">État du projet :</label>
-            <select id="roadtripStatut">
-                <option value="brouillon" <?php echo ($modeEdition && $roadTripData['statut'] == 'brouillon') ? 'selected' : ''; ?>>📝 Brouillon (Non fini)</option>
-                <option value="termine" <?php echo ($modeEdition && $roadTripData['statut'] == 'termine') ? 'selected' : ''; ?>>✅ Terminé (Prêt à publier)</option>
+            <label for="roadtripStatut" style="font-weight:bold;">Avancement du projet :</label>
+            <select id="roadtripStatut" style="width:100%; margin-bottom:10px;">
+                <option value="brouillon" <?php echo ($modeEdition && $roadTripData['statut'] == 'brouillon') ? 'selected' : ''; ?>>📝 En cours de création (Brouillon)</option>
+                <option value="termine" <?php echo ($modeEdition && $roadTripData['statut'] == 'termine') ? 'selected' : ''; ?>>✅ Projet terminé</option>
             </select>
           </div>
 
-          <label>Visibilité (si terminé) :</label>
+          <label for="roadtripVisibilite" style="font-weight:bold;">Qui peut voir ce RoadTrip ?</label>
           <select id="roadtripVisibilite" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
             <option value="prive" <?php echo ($modeEdition && $roadTripData['visibilite'] == 'prive') ? 'selected' : ''; ?>>🔒 Privé (Moi seul)</option>
             <option value="amis" <?php echo ($modeEdition && $roadTripData['visibilite'] == 'amis') ? 'selected' : ''; ?>>👥 Amis</option>
-            <option value="public" <?php echo ($modeEdition && $roadTripData['visibilite'] == 'public') ? 'selected' : ''; ?>>🌍 Public</option>
+            <option value="public" <?php echo ($modeEdition && $roadTripData['visibilite'] == 'public') ? 'selected' : ''; ?>>🌍 Public (Tout le monde)</option>
           </select>
+          <small style="display:block; margin-bottom:10px; color:#666;">
+            * Vous pouvez partager un brouillon en mode "Amis" ou "Public".
+          </small>
 
           <label>Couverture du Road Trip :</label>
           <?php if($modeEdition && !empty($roadTripData['photo'])): ?>

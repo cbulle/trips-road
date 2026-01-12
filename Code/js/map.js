@@ -201,19 +201,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statusSelect = document.getElementById('roadtripStatut');
     const visibilitySelect = document.getElementById('roadtripVisibilite');
 
-    function updateVisibilityState() {
-        if(statusSelect && visibilitySelect) {
-            if (statusSelect.value === 'brouillon') {
-                visibilitySelect.value = 'prive';
-                visibilitySelect.disabled = true;
-            } else {
-                visibilitySelect.disabled = false;
-            }
-        }
+    if(visibilitySelect) {
+        visibilitySelect.disabled = false;
     }
+    
     if(statusSelect) {
-        statusSelect.addEventListener('change', updateVisibilityState);
-        updateVisibilityState(); 
+        statusSelect.addEventListener('change', () => {
+             if(visibilitySelect) visibilitySelect.disabled = false;
+        });
     }
 
     // ============================================================
