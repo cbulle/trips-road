@@ -26,34 +26,34 @@
                 </div>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" id="link_access">
                 <a href="/accessibilite.php">
                     <i class="material-icons">settings_accessibility</i>
                     <span>Paramètres</span>
                 </a>
             </li>
 
-            <li class="title">
+            <li class="title" id="link_Titre">
                 <a href="/index.php" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>Trips & Roads</a>
             </li>
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
 
-                <li class="nav-item">
+                <li class="nav-item" id="link_Chat">
                     <a href="/messagerie.php">
                         <i class="material-icons">chat_bubble</i>
                         <span>Messagerie</span>
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" id="link_Amis">
                     <a href="/amis.php">
                         <i class="material-icons">group</i>
                         <span>Amis</span>
                     </a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" id="link_Crea">
                     <a href="/creationRoadTrip.php" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
                         <i class="material-icons">add_box</i>
                         <span>Créer un Road-Trip</span>
@@ -63,7 +63,7 @@
             <?php endif; ?>
 
             
-            <li class="nav-item">
+            <li class="nav-item" id="link_PP">
                 <?php if (isset($_SESSION['utilisateur'])): ?>
 
                     <span class="profil-box"> 
@@ -90,7 +90,7 @@
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
                         </span>
-                    <li class = "nav-item">                     
+                    <li class = "nav-item" id="link_Deco">                     
                     <a class = "pp_logout" href="/logout.php">
                         <i class="material-icons">logout</i>
                         <span>Déconnexion</span>
@@ -120,7 +120,6 @@
 
                 <li><a href="../Roadtrip.php">Roads-Trips</a></li>
                 <li><a href="../mesRoadTrips.php">Mes Roads-Trips</a></li>
-                <li><a href="../historique.php">Historique</a></li>
                 <li><a href="../favoris.php">Favoris</a></li>
                 <li><a href="../profil.php">Paramètres de compte</a></li>
                 <li><a href="..//page_link/faq.php">Aide / FAQ</a></li>

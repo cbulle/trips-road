@@ -5,6 +5,28 @@ include_once __DIR__ . '/fonctions/InfoItineraire.php';
 
 $id_roadtrip = $_GET['id'] ?? null;
 
+// On suppose que tu as récupéré l'ID du road trip dans une variable, par exemple $roadtrip_id ou $_GET['id']
+$current_roadtrip_id = $_GET['id'] ?? null;
+
+// Enregistrement dans l'historique si l'utilisateur est connecté et que l'ID existe
+if ($current_roadtrip_id && isset($_SESSION['utilisateur']['id'])) {
+    try {
+        $uid = $_SESSION['utilisateur']['id'];
+        
+        // 1. On supprime une éventuelle ancienne visite de ce même road trip pour cet utilisateur
+        // (Pour éviter les doublons et faire remonter le road trip en haut de liste)
+        $stmtHistory = $pdo->prepare("DELETE FROM historique WHERE id_utilisateur = :uid AND id_roadtrip = :rid");
+        $stmtHistory->execute(['uid' => $uid, 'rid' => $current_roadtrip_id]);
+        
+        // 2. On insère la nouvelle visite avec la date actuelle
+        $stmtHistory = $pdo->prepare("INSERT INTO historique (id_utilisateur, id_roadtrip, date_visite) VALUES (:uid, :rid, NOW())");
+        $stmtHistory->execute(['uid' => $uid, 'rid' => $current_roadtrip_id]);
+        
+    } catch (Exception $e) {
+        // On ne bloque pas l'affichage de la page si l'historique plante
+    }
+}
+
 if (!$id_roadtrip) {
     header('Location: /index.php');
     exit;

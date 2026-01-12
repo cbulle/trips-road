@@ -64,7 +64,7 @@ include_once __DIR__ . "/modules/header.php"
 
                     <p>
                     Les informations avec astérisque sont nécessaires à la création et à la gestion de votre compte 
-                    qui vous permet notamment d'être informés des nouveautés, bénéficiez d’offres
+                    qui vous permet notamment d'être informés des nouveautés, bénéficiez d'offres
                     personnalisées.<br>Pour garder le contrôle sur la façon dont nous utilisons vos données, vous pouvez à 
                     tout moment revenir sur vos choix sur la page modifier mes préférences dans votre espace client.
                     </p>

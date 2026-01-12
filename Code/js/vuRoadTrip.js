@@ -146,28 +146,23 @@ async function initStepMap(id) {
 /**
  * 3. FONCTION DE DESSIN (CŒUR DU SYSTÈME)
  */
+/**
+ * 3. FONCTION DE DESSIN (MISE À JOUR AVEC ROUTAGE SPÉCIFIQUE)
+ */
 async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
-    // 1. Conversion sécurisée
     const latDep = parseFloat(data.depart.lat);
     const lonDep = parseFloat(data.depart.lon);
     const latArr = parseFloat(data.arrivee.lat);
     const lonArr = parseFloat(data.arrivee.lon);
 
-    // Sécurité anti-crash : Si une coordonnée est invalide (NaN), on arrête
-    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) {
-        console.error("Coordonnées invalides pour le trajet:", data.titre);
-        return;
-    }
+    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) return;
 
     let stepCounter = 1;
-
-    // Création des marqueurs
     createNumberedMarker(map, latDep, lonDep, stepCounter++, color, `<b>Départ:</b> ${data.depart.nom}`, useOffset ? 'left' : null, clusterGroup);
 
     if (data.sousEtapes && data.sousEtapes.length > 0) {
         data.sousEtapes.forEach((se) => {
-            const sLat = parseFloat(se.lat);
-            const sLon = parseFloat(se.lon);
+            const sLat = parseFloat(se.lat); const sLon = parseFloat(se.lon);
             if (!isNaN(sLat) && !isNaN(sLon)) {
                 let popupContent = `<b>📍 ${se.nom}</b>`;
                 if (se.heure) popupContent += `<br>🕐 ${se.heure}`;
@@ -175,59 +170,50 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
             }
         });
     }
-
     createNumberedMarker(map, latArr, lonArr, stepCounter, color, `<b>Arrivée:</b> ${data.arrivee.nom}`, useOffset ? 'right' : null, clusterGroup);
 
-    // 2. Calcul itinéraire OSRM
-    let profile = 'driving';
-    if (data.mode === 'velo' || data.mode === 'vélo') profile = 'cycling';
-    if (data.mode === 'marche' || data.mode === 'à pied') profile = 'walking';
-
+    // --- LOGIQUE DE ROUTAGE ADAPTÉE ---
+    const servers = {
+        'voiture': 'https://routing.openstreetmap.de/routed-car',
+        'velo': 'https://routing.openstreetmap.de/routed-bike',
+        'vélo': 'https://routing.openstreetmap.de/routed-bike',
+        'marche': 'https://routing.openstreetmap.de/routed-foot',
+        'à pied': 'https://routing.openstreetmap.de/routed-foot'
+    };
+    
+    const baseUrl = servers[data.mode] || servers['voiture'];
     let coordinates = `${lonDep},${latDep}`;
-    if (data.sousEtapes && data.sousEtapes.length > 0) {
+    if (data.sousEtapes) {
         data.sousEtapes.forEach(se => {
-             // On s'assure de ne pas mettre de NaN dans l'URL
-             const sLat = parseFloat(se.lat);
-             const sLon = parseFloat(se.lon);
-             if(!isNaN(sLat) && !isNaN(sLon)) {
-                 coordinates += `;${sLon},${sLat}`;
-             }
+            if(!isNaN(parseFloat(se.lat))) coordinates += `;${se.lon},${se.lat}`;
         });
     }
     coordinates += `;${lonArr},${latArr}`;
 
-    const url = `https://router.project-osrm.org/route/v1/${profile}/${coordinates}?overview=full&geometries=geojson`;
+    // On utilise "driving" comme action sur ces serveurs car le profil est déjà dans l'URL du serveur
+    const url = `${baseUrl}/route/v1/driving/${coordinates}?overview=full&geometries=geojson`;
 
     try {
         const response = await fetch(url);
         const json = await response.json();
-        let geoData;
-
+        
         if (json.code === 'Ok') {
-            geoData = json.routes[0].geometry;
-        } else {
-            console.warn("OSRM fallback (ligne droite) pour:", data.titre);
-            geoData = {
-                "type": "LineString",
-                "coordinates": [[lonDep, latDep], [lonArr, latArr]]
-            };
+            const routeLayer = L.geoJSON(json.routes[0].geometry, {
+                style: { 
+                    color: color, 
+                    weight: 5, 
+                    opacity: 0.8,
+                    // Style : pointillés pour vélo/marche pour bien les différencier
+                    dashArray: (data.mode !== 'voiture') ? '10, 10' : null 
+                }
+            }).addTo(map);
+
+            data.layerGroup = routeLayer;
+            if (fitBounds) map.fitBounds(routeLayer.getBounds(), { padding: [30, 30] });
         }
-
-        const routeLayer = L.geoJSON(geoData, {
-            style: { color: color, weight: 5, opacity: 0.8 }
-        }).addTo(map);
-
-        data.layerGroup = routeLayer;
-
-        if (fitBounds) {
-            map.fitBounds(routeLayer.getBounds(), { padding: [30, 30] });
-        }
-
     } catch (e) {
         console.error("Erreur trace route:", e);
-        // Fallback ligne droite visuelle
-        const line = L.polyline([[latDep, lonDep], [latArr, lonArr]], {color: color}).addTo(map);
-        if (fitBounds) map.fitBounds(line.getBounds());
+        L.polyline([[latDep, lonDep], [latArr, lonArr]], {color: color, weight: 2, dashArray: '5,5'}).addTo(map);
     }
 }
 
@@ -305,62 +291,161 @@ function checkAndToggleGlobalMap() {
     }
 }
 
+
 /* ============================================================
-   CALCULS TEXTUELS
+   CALCULS TEXTUELS ET HORAIRES
    ============================================================ */
 function calculerTousLesSegments() {
-    const segments = document.querySelectorAll('.segment-info');
-    segments.forEach((segment, index) => {
+    // Pour chaque trajet (card-vu)
+    const cards = document.querySelectorAll('.card-vu');
+    cards.forEach((card, cardIndex) => {
         // Petit délai pour ne pas spammer l'API
-        setTimeout(() => { calculerSegment(segment); }, index * 300);
+        setTimeout(() => { calculerHorairesTrajet(card); }, cardIndex * 500);
     });
 }
 
-async function calculerSegment(segment) {
-    const latDep = parseFloat(segment.dataset.latDep);
-    const lonDep = parseFloat(segment.dataset.lonDep);
-    const latArr = parseFloat(segment.dataset.latArr);
-    const lonArr = parseFloat(segment.dataset.lonArr);
-    const mode = segment.dataset.mode || 'voiture';
+async function calculerHorairesTrajet(card) {
+    const trajetId = card.id.replace('card-', '');
+    const dataTrajet = getTrajetData(trajetId);
     
-    const distEl = segment.querySelector('.segment-distance');
-    const timeEl = segment.querySelector('.segment-time');
-    
-    if (isNaN(latDep) || isNaN(lonDep) || isNaN(latArr) || isNaN(lonArr)) {
-        distEl.textContent = '-'; timeEl.textContent = '-'; return;
+    if (!dataTrajet || !dataTrajet.hasCoords) {
+        console.warn(`Trajet ${trajetId} : coordonnées manquantes`);
+        return;
     }
+
+    // Récupérer toutes les sous-étapes cards dans l'ordre
+    const etapeCards = card.querySelectorAll('.sous-etape-card');
     
-    const profiles = { 'voiture': 'driving', 'velo': 'cycling', 'vélo': 'cycling', 'marche': 'walking', 'à pied': 'walking' };
-    const profile = profiles[mode.toLowerCase()] || 'driving';
-    const url = `https://router.project-osrm.org/route/v1/${profile}/${lonDep},${latDep};${lonArr},${latArr}?overview=false`;
-    
+    // Construire la liste des coordonnées : Départ -> Sous-étapes -> Arrivée
+    let coordsPath = `${dataTrajet.depart.lon},${dataTrajet.depart.lat}`;
+    if (dataTrajet.sousEtapes && dataTrajet.sousEtapes.length > 0) {
+        dataTrajet.sousEtapes.forEach(se => {
+            coordsPath += `;${se.lon},${se.lat}`;
+        });
+    }
+    coordsPath += `;${dataTrajet.arrivee.lon},${dataTrajet.arrivee.lat}`;
+
+    // Choisir le bon profil de routage selon le mode de transport
+    let profile = 'car';
+    if (dataTrajet.mode === 'velo' || dataTrajet.mode === 'vélo') profile = 'bike';
+    if (dataTrajet.mode === 'marche' || dataTrajet.mode === 'à pied') profile = 'foot';
+
+    const url = `https://router.project-osrm.org/route/v1/${profile}/${coordsPath}?overview=false&steps=false`;
+
     try {
         const response = await fetch(url);
         const data = await response.json();
-        
-        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+
+        if (data.code === 'Ok' && data.routes && data.routes[0]) {
             const route = data.routes[0];
-            const distanceKm = (route.distance / 1000).toFixed(1);
+            let currentClock = dataTrajet.heure_depart || '08:00';
             
-            const durationSec = route.duration;
-            const heures = Math.floor(durationSec / 3600);
-            const minutes = Math.floor((durationSec % 3600) / 60);
-            let tempsTexte = "";
-            
-            if (heures > 0) {
-                tempsTexte = `${heures}h${minutes.toString().padStart(2, '0')}`;
-            } else {
-                tempsTexte = `${minutes} min`;
-            }
-            
-            distEl.textContent = `${distanceKm} km`;
-            timeEl.textContent = tempsTexte;
-            segment.classList.add('segment-calculated');
-        } else {
-            distEl.textContent = '?'; timeEl.textContent = '?';
+            // Parcourir les "legs" (tronçons entre les points)
+            route.legs.forEach((leg, legIndex) => {
+                const durationSeconds = leg.duration;
+                const distanceKm = (leg.distance / 1000).toFixed(1);
+                
+                // Ajouter le temps de route à l'heure actuelle
+                currentClock = addTime(currentClock, durationSeconds);
+                
+                // Trouver la carte correspondante (legIndex + 1 car 0 = départ)
+                const targetCard = etapeCards[legIndex + 1];
+                
+                if (targetCard) {
+                    const horaireSpan = targetCard.querySelector('.horaire-calcule');
+                    const isDeparture = targetCard.dataset.isDeparture === '1';
+                    const isArrival = targetCard.dataset.isArrival === '1';
+                    
+                    if (horaireSpan && !isDeparture) {
+                        if (isArrival) {
+                            horaireSpan.innerHTML = `🏁 Arrivée : <strong>${currentClock}</strong>`;
+                        } else {
+                            horaireSpan.innerHTML = `⏰ Arrivée : <strong>${currentClock}</strong>`;
+                            
+                            // Ajouter le temps de pause pour le calcul suivant
+                            const pauseDuration = targetCard.dataset.pause || '00:00';
+                            const departTime = addTime(currentClock, durationToSeconds(pauseDuration));
+                            
+                            // Afficher aussi l'heure de départ de cette étape
+                            if (pauseDuration !== '00:00') {
+                                horaireSpan.innerHTML += `<br><span class="horaire-depart-etape">🚀 Départ : <strong>${departTime}</strong></span>`;
+                                currentClock = departTime;
+                            }
+                        }
+                    }
+                }
+                
+                // Mettre à jour aussi le segment de transport correspondant
+                const segments = card.querySelectorAll('.segment-info');
+                if (segments[legIndex]) {
+                    const segmentInfo = segments[legIndex];
+                    segmentInfo.querySelector('.segment-distance').textContent = distanceKm + " km";
+                    
+                    // Calculer le temps de trajet en heures et minutes
+                    const hours = Math.floor(durationSeconds / 3600);
+                    const minutes = Math.floor((durationSeconds % 3600) / 60);
+                    let timeText = '';
+                    if (hours > 0) timeText += hours + 'h ';
+                    timeText += minutes + 'min';
+                    
+                    segmentInfo.querySelector('.segment-time').textContent = timeText;
+                    segmentInfo.classList.add('segment-calculated');
+                }
+            });
         }
     } catch (error) {
-        distEl.textContent = ''; timeEl.textContent = '';
+        console.error("Erreur calcul horaires:", error);
+        // En cas d'erreur, afficher un message sur les horaires
+        etapeCards.forEach(card => {
+            const horaireSpan = card.querySelector('.horaire-calcule');
+            if (horaireSpan) {
+                horaireSpan.innerHTML = '<span style="color: #999;">⚠️ Calcul indisponible</span>';
+            }
+        });
     }
 }
 
+function closeShareModal() {
+    document.getElementById('shareModal').classList.remove('active');
+    // Retirer le paramètre de l'URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+function copyShareUrl() {
+    const input = document.getElementById('shareUrl');
+    navigator.clipboard.writeText(input.value).then(() => {
+        const success = document.getElementById('copySuccess');
+        success.style.display = 'block';
+        
+        setTimeout(() => {
+            success.style.display = 'none';
+        }, 3000);
+    }).catch(err => {
+        console.error('Erreur lors de la copie du texte : ', err);
+    });
+}
+
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('shareModal');
+    if (modal && !modal.contains(event.target)) {
+        closeShareModal();
+    }
+});
+
+function addTime(startTime, secondsToAdd) {
+    if(!startTime) return "--:--";
+    const [h, m] = startTime.split(':').map(Number);
+    const date = new Date();
+    date.setHours(h, m, 0);
+    date.setSeconds(date.getSeconds() + secondsToAdd);
+    return date.getHours().toString().padStart(2, '0') + ":" + 
+           date.getMinutes().toString().padStart(2, '0');
+}
+
+// Fonction utilitaire pour convertir "HH:mm:ss" ou "HH:mm" en secondes
+function durationToSeconds(timeStr) {
+    if(!timeStr) return 0;
+    const parts = timeStr.split(':').map(Number);
+    if(parts.length === 3) return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
+    return (parts[0] * 3600) + (parts[1] * 60);
+}

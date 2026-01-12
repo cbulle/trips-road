@@ -1,29 +1,31 @@
 /* ==============================
-  FOOTER
+   FOOTER
 ============================== */
 footer {
   transition: all 0.5s ease;
   background-color: var(--bleu_fonce);
-  padding: 20px 0;
+  padding: 40px 0; 
   display: flex;
   justify-content: center; 
   margin-top: auto;
   flex-grow: 1;
-  max-height: 175px;
+  min-height: 175px; 
+  height: auto; 
 }
-
 
 .footer-container {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
+  align-items: center; 
   width: 80%; 
+  max-width: 1200px;
 }
 
 footer .image-container {
   display: flex;
   justify-content: flex-start; 
   align-items: center;
-  width: 10%; 
+  width: 15%; 
 }
 
 footer .image-container img {
@@ -31,13 +33,14 @@ footer .image-container img {
   height: auto;
   background-color: #F2E9D6;
   border-radius: 13px;
+  display: block; 
 }
 
 footer .social-media {
   display: flex;
   justify-content: center; 
   align-items: center;
-  width: 45%; 
+  width: 40%; 
   gap: 15px;
 }
 
@@ -51,6 +54,7 @@ footer .social-icon {
   justify-content: center;
   border-radius: 50%;
   font-size: 1.2rem;
+  text-decoration: none; 
   transition: all 0.3s ease;
 }
 
@@ -60,10 +64,11 @@ footer .social-icon:hover {
   transform: translateY(-5px);
 }
 
+
 footer .footer-links {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 
-  grid-gap: 20px;
+  gap: 15px; 
   width: 45%; 
 }
 
@@ -71,16 +76,62 @@ footer .footer-links li {
   list-style: none;
 }
 
-footer .footer-links>li>a {
+footer .footer-links > li > a {
   color: var(--beige);
   font-weight: bold;
-  position: absolute;
-  transition: 0.5s;
+  text-decoration: none;
+  display: inline-block; 
+  transition: transform 0.3s ease, color 0.3s ease;
+  transform-origin: left center; 
 }
-
-footer .footer-links>li>a:hover {
+footer .footer-links > li > a:hover {
   color: var(--orange);
-  font-size: 1.4rem;
+  transform: scale(1.15); 
 }
 
+/* ==============================
+   RESPONSIVE (Mobile / Tablette)
+============================== */
+@media(max-width: 768px){
+  footer {
+    padding: 40px 0;
+  }
 
+  .footer-container {
+    flex-direction: column; 
+    gap: 30px; 
+    width: 90%;
+  }
+
+
+  footer .image-container,
+  footer .social-media,
+  footer .footer-links {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    
+  }
+
+  
+  footer .footer-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 15px 30px;
+    text-align: center;
+    
+  }
+  
+  footer .footer-links > li > a {
+    transform-origin: center;
+    font-size: 2rem;
+  }
+}
+
+@media(max-width: 426px){
+  
+  
+  footer .footer-links > li > a {
+    font-size: 1.5rem;
+  }
+}

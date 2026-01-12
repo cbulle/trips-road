@@ -30,6 +30,7 @@ html.dark {
   --beige_fonce: #16476A;
   --bleu_fonce_ecriture: rgb(212, 212, 212);
   --beige_visu: #40a79c;
+  --noir : #FFFFFF
   color: black;
 }
 
@@ -37,6 +38,9 @@ html.dark {
 html.malvoyant {
   font-size: 20px;
 }
+
+
+
 
 /* Mode daltonien générique */
 html.daltonien {
@@ -143,6 +147,10 @@ h1{
   text-align: center;
 }
 
+button, input, select, textarea, label{
+    font-size: 20px;
+  }
+
 /*===================================
           Photo-Profil 
 =====================================*/
@@ -178,129 +186,6 @@ h1{
   right : 32px ;
 }
 
-/* ==============================
-  NAVBAR / HEADER
-============================== */
-
-header {
-  background-color: var(--bleu_fonce);
-  transition: all 0.5s ease;
-}
-
-header>nav {
-  padding-bottom: 10px;
-}
-header nav > ul {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  padding-top: 50px;
-  list-style: none;
-}
-
-header nav > ul > li > a > img {
-  width: 100%;
-  max-width: 75px;
-  height: auto;
-  border-radius: 50%;
-  position: relative;
-  right: -50px;
-}
-
-.title>a{
-  color: var(--beige);
-  list-style: none;
-  font-size: 3rem;
-}
-
-header nav > ul > div > li > a {
-  color: var(--beige);
-  text-decoration: none;
-}
-
-/* ==============================
-  NAV ITEM STYLE
-============================== */
-
-header nav > ul > div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin: 0 10px;
-}
-
-header nav > ul > div span {
-  margin-top: 5px;
-  font-size: 1rem;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 20px;
-}
-
-.nav-item i {
-  font-size: 2rem;
-  margin-bottom: 5px;
-}
-
-.nav-item span {
-  display: block;
-  font-size: 1rem;
-}
-
-.nav-item a {
-  color: var(--beige); 
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.5s ease;
-  position: absolute;
-  top: 82px;
-}
-
-.nav-item a > i {
-  color: var(--beige); 
-  transition: all 0.5s ease;
-  position: absolute;
-  bottom: 15px;
-}
-
-.nav-item a:hover {
-  color: var(--orange); 
-}
-
-.nav-item a:hover > i {
-  font-size: 2.5rem;
-  color: var(--orange);
-  transition: all 0.5s ease;
-}
-
-.nav-item a:hover > span {
-  font-weight: bold;
-  font-size: 1.2rem; 
-  color: var(--orange);
-  transition: all 0.5s ease;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 0 10px;
-}
-
-.nav-item span {
-  margin-top: 5px;
-  font-size: 1rem;
-}
-
-
 
 /* ==============================
   STYLE DANS DES INPUTS DANS LA SIDE-BAR
@@ -314,7 +199,8 @@ header nav > ul > div span {
 .TitreRT{
   color: var(--beige);
   background-color: var(--bleu_clair);
-  padding : 15px;  
+  padding : 15px;
+  margin-bottom: 15px; 
 }
 
 
@@ -395,7 +281,6 @@ header nav > ul > div span {
 
 /* ==============================
    STYLE DU FORMULAIRE "AJOUTER UN TRAJET"
-   (Genere dynamiquement en JS)
 ============================== */
 
 /* Conteneur de chaque champ */
@@ -1939,42 +1824,175 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 .status-selector-container select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 10px;
-    border: 1px solid var(--orange);
-    font-weight: bold;
+  width: 100%;
+  padding: 10px 14px; /* Ajusté pour correspondre aux inputs */
+  border-radius: 15px; /* Ajusté à 15px */
+  border: 1px solid var(--orange);
+  font-weight: bold;
+  background-color: white;
 }
 
+/* ==============================
+  STYLE AUTOCOMPLETE PHOTO/CSS
+============================== */
+.ui-autocomplete {
+    background: var(--white) !important;
+    border: 2px solid var(--bleu_clair) !important;
+    border-radius: 15px !important; /* Harmonisé avec sidebar */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    z-index: 9999 !important;
+    max-width: 400px;
+}
 
+.ui-menu-item-content {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
 
+.ui-menu-item-name {
+    font-weight: bold;
+    color: var(--bleu_fonce);
+    font-size: 0.95rem;
+}
+
+.ui-menu-item-details {
+    font-size: 0.75rem;
+    color: var(--gris_clair);
+    margin-top: 2px;
+}
+
+.ui-menu-item:hover, .ui-state-active {
+    background-color: var(--beige) !important;
+    border: none !important;
+}
+
+.ui-menu-item:hover .ui-menu-item-name, 
+.ui-state-active .ui-menu-item-name {
+    color: var(--orange) !important;
+}
+
+/* ==============================
+   RESPONSIVE (TABLETTE & MOBILE)
+   Passage en colonne : Formulaire en haut, Carte en bas
+============================== */
 @media (max-width: 1024px) {
-  .sidebar{
-    width: 30%;
+
+  .main-container {
+    flex-direction: column; 
+    padding: 10px;
+    gap: 0;
+  }
+
+  .sidebar {
+    width: 100%; 
+    max-width: 100%;
+    margin-bottom: 20px; 
+    box-sizing: border-box;
+    order: 1; 
+  }
+
+  .segment-form-container, 
+  #segmentFormContainer {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    order: 2; /
+  }
+
+  .map-container {
+    width: 100%;
+    position: relative; 
+    top: auto;
+    order: 3; 
+    z-index: 1;
+  }
+
+  #map {
+    height: 60vh; 
+    min-height: 400px; 
+    border-radius: 10px;
+  }
+
+  .sidebar select, 
+  .sidebar input, 
+  .sidebar textarea,
+  .sidebar button ,
+  .sidebar label,
+  .sidebar #legend h3, 
+  h1.TitreRT, h3{
+    font-size: 2.5rem; 
   }
 }
-/*=====================
-Oublie
-=====================*/
-.alert-box {
-            max-width: 500px;
-            margin: 100px auto;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            background: white;
-        }
-        .success { border-left: 5px solid #2ecc71; }
-        .error { border-left: 5px solid #e74c3c; }
-        h2 { margin-top: 0; color: #333; }
-        .btn-retour {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #BF092F;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .btn-retour:hover { background-color: #a00727; }
+/* ==============================
+   STYLES POUR LES HORAIRES
+============================== */
+
+.horaire-info {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    border-left: 3px solid var(--bleu_clair);
+}
+
+.horaire-depart,
+.horaire-calcule {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.horaire-depart strong,
+.horaire-calcule strong {
+    color: var(--bleu_fonce);
+    font-size: 1.1rem;
+}
+
+.horaire-loader {
+    color: var(--gris_clair);
+    font-style: italic;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.horaire-depart-etape {
+    display: block;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(57, 178, 165, 0.3);
+    font-size: 0.9rem;
+    color: var(--vert);
+}
+
+/* Style spécifique pour les horaires d'arrivée finale */
+.arrivee-card .horaire-calcule strong {
+    color: var(--rouge);
+    font-size: 1.2rem;
+}
+
+/* Style pour le temps sur place */
+.pause-duree {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(46, 139, 87, 0.1);
+    border-radius: 15px;
+    border: 1px solid rgba(46, 139, 87, 0.2);
+    font-size: 0.9rem;
+}
+
+.pause-duree strong {
+    color: var(--vert);
+}
+
+/* Animation pour le chargement */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.horaire-calcule:not(.horaire-loader) {
+    animation: fadeIn 0.3s ease-out;
+}

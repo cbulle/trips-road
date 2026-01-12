@@ -7,7 +7,6 @@ if (!isset($_SESSION['utilisateur'])) {
     exit;
 }
 
-
 $user = $_SESSION['utilisateur'];
 ?>
 <!DOCTYPE html>
@@ -38,6 +37,7 @@ $user = $_SESSION['utilisateur'];
             <ul>
                 <li><a href="mesRoadTrips.php">Mes Road-Trips</a></li>
                 <li><a href="profil.php" class="active">Paramètres du compte</a></li>
+                <li><a href="accessibilite.php" class="access">Accessibilité</a></li>
                 <li><a href="/logout.php" class="logout">Déconnexion</a></li>
             </ul>
         </nav>

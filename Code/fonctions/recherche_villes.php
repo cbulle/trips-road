@@ -48,7 +48,7 @@ curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
 
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+//curl_close($ch);
 
 // Si échec ou pas de réponse 200, on renvoie vide
 if ($response === false || $httpCode !== 200) {

@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+    let userFavorites = [];
+    try {
+        const respFav = await fetch('/fonctions/get_lieux_favoris.php');
+        if(respFav.ok) {
+            userFavorites = await respFav.json();
+        }
+    } catch (e) {
+        console.log("Erreur chargement favoris", e);
+    }
+
     // ============================================================
     // 0. FONCTION DE COMPRESSION D'IMAGE (CÔTÉ CLIENT)
     // ============================================================
@@ -79,13 +89,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentStartCoords = null; 
 
     const strategies = {
-        Voiture: { profile: 'driving' },
-        Velo: { profile: 'cycling' },
-        Marche: { profile: 'walking' }
+        'Voiture': 'driving',
+        'Velo': 'cycling',
+        'Marche': 'walking'
     };
  
     const segmentColors = [
-        '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9'
+        '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9', // Tes couleurs originales
+        '#16A085', 
+        '#E67E22', 
+        '#8E44AD', 
+        '#2C3E50', 
+        '#C0392B', 
+        '#27AE60', 
+        '#F1C40F', 
+        '#E74C3C', 
+        '#34495E', 
+        '#9B59B6', 
+        '#1ABC9C', 
+        '#7F8C8D', 
+        '#D35400'  
     ];
 
     // ============================================================
@@ -198,13 +221,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================================
     
     async function getCoordonnees(ville) {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr`;
+        /* List of the countries avalaible for research of a city (the API will only search the name in those
+        country) All europe is here*/
+        const europeCodes = [
+            "fr","be","ch","lu", // France, Belguim, Switzerland, Luxemburg
+            "de","at","li", // Germany, Austria, Liechtenstein
+            "it","sm","va", // Italy, San-Marino, Vatican city
+            "es","pt","ad", // Spain, Portugal, Andorra
+            "gb","ie", // Great Britain, Ireland
+            "nl","dk","no","se","fi","is", // Netherlands, Danemark, Norway, Sweden, Finland, Iceland
+            "pl","cz","sk","hu", // Poland, Czech Republic, Slovakia, Hungary
+            "ee","lv","lt", // Estonia, latvia, lethuania
+            "ro","bg","gr","cy","mt", // Romania, Bulgaria, Greece, Cyprus, Malta
+            "si","hr","ba","rs","me","al","mk","xk", // Slovenia, Croatia, Bosnia, Serbia, Montenegro, Albania, North Macedonia, Kosovo
+            "ua","md","by","ge","am","az" // Ukraine, Moldova, Belarus, Georgia, Armenia, Azerbaidjan
+        ].join(',');
+
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr&countrycodes=${europeCodes}`;
+        
         try {
             const resp = await fetch(url);
             const data = await resp.json();
             if (data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
             return null;
-        } catch (e) { return null; }
+        } catch (e) { 
+            console.error("Erreur de géocodage:", e);
+            return null; 
+        }
     }
     
     function addMarker(lieu, coords, type, popupContent) {
@@ -218,21 +261,85 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function initAutocomplete(element) {
         if (!element) return;
+
+        element.addEventListener('input', function() {
+            this.removeAttribute('data-lat');
+            this.removeAttribute('data-lon');
+            this.removeAttribute('data-full-name');
+            this.style.backgroundColor = ''; 
+        });
+        // -----------------------------------------------------------------------
+
         $(element).autocomplete({
             source: function(request, response) {
+                // Appel API Photon
+                const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(request.term)}&lang=fr&limit=15`;
+                
                 $.ajax({
-                    url: './fonctions/recherche_villes.php',
-                    dataType: "json",
+                    url: url,
                     method: "GET",
-                    data: { q: request.term },
                     success: function(data) {
-                        response($.map(data, function(item) { return { label: item.nom_ville, value: item.nom_ville } }));
-                    },
-                    error: function() { response([]); }
+                        let suggestions = [];
+                        let seen = new Set();
+
+                        // Liste des codes pays européens pour le filtrage
+                        const europeanCountryCodes = [
+                            "FR","BE","CH","LU","DE","AT","LI","IT","SM","VA","ES","PT","AD",
+                            "GB","IE","NL","DK","NO","SE","FI","IS","PL","CZ","SK","HU","EE",
+                            "LV","LT","RO","BG","GR","CY","MT","SI","HR","BA","RS","ME","AL",
+                            "MK","XK","UA","MD","BY","GE","AM","AZ"
+                        ];
+
+                        data.features.forEach(item => {
+                            const p = item.properties;
+                            const countryCode = p.countrycode; 
+
+                            // FILTRE : On ne garde que si le pays est dans notre liste européenne
+                            if (!europeanCountryCodes.includes(countryCode)) {
+                                return; 
+                            }
+
+                            const name = p.name || "";
+                            const city = p.city || p.town || "";
+                            const postcode = p.postcode || "";
+                            const country = p.country || "";
+                            
+                            const uniqueKey = `${name}-${city}-${postcode}-${country}`.toLowerCase();
+
+                            if (!seen.has(uniqueKey) && suggestions.length < 8) {
+                                seen.add(uniqueKey);
+                                const fullLabel = [name, city, postcode, country].filter(Boolean).join(", ");
+                                
+                                suggestions.push({
+                                    label: `<div class="ui-menu-item-content">
+                                                <span class="ui-menu-item-name">${name}</span>
+                                                <span class="ui-menu-item-details">${fullLabel}</span>
+                                            </div>`,
+                                    value: fullLabel, 
+                                    full_name: fullLabel,
+                                    lat: item.geometry.coordinates[1],
+                                    lon: item.geometry.coordinates[0]
+                                });
+                            }
+                        });
+                        response(suggestions);
+                    }
                 });
             },
-            minLength: 3
-        });
+            minLength: 3,
+            select: function(event, ui) {
+                $(this).val(ui.item.full_name);
+                $(this).attr('data-full-name', ui.item.full_name);
+                $(this).attr('data-lat', ui.item.lat);
+                $(this).attr('data-lon', ui.item.lon);
+                
+                $(this).css('backgroundColor', '#e8f8f5');
+                
+                return false;
+            }
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            return $("<li>").append($("<div>").html(item.label)).appendTo(ul);
+        };
     }
 
     function updateDateConstraints() {
@@ -310,6 +417,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy, existingData = null) {
         const modeTransport = existingData ? existingData.mode : 'Voiture';
+        console.log(modeTransport);
         const currentProfile = strategies[modeTransport] ? strategies[modeTransport].profile : strategy.profile;
 
         let coordsList = [startCoords];
@@ -358,13 +466,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const transportBtns = clone.querySelectorAll('.transport-btn');
             transportBtns.forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.dataset.mode === segData.modeTransport) btn.classList.add('active');
                 btn.addEventListener('click', async () => {
+                    // Récupérer le mode depuis l'attribut data-mode du bouton cliqué
+                    const nouveauMode = btn.dataset.mode; 
+                    
+                    // UI : changer le bouton actif
                     transportBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    segments[index].modeTransport = btn.dataset.mode;
-                    await updateRouteSegment(index, btn.dataset.mode, segments[index].options);
+
+                    // IMPORTANT : Appeler la mise à jour avec le nouveau mode
+                    console.log("Passage au mode :", nouveauMode); // Pour tes tests
+                    await updateRouteSegment(index, nouveauMode, segments[index].options);
                 });
             });
 
@@ -376,35 +488,126 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error(e); }
     }
 
+    // Fonction utilitaire pour créer le select des favoris
+    // 1. Fonction pour le menu Départ / Arrivée
+    function createFavSelectForInput(targetInputId) {
+        if (!userFavorites || userFavorites.length === 0) return null;
+
+        const select = document.createElement('select');
+        // MODIFICATION ICI : padding ajusté et border-radius 15px pour correspondre aux inputs
+        select.style.cssText = "width: 100%; margin-bottom: 10px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 15px; background-color: #fff; color: #555; font-size: 1rem; cursor: pointer;";
+        
+        let optionsHtml = '<option value="">⭐ Choisir un favori...</option>';
+        userFavorites.forEach(fav => {
+            const icon = (fav.categorie === 'restaurant') ? '🍽️' : 
+                         (fav.categorie === 'hotel') ? '🏨' : '📍';
+            optionsHtml += `<option value="${fav.nom_lieu}">${icon} ${fav.nom_lieu}</option>`;
+        });
+        select.innerHTML = optionsHtml;
+
+        select.addEventListener('change', function() {
+            const input = document.getElementById(targetInputId);
+            if(input && this.value) {
+                input.value = this.value;
+                input.style.backgroundColor = '#e8f8f5';
+                setTimeout(() => { input.style.backgroundColor = ''; }, 500);
+            }
+        });
+
+        return select;
+    }
+
     const btnAddSegment = document.getElementById('btnAddSegment');
     const newBlockFormContainer = document.getElementById('newBlockForm');
  
     if (btnAddSegment) {
         btnAddSegment.addEventListener('click', () => {
             btnAddSegment.style.display = 'none'; 
-            let html = !currentStartCoords ? `<div class="new-block-field"><label class="new-block-label">Départ :</label><input type="text" id="inputStartBlock" class="new-block-input"></div>` : `<div class="new-block-static"><strong>Départ :</strong> ${currentStartCity}</div>`;
-            html += `<div class="new-block-field"><label class="new-block-label">Arrivée :</label><input type="text" id="inputEndBlock" class="new-block-input"></div><div class="new-block-actions"><button id="btnCancelBlock" class="btn-block-action btn-block-cancel">Annuler</button><button id="btnValidateBlock" class="btn-block-action btn-block-validate">Valider</button></div>`;
+            let html = '';
+            
+            // Construction du HTML (inchangé)
+            if (!currentStartCoords) {
+                html += `<div class="new-block-field"><label class="new-block-label">Départ :</label><input type="text" id="inputStartBlock" class="new-block-input"></div>`;
+            } else {
+                html += `<div class="new-block-static"><strong>Départ :</strong> ${currentStartCity}</div>`;
+            }
+ 
+            html += `<div class="new-block-field"><label class="new-block-label">Arrivée :</label><input type="text" id="inputEndBlock" class="new-block-input"></div>
+                     <div class="new-block-actions">
+                        <button id="btnCancelBlock" class="btn-block-action btn-block-cancel">Annuler</button>
+                        <button id="btnValidateBlock" class="btn-block-action btn-block-validate">Valider</button>
+                     </div>`;
+ 
             newBlockFormContainer.innerHTML = html;
-            if (!currentStartCoords) initAutocomplete(document.getElementById('inputStartBlock'));
-            initAutocomplete(document.getElementById('inputEndBlock'));
-            document.getElementById('btnCancelBlock').onclick = () => { newBlockFormContainer.innerHTML = ''; btnAddSegment.style.display = 'block'; };
-            document.getElementById('btnValidateBlock').onclick = async () => {
-                const btn = document.getElementById('btnValidateBlock'); btn.disabled = true; btn.textContent = "Calcul...";
-                let startName = currentStartCity, startCoords = currentStartCoords;
-                if (document.getElementById('inputStartBlock')) {
-                    startName = document.getElementById('inputStartBlock').value.trim();
-                    startCoords = await getCoordonnees(startName);
+
+            // --- MODIFICATION : AJOUT DES MENUS DÉROULANTS ---
+            
+            // 1. Menu pour le DÉPART (seulement si c'est le tout premier trajet)
+            const inputStart = document.getElementById('inputStartBlock');
+            if (inputStart) {
+                const selectStart = createFavSelectForInput('inputStartBlock');
+                if (selectStart) {
+                    inputStart.parentNode.insertBefore(selectStart, inputStart);
+                }
+                initAutocomplete(inputStart);
+            }
+            
+            // 2. Menu pour l'ARRIVÉE (toujours présent)
+            const inputEnd = document.getElementById('inputEndBlock');
+            if (inputEnd) {
+                const selectEnd = createFavSelectForInput('inputEndBlock');
+                if (selectEnd) {
+                    inputEnd.parentNode.insertBefore(selectEnd, inputEnd);
+                }
+                initAutocomplete(inputEnd);
+            }
+            // ---------------------------------------------------
+ 
+            // Gestion des boutons Annuler / Valider (Code existant conservé)
+            document.getElementById('btnCancelBlock').addEventListener('click', () => {
+                newBlockFormContainer.innerHTML = '';
+                btnAddSegment.style.display = 'block';
+            });
+ 
+            document.getElementById('btnValidateBlock').addEventListener('click', async () => {
+                const btn = document.getElementById('btnValidateBlock');
+                btn.disabled = true; btn.textContent = "Calcul...";
+                
+                let startName, startCoords;
+                const inputStartEl = document.getElementById('inputStartBlock');
+                
+                if (inputStartEl) {
+                    const lat = inputStartEl.getAttribute('data-lat');
+                    const lon = inputStartEl.getAttribute('data-lon');
+                    
+                    startName = inputStartEl.value.trim();
+                    startCoords = (lat && lon) ? [parseFloat(lat), parseFloat(lon)] : await getCoordonnees(startName);
+                    
                     if(!startCoords) { alert('Départ introuvable'); btn.disabled=false; return; }
                     addMarker(startName, startCoords, "ville", startName);
+                } else {
+                    startName = currentStartCity;
+                    startCoords = currentStartCoords;
                 }
-                const endName = document.getElementById('inputEndBlock').value.trim();
-                const endCoords = await getCoordonnees(endName);
+                
+                const inputEndEl = document.getElementById('inputEndBlock');
+                const eLat = inputEndEl.getAttribute('data-lat');
+                const eLon = inputEndEl.getAttribute('data-lon');
+                const endName = inputEndEl.value.trim();
+                
+                const endCoords = (eLat && eLon) ? [parseFloat(eLat), parseFloat(eLon)] : await getCoordonnees(endName);
+                
                 if(!endCoords) { alert('Arrivée introuvable'); btn.disabled=false; return; }
+                
                 await _ajouterSegmentEntre(startName, startCoords, endName, endCoords, segments.length, strategies['Voiture']);
                 addMarker(endName, endCoords, "ville", endName);
-                currentStartCity = endName; currentStartCoords = endCoords;
-                newBlockFormContainer.innerHTML = ''; btnAddSegment.style.display = 'block';
-            };
+                
+                currentStartCity = endName;
+                currentStartCoords = endCoords; // On garde les coordonnées réelles pour le prochain trajet
+                
+                newBlockFormContainer.innerHTML = '';
+                btnAddSegment.style.display = 'block';
+            });
         });
     }
 
@@ -416,34 +619,62 @@ document.addEventListener('DOMContentLoaded', async () => {
         const seg = segments[index];
         if (!seg) return;
 
-        if (seg.line) map.removeLayer(seg.line);
+        // Mapping des serveurs spécifiques pour chaque mode (plus fiable que le profil seul)
+        const servers = {
+            'Voiture': 'https://routing.openstreetmap.de/routed-car',
+            'Velo': 'https://routing.openstreetmap.de/routed-bike',
+            'Marche': 'https://routing.openstreetmap.de/routed-foot'
+        };
+        
+        const baseUrl = servers[mode] || servers['Voiture'];
 
-        let profile = 'driving'; 
-        if (mode === 'Velo') profile = 'cycling';
-        if (mode === 'Marche') profile = 'walking';
-
-        let coordsList = [seg.startCoord];
+        // Préparation des coordonnées (Long,Lat pour OSRM)
+        let points = [seg.startCoord];
         if (seg.sousEtapes) {
-            seg.sousEtapes.forEach(se => { if(se.coords) coordsList.push(se.coords); });
+            seg.sousEtapes.forEach(se => { if(se.coords) points.push(se.coords); });
         }
-        coordsList.push(seg.endCoord);
-        const coordString = coordsList.map(c => `${c[1]},${c[0]}`).join(';');
-        const url = `https://router.project-osrm.org/route/v1/${profile}/${coordString}?overview=full&geometries=geojson`;
+        points.push(seg.endCoord);
+        const coordString = points.map(p => `${p[1]},${p[0]}`).join(';');
+
+        const url = `${baseUrl}/route/v1/driving/${coordString}?overview=full&geometries=geojson&continue_straight=true`;
 
         try {
             const resp = await fetch(url);
             const data = await resp.json();
+            
             if (data.code === 'Ok') {
                 const route = data.routes[0];
+
+                // 1. SUPPRESSION RADICALE : On retire l'ancienne ligne de la carte
+                if (seg.line) {
+                    map.removeLayer(seg.line);
+                }
+
+                // 2. MISE À JOUR DES DONNÉES
                 seg.distance = route.distance;
                 seg.duration = route.duration;
-                seg.legs = route.legs;
-                seg.line = L.geoJSON(route.geometry, { color: seg.couleurSegment, weight: 5 }).addTo(map);
-                updateLegendHtml(index);
-            }
-        } catch (e) { console.error("Erreur d'itinéraire", e); }
-    }
+                seg.modeTransport = mode;
 
+                // 3. CRÉATION DE LA NOUVELLE LIGNE
+                // On change le style (pointillés pour vélo/marche) pour vérifier visuellement
+                const lineStyle = {
+                    color: seg.couleurSegment,
+                    weight: 6,
+                    opacity: 0.8,
+                    dashArray: mode !== 'Voiture' ? '10, 10' : null // Pointillés si pas voiture
+                };
+
+                seg.line = L.geoJSON(route.geometry, lineStyle).addTo(map);
+
+                // 4. MISE À JOUR DE LA LÉGENDE
+                updateLegendHtml(index);
+                
+                console.log(`Succès ! Mode: ${mode}, Route mise à jour.`);
+            }
+        } catch (e) {
+            console.error("Erreur de mise à jour de la route :", e);
+        }
+    }
     // ============================================================
     // 7. ÉDITEUR SOUS-ÉTAPES ET LÉGENDE (MODIFIÉ)
     // ============================================================
@@ -454,29 +685,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateLegendHtml(index) {
         const seg = segments[index];
         const li = document.querySelector(`li[data-index="${index}"]`);
-        if(!li) return;
-        
-        const distKm = (seg.distance / 1000).toFixed(1);
-        const timeStr = formatDuration(seg.duration);
-        let statsHtml = `<div style="font-size:0.85em; color:#666; margin-bottom:5px;">📏 ${distKm} km | ⏱️ ${timeStr}</div>`;
+        if(!li || !seg.heure_depart) return;
 
         const ul = li.querySelector('.sousEtapesList');
         let html = ``;
-        let lastTime = null;
+        
+        // 1. Heure de départ initiale (ex: "08:00")
+        let currentClock = seg.heure_depart; 
 
-        if(seg.sousEtapes && seg.sousEtapes.length > 0) {
-            seg.sousEtapes.forEach(se => {
-                html += `<li style="margin-top:5px; border-left:2px solid ${seg.couleurSegment}; padding-left:5px;">
-                            📍 ${getNomSimple(se.nom)} <small>(${se.heure})</small></li>`;
-                lastTime = se.heure;
+        // Fonction utilitaire pour ajouter du temps (secondes) à une heure (HH:mm)
+        function addTime(startTime, secondsToAdd) {
+            const [h, m] = startTime.split(':').map(Number);
+            const date = new Date();
+            date.setHours(h, m, 0);
+            date.setSeconds(date.getSeconds() + secondsToAdd);
+            return date.getHours().toString().padStart(2, '0') + ":" + 
+                date.getMinutes().toString().padStart(2, '0');
+        }
+
+        // Fonction utilitaire pour convertir "HH:mm" en secondes
+        function durationToSeconds(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return (h * 3600) + (m * 60);
+        }
+
+        if(seg.legs) {
+            // Parcours des sous-étapes et des "legs" (tronçons entre 2 points)
+            seg.legs.forEach((leg, i) => {
+                // On ajoute le temps de trajet du tronçon
+                currentClock = addTime(currentClock, leg.duration);
+                
+                if (i < seg.sousEtapes.length) {
+                    const se = seg.sousEtapes[i];
+                    html += `<li style="margin-top:5px; border-left:2px solid ${seg.couleurSegment}; padding-left:5px;">
+                                <b>Arrivée à ${getNomSimple(se.nom)} : ${currentClock}</b><br>
+                                <small>Pause de ${se.heure}h</small></li>`;
+                    
+                    // On ajoute le temps de pause passé sur place
+                    currentClock = addTime(currentClock, durationToSeconds(se.heure));
+                    html += `<li style="list-style:none; font-size:0.8em; color:gray;">(Départ prévu à ${currentClock})</li>`;
+                }
             });
         }
 
-        if (lastTime && seg.legs) {
-            const lastLegDuration = seg.legs[seg.legs.length - 1].duration;
-            const eta = calculateETA(lastTime, lastLegDuration);
-            html += `<li style="margin-top:5px; font-weight:bold; color:#2c3e50;">🏁 Arrivée : ${eta}</li>`;
-        }
+        const distKm = (seg.distance / 1000).toFixed(1);
+        const totalTimeStr = formatDuration(seg.duration);
+        let statsHtml = `<div style="font-size:0.85em; color:#666; margin-bottom:5px;">📏 ${distKm} km | ⏱️ ${totalTimeStr} de route</div>`;
+        
+        html += `<li style="margin-top:5px; font-weight:bold; color:#2c3e50;">🏁 Arrivée finale : ${currentClock}</li>`;
+        
         ul.innerHTML = statsHtml + html;
     }
 
@@ -500,21 +757,152 @@ document.addEventListener('DOMContentLoaded', async () => {
         else addSousEtapeForm();
     }
     
+    // Ajout d'une ligne de formulaire sous-étape
     function addSousEtapeForm(data = {}) {
         const uniqueId = 'editor-' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         const clone = document.getElementById('template-sub-etape').content.cloneNode(true);
         const div = clone.querySelector('.subEtape');
-        div.querySelector('.subEtapeNom').value = data.nom || '';
+        
+        const inputNom = div.querySelector('.subEtapeNom'); 
+        inputNom.value = data.nom || '';
         div.querySelector('.subEtapeHeure').value = data.heure || '';
+        
+        // --- CRÉATION DU SELECT FAVORIS ---
+        if (userFavorites.length > 0) {
+            const selectFav = document.createElement('select');
+            // MODIFICATION ICI : même style harmonisé
+            selectFav.style.cssText = "width: 100%; margin-bottom: 10px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 15px; background-color: #fff; color: #555; font-size: 1rem; cursor: pointer;";
+            
+            let optionsHtml = '<option value="">⭐ Insérer un favori...</option>';
+            userFavorites.forEach(fav => {
+                const icon = (fav.categorie === 'restaurant') ? '🍽️' : 
+                             (fav.categorie === 'hotel') ? '🏨' : '📍';
+                optionsHtml += `<option value="${fav.nom_lieu}">${icon} ${fav.nom_lieu}</option>`;
+            });
+            
+            selectFav.innerHTML = optionsHtml;
+            
+            selectFav.addEventListener('change', function() {
+                if(this.value) {
+                    inputNom.value = this.value;
+                    inputNom.style.backgroundColor = '#e8f8f5';
+                    setTimeout(() => { inputNom.style.backgroundColor = ''; }, 500);
+                }
+            });
+            
+            inputNom.parentNode.insertBefore(selectFav, inputNom);
+        }
+        // ---------------------------------------------
+
         const txt = div.querySelector('.subEtapeRemarque');
         txt.id = uniqueId; 
-        div.querySelector('.removeSubEtapeBtn').onclick = () => { if(tinymce.get(uniqueId)) tinymce.get(uniqueId).remove(); div.remove(); };
+        txt.value = data.remarque || '';
+        
         subEtapesContainer.appendChild(div);
-        initAutocomplete(div.querySelector('.subEtapeNom'));
+        initAutocomplete(inputNom); 
+        
         setTimeout(() => {
-            tinymce.init({ selector: '#' + uniqueId, base_url: '/js/tinymce', suffix: '.min', license_key: 'gpl', promotion: false, branding: false, menubar: false, statusbar: false, min_height: 150, plugins: 'image link lists', toolbar: 'undo redo | bold italic | bullist | link image', })
-            .then(editors => { if (data.remarque && editors.length > 0) editors[0].setContent(data.remarque); });
+            tinymce.init({
+                selector: '#' + uniqueId,
+                
+                base_url: '/js/tinymce',
+                suffix: '.min',
+                license_key: 'gpl',
+                
+                height: 300,
+                menubar: false,
+                statusbar: false,
+                language: 'fr_FR', 
+
+                plugins: 'image link lists table code help wordcount',
+                toolbar: 'undo redo | bold italic | bullist numlist | link image | table | code',
+
+                /* --- GESTION DES IMAGES --- */
+                image_title: true,
+                automatic_uploads: true,
+                // L'URL de ton script PHP créé à l'étape 1
+                images_upload_url: '/formulaire/traitementImageTiny.php', 
+                file_picker_types: 'image',
+                
+                // Empêche TinyMCE de convertir les URLs en relatif "../uploads" qui casseraient sur d'autres pages
+                relative_urls: false, 
+                remove_script_host: false,
+                convert_urls: true,
+
+                // Callback pour la compression et l'upload
+                file_picker_callback: (cb, value, meta) => {
+                    const input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'image/*');
+
+                    input.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = (readerEvent) => {
+                            const img = new Image();
+                            img.src = readerEvent.target.result;
+
+                            img.onload = () => {
+                                // Paramètres de compression
+                                const MAX_WIDTH = 1200;
+                                const MAX_HEIGHT = 1200;
+                                let width = img.width;
+                                let height = img.height;
+
+                                // Calcul du redimensionnement
+                                if (width > height) {
+                                    if (width > MAX_WIDTH) {
+                                        height *= MAX_WIDTH / width;
+                                        width = MAX_WIDTH;
+                                    }
+                                } else {
+                                    if (height > MAX_HEIGHT) {
+                                        width *= MAX_HEIGHT / height;
+                                        height = MAX_HEIGHT;
+                                    }
+                                }
+
+                                // Création du Canvas pour dessiner l'image redimensionnée
+                                const canvas = document.createElement('canvas');
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+
+                                // Conversion en Blob (Fichier compressé)
+                                // Le 0.7 correspond à 70% de qualité JPEG
+                                canvas.toBlob((blob) => {
+                                    const newFile = new File([blob], file.name, { 
+                                        type: 'image/jpeg', 
+                                        lastModified: Date.now() 
+                                    });
+
+                                    // Ajout au cache de TinyMCE pour déclencher l'upload automatique
+                                    const id = 'blobid' + (new Date()).getTime();
+                                    const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                                    const blobInfo = blobCache.create(id, newFile, blob);
+                                    
+                                    blobCache.add(blobInfo);
+
+                                    // Appelle le callback pour afficher l'image (en base64) en attendant l'upload réel
+                                    cb(blobInfo.blobUri(), { title: file.name });
+                                    
+                                }, 'image/jpeg', 0.7); 
+                            };
+                        };
+                    });
+                    input.click();
+                }
+            });
         }, 100);
+
+        div.querySelector('.removeSubEtapeBtn').addEventListener('click', () => {
+            tinymce.get(uniqueId)?.remove();
+            div.remove();
+        });
     }
 
     document.getElementById('addSubEtape').onclick = () => addSousEtapeForm();
@@ -523,17 +911,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('saveSegment').onclick = async () => {
         const seg = segments[currentSegmentIndex];
         const newSubs = [];
+        // On récupère toutes les divs subEtape
         for (const div of document.querySelectorAll('.subEtape')) {
-            const nom = div.querySelector('.subEtapeNom').value.trim();
+            const inputNom = div.querySelector('.subEtapeNom'); // On cible l'élément input direct
+            const nom = inputNom.value.trim();
             const heure = div.querySelector('.subEtapeHeure').value;
-            const remarque = tinymce.get(div.querySelector('.subEtapeRemarque').id).getContent();
+            // Récupération contenu TinyMCE
+            const idEditor = div.querySelector('.subEtapeRemarque').id;
+            const remarque = tinymce.get(idEditor) ? tinymce.get(idEditor).getContent() : "";
+            
             if(!nom || !heure) continue;
-            const coords = await getCoordonnees(nom);
+
+            // --- CORRECTION ICI ---
+            let coords = null;
+            const latAttr = inputNom.getAttribute('data-lat');
+            const lonAttr = inputNom.getAttribute('data-lon');
+
+            // 1. Si Photon a déjà donné les coords (via le clic autocomplétion), on les utilise !
+            if (latAttr && lonAttr) {
+                coords = [parseFloat(latAttr), parseFloat(lonAttr)];
+            } else {
+                // 2. Sinon (saisie manuelle sans clic), on demande à Nominatim
+                coords = await getCoordonnees(nom);
+            }
+            // ----------------------
+
             if(coords) {
                 newSubs.push({ nom, heure, remarque, coords, lat: coords[0], lon: coords[1] });
                 addMarker(nom, coords, "sous_etape", `<b>${nom}</b><br>${heure}`);
+            } else {
+                alert(`Impossible de localiser : ${nom}. Veuillez sélectionner une suggestion dans la liste.`);
             }
         }
+        
         seg.sousEtapes = newSubs;
         await updateRouteSegment(currentSegmentIndex, seg.modeTransport || 'Voiture');
         document.getElementById('segmentFormContainer').style.display = 'none';
@@ -568,7 +978,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const trajetsData = segments.map(s => ({
                 depart: s.startName, departLat: s.startCoord[0], departLon: s.startCoord[1],
                 arrivee: s.endName, arriveeLat: s.endCoord[0], arriveeLon: s.endCoord[1],
-                mode: s.modeTransport, date: s.date, sousEtapes: s.sousEtapes
+                mode: s.modeTransport, date: s.date, sousEtapes: s.sousEtapes,
+                heure_depart: document.querySelector(`li[data-index="${segments.indexOf(s)}"] .legend-time-input`).value
             }));
             formData.append('trajets', JSON.stringify(trajetsData));
 

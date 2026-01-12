@@ -1,6 +1,13 @@
 <?php
 require_once __DIR__ . '/include/init.php';
 
+if (!isset($_SESSION['utilisateur'])) {
+    header("Location: id.php");
+    exit;
+}
+
+
+$user = $_SESSION['utilisateur'];
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -9,12 +16,36 @@ require_once __DIR__ . '/include/init.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href= "/css/style.css">
     <link rel="stylesheet" href= "/css/accessibilite.css">
+    <link rel="stylesheet" href= "/css/profil.css">
 
     <title>Accessibilité</title>
 </head>
 <body>
     <?php include __DIR__ . "/modules/header.php" ?>
-   <div class="cont_access">
+<main class="accessibilite-container">
+
+    <aside class="profil-sidebar">
+        <div class="user-brief">
+            <?php
+            $photoProfil = !empty($_SESSION['utilisateur']['photo_profil']) ? htmlspecialchars($_SESSION['utilisateur']['photo_profil']) : "User.png";
+            $photoUrl = (file_exists(__DIR__ . "/uploads/pp/$photoProfil")) ? "/uploads/pp/$photoProfil" : "img/User.png";
+            ?>
+            <div class="avatar-circle small" style="background-image: url('<?= $photoUrl ?>');"></div>
+            <h3><?= htmlspecialchars($user['prenom']) . ' ' . htmlspecialchars($user['nom']) ?></h3>
+        </div>
+        
+        <nav class="profil-nav">
+            <ul>
+                <li><a href="mesRoadTrips.php">Mes Road-Trips</a></li>
+                <li><a href="profil.php" class="">Paramètres du compte</a></li>
+                <li><a href="accessibilite.php" class="active">Accessibilité</a></li>
+                <li><a href="/logout.php" class="logout">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+
+   <section class="cont_access">
     <form id="AccessForm" class="AccessForm" action="" method="post">
         <h2 id="login-title">Accessibilité</h2>
 
@@ -57,11 +88,11 @@ require_once __DIR__ . '/include/init.php';
         </div>
 
         
-    </form>
-</div>
+    </form> 
+</section>
 
 
-
+</main>
     <?php include __DIR__ . "/modules/footer.php" ?>
     <script src="/js/map.js"></script>
 </body>

@@ -19,9 +19,9 @@ $userId = $_SESSION['utilisateur']['id'] ?? null;
         echo "<script>const currentUserId = null;</script>";
     }
     ?>
-
-    <link rel="stylesheet" href="css/style.css"> 
     <link rel="stylesheet" href="css/index.css"> 
+    <link rel="stylesheet" href="css/style.css"> 
+    
 
 
 </head>
