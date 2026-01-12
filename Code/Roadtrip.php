@@ -4,8 +4,7 @@ include_once __DIR__ . '/bd/lec_bd.php';
 
 $id_utilisateur = $_SESSION['utilisateur']['id'] ?? null;
 
-// --- MODIFICATION ICI : On fait une jointure pour récupérer le pseudo ---
-// On suppose que la clé étrangère dans 'roadtrip' est 'id_utilisateur'
+// On récupère les road trips publics
 $sql = "SELECT r.*, u.pseudo 
         FROM roadtrip r 
         LEFT JOIN utilisateurs u ON r.id_utilisateur = u.id 
@@ -22,8 +21,6 @@ if ($id_utilisateur) {
     $stmt->execute(['id' => $id_utilisateur]);
     $favorisIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
-
-// (La requête séparée sur 'utilisateurs' n'est plus nécessaire ici, je l'ai retirée)
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +30,26 @@ if ($id_utilisateur) {
     <title>Road Trips Publics</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/accessibilite.css">
-    
+    <style>
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status-termine {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-brouillon {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+    </style>
 </head>
 <body>
 <?php include_once __DIR__ . "/modules/header.php"; ?>
@@ -60,7 +76,15 @@ if ($id_utilisateur) {
             <?php endif; ?>
 
             <h3><?= htmlspecialchars($rt['titre']) ?></h3>
-            
+
+            <?php 
+                $isTermine = ($rt['statut'] === 'termine');
+                $classeStatus = $isTermine ? 'status-termine' : 'status-brouillon';
+                $labelStatus = $isTermine ? '✅ Terminé' : '🚧 En cours';
+            ?>
+            <span class="status-badge <?= $classeStatus ?>">
+                <?= $labelStatus ?>
+            </span>
             <p><?= htmlspecialchars($rt['description']) ?></p>
 
             <p class="creator-info">
@@ -77,7 +101,6 @@ if ($id_utilisateur) {
                     <a class="btn-favori <?= $isFavori ? 'active' : '' ?>" 
                        href="/formulaire/favo.php?id=<?= $rt['id'] ?>&redirect=Roadtrip.php">
                         <i class="material-icons">favorite</i>
-                        
                     </a>
                 <?php endif; ?>
             </div>

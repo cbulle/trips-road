@@ -68,7 +68,6 @@ try {
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$existing) jsonError("RoadTrip introuvable ou droits insuffisants.");
-        if ($existing['statut'] === 'termine') jsonError("Impossible de modifier un roadtrip déjà publié.");
         
         $anciennePhoto = $existing['photo'];
     }

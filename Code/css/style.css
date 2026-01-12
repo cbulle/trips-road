@@ -1996,3 +1996,4 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 .horaire-calcule:not(.horaire-loader) {
     animation: fadeIn 0.3s ease-out;
 }
+
