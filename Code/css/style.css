@@ -199,7 +199,8 @@ button, input, select, textarea, label{
 .TitreRT{
   color: var(--beige);
   background-color: var(--bleu_clair);
-  padding : 15px;  
+  padding : 15px;
+  margin-bottom: 15px; 
 }
 
 
@@ -1823,14 +1824,54 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 .status-selector-container select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 10px;
-    border: 1px solid var(--orange);
-    font-weight: bold;
+  width: 100%;
+  padding: 10px 14px; /* Ajusté pour correspondre aux inputs */
+  border-radius: 15px; /* Ajusté à 15px */
+  border: 1px solid var(--orange);
+  font-weight: bold;
+  background-color: white;
 }
 
+/* ==============================
+  STYLE AUTOCOMPLETE PHOTO/CSS
+============================== */
+.ui-autocomplete {
+    background: var(--white) !important;
+    border: 2px solid var(--bleu_clair) !important;
+    border-radius: 15px !important; /* Harmonisé avec sidebar */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    z-index: 9999 !important;
+    max-width: 400px;
+}
 
+.ui-menu-item-content {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.ui-menu-item-name {
+    font-weight: bold;
+    color: var(--bleu_fonce);
+    font-size: 0.95rem;
+}
+
+.ui-menu-item-details {
+    font-size: 0.75rem;
+    color: var(--gris_clair);
+    margin-top: 2px;
+}
+
+.ui-menu-item:hover, .ui-state-active {
+    background-color: var(--beige) !important;
+    border: none !important;
+}
+
+.ui-menu-item:hover .ui-menu-item-name, 
+.ui-state-active .ui-menu-item-name {
+    color: var(--orange) !important;
+}
 
 /* ==============================
    RESPONSIVE (TABLETTE & MOBILE)
@@ -1883,4 +1924,75 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   h1.TitreRT, h3{
     font-size: 2.5rem; 
   }
+}
+/* ==============================
+   STYLES POUR LES HORAIRES
+============================== */
+
+.horaire-info {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    border-left: 3px solid var(--bleu_clair);
+}
+
+.horaire-depart,
+.horaire-calcule {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.horaire-depart strong,
+.horaire-calcule strong {
+    color: var(--bleu_fonce);
+    font-size: 1.1rem;
+}
+
+.horaire-loader {
+    color: var(--gris_clair);
+    font-style: italic;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.horaire-depart-etape {
+    display: block;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(57, 178, 165, 0.3);
+    font-size: 0.9rem;
+    color: var(--vert);
+}
+
+/* Style spécifique pour les horaires d'arrivée finale */
+.arrivee-card .horaire-calcule strong {
+    color: var(--rouge);
+    font-size: 1.2rem;
+}
+
+/* Style pour le temps sur place */
+.pause-duree {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(46, 139, 87, 0.1);
+    border-radius: 15px;
+    border: 1px solid rgba(46, 139, 87, 0.2);
+    font-size: 0.9rem;
+}
+
+.pause-duree strong {
+    color: var(--vert);
+}
+
+/* Animation pour le chargement */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.horaire-calcule:not(.horaire-loader) {
+    animation: fadeIn 0.3s ease-out;
 }
