@@ -1,7 +1,6 @@
 <?php
-require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../include/init.php';
 include __DIR__ . '/../bd/lec_bd.php';
-// On inclut votre fonction de compression
 require_once __DIR__ . '/../fonctions/compressImage.php';
 
 header('Content-Type: application/json');
