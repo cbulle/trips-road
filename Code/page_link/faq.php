@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../include/init.php';
 
 ?>
 
@@ -23,25 +23,103 @@ include_once __DIR__ . "/../modules/header.php";
 <main>
     <div class="cgu-container">
         <h1>Foire aux Questions</h1>
+        <p>Toutes les réponses pour préparer votre prochain Road Trip sereinement.</p>
+        </div>
+        <p>Toutes les réponses pour préparer votre prochain Road Trip sereinement.</p>
+        </div>
+        <section class="faq-category">
+        <h2> Gestion du Compte</h2>
+            
+            <details>
+                <summary>Comment créer un compte sur Trips & Road ?</summary>
+                <div class="faq-answer">
+                    <p>C'est très simple ! Cliquez sur l'icône utilisateur en haut à droite, puis sélectionnez "S'inscrire". Remplissez le formulaire avec votre email, un mot de passe sécurisé et vos informations de profil. Une fois inscrit, vous pourrez commencer à créer vos trajets immédiatement.</p>
+                </div>
+            </details>
 
-        <section class="faq">
-            <h2>Questions fréquentes</h2>
+            <details>
+                <summary>J'ai oublié mon mot de passe, que faire ?</summary>
+                <div class="faq-answer">
+                    <p>Pas de panique. Sur la page de connexion, cliquez sur le lien "Mot de passe oublié ?". Entrez votre adresse email, et nous vous enverrons un lien sécurisé (valable 30 minutes) pour réinitialiser votre mot de passe.</p>
+                </div>
+            </details>
 
-            <div class="faq-item">
-                <h3>1. Comment créer un road trip ?</h3>
-                <p>Pour créer un road trip, vous devez d'abord vous inscrire sur notre site, puis utiliser notre interface intuitive pour planifier votre itinéraire, ajouter des points d'intérêt, et personnaliser votre voyage.</p>
-            </div>
+            <details>
+                <summary>Comment modifier ma photo de profil ou mes informations ?</summary>
+                <div class="faq-answer">
+                    <p>Une fois connecté, rendez-vous sur votre page <strong>Profil</strong>. Vous verrez un bouton "Modifier mes informations" qui vous permettra de changer votre bio, votre ville de résidence ou d'uploader une nouvelle photo de profil.</p>
+                </div>
+            </details>
+        </section>
 
-            <div class="faq-item">
-                <h3>2. Est-ce que je peux partager mon road trip ?</h3>
-                <p>Oui, une fois votre road trip créé, vous pouvez le partager avec d'autres utilisateurs de la plateforme. Il vous suffit de choisir l'option de partage dans les paramètres de votre road trip.</p>
-            </div>
+        <section class="faq-category">
+            <h2> Mes Road Trips</h2>
 
-            <div class="faq-item">
-                <h3>3. Comment puis-je accéder à la carte des points d'intérêt ?</h3>
-                <p>Vous pouvez accéder à la carte des points d'intérêt en cliquant sur l'onglet "Carte" dans le menu principal. Vous y trouverez tous les lieux recommandés pour vos road trips.</p>
-            </div>
-             <section class="ask-question">
+            <details>
+                <summary>Comment fonctionne la confidentialité de mes trajets ?</summary>
+                <div class="faq-answer">
+                    <p>Lors de la création d'un Road Trip, vous avez le choix entre trois niveaux de visibilité :</p>
+                    <ul>
+                        <li><strong>Public :</strong> Visible par tous les visiteurs du site.</li>
+                        <li><strong>Amis :</strong> Visible uniquement par les utilisateurs que vous avez acceptés en amis.</li>
+                        <li><strong>Privé :</strong> Visible uniquement par vous.</li>
+                    </ul>
+                    <p>Vous pouvez modifier ce réglage à tout moment dans les options du trajet.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>Comment ajouter des étapes à mon itinéraire ?</summary>
+                <div class="faq-answer">
+                    <p>Sur la page de création ou de modification d'un Road Trip, utilisez la barre de recherche pour trouver une ville ou un lieu. Cliquez sur "Ajouter" pour l'insérer dans votre liste. Vous pouvez ensuite réorganiser l'ordre des étapes par simple glisser-déposer.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>Puis-je partager mon trajet avec des personnes qui n'ont pas de compte ?</summary>
+                <div class="faq-answer">
+                    <p>Oui ! Utilisez le bouton <strong>Partager</strong> sur la fiche de votre Road Trip. Cela générera un lien unique que vous pouvez envoyer par email ou SMS. Toute personne disposant de ce lien pourra consulter votre itinéraire, même sans être inscrite.</p>
+                </div>
+            </details>
+        </section>
+
+        <section class="faq-category">
+            <h2>Communauté & Amis</h2>
+
+            <details>
+                <summary>Comment ajouter des amis ?</summary>
+                <div class="faq-answer">
+                    <p>Allez sur la page <strong>Amis</strong> et utilisez la barre de recherche pour trouver un utilisateur par son pseudo ou son nom. Cliquez sur "Ajouter". Une fois qu'il aura accepté votre demande, vous pourrez voir ses voyages réservés aux amis et discuter via la messagerie.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>Comment fonctionne la messagerie privée ?</summary>
+                <div class="faq-answer">
+                    <p>Vous pouvez envoyer des messages privés à tous vos amis confirmés. Cliquez sur l'icône "Enveloppe" dans le menu ou allez directement sur le profil d'un ami pour démarrer une conversation sécurisée.</p>
+                </div>
+            </details>
+        </section>
+
+        <section class="faq-category">
+            <h2> Technique & Support</h2>
+
+            <details>
+                <summary>L'application est-elle gratuite ?</summary>
+                <div class="faq-answer">
+                    <p>Oui, Trips & Road est un projet étudiant entièrement gratuit. Toutes les fonctionnalités (calcul d'itinéraire, stockage de photos, messagerie) sont accessibles sans frais.</p>
+                </div>
+            </details>
+
+            <details>
+                <summary>Comment signaler un bug ou un contenu inapproprié ?</summary>
+                <div class="faq-answer">
+                    <p>Si vous rencontrez un problème technique ou un comportement abusif, veuillez utiliser notre formulaire de <a href="contact.php" class="contact-link">Contact</a> ou nous écrire directement à support@tripsandroads.com.</p>
+                </div>
+            </details>
+        </section>
+
+          <section class="ask-question">
             <h2>Posez votre propre question</h2>
 
             <?php if (isset($message)): ?>
@@ -65,13 +143,16 @@ include_once __DIR__ . "/../modules/header.php";
                 <button type="submit">Poser la question</button>
             </form>
         </section>
+
+
+        
     </div>
 
             
 </main>
 
 
-<script src = "/../js/map.js" ></script>
+<script src = "/../js/recherche.js" ></script>
 <?php     
 include_once __DIR__ . "/../modules/footer.php";
 ?>

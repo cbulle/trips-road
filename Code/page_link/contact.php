@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../modules/init.php';
+require_once __DIR__ . '/../include/init.php';
 
 ?>
 
@@ -19,18 +19,29 @@ include_once __DIR__ . "/../modules/header.php";
 ?>
 
 <main>
-    <div class="cgu-container">
-        <section class="about-section">
-            <h1>À propos de Trips & Roads</h1>
-            <p>Bienvenue sur Trips & Roads, la plateforme dédiée à la planification de vos road trips ! Nous vous offrons une interface simple et intuitive pour planifier vos voyages, découvrir des points d’intérêt, et partager vos itinéraires avec d'autres passionnés de voyage.</p>
-            <p>Que vous soyez un voyageur expérimenté ou un débutant, notre plateforme vous aidera à créer des road trips inoubliables, tout en vous fournissant des outils pour personnaliser vos trajets selon vos préférences.</p>
-            <p>Notre mission : faciliter la planification de vos aventures sur la route, tout en vous permettant de partager vos expériences avec la communauté.</p>
-        </section>
+    <div class="contact-wrapper">
+        
+        <div class="contact-info">
+            <h2>Discutons !</h2>
+            <p>Une question sur votre itinéraire ? Un bug à signaler ? Ou simplement envie de dire bonjour ? Notre équipe étudiante est à votre écoute.</p>
+            
+            <div class="info-item">
+                <h3>Adresse</h3>
+                <p>IUT Lyon 1 - Site de Bourg<br>71 Rue Peter Fink<br>01000 Bourg-en-Bresse</p>
+            </div>
+            
+            <div class="info-item">
+                <h3>Email</h3>
+                <p>tripsandroads@gmail.com</p>
+            </div>
 
-        <section class="contact-section">
-            <h2>Contactez-nous</h2>
+           
+        </div>
 
-            <?php if (isset($successMessage)): ?>
+        <div class="contact-form">
+            <h1>Envoyez-nous un message</h1>
+            
+             <?php if (isset($successMessage)): ?>
                 <p class="success-message"><?= $successMessage ?></p>
             <?php elseif (isset($errorMessage)): ?>
                 <p class="error-message"><?= $errorMessage ?></p>
@@ -44,23 +55,37 @@ include_once __DIR__ . "/../modules/header.php";
                 </ul>
             <?php endif; ?>
 
-            <form action="/../formulaire/form_faq.php" method="POST">
 
-                 <label for="nom">Nom :</label>
-                <input type="text" name="nom" id="nom" value="<?= isset($nom) ? $nom : '' ?>" required>
+            <form action="" method="POST">
+                <div class="form-group">
+                    <label for="nom">Votre Nom</label>
+                    <input type="text" id="nom" name="nom" required placeholder="Jean Dupont">
+                </div>
 
-                <label for="email">Email :</label>
-                <input type="email" name="email" id="email" value="<?= isset($email) ? $email : '' ?>" required>
+                <div class="form-group">
+                    <label for="email">Votre Email</label>
+                    <input type="email" id="email" name="email" required placeholder="jean@exemple.com">
+                </div>
 
-                <label for="sujet">Sujet :</label>
-                <input type="text" name="sujet" id="sujet" value="<?= isset($sujet) ? $sujet : '' ?>" required>
+                <div class="form-group">
+                    <label for="sujet">Sujet</label>
+                    <select id="sujet" name="sujet" required>
+                        <option value="Question générale">Question générale</option>
+                        <option value="Support technique / Bug">Support technique / Bug</option>
+                        <option value="Partenariat">Partenariat</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
 
-                <label for="question">Votre Message</label>
-                <textarea name="question" id="question" rows="4" required><?= isset($question) ? $question : '' ?></textarea>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required placeholder="Comment pouvons-nous vous aider ?"></textarea>
+                </div>
 
-                <button type="submit">Envoyer votre message</button>
+                <button type="submit">Envoyer le message</button>
             </form>
-        </section>
+        </div>
+
     </div>
 </main>
 
