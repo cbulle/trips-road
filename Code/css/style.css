@@ -1953,3 +1953,28 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     width: 30%;
   }
 }
+/*=====================
+Oublie
+=====================*/
+.alert-box {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: white;
+        }
+        .success { border-left: 5px solid #2ecc71; }
+        .error { border-left: 5px solid #e74c3c; }
+        h2 { margin-top: 0; color: #333; }
+        .btn-retour {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #BF092F;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn-retour:hover { background-color: #a00727; }

@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../include/init.php';
-// Inclure PHPMailer (ajustez le chemin selon votre dossier réel)
 require_once __DIR__ . '/PHPMailer-master/src/PHPMailer.php';
 require_once __DIR__ . '/PHPMailer-master/src/SMTP.php';
 require_once __DIR__ . '/PHPMailer-master/src/Exception.php';
@@ -27,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
         $basePath = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/');
-        $link = $protocol . '://' . $host . $basePath . '/page_link/reset_password.php?token=' . $token;
+        $link = $protocol . '://' . $host . $basePath . '/reset_password.php?token=' . $token;
 
         $mail = new PHPMailer(true);
         try {
@@ -50,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
 
             $mail->send();
 
-            // On définit le message de succès
             $titreMessage = "Email envoyé !";
             $message = "Vérifiez votre boîte de réception (et vos spams). Le lien est valide 30 minutes.";
             $typeAlert = "success";
@@ -61,17 +59,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
             $typeAlert = "error";
         }
     } else {
-        // Message générique de sécurité
         $titreMessage = "Email envoyé !";
         $message = "Si cette adresse est enregistrée, vous recevrez un lien de réinitialisation.";
         $typeAlert = "success";
     }
 } else {
-    // Si accès direct sans POST, redirection
-    header("Location: ../page_link/oublie.php");
+    header("Location: ../fonctions/oublie.php");
     exit;
 }
-// Fin du traitement PHP, on passe à l'affichage HTML pur
 ?>
 
 <!DOCTYPE html>
@@ -80,30 +75,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
     <meta charset="UTF-8">
     <title><?php echo $titreMessage; ?> - Trips & Road</title>
     <link rel="stylesheet" href="../css/style.css">
-    <style>
-        .alert-box {
-            max-width: 500px;
-            margin: 100px auto;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            background: white;
-        }
-        .success { border-left: 5px solid #2ecc71; }
-        .error { border-left: 5px solid #e74c3c; }
-        h2 { margin-top: 0; color: #333; }
-        .btn-retour {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #BF092F;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .btn-retour:hover { background-color: #a00727; }
-    </style>
 </head>
 <body>
 
