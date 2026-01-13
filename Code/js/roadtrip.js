@@ -259,10 +259,14 @@ async function calculerHorairesTrajet(card) {
     const trajetId = card.id.replace('card-', '');
     const dataTrajet = getTrajetData(trajetId);
     
-    if (!dataTrajet || !dataTrajet.hasCoords) return;
+    if (!dataTrajet || !dataTrajet.hasCoords) {
+        // console.warn(`Trajet ${trajetId} : coordonnées manquantes`);
+        return;
+    }
 
     const etapeCards = card.querySelectorAll('.sous-etape-card');
     
+    // Construction des coordonnées
     let coordsPath = `${dataTrajet.depart.lon},${dataTrajet.depart.lat}`;
     if (dataTrajet.sousEtapes && dataTrajet.sousEtapes.length > 0) {
         dataTrajet.sousEtapes.forEach(se => {
@@ -271,11 +275,22 @@ async function calculerHorairesTrajet(card) {
     }
     coordsPath += `;${dataTrajet.arrivee.lon},${dataTrajet.arrivee.lat}`;
 
-    let profile = 'car';
-    if (dataTrajet.mode.includes('velo') || dataTrajet.mode.includes('vélo')) profile = 'bike';
-    if (dataTrajet.mode.includes('marche') || dataTrajet.mode.includes('pied')) profile = 'foot';
+    // --- CORRECTION ICI : Utilisation des bons serveurs ---
+    const servers = {
+        'voiture': 'https://routing.openstreetmap.de/routed-car',
+        'velo': 'https://routing.openstreetmap.de/routed-bike',
+        'vélo': 'https://routing.openstreetmap.de/routed-bike',
+        'marche': 'https://routing.openstreetmap.de/routed-foot',
+        'à pied': 'https://routing.openstreetmap.de/routed-foot'
+    };
 
-    const url = `https://router.project-osrm.org/route/v1/${profile}/${coordsPath}?overview=false&steps=false`;
+    // On récupère le bon serveur, sinon voiture par défaut
+    const baseUrl = servers[dataTrajet.mode] || servers['voiture'];
+
+    // Note : Sur ces serveurs spécifiques (FOSSGIS), on laisse souvent "/driving/" dans l'URL
+    // car c'est le sous-domaine (routed-foot) qui détermine la vitesse.
+    const url = `${baseUrl}/route/v1/driving/${coordsPath}?overview=false&steps=false`;
+    // -------------------------------------------------------
 
     try {
         const response = await fetch(url);
@@ -292,15 +307,18 @@ async function calculerHorairesTrajet(card) {
                 currentClock = addTime(currentClock, durationSeconds);
                 
                 const targetCard = etapeCards[legIndex + 1];
+                
                 if (targetCard) {
                     const horaireSpan = targetCard.querySelector('.horaire-calcule');
                     const isArrival = targetCard.dataset.isArrival === '1';
+                    // Correction potentielle si 'isDeparture' n'est pas défini dans ton HTML, on vérifie juste arrival
                     
                     if (horaireSpan) {
                         if (isArrival) {
                             horaireSpan.innerHTML = `🏁 Arrivée : <strong>${currentClock}</strong>`;
                         } else {
                             horaireSpan.innerHTML = `⏰ Arrivée : <strong>${currentClock}</strong>`;
+                            
                             const pauseDuration = targetCard.dataset.pause || '00:00';
                             if (pauseDuration !== '00:00') {
                                 const departTime = addTime(currentClock, durationToSeconds(pauseDuration));
@@ -315,11 +333,16 @@ async function calculerHorairesTrajet(card) {
                 if (segments[legIndex]) {
                     const segmentInfo = segments[legIndex];
                     segmentInfo.querySelector('.segment-distance').textContent = distanceKm + " km";
+                    
                     const hours = Math.floor(durationSeconds / 3600);
                     const minutes = Math.floor((durationSeconds % 3600) / 60);
-                    let timeText = hours > 0 ? hours + 'h ' : '';
+                    let timeText = '';
+                    if (hours > 0) timeText += hours + 'h ';
                     timeText += minutes + 'min';
+                    
                     segmentInfo.querySelector('.segment-time').textContent = timeText;
+                    // Ajout d'une classe pour indiquer que le calcul est fait (optionnel)
+                    segmentInfo.classList.add('segment-calculated');
                 }
             });
         }
