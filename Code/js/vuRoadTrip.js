@@ -309,14 +309,13 @@ async function calculerHorairesTrajet(card) {
     const dataTrajet = getTrajetData(trajetId);
     
     if (!dataTrajet || !dataTrajet.hasCoords) {
-        console.warn(`Trajet ${trajetId} : coordonnées manquantes`);
+        // console.warn(`Trajet ${trajetId} : coordonnées manquantes`);
         return;
     }
 
-    // Récupérer toutes les sous-étapes cards dans l'ordre
     const etapeCards = card.querySelectorAll('.sous-etape-card');
     
-    // Construire la liste des coordonnées : Départ -> Sous-étapes -> Arrivée
+    // Construction des coordonnées
     let coordsPath = `${dataTrajet.depart.lon},${dataTrajet.depart.lat}`;
     if (dataTrajet.sousEtapes && dataTrajet.sousEtapes.length > 0) {
         dataTrajet.sousEtapes.forEach(se => {
@@ -325,12 +324,22 @@ async function calculerHorairesTrajet(card) {
     }
     coordsPath += `;${dataTrajet.arrivee.lon},${dataTrajet.arrivee.lat}`;
 
-    // Choisir le bon profil de routage selon le mode de transport
-    let profile = 'car';
-    if (dataTrajet.mode === 'velo' || dataTrajet.mode === 'vélo') profile = 'bike';
-    if (dataTrajet.mode === 'marche' || dataTrajet.mode === 'à pied') profile = 'foot';
+    // --- CORRECTION ICI : Utilisation des bons serveurs ---
+    const servers = {
+        'voiture': 'https://routing.openstreetmap.de/routed-car',
+        'velo': 'https://routing.openstreetmap.de/routed-bike',
+        'vélo': 'https://routing.openstreetmap.de/routed-bike',
+        'marche': 'https://routing.openstreetmap.de/routed-foot',
+        'à pied': 'https://routing.openstreetmap.de/routed-foot'
+    };
 
-    const url = `https://router.project-osrm.org/route/v1/${profile}/${coordsPath}?overview=false&steps=false`;
+    // On récupère le bon serveur, sinon voiture par défaut
+    const baseUrl = servers[dataTrajet.mode] || servers['voiture'];
+
+    // Note : Sur ces serveurs spécifiques (FOSSGIS), on laisse souvent "/driving/" dans l'URL
+    // car c'est le sous-domaine (routed-foot) qui détermine la vitesse.
+    const url = `${baseUrl}/route/v1/driving/${coordsPath}?overview=false&steps=false`;
+    // -------------------------------------------------------
 
     try {
         const response = await fetch(url);
@@ -340,34 +349,28 @@ async function calculerHorairesTrajet(card) {
             const route = data.routes[0];
             let currentClock = dataTrajet.heure_depart || '08:00';
             
-            // Parcourir les "legs" (tronçons entre les points)
             route.legs.forEach((leg, legIndex) => {
                 const durationSeconds = leg.duration;
                 const distanceKm = (leg.distance / 1000).toFixed(1);
                 
-                // Ajouter le temps de route à l'heure actuelle
                 currentClock = addTime(currentClock, durationSeconds);
                 
-                // Trouver la carte correspondante (legIndex + 1 car 0 = départ)
                 const targetCard = etapeCards[legIndex + 1];
                 
                 if (targetCard) {
                     const horaireSpan = targetCard.querySelector('.horaire-calcule');
-                    const isDeparture = targetCard.dataset.isDeparture === '1';
                     const isArrival = targetCard.dataset.isArrival === '1';
+                    // Correction potentielle si 'isDeparture' n'est pas défini dans ton HTML, on vérifie juste arrival
                     
-                    if (horaireSpan && !isDeparture) {
+                    if (horaireSpan) {
                         if (isArrival) {
                             horaireSpan.innerHTML = `🏁 Arrivée : <strong>${currentClock}</strong>`;
                         } else {
                             horaireSpan.innerHTML = `⏰ Arrivée : <strong>${currentClock}</strong>`;
                             
-                            // Ajouter le temps de pause pour le calcul suivant
                             const pauseDuration = targetCard.dataset.pause || '00:00';
-                            const departTime = addTime(currentClock, durationToSeconds(pauseDuration));
-                            
-                            // Afficher aussi l'heure de départ de cette étape
                             if (pauseDuration !== '00:00') {
+                                const departTime = addTime(currentClock, durationToSeconds(pauseDuration));
                                 horaireSpan.innerHTML += `<br><span class="horaire-depart-etape">🚀 Départ : <strong>${departTime}</strong></span>`;
                                 currentClock = departTime;
                             }
@@ -375,13 +378,11 @@ async function calculerHorairesTrajet(card) {
                     }
                 }
                 
-                // Mettre à jour aussi le segment de transport correspondant
                 const segments = card.querySelectorAll('.segment-info');
                 if (segments[legIndex]) {
                     const segmentInfo = segments[legIndex];
                     segmentInfo.querySelector('.segment-distance').textContent = distanceKm + " km";
                     
-                    // Calculer le temps de trajet en heures et minutes
                     const hours = Math.floor(durationSeconds / 3600);
                     const minutes = Math.floor((durationSeconds % 3600) / 60);
                     let timeText = '';
@@ -389,19 +390,13 @@ async function calculerHorairesTrajet(card) {
                     timeText += minutes + 'min';
                     
                     segmentInfo.querySelector('.segment-time').textContent = timeText;
+                    // Ajout d'une classe pour indiquer que le calcul est fait (optionnel)
                     segmentInfo.classList.add('segment-calculated');
                 }
             });
         }
     } catch (error) {
         console.error("Erreur calcul horaires:", error);
-        // En cas d'erreur, afficher un message sur les horaires
-        etapeCards.forEach(card => {
-            const horaireSpan = card.querySelector('.horaire-calcule');
-            if (horaireSpan) {
-                horaireSpan.innerHTML = '<span style="color: #999;">⚠️ Calcul indisponible</span>';
-            }
-        });
     }
 }
 
