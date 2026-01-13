@@ -944,14 +944,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('segmentFormContainer').style.display = 'none';
     };
 
+    // ... (Code précédent inchangé) ...
+
     // ============================================================
-    // 8. SAUVEGARDE FINALE
+    // 8. SAUVEGARDE FINALE (VERSION OPTIMISÉE IUT)
     // ============================================================
 
     document.getElementById('saveRoadtrip').onclick = async (e) => {
         if(segments.length === 0) return alert('Aucun trajet !');
+        
         const btn = document.getElementById('saveRoadtrip');
-        const oldTxt = btn.textContent; btn.textContent = "Compression & Sauvegarde..."; btn.disabled = true;
+        const oldTxt = btn.textContent; 
+        btn.textContent = "Préparation et envoi..."; 
+        btn.disabled = true;
 
         try {
             const formData = new FormData();
@@ -961,28 +966,92 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('visibilite', document.getElementById('roadtripVisibilite').value);
             formData.append('statut', document.getElementById('roadtripStatut').value);
             
+            // Gestion Photo de couverture
             const fileInput = document.getElementById('roadtripPhoto');
             if(fileInput.files.length > 0) {
                 const originalFile = fileInput.files[0];
                 if(originalFile.type.startsWith('image/')) {
-                    const compressedFile = await compresserImageJS(originalFile, 0.7, 1920);
+                    // On compresse aussi la photo de couverture pour être gentil avec le serveur
+                    const compressedFile = await compresserImageJS(originalFile, 0.7, 1200);
                     formData.append('photo_cover', compressedFile);
-                } else formData.append('photo_cover', originalFile);
+                } else {
+                    formData.append('photo_cover', originalFile);
+                }
             }
 
-            const trajetsData = segments.map(s => ({
-                depart: s.startName, departLat: s.startCoord[0], departLon: s.startCoord[1],
-                arrivee: s.endName, arriveeLat: s.endCoord[0], arriveeLon: s.endCoord[1],
-                mode: s.modeTransport, date: s.date, sousEtapes: s.sousEtapes,
-                heure_depart: document.querySelector(`li[data-index="${segments.indexOf(s)}"] .legend-time-input`).value
-            }));
-            formData.append('trajets', JSON.stringify(trajetsData));
+            // --- FONCTION DE NETTOYAGE ---
+            // Cette fonction crée une copie propre des données pour l'envoi
+            const cleanSegmentsForSave = (segmentsSource) => {
+                return segmentsSource.map((s, index) => {
+                    const timeInput = document.querySelector(`li[data-index="${index}"] .legend-time-input`);
+                    
+                    // Nettoyage des sous-étapes
+                    const cleanSousEtapes = s.sousEtapes.map(se => {
+                        let desc = se.remarque || "";
+                        // REGEX MAGIQUE : Elle retire les images en base64 (src="data:image...")
+                        // qui font planter le serveur, mais garde les images uploadées (src="/uploads/...")
+                        desc = desc.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, '[Image trop lourde retirée - Utilisez le bouton upload]');
+                        
+                        return {
+                            nom: se.nom,
+                            heure: se.heure,
+                            remarque: desc, // Description nettoyée
+                            lat: se.lat || se.coords[0],
+                            lon: se.lon || se.coords[1]
+                        };
+                    });
 
+                    return {
+                        depart: s.startName,
+                        departLat: s.startCoord[0], departLon: s.startCoord[1],
+                        arrivee: s.endName,
+                        arriveeLat: s.endCoord[0], arriveeLon: s.endCoord[1],
+                        mode: s.modeTransport,
+                        date: s.date,
+                        heure_depart: timeInput ? timeInput.value : '08:00',
+                        sousEtapes: cleanSousEtapes
+                    };
+                });
+            };
+
+            // 1. On nettoie les données
+            const cleanTrajets = cleanSegmentsForSave(segments);
+            console.log("Données nettoyées prêtes à l'envoi :", cleanTrajets);
+
+            // 2. On utilise la technique du BLOB (Fichier virtuel)
+            // C'est indispensable pour contourner la limite 'max_input_vars' du serveur IUT
+            const jsonString = JSON.stringify(cleanTrajets);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            formData.append('trajets_file', blob, 'trajets.json');
+
+            // Ajout d'un tableau vide pour 'villes' pour éviter l'erreur PHP
+            formData.append('villes', JSON.stringify([]));
+
+            // 3. Envoi
             const resp = await fetch('/formulaire/saveRoadtrip.php', { method: 'POST', body: formData });
-            const json = await resp.json();
-            if(json.success) { alert("Sauvegardé ! 📸"); window.location.href = "/mesRoadTrips.php"; }
-            else alert("Erreur serveur : " + json.message);
-        } catch(e) { console.error(e); }
-        finally { btn.textContent = oldTxt; btn.disabled = false; }
+            
+            // Lecture de la réponse brute pour débogage si le JSON plante
+            const textResp = await resp.text(); 
+            
+            try {
+                const json = JSON.parse(textResp);
+                if(json.success) { 
+                    alert("Sauvegardé avec succès ! 💾"); 
+                    window.location.href = "/mesRoadTrips.php"; 
+                } else { 
+                    alert("Erreur retournée par le serveur : " + json.message); 
+                }
+            } catch(e) {
+                console.error("Erreur parsing JSON. Réponse brute du serveur :", textResp);
+                alert("Erreur technique (500). Regardez la console (F12) pour voir la réponse du serveur.");
+            }
+
+        } catch(e) { 
+            console.error("Erreur JS :", e); 
+            alert("Une erreur inattendue est survenue : " + e.message);
+        } finally { 
+            btn.textContent = oldTxt; 
+            btn.disabled = false; 
+        }
     };
 });
