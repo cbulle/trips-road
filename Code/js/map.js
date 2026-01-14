@@ -399,7 +399,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     date_trajet: t.date_trajet || t.date, 
                     heure_depart: t.heure_depart,
                     sousEtapes: sousEtapesWithCoords 
-                };                await _ajouterSegmentEntre(t.depart, startCoords, t.arrivee, endCoords, segments.length, strategies['Voiture'], dataForJs);
+                };               
+                await _ajouterSegmentEntre(t.depart, startCoords, t.arrivee, endCoords, segments.length, strategies[t.mode], dataForJs);
                 currentStartCity = t.arrivee;
                 currentStartCoords = endCoords;
             }
@@ -477,13 +478,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const transportBtns = clone.querySelectorAll('.transport-btn');
             transportBtns.forEach(btn => {
+                if (btn.dataset.mode === modeTransport) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+
                 btn.addEventListener('click', async () => {
                     const nouveauMode = btn.dataset.mode; 
-                    
                     transportBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-
-                    console.log("Passage au mode :", nouveauMode);
                     await updateRouteSegment(index, nouveauMode, segments[index].options);
                 });
             });
