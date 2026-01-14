@@ -2,7 +2,6 @@
 require_once __DIR__ . '/include/init.php';
 include_once __DIR__ . '/bd/lec_bd.php'; 
 
-// Vérification connexion
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /connexion.php');
     exit;
@@ -10,40 +9,32 @@ if (!isset($_SESSION['utilisateur']['id'])) {
 
 $defaultCity = isset($_SESSION['user']['ville']) ? $_SESSION['user']['ville'] : ""; 
 
-// --- MODE ÉDITION : Si un ID est fourni ---
 $modeEdition = false;
 $roadTripData = null;
 $existingTrajets = [];
 $existingVilles = [];
-// $isPublished n'est plus nécessaire pour bloquer l'édition, on le garde juste pour l'info si besoin
 $isPublished = false; 
 
 if (isset($_GET['id'])) {
     $id_rt = $_GET['id'];
     $id_user = $_SESSION['utilisateur']['id'];
 
-    // Récupérer le RoadTrip
     $stmt = $pdo->prepare("SELECT * FROM roadtrip WHERE id = ? AND id_utilisateur = ?");
     $stmt->execute([$id_rt, $id_user]);
     $roadTripData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($roadTripData) {
       
-      // --- MODIFICATION ICI ---
-      // J'ai supprimé le bloc qui redirigeait vers vuRoadTrip.php si le statut était 'termine'.
-      // Maintenant, on peut éditer peu importe le statut.
       if ($roadTripData['statut'] === 'termine') {
         $isPublished = true;
       }
       
       $modeEdition = true;
 
-      // Récupérer Trajets
       $stmtT = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero ASC");
       $stmtT->execute([$id_rt]);
       $rawTrajets = $stmtT->fetchAll(PDO::FETCH_ASSOC);
 
-      // Récupérer Sous-étapes pour chaque trajet
       foreach ($rawTrajets as $t) {
           $stmtS = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero ASC");
           $stmtS->execute([$t['id']]);
@@ -56,7 +47,8 @@ if (isset($_GET['id'])) {
           } elseif(isset($t['date_trajet'])) {
               $trajetComplet['date_trajet'] = date('Y-m-d', strtotime($t['date_trajet']));
           }
-
+          
+          $trajetComplet['heure_depart'] = isset($t['heure_depart']) ? $t['heure_depart'] : "08:00";
           $trajetComplet['sousEtapes'] = array_map(function($se) {
               return [
                   'nom' => $se['ville'],

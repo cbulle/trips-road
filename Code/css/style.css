@@ -440,10 +440,6 @@ padding: 6px 10px;
   ANIMATION FORMULAIRE SOUS-ETAPES
 ============================== */
 
-/* ==============================
-  ANIMATION FORMULAIRE SOUS-ETAPES
-============================== */
-
 .segment-form-container {
   transition: opacity 0.3s ease; 
   opacity: 1;
