@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/lec_bd.php'; // Votre connexion $pdo
+require_once __DIR__ . '/lec_bd.php'; 
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -7,11 +7,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $userId = $_SESSION['utilisateur']['id'] ?? null;
 
-// --- REQUÊTE SQL INTELLIGENTE ---
-// Elle récupère :
-// 1. Les road trips Publics
-// 2. Vos propres road trips
-// 3. Les road trips "Amis" SI une relation 'accepte' existe dans la table 'amis'
 $sql = '
     SELECT DISTINCT r.*, u.pseudo 
     FROM roadtrip r

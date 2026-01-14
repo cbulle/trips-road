@@ -172,11 +172,6 @@ function getTransportIcon($type) {
         
         <p><?php echo nl2br($roadTrip['description']); ?></p>
 
-        <?php if($roadTrip['id_utilisateur'] == $id_utilisateur): ?>
-        <div class="actions-header">
-            <a href="creationRoadTrip.php?id=<?php echo $roadTrip['id']; ?>" class="btn-modifier">✏️ Modifier ce Road Trip</a>
-        </div>
-        <?php endif; ?>
     </div>
 
     <h2>Vue d'ensemble du Road Trip 🌍</h2>
@@ -305,7 +300,9 @@ function getTransportIcon($type) {
                         ?>
                     <?php endfor; ?>
                 </div> 
-                <div id="map-trajet-<?php echo $t['id']; ?>" class="map-trajet"></div>
+                <div class = "map-container-vu"> 
+                    <div id="map-trajet-<?php echo $t['id']; ?>" class="map-trajet"></div>
+                </div>
             </div>
         </div>
     <?php endforeach; ?>    
