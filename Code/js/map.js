@@ -394,8 +394,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (startCoords && endCoords) {
                 addMarker(t.depart, startCoords, "ville", t.depart);
                 addMarker(t.arrivee, endCoords, "ville", t.arrivee);
-                const dataForJs = { mode: t.mode, date_trajet: t.date_trajet || t.date, sousEtapes: sousEtapesWithCoords };
-                await _ajouterSegmentEntre(t.depart, startCoords, t.arrivee, endCoords, segments.length, strategies['Voiture'], dataForJs);
+                const dataForJs = { 
+                    mode: t.mode, 
+                    date_trajet: t.date_trajet || t.date, 
+                    heure_depart: t.heure_depart,
+                    sousEtapes: sousEtapesWithCoords 
+                };                await _ajouterSegmentEntre(t.depart, startCoords, t.arrivee, endCoords, segments.length, strategies['Voiture'], dataForJs);
                 currentStartCity = t.arrivee;
                 currentStartCoords = endCoords;
             }
@@ -458,19 +462,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const dateInput = clone.querySelector('.legend-date-input');
             if(segData.date) dateInput.value = segData.date;
+
+            const timeInput = clone.querySelector('.legend-time-input');
+            if(existingData && existingData.heure_depart) {
+                timeInput.value = existingData.heure_depart;
+                segData.heure_depart = existingData.heure_depart; 
+            } else {
+                segData.heure_depart = timeInput.value;
+            }
+            timeInput.addEventListener('change', (e) => {
+                segments[index].heure_depart = e.target.value;
+                updateLegendHtml(index); // Relance le calcul de l'itinéraire horaire
+            });
             
             const transportBtns = clone.querySelectorAll('.transport-btn');
             transportBtns.forEach(btn => {
                 btn.addEventListener('click', async () => {
-                    // Récupérer le mode depuis l'attribut data-mode du bouton cliqué
                     const nouveauMode = btn.dataset.mode; 
                     
-                    // UI : changer le bouton actif
                     transportBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
 
-                    // IMPORTANT : Appeler la mise à jour avec le nouveau mode
-                    console.log("Passage au mode :", nouveauMode); // Pour tes tests
+                    console.log("Passage au mode :", nouveauMode);
                     await updateRouteSegment(index, nouveauMode, segments[index].options);
                 });
             });
@@ -483,8 +496,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error(e); }
     }
 
-    // Fonction utilitaire pour créer le select des favoris
-    // 1. Fonction pour le menu Départ / Arrivée
     function createFavSelectForInput(targetInputId) {
         if (!userFavorites || userFavorites.length === 0) return null;
 

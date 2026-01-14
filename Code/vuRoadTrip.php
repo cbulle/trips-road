@@ -64,11 +64,6 @@ $stmt->execute([$id_roadtrip]);
 $roadTrip = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$roadTrip) { echo "Road trip introuvable."; exit; }
 
-// Vérification droits (si besoin, ici on affiche même si public, mais vuRoadTrip est souvent pour le créateur)
-// Si vous voulez restreindre vuRoadTrip au seul créateur :
-// if ($roadTrip['id_utilisateur'] != $id_utilisateur) { header("Location: Roadtrip.php?id=$id_roadtrip"); exit; }
-
-// Récupération Trajets
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
