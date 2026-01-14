@@ -118,6 +118,8 @@ require_once __DIR__ . '/../include/init.php';
         </section>
     </div>
 </main>
-
+<?php
+    include_once __DIR__ . "/../modules/footer.php";
+?>
     </body>
     </html>

@@ -321,7 +321,9 @@ function getTransportIcon($type) {
                     <?php endfor; ?>
                 </div> 
                 
-                <div id="map-trajet-<?php echo $t['id']; ?>" class="map-trajet"></div>
+                <div class = "map-container-vu"> 
+                    <div id="map-trajet-<?php echo $t['id']; ?>" class="map-trajet"></div>
+                </div>
             </div>
         </div>
     <?php endforeach; ?>    

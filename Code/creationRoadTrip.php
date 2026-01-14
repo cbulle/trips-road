@@ -49,6 +49,7 @@ if (isset($_GET['id'])) {
           }
           
           $trajetComplet['heure_depart'] = isset($t['heure_depart']) ? $t['heure_depart'] : "08:00";
+          $trajetComplet['mode'] = isset($t['mode_transport']) ? $t['mode_transport'] : "Voiture";
           $trajetComplet['sousEtapes'] = array_map(function($se) {
               return [
                   'nom' => $se['ville'],

@@ -25,7 +25,6 @@ function geocoderVilleEnDirect($nomVille, $pdo) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_USERAGENT, "SaeRoadTripApp_V2");
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    // Configuration SSL permissive pour éviter les blocages sur certains PC locaux
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
