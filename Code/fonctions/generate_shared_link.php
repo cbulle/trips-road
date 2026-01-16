@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
+require_once __DIR__ . '/../include/init.php';
+include_once __DIR__ . '/../bd/lec_bd.php';
 
 if (!isset($_SESSION['utilisateur']['id'])) {
-    header('Location: /id.php');
+    header('Location: /../id.php');
     exit;
 }
 
@@ -11,14 +11,14 @@ $id_utilisateur = $_SESSION['utilisateur']['id'];
 $id_roadtrip = $_GET['id'] ?? null;
 
 if (!$id_roadtrip) {
-    header('Location: /mesRoadTrips.php');
+    header('Location: /../mesRoadTrips.php');
     exit;
 }
 
 $stmt = $pdo->prepare("SELECT id FROM roadtrip WHERE id = :id AND id_utilisateur = :user_id");
 $stmt->execute(['id' => $id_roadtrip, 'user_id' => $id_utilisateur]);
 if (!$stmt->fetch()) {
-    header('Location: /mesRoadTrips.php');
+    header('Location: /../mesRoadTrips.php');
     exit;
 }
 
@@ -38,7 +38,7 @@ try {
     
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
-    $shareUrl = $protocol . '://' . $host . '/shared.php?t=' . $token;
+    $shareUrl = $protocol . '://' . $host . '/../shared.php?t=' . $token;
     
     $_SESSION['share_url'] = $shareUrl;
     
@@ -46,5 +46,5 @@ try {
     error_log("Erreur génération lien: " . $e->getMessage());
 }
 
-header('Location: /mesRoadTrips.php?show_share=' . $id_roadtrip);
+header('Location: /../mesRoadTrips.php?show_share=' . $id_roadtrip);
 exit;
