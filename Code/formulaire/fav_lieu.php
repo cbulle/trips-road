@@ -2,8 +2,9 @@
 // Code/formulaire/fav_lieu.php
 
 require_once __DIR__ . '/../include/init.php';
-// Ajout de la connexion à la base de données (indispensable)
-require_once __DIR__ . '/../bd/lec_bd.php'; 
+require_once __DIR__ . '/../bd/lec_bd.php';
+
+/** @var PDO $pdo */
 
 header('Content-Type: application/json');
 
