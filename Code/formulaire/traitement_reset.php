@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../include/init.php';
+include_once __DIR__ . '/../bd/lec_bd.php';
+
+/** @var PDO $pdo */
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $token = $_POST['token'];

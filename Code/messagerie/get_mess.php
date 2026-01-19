@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../include/init.php';
 include_once __DIR__ . '/../bd/lec_bd.php';
 
+/** @var PDO $pdo */
+
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['utilisateur']['id'])) {

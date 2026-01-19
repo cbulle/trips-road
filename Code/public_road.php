@@ -3,7 +3,7 @@ require_once __DIR__ . '/include/init.php';
 include_once __DIR__ . '/bd/lec_bd.php';
 include_once __DIR__ . '/fonctions/InfoItineraire.php';
 
-// --- FONCTIONS DE GÉOCODAGE (Version optimisée) ---
+/** @var PDO $pdo */
 
 function getCoordonneesDepuisFavoris($nomLieu, $id_utilisateur, $pdo) {
     $stmt = $pdo->prepare("SELECT latitude, longitude FROM lieux_favoris WHERE nom_lieu = :nom AND id_utilisateur = :uid LIMIT 1");
