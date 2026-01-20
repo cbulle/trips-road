@@ -82,11 +82,11 @@ io.use(async (socket, next) => {
     socket.userName = `${rows[0].prenom} ${rows[0].nom}`;
     socket.userPhoto = rows[0].photo_profil;
     
-    console.log(`✅ Authentification réussie: ${socket.userName} (${socket.userId})`);
+    console.log(`Authentification réussie: ${socket.userName} (${socket.userId})`);
     next();
     
   } catch (error) {
-    console.error('❌ Erreur auth:', error);
+    console.error('Erreur auth:', error);
     next(new Error('Database error'));
   }
 });
@@ -122,7 +122,7 @@ io.on('connection', async (socket) => {
   
   // ============ ÉVÉNEMENT : ENVOI DE MESSAGE ============
   socket.on('message:send', async (data) => {
-    console.log(`📤 Message de ${socket.userName}:`, {
+    console.log(`Message de ${socket.userName}:`, {
       conv: data.conversationId,
       dest: data.destinataireId
     });
@@ -183,7 +183,7 @@ io.on('connection', async (socket) => {
       // Envoyer au destinataire s'il est connecté
       const destinataire = connectedUsers.get(destinataireId);
       if (destinataire) {
-        console.log(`📨 Envoi à ${destinataire.userName}`);
+        console.log(`Envoi à ${destinataire.userName}`);
         io.to(destinataire.socketId).emit('message:received', messageData);
         
         // Marquer comme délivré
@@ -192,7 +192,7 @@ io.on('connection', async (socket) => {
           [messageId]
         );
       } else {
-        console.log(`📭 Destinataire hors ligne (${destinataireId})`);
+        console.log(`Destinataire hors ligne (${destinataireId})`);
       }
       
       // Confirmer à l'expéditeur
@@ -201,10 +201,10 @@ io.on('connection', async (socket) => {
         tempId: data.tempId // Pour mettre à jour l'UI optimiste
       });
       
-      console.log(`✅ Message ${messageId} envoyé`);
+      console.log(`Message ${messageId} envoyé`);
       
     } catch (error) {
-      console.error('❌ Erreur envoi message:', error);
+      console.error('Erreur envoi message:', error);
       socket.emit('message:error', { 
         error: 'Erreur serveur',
         details: error.message 
@@ -214,7 +214,7 @@ io.on('connection', async (socket) => {
   
   // ============ ÉVÉNEMENT : UTILISATEUR ÉCRIT ============
   socket.on('typing:start', ({ conversationId, destinataireId }) => {
-    console.log(`✍️ ${socket.userName} écrit dans conv ${conversationId}`);
+    console.log(` ${socket.userName} écrit dans conv ${conversationId}`);
     
     // Ajouter à la map des typeurs
     if (!typingUsers.has(conversationId)) {
@@ -234,7 +234,7 @@ io.on('connection', async (socket) => {
   });
   
   socket.on('typing:stop', ({ conversationId, destinataireId }) => {
-    console.log(`🛑 ${socket.userName} arrête d'écrire`);
+    console.log(`${socket.userName} arrête d'écrire`);
     
     // Retirer de la map
     if (typingUsers.has(conversationId)) {
@@ -257,7 +257,7 @@ io.on('connection', async (socket) => {
   
   // ============ ÉVÉNEMENT : MARQUER COMME LU ============
   socket.on('message:read', async ({ messageId, conversationId }) => {
-    console.log(`👁️ Message ${messageId} lu par ${socket.userName}`);
+    console.log(`Message ${messageId} lu par ${socket.userName}`);
     
     try {
       // Mettre à jour en BDD
@@ -296,7 +296,7 @@ io.on('connection', async (socket) => {
   
   // ============ ÉVÉNEMENT : MARQUER CONVERSATION COMME LUE ============
   socket.on('conversation:read', async ({ conversationId }) => {
-    console.log(`📖 Conversation ${conversationId} lue par ${socket.userName}`);
+    console.log(`Conversation ${conversationId} lue par ${socket.userName}`);
     
     try {
       // Marquer tous les messages non lus de cette conversation
@@ -309,7 +309,7 @@ io.on('connection', async (socket) => {
         [conversationId, socket.userId]
       );
       
-      console.log(`✅ ${result.affectedRows} messages marqués comme lus`);
+      console.log(`${result.affectedRows} messages marqués comme lus`);
       
       // Récupérer l'autre participant
       const [conv] = await pool.execute(
@@ -335,13 +335,13 @@ io.on('connection', async (socket) => {
       }
       
     } catch (error) {
-      console.error('❌ Erreur lecture conversation:', error);
+      console.error('Erreur lecture conversation:', error);
     }
   });
   
   // ============ DÉCONNEXION ============
   socket.on('disconnect', async () => {
-    console.log(`🔴 Déconnexion: ${socket.userName}`);
+    console.log(`Déconnexion: ${socket.userName}`);
     
     // Retirer de la map
     connectedUsers.delete(socket.userId);
@@ -363,7 +363,7 @@ io.on('connection', async (socket) => {
   
   // ============ GESTION DES ERREURS ============
   socket.on('error', (error) => {
-    console.error(`❌ Erreur socket ${socket.userName}:`, error);
+    console.error(`Erreur socket ${socket.userName}:`, error);
   });
 });
 
@@ -384,7 +384,7 @@ async function joinUserConversations(socket) {
       console.log(`  → Rejoint ${room}`);
     });
     
-    console.log(`📁 ${socket.userName} a rejoint ${conversations.length} conversation(s)`);
+    console.log(`${socket.userName} a rejoint ${conversations.length} conversation(s)`);
     
   } catch (error) {
     console.error('Erreur joinUserConversations:', error);
@@ -443,7 +443,7 @@ async function notifyFriendsOnline(userId, isOnline) {
       }
     });
     
-    console.log(`📢 ${friends.length} ami(s) notifié(s) du statut de ${userName}`);
+    console.log(`${friends.length} ami(s) notifié(s) du statut de ${userName}`);
     
   } catch (error) {
     console.error('Erreur notifyFriendsOnline:', error);
@@ -479,35 +479,35 @@ const PORT = process.env.SOCKET_PORT || 3000;
 
 http.listen(PORT, () => {
   console.log('\n=================================');
-  console.log('🚀 Serveur Socket.IO démarré !');
-  console.log(`📡 Port: ${PORT}`);
-  console.log(`🌐 Origine autorisée: ${process.env.ALLOWED_ORIGIN}`);
-  console.log(`💾 BDD: ${process.env.DB_NAME}@${process.env.DB_HOST}`);
+  console.log('Serveur Socket.IO démarré !');
+  console.log(`Port: ${PORT}`);
+  console.log(`Origine autorisée: ${process.env.ALLOWED_ORIGIN}`);
+  console.log(`BDD: ${process.env.DB_NAME}@${process.env.DB_HOST}`);
   console.log('=================================\n');
-  console.log('📊 Routes de monitoring:');
+  console.log('Routes de monitoring:');
   console.log(`   http://localhost:${PORT}/health`);
   console.log(`   http://localhost:${PORT}/stats`);
-  console.log('\n👁️  En attente de connexions...\n');
+  console.log('\n  En attente de connexions...\n');
 });
 
 // ============ GESTION ARRÊT PROPRE ============
 process.on('SIGINT', async () => {
-  console.log('\n\n🛑 Arrêt du serveur...');
+  console.log('\n\nArrêt du serveur...');
   
   // Mettre tous les utilisateurs hors ligne
   for (const [userId] of connectedUsers) {
     await updateUserPresence(userId, null, 'offline');
   }
   
-  console.log('✅ Nettoyage terminé');
+  console.log('Nettoyage terminé');
   process.exit(0);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Promesse rejetée non gérée:', reason);
+  console.error('Promesse rejetée non gérée:', reason);
 });
 
 process.on('uncaughtException', (error) => {
-  console.error('❌ Exception non capturée:', error);
+  console.error('Exception non capturée:', error);
   process.exit(1);
 });
