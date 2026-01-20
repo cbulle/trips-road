@@ -21,7 +21,6 @@ if (empty($message) || !$destinataire_id) {
 try {
     // Si pas de conversation_id, créer ou récupérer la conversation
     if (!$conversation_id) {
-        // Vérifier si une conversation existe déjà
         $stmt = $pdo->prepare("
             SELECT id FROM conversations 
             WHERE (user1_id = :u1 AND user2_id = :u2) 
@@ -33,7 +32,6 @@ try {
         if ($conv) {
             $conversation_id = $conv['id'];
         } else {
-            // Créer une nouvelle conversation
             $stmt = $pdo->prepare("
                 INSERT INTO conversations (user1_id, user2_id) 
                 VALUES (:u1, :u2)
@@ -43,7 +41,6 @@ try {
         }
     }
     
-    // Insérer le message (non chiffré si fallback)
     $stmt = $pdo->prepare("
         INSERT INTO messages 
         (conversation_id, expediteur_id, destinataire_id, message, lu) 
@@ -56,7 +53,6 @@ try {
         'msg' => $message
     ]);
     
-    // Mettre à jour la dernière activité
     $stmt = $pdo->prepare("
         UPDATE conversations 
         SET derniere_activite = NOW() 
@@ -64,7 +60,6 @@ try {
     ");
     $stmt->execute(['id' => $conversation_id]);
     
-    // Message de succès (optionnel)
     $_SESSION['message_sent'] = true;
     
 } catch (PDOException $e) {
