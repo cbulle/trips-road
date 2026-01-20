@@ -65,6 +65,25 @@ $stmt->execute([$id_roadtrip]);
 $roadTrip = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$roadTrip) { echo "Road trip introuvable."; exit; }
 
+// --- ENREGISTREMENT DANS L'HISTORIQUE (Code Résolu) ---
+if (isset($id_utilisateur)) {
+    try {
+        // 1. Suppression de l'ancienne visite pour ce roadtrip (nettoyage)
+        // Cela permet de ne garder que la visite la plus récente
+        $delStmt = $pdo->prepare("DELETE FROM historique WHERE id_utilisateur = :uid AND id_roadtrip = :rid");
+        $delStmt->execute(['uid' => $id_utilisateur, 'rid' => $id_roadtrip]);
+
+        // 2. Insertion de la nouvelle visite
+        $insStmt = $pdo->prepare("INSERT INTO historique (id_utilisateur, id_roadtrip, date_visite) VALUES (:uid, :rid, NOW())");
+        $insStmt->execute(['uid' => $id_utilisateur, 'rid' => $id_roadtrip]);
+
+    } catch (Exception $e) {
+        // On capture l'erreur silencieusement pour ne pas bloquer l'affichage de la page
+        // error_log($e->getMessage()); 
+    }
+}
+// ----------------------------------------------------
+
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
