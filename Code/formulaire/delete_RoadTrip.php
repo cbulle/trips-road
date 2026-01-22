@@ -63,5 +63,5 @@ $delete = $pdo->prepare("DELETE FROM roadtrip WHERE id = :id");
 $delete->execute(['id' => $id_roadtrip]);
 
 // Retour à la liste avec un message
-header("Location: /../mesRoadTrips.php?msg=supprime");
+header("Location: /../mesRoadTrips?msg=supprime");
 exit;

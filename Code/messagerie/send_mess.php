@@ -5,7 +5,7 @@ include_once __DIR__ . '/../bd/lec_bd.php';
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
-    header('Location: /id.php');
+    header('Location: /id');
     exit;
 }
 
@@ -15,7 +15,7 @@ $destinataire_id = $_POST['destinataire_id'] ?? null;
 $message = trim($_POST['message'] ?? '');
 
 if (empty($message) || !$destinataire_id) {
-    header('Location: /messagerie.php' . ($conversation_id ? '?conv=' . $conversation_id : ''));
+    header('Location: /messagerie' . ($conversation_id ? '?conv=' . $conversation_id : ''));
     exit;
 }
 
@@ -60,5 +60,5 @@ try {
     error_log("Erreur envoi message: " . $e->getMessage());
 }
 
-header('Location: /messagerie.php?conv=' . $conversation_id);
+header('Location: /messagerie?conv=' . $conversation_id);
 exit;

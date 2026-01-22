@@ -48,5 +48,5 @@ try {
     $_SESSION['error'] = "Erreur lors de l'opération.";
 }
 
-header('Location: /' . 'favoris.php');
+header('Location: /' . 'favoris');
 exit;

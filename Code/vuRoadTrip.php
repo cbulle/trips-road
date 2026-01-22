@@ -8,7 +8,7 @@ include_once __DIR__ . '/fonctions/geocoderVilleEnDirect.php';
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
-    header('Location: /id.php');
+    header('Location: /id');
     exit;
 }
 $id_utilisateur = $_SESSION['utilisateur']['id'];

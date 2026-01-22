@@ -61,22 +61,21 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p><?= htmlspecialchars($rt['description']) ?></p>
 
             <div class="roadtrip-buttons">
-                <a class="btn-view" href="vuRoadTrip.php?id=<?= $rt['id'] ?>">
+                <a class="btn-view" href="vuRoadTrip?id=<?= $rt['id'] ?>">
                     <i class="material-icons">visibility</i>
                 </a>
 
-                <a class="btn-edit" href="creationRoadTrip.php?id=<?= $rt['id'] ?>">
-                    <i class="material-icons">edit</i> 
-                </a>
-                
-                <a class="btn-share" href="generate_shared_link.php?id=<?= $rt['id'] ?>">
-                    <i class="material-icons">share</i>                   
+                <a class="btn-edit" href="creationRoadTrip?id=<?= $rt['id'] ?>">
+                    <i class="material-icons">edit</i>
                 </a>
 
-                <a class="btn-delete" href="/formulaire/delete_RoadTrip.php?id=<?= $rt['id'] ?>" 
+                <a class="btn-share" href="generate_shared_link?id=<?= $rt['id'] ?>">
+                    <i class="material-icons">share</i>
+                </a>
+
+                <a class="btn-delete" href="delete_RoadTrip?id=<?= $rt['id'] ?>"
                    onclick="return confirm('Voulez-vous vraiment supprimer ce road trip ?');">
-                                        <i class="material-icons">delete</i>                   
-
+                    <i class="material-icons">delete</i>
                 </a>
             </div>
 

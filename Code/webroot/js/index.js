@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Vérifie si l'utilisateur est connecté (variable définie dans index.php)
         if (typeof currentUserId === 'undefined' || currentUserId === null) return;
 
-        fetch('/fonctions/get_lieux_favoris.php')
+        fetch('/get_lieux_favoris')
             .then(resp => resp.json())
             .then(data => {
                 data.forEach(fav => {

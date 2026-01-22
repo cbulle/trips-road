@@ -13,14 +13,14 @@ $id_utilisateur = $_SESSION['utilisateur']['id'];
 $id_roadtrip = $_GET['id'] ?? null;
 
 if (!$id_roadtrip) {
-    header('Location: /mesRoadTrips.php');
+    header('Location: /mesRoadTrips');
     exit;
 }
 
 $stmt = $pdo->prepare("SELECT id FROM roadtrip WHERE id = :id AND id_utilisateur = :user_id");
 $stmt->execute(['id' => $id_roadtrip, 'user_id' => $id_utilisateur]);
 if (!$stmt->fetch()) {
-    header('Location: /mesRoadTrips.php');
+    header('Location: /mesRoadTrips');
     exit;
 }
 
@@ -48,5 +48,5 @@ try {
     error_log("Erreur génération lien: " . $e->getMessage());
 }
 
-header('Location: /mesRoadTrips.php?show_share=' . $id_roadtrip);
+header('Location: /mesRoadTrips?show_share=' . $id_roadtrip);
 exit;

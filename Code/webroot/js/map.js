@@ -1043,7 +1043,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('villes', JSON.stringify([]));
 
             // 3. Envoi
-            const resp = await fetch('/formulaire/saveRoadtrip.php', { method: 'POST', body: formData });
+            const resp = await fetch('/creationRoadTrip', { method: 'POST', body: formData });
             
             // Lecture de la réponse brute pour débogage si le JSON plante
             const textResp = await resp.text(); 
@@ -1052,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const json = JSON.parse(textResp);
                 if(json.success) { 
                     alert("Sauvegardé avec succès ! 💾"); 
-                    window.location.href = "/mesRoadTrips.php"; 
+                    window.location.href = "/mesRoadTrips";
                 } else { 
                     alert("Erreur retournée par le serveur : " + json.message); 
                 }

@@ -94,14 +94,14 @@ if ($id_utilisateur) {
             </p>
 
             <div class="roadtrip-buttons">
-                <a class="btn-view" href="public_road.php?id=<?= $rt['id'] ?>">
+                <a class="btn-view" href="public_road?id=<?= $rt['id'] ?>">
                     <i class="material-icons">visibility</i>
                 </a>
                 
                 <?php if ($id_utilisateur): ?>
                     <?php $isFavori = in_array($rt['id'], $favorisIds); ?>
                     <a class="btn-favori <?= $isFavori ? 'active' : '' ?>" 
-                       href="/formulaire/favo.php?id=<?= $rt['id'] ?>&redirect=Roadtrip.php">
+                       href="/favo?id=<?= $rt['id'] ?>&redirect=Roadtrip">
                         <i class="material-icons">favorite</i>
                     </a>
                 <?php endif; ?>

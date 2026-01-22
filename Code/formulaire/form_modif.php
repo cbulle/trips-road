@@ -41,7 +41,7 @@ if (!empty($new_password)) {
 }
 
 
-$upload_dir = __DIR__ . '/../uploads/pp/';
+$upload_dir = WEBROOT . "uploads/pp";
 if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0777, true);
 }
@@ -140,5 +140,5 @@ $_SESSION['utilisateur'] = [
     'photo_profil'   => $new_photo
 ];
 
-header("Location: ../profil.php?updated=1");
+header("Location: /profil?updated=1");
 exit;
