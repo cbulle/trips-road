@@ -2,18 +2,16 @@
 // ============================================================
 // CONFIGURATION & INITIALISATION
 // ============================================================
+/** @var PDO $pdo */
 
-// On tente d'augmenter les limites pour ce script (si le serveur l'autorise)
 @ini_set('memory_limit', '512M');       // Mémoire vive pour le traitement
 @ini_set('max_execution_time', 300);    // Temps max (5 min)
 @ini_set('post_max_size', '64M');       // Taille max POST
 @ini_set('upload_max_filesize', '64M'); // Taille max Fichier
 
-// Désactiver l'affichage des erreurs HTML (sinon le JSON casse)
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// On définit le type de réponse attendu par le JS
 header('Content-Type: application/json; charset=utf-8');
 
 // Imports
