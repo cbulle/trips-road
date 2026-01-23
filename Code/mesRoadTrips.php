@@ -69,7 +69,7 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <i class="material-icons">edit</i> 
                 </a>
                 
-                <a class="btn-share" href="generate_shared_link.php?id=<?= $rt['id'] ?>">
+                <a class="btn-share" href="/../fonctions/generate_shared_link.php?id=<?= $rt['id'] ?>">
                     <i class="material-icons">share</i>                   
                 </a>
 
