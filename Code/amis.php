@@ -104,7 +104,7 @@ include_once __DIR__ . '/bd/lec_bd.php';
                                 </div>
                                 
                                 <div class="ami-actions">
-                                    <a href="/messagerie/debut_conv.php?ami_id=<?= $ami['id'] ?>" 
+                                    <a href="/debut_conv?ami_id=<?= $ami['id'] ?>"
                                        class="btn-message">
                                         <i class="material-icons" >chat</i> Message
                                     </a>

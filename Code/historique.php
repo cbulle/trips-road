@@ -6,7 +6,7 @@ include_once __DIR__ . '/bd/lec_bd.php';
 
 // Redirection si pas connecté
 if (!isset($_SESSION['utilisateur']['id'])) {
-    header('Location: /id.php');
+    header('Location: /login');
     exit;
 }
 

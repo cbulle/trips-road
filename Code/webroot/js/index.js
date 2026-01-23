@@ -502,7 +502,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append('lon', lon);
         formData.append('categorie', categorie);
 
-        fetch('/formulaire/fav_lieu.php', {
+        fetch('/fav_lieu', {
             method: 'POST',
             body: formData
         })

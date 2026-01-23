@@ -5,7 +5,7 @@ require_once __DIR__ . "/path.php";
 $url = $_SERVER['PATH_INFO'] ?? "";
 
 switch($url) {
-    case "/":
+    case "":
         include_once ROOT . "index.php";
         break;
 
@@ -135,7 +135,7 @@ switch($url) {
         include_once ROOTFORM . "delete_RoadTrip.php";
         break;
 
-    case "/action_fav_lieu":
+    case "/fav_lieu":
         include_once ROOTFORM . "fav_lieu.php";
         break;
 
