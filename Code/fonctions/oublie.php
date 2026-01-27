@@ -1,4 +1,4 @@
-<?php require_once '../include/init.php'; ?>
+<?php require_once ROOT . 'include/init.php'; ?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<?php include_once __DIR__ . "/../modules/header.php"; ?>
+<?php include_once ROOT . "modules/header.php"; ?>
 
 <main class="main-index">
     <div class="index_container">
@@ -21,6 +21,6 @@
 </form>
 </main>
 
-<?php include_once __DIR__ . "/../modules/footer.php"; ?>
+<?php include_once ROOT . "modules/footer.php"; ?>
 </body>
 </html>

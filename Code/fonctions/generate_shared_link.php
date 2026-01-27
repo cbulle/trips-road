@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../bd/lec_bd.php';
+include_once ROOT . 'bd/lec_bd.php';
 
 /** @var PDO $pdo */
 

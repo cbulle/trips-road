@@ -17,7 +17,6 @@ header('Content-Type: application/json; charset=utf-8');
 // Imports
 require_once __DIR__ . '/../include/init.php';
 include __DIR__ . '/../bd/lec_bd.php';
-require_once __DIR__ . '/../fonctions/compressImage.php';
 
 // ============================================================
 // FONCTIONS UTILITAIRES

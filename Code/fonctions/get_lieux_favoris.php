@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../bd/lec_bd.php';
+require_once ROOT . 'bd/lec_bd.php';
 
 /** @var PDO $pdo */
 
