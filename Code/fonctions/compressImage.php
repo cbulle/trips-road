@@ -1,5 +1,4 @@
 <?php
-// Fonction de compression + création miniature
 function compressImage($source, $dest, $quality = 75, $thumbWidth = 200, $thumbDir = null) {
     $info = getimagesize($source);
     $mime = $info['mime'];

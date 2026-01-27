@@ -13,7 +13,7 @@
 <main class="main-index">
     <div class="index_container">
 
-<form action="/../formulaire/traitement_oublie.php" method="POST">
+<form action=/traitement_oublie" method="POST">
     <h2>Réinitialisation du mot de passe</h2>
     <label for="email">Votre adresse email :</label>
     <input type="email" name="email" required>
