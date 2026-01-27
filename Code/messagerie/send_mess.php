@@ -20,9 +20,7 @@ if (empty($message) || !$destinataire_id) {
 }
 
 try {
-    // Si pas de conversation_id, créer ou récupérer la conversation
     if (!$conversation_id) {
-        // Vérifier si une conversation existe déjà entre ces deux utilisateurs
         $stmt = $pdo->prepare("
             SELECT id FROM conversations 
             WHERE (user1_id = :u1 AND user2_id = :u2) OR (user1_id = :u2 AND user2_id = :u1)
@@ -52,7 +50,6 @@ try {
         'msg' => $message
     ]);
     
-    // Mettre à jour la dernière activité de la conversation
     $stmt = $pdo->prepare("UPDATE conversations SET derniere_activite = NOW() WHERE id = :id");
     $stmt->execute(['id' => $conversation_id]);
     

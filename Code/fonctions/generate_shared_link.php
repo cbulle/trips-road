@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
+require_once __DIR__ . '/../include/init.php';
+include_once __DIR__ . '/../bd/lec_bd.php';
 
 /** @var PDO $pdo */
 
@@ -40,7 +40,7 @@ try {
     
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
-    $shareUrl = $protocol . '://' . $host . '/shared.php?t=' . $token;
+    $shareUrl = $protocol . '://' . $host . '/../shared.php?t=' . $token;
     
     $_SESSION['share_url'] = $shareUrl;
     
