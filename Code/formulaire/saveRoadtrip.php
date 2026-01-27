@@ -211,8 +211,6 @@ try {
             $stmtSE->execute([$j + 1, $nom, $descSE, $trajetId, $mode, $heureSE]);
             $sousEtapeId = $pdo->lastInsertId();
 
-            // SCAN DES IMAGES TINYMCE (Pour la table sous_etape_photos)
-            // On cherche les images qui sont stockées dans /uploads/
             $pattern = '/\/uploads\/sousetapes\/(rt_img_[a-zA-Z0-9_]+\.(?:jpg|jpeg|png|gif|webp))/i';
             
             if (preg_match_all($pattern, $descSE, $matches)) {

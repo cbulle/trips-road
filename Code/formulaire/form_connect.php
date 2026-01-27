@@ -90,7 +90,7 @@ if (isset($_SESSION['user_id'])) {
         <p class="error"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <p><a href="../id.php">Réessayer</a></p>
+    <p><a href="../login">Réessayer</a></p>
 </main>
 
 <?php include __DIR__ . '/../modules/footer.php'; ?>

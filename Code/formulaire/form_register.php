@@ -9,7 +9,7 @@ $required = ['pseudo','name', 'firstname', 'email', 'password', 'confirm_passwor
 foreach ($required as $field) {
     if (empty($_POST[$field])) {
         die("<p>Veuillez remplir tous les champs obligatoires.</p>
-            <p><a href='../id.php'>Retour</a></p>");
+            <p><a href='../login'>Retour</a></p>");
     }
 }
 $pseudo      = trim($_POST['pseudo']);
@@ -27,7 +27,7 @@ $birthdate   = trim($_POST['birthdate']);
 
 if ($password !== $confirm) {
     die("<p>Les mots de passe ne correspondent pas.</p>
-         <p><a href='../id.php'>Retour</a></p>");
+         <p><a href='../login'>Retour</a></p>");
 }
 
 
@@ -36,7 +36,7 @@ $check->execute(['email' => $email]);
 
 if ($check->fetch()) {
     die("<p>Cet email est déjà utilisé.</p>
-         <p><a href='../id.php'>Retour</a></p>");
+         <p><a href='../login'>Retour</a></p>");
 }
 
 

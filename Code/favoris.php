@@ -5,7 +5,7 @@ include_once __DIR__ . '/bd/lec_bd.php';
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
-    header('Location: /id.php');
+    header('Location: /login');
     exit;
 }
 
@@ -16,7 +16,7 @@ if (isset($_GET['delete_lieu'])) {
     try {
         $stmtDel = $pdo->prepare("DELETE FROM lieux_favoris WHERE id = :id AND id_utilisateur = :uid");
         $stmtDel->execute(['id' => $id_lieu_a_supprimer, 'uid' => $id_utilisateur]);
-        header('Location: favoris.php');
+        header('Location: favoris');
         exit;
     } catch (Exception $e) { }
 }
@@ -105,7 +105,7 @@ function getIconForCategory($cat) {
                         
                         <div class="roadtrip-buttons">
                             <a class="btn-view" href="public_road.php?id=<?= $fav['id'] ?>">Voir</a>
-                            <a class="btn-delete" href="/formulaire/favo.php?id=<?= $fav['id'] ?>&action=remove&redirect=favoris.php" 
+                            <a class="btn-delete" href="/favo?id=<?= $fav['id'] ?>&action=remove&redirect=favoris"
                                onclick="return confirm('Retirer ce road trip de vos favoris ?');">
                                 <i class="fas fa-trash"></i> Retirer
                             </a>
@@ -149,7 +149,7 @@ function getIconForCategory($cat) {
                                     <i class="fas fa-map-marked-alt"></i> Carte
                                 </a>
 
-                                <a class="btn-delete" href="favoris.php?delete_lieu=<?= $lieu['id'] ?>" 
+                                <a class="btn-delete" href="favoris?delete_lieu=<?= $lieu['id'] ?>"
                                    onclick="return confirm('Retirer ce lieu de vos favoris ?');">
                                     <i class="fas fa-trash"></i> Retirer
                                 </a>

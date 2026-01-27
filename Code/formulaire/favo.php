@@ -4,7 +4,7 @@ include_once __DIR__ . '/../bd/lec_bd.php';
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
-    header('Location: /id.php');
+    header('Location: /login');
     exit;
 }
 
@@ -48,5 +48,5 @@ try {
     $_SESSION['error'] = "Erreur lors de l'opération.";
 }
 
-header('Location: /' . 'favoris.php');
+header('Location: /' . 'favoris');
 exit;

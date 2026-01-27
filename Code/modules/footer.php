@@ -29,12 +29,12 @@
       </div>
 
       <ul class="footer-links">
-        <li><a href="../page_link/contact.php" class="un"> Contact </a></li>
-        <li><a href="../page_link/cgu.php" class="deux">CGU</a></li>
-        <li><a href="../page_link/politique.php" class="trois">Politique de confidentialité</a></li>
-        <li><a href="../page_link/faq.php" class="quatre">FAQ</a></li>
-        <li><a href="../Roadtrip.php" class="cinq">Road-Trip</a></li>
-        <li><a href="../page_link/cookie.php" class="six">Gestion des cookies</a></li>
+        <li><a href="../page_link/contact" class="un"> Contact </a></li>
+        <li><a href="../page_link/cgu" class="deux">CGU</a></li>
+        <li><a href="../page_link/politique" class="trois">Politique de confidentialité</a></li>
+        <li><a href="../page_link/faq" class="quatre">FAQ</a></li>
+        <li><a href="../Roadtrip" class="cinq">Road-Trip</a></li>
+        <li><a href="../page_link/cookie" class="six">Gestion des cookies</a></li>
       </ul>
     </div>
 </footer>

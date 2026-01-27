@@ -27,34 +27,34 @@
             </li>
 
             <li class="nav-item" id="link_access">
-                <a href="/accessibilite.php">
+                <a href="/accessibilite">
                     <i class="material-icons">settings_accessibility</i>
                     <span>Paramètres</span>
                 </a>
             </li>
 
             <li class="title" id="link_Titre">
-                <a href="/index.php" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>Trips & Roads</a>
+                <a href="/index" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>Trips & Roads</a>
             </li>
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
 
                 <li class="nav-item" id="link_Chat">
-                    <a href="/messagerie.php">
+                    <a href="/messagerie">
                         <i class="material-icons">chat_bubble</i>
                         <span>Messagerie</span>
                     </a>
                 </li>
 
                 <li class="nav-item" id="link_Amis">
-                    <a href="/amis.php">
+                    <a href="/amis">
                         <i class="material-icons">group</i>
                         <span>Amis</span>
                     </a>
                 </li>
 
                 <li class="nav-item" id="link_Crea">
-                    <a href="/creationRoadTrip.php" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
+                    <a href="/creationRoadTrip" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
                         <i class="material-icons">add_box</i>
                         <span>Créer un Road-Trip</span>
                     </a>
@@ -76,7 +76,7 @@
                                 $photoProfil = "User.png"; 
                                 
                             }
-                            $serverPathUploads = __DIR__ . "/../uploads/pp/$photoProfil";                       
+                            $serverPathUploads = WEBROOT . "uploads/pp/" . $photoProfil;
                             if (!file_exists($serverPathUploads)) {
                                 $photoPath = __DIR__ . "/../img/$photoProfil"; 
                                 
@@ -85,13 +85,13 @@
                                 $photoPath = "/uploads/pp/$photoProfil";
                             }
                             ?>
-                            <a  href="/profil.php"><img class="profil-photo" src="<?= $photoPath ?>" alt="Photo de profil"> </a>
+                            <a  href="/profil"><img class="profil-photo" src="<?= $photoPath ?>" alt="Photo de profil"> </a>
                     <span class="profil-nom">
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>
                         </span>
                     <li class = "nav-item" id="link_Deco">                     
-                    <a class = "pp_logout" href="/logout.php">
+                    <a class = "pp_logout" href="/logout">
                         <i class="material-icons">logout</i>
                         <span>Déconnexion</span>
                     </a>                        
@@ -100,7 +100,7 @@
 
                 <?php else: ?>
 
-                    <a href="/id.php" <?= ($_SERVER['REQUEST_URI'] === '/id.php') ? 'class="active"' : '' ?>>
+                    <a href="/login">
                         <i class="material-icons">account_circle</i>
                         <span>Se connecter</span>
                     </a>
@@ -118,19 +118,19 @@
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
 
-                <li><a href="../Roadtrip.php">Roads-Trips</a></li>
-                <li><a href="../mesRoadTrips.php">Mes Roads-Trips</a></li>
-                <li><a href="../favoris.php">Favoris</a></li>
-                <li><a href="../historique.php">Historique</a></li>
-                <li><a href="../profil.php">Paramètres de compte</a></li>
-                <li><a href="../page_link/faq.php">Aide / FAQ</a></li>
-                <li><a href="../page_link/contact.php">À propos / Contact</a></li>
-                <li><a href="/logout.php">Déconnexion</a></li>
+                <li><a href="../Roadtrip">Roads-Trips</a></li>
+                <li><a href="../mesRoadTrips">Mes Roads-Trips</a></li>
+                <li><a href="../favoris">Favoris</a></li>
+                <li><a href="../historique">Historique</a></li>
+                <li><a href="../profil">Paramètres de compte</a></li>
+                <li><a href="../page_link/faq">Aide / FAQ</a></li>
+                <li><a href="../page_link/contact">À propos / Contact</a></li>
+                <li><a href="/logout">Déconnexion</a></li>
 
             <?php else: ?>
 
-                <li><a href="../Roadtrip.php">Roads-Trips</a></li>
-                <li><a href="/id.php">Se connecter</a></li>
+                <li><a href="../Roadtrip">Roads-Trips</a></li>
+                <li><a href="/id">Se connecter</a></li>
 
             <?php endif; ?>
 

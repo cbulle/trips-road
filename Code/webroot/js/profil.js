@@ -2,18 +2,12 @@
   Formulaire d'inscription et de connexion
 =======================================*/
 
-
-
 function showLogin() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'none';
     document.getElementById('btnLogin').classList.add('active');
     document.getElementById('btnRegister').classList.remove('active');
 }
 
 function showRegister() {
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('registerForm').style.display = 'block';
     document.getElementById('btnLogin').classList.remove('active');
     document.getElementById('btnRegister').classList.add('active');
 }

@@ -5,7 +5,7 @@ include_once __DIR__ . '/bd/lec_bd.php';
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
-    header('Location: /id.php');
+    header('Location: /login');
     exit;
 }
 
@@ -180,7 +180,7 @@ if ($conversation_id) {
                     <?php endforeach; ?>
                 </div>
 
-                <form class="message-form" method="POST" action="/messagerie/send_mess.php" id="messageForm">
+                <form class="message-form" method="POST" action="send_mess" id="messageForm">
                     <input type="hidden" name="conversation_id" value="<?= $conversation_id ?>">
                     <input type="hidden" name="destinataire_id" value="<?= $ami_info['ami_id'] ?>">
                     <textarea name="message" placeholder="Écrivez votre message..." required></textarea>
@@ -208,7 +208,7 @@ if (container) {
 <?php if ($conversation_id): ?>
 
 setInterval(() => {
-    fetch('messagerie/get_mess.php?conv=<?= $conversation_id ?>')
+    fetch('get_mess?conv=<?= $conversation_id ?>')
         .then(response => response.json())
         .then(data => {
             if (data.new_messages) {

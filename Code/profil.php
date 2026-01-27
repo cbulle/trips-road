@@ -3,7 +3,7 @@ require_once __DIR__ . '/include/init.php';
 
 
 if (!isset($_SESSION['utilisateur'])) {
-    header("Location: id.php");
+    header("Location: /login");
     exit;
 }
 
@@ -27,7 +27,7 @@ $user = $_SESSION['utilisateur'];
         <div class="user-brief">
             <?php
             $photoProfil = !empty($_SESSION['utilisateur']['photo_profil']) ? htmlspecialchars($_SESSION['utilisateur']['photo_profil']) : "User.png";
-            $photoUrl = (file_exists(__DIR__ . "/uploads/pp/$photoProfil")) ? "/uploads/pp/$photoProfil" : "img/User.png";
+            $photoUrl = (file_exists(WEBROOT . "uploads/pp/".$photoProfil)) ? "/uploads/pp/$photoProfil" : "img/User.png";
             ?>
             <div class="avatar-circle small" style="background-image: url('<?= $photoUrl ?>');"></div>
             <h3><?= htmlspecialchars($user['prenom']) . ' ' . htmlspecialchars($user['nom']) ?></h3>
@@ -49,7 +49,7 @@ $user = $_SESSION['utilisateur'];
             <p>Gérez vos informations personnelles et vos préférences de sécurité.</p>
         </div>
 
-        <form id="profilForm" class="form_modif" action="formulaire/form_modif.php" method="post" enctype="multipart/form-data">
+        <form id="profilForm" class="form_modif" action="/profil" method="POST" enctype="multipart/form-data">
             
             <div class="form-section photo-section">
                 <div class="avatar-wrapper">
