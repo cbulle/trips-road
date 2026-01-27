@@ -1,6 +1,4 @@
 <?php
-include_once ROOT . 'bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {

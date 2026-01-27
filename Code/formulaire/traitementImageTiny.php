@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../include/init.php';
-
 header('Content-Type: application/json');
 
 if (isset($_FILES['file'])) {
@@ -25,7 +23,6 @@ if (isset($_FILES['file'])) {
 
     if (move_uploaded_file($file['tmp_name'], $cheminFinal)) {
         
-        // --- CALCUL DU CHEMIN WEB (URL) CORRIGÉ ---
         $scriptPath = $_SERVER['SCRIPT_NAME'];
         $webRoot = dirname(dirname($scriptPath));
         
@@ -47,4 +44,3 @@ if (isset($_FILES['file'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Aucun fichier reçu.']);
 }
-?>

@@ -1,9 +1,4 @@
 <?php
-require_once __DIR__ . '/../include/init.php';
-require_once __DIR__ . '/PHPMailer-master/src/PHPMailer.php';
-require_once __DIR__ . '/PHPMailer-master/src/SMTP.php';
-require_once __DIR__ . '/PHPMailer-master/src/Exception.php';
-
 /** @var PDO $pdo */
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -66,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
         $typeAlert = "success";
     }
 } else {
-    header("Location: ../fonctions/oublie.php");
+    header("Location: /fonctions/oublie");
     exit;
 }
 ?>
@@ -80,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
 </head>
 <body>
 
-    <?php include_once __DIR__ . "/../modules/header.php"; ?>
+    <?php include_once ROOT . "modules/header.php"; ?>
 
     <main>
         <div class="alert-box <?php echo $typeAlert; ?>">
@@ -91,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
         </div>
     </main>
 
-    <?php include_once __DIR__ . "/../modules/footer.php"; ?>
+    <?php include_once ROOT . "modules/footer.php"; ?>
 
 </body>
 </html>

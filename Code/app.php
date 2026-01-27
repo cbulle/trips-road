@@ -2,10 +2,10 @@
 session_start();
 require_once __DIR__ . "/path.php";
 
-$url = $_SERVER['PATH_INFO'] ?? "";
+$url = $_SERVER['PATH_INFO'] ?? "/";
 
 switch($url) {
-    case "":
+    case "/":
         include_once ROOT . "index.php";
         break;
 
@@ -93,7 +93,7 @@ switch($url) {
         }
         break;
 
-    case "/mot-de-passe-oublie":
+    case "/oublie":
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             include_once ROOTFORM . "traitement_oublie.php";
         } else {
@@ -155,7 +155,9 @@ switch($url) {
     case "/get_lieux_favoris":
         include_once ROOT . "fonctions/get_lieux_favoris.php";
         break;
-
+    case "/fonctions/oublie":
+        include_once ROOTFUNCTIONS . "oublie.php";
+        break;
     default:
         http_response_code(404);
         echo "404 Not Found";

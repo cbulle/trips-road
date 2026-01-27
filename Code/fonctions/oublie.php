@@ -1,5 +1,3 @@
-<?php require_once ROOT . 'include/init.php'; ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>

@@ -1,6 +1,4 @@
 <?php
-require_once ROOT . 'bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 header('Content-Type: application/json');
