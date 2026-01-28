@@ -183,15 +183,15 @@
 }
 
 input:checked + .slider {
-    background-color: var(--vert_btn);
+    background-color: var(--vert);
 }
 
 #checkboxSombre:checked + .slider {
-    background-color: var(--bleu_fonce);
+    background-color: var(--orange);
 }
 
 #checkboxMalvoyant:checked + .slider {
-    background-color: var(--orange_malvoyant);
+    background-color: var(--vert);
 }
 
 input:checked + .slider:before {

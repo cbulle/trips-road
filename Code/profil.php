@@ -93,7 +93,7 @@ $user = $_SESSION['utilisateur'];
                         <label for="email">Adresse email</label>
                         <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
                     </div>
-
+z
                     <div class="form-group">
                         <label for="phone">Téléphone</label>
                         <input type="tel" id="phone" name="phone" value="<?= htmlspecialchars($user['tel'] ?? "") ?>">
@@ -144,7 +144,7 @@ $user = $_SESSION['utilisateur'];
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-save">Enregistrer les modifications</button>
+                <button type="submit" class="Btn">Enregistrer les modifications</button>
             </div>
 
         </form>
@@ -152,6 +152,5 @@ $user = $_SESSION['utilisateur'];
 </main>
 
 <?php include_once __DIR__ . "/modules/footer.php"; ?>
-
 </body>
 </html>

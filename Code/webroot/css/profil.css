@@ -1,3 +1,21 @@
+
+.profil-container .Btn {
+    padding: 12px 25px;
+    background: var(--bleu_clair);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.profil-container .Btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--bleu_fonce);
+}
+
 @media (min-width: 768px) {
 
 
@@ -147,7 +165,7 @@
 }
 
 .btn-upload:hover {
-    background: var(--bleu_clair);
+    background-color: var(--bleu_fonce);
     color: var(--white);
 }
 

@@ -31,12 +31,12 @@ include_once __DIR__ . "/modules/header.php"
     <div class="index_container">
         <h2>Bienvenue sur Trips & Roads !</h2>
         <p>Planifiez et partagez vos road trips facilement.</p>
-        <a href="/creationRoadTrip"><button type="submit">Créer un nouveau Road Trip</button></a>
+        <a href="/creationRoadTrip"><button class="Btn" type="submit">Créer un nouveau Road Trip</button></a>
     </div>
 
     <div class="search-container">
         <input type="text" id="poiSearch" placeholder="Rechercher un lieu..." />
-        <button id="searchBtn">🔍 Rechercher</button>
+        <button id="searchBtn" class="Btn">🔍 Rechercher</button>
         <ul id="searchResults" class="searching-results"></ul>
     </div>
 

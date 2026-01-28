@@ -155,9 +155,12 @@ switch($url) {
     case "/get_lieux_favoris":
         include_once ROOT . "fonctions/get_lieux_favoris.php";
         break;
-
+    case "/google-auth": 
+        include_once ROOTFORM . "google_auth.php";
+        break;
     default:
         http_response_code(404);
         echo "404 Not Found";
         break;
+    
 }
