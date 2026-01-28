@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 $required = ['pseudo','name', 'firstname', 'email', 'password', 'confirm_password', 
@@ -27,7 +25,7 @@ $birthdate   = trim($_POST['birthdate']);
 
 if ($password !== $confirm) {
     die("<p>Les mots de passe ne correspondent pas.</p>
-         <p><a href='../login'>Retour</a></p>");
+         <p><a href='/login'>Retour</a></p>");
 }
 
 
@@ -36,7 +34,7 @@ $check->execute(['email' => $email]);
 
 if ($check->fetch()) {
     die("<p>Cet email est déjà utilisé.</p>
-         <p><a href='../login'>Retour</a></p>");
+         <p><a href='/login'>Retour</a></p>");
 }
 
 
@@ -45,7 +43,7 @@ $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
 
 $photo_profil = null; 
-$dossier_upload = __DIR__ . '/../uploads/pp/';
+$dossier_upload = WEBROOT . 'uploads/pp/';
 
 if (!is_dir($dossier_upload)) {
     mkdir($dossier_upload, 0777, true);
@@ -110,6 +108,6 @@ $_SESSION['utilisateur'] = [
     'ville'     =>$town
 ];
 
-header('Location: /index.php');
+header('Location: /');
 exit;
 ?>

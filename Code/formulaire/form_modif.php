@@ -1,11 +1,8 @@
 <?php
-require_once __DIR__ . '/../include/init.php';
-require_once __DIR__ . '/../bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur'])) {
-    header("Location: ../login");
+    header("Location: /login");
     exit;
 }
 
@@ -35,7 +32,7 @@ $password_hash = null;
 
 if (!empty($new_password)) {
     if ($new_password !== $confirm_password) {
-        die("Les mots de passe ne correspondent pas. <a href='../profil.php'>Retour</a>");
+        die("Les mots de passe ne correspondent pas. <a href='/profil'>Retour</a>");
     }
     $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
 }

@@ -9,7 +9,7 @@ const style = document.createElement('style');
 
 
 // --- Chargement ---
-fetch("../bd/rech_bd.php")
+fetch("/api/all_roadtrips")
     .then(response => response.json())
     .then(json => {
         userId = json.userId;
@@ -61,7 +61,6 @@ if (searchBox && resultsTableBody) {
             const matchTitle = item.titre.toLowerCase().includes(query);
             if (!matchTitle) return false;
             
-            // Le PHP a déjà fait le tri de sécurité, on accepte tout ce qui arrive
             return true;
         });
 
@@ -73,7 +72,7 @@ if (searchBox && resultsTableBody) {
                 const row = document.createElement('tr');
                 
                 row.addEventListener('mousedown', function(e) {
-                    window.location.href = "vuRoadTrip.php?id=" + item.id;
+                    window.location.href = "/vuRoadTrip?id=" + item.id;
                 });
 
                 const cell = document.createElement('td');

@@ -1,8 +1,4 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
-include_once __DIR__ . '/fonctions/InfoItineraire.php';
-
 /** @var PDO $pdo */
 
 $token = $_GET['t'] ?? null;
@@ -47,15 +43,6 @@ foreach ($trajets as $trajet) {
         $stmt->execute([$sousEtape['id']]);
         $sousEtape['photos'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $etapes[$trajet['id']][] = $sousEtape;
-    }
-}
-
-function getTransportIcon($type) {
-    switch(strtolower($type)) {
-        case 'voiture': return '🚗';
-        case 'velo': case 'vélo': return '🚴';
-        case 'marche': case 'à pied': case 'a pied': return '🚶';
-        default: return '🚗';
     }
 }
 ?>

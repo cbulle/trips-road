@@ -1,5 +1,4 @@
 <?php
-
 function geocoderVilleEnDirect($nomVille, $pdo) {
     if (empty($nomVille)) return null;
 

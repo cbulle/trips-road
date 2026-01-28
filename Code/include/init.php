@@ -15,7 +15,6 @@ if (empty($_SESSION['utilisateur']['id']) && isset($_COOKIE['remember_me'])) {
 
         if ($auth_token) {
             if (hash_equals($auth_token['hashed_validator'], hash('sha256', $validator))) {
-                // Token valide ! On récupère les infos de l'utilisateur
                 $stmtUser = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = ?");
                 $stmtUser->execute([$auth_token['user_id']]);
                 $user = $stmtUser->fetch();

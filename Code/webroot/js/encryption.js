@@ -108,7 +108,7 @@ class MessageEncryption {
     console.log('📤 Sauvegarde de la clé publique sur le serveur...');
     
     try {
-      const response = await fetch('/formulaire/save_public_key.php', {
+      const response = await fetch('/api/save_public_key', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -136,7 +136,7 @@ class MessageEncryption {
    */
   async ensurePublicKeyOnServer() {
     try {
-      const response = await fetch('/formulaire/get_session_id.php');
+      const response = await fetch('/api/get_session_id');
       const data = await response.json();
       
       if (!data.success) {
@@ -146,7 +146,7 @@ class MessageEncryption {
       const userId = data.userId;
       
       // Vérifier si la clé publique existe
-      const keyResponse = await fetch(`/formulaire/get_public_key.php?user_id=${userId}`);
+      const keyResponse = await fetch('/api/get_public_key?user_id=${userId}');
       const keyData = await keyResponse.json();
       
       if (!keyData.success || !keyData.publicKey) {

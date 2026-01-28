@@ -2,15 +2,11 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require __DIR__ . '/PHPMailer-master/src/Exception.php';
-require __DIR__ . '/PHPMailer-master/src/PHPMailer.php';
-require __DIR__ . '/PHPMailer-master/src/SMTP.php';
-
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $_SESSION['faq_error'] = ["Méthode non autorisée."];
-    header('Location: /faq.php');
+    header('Location: /page_link/faq');
     exit;
 }
 
@@ -39,7 +35,7 @@ if (empty($question)) {
 
 if (!empty($errors)) {
     $_SESSION['faq_error'] = $errors;
-    header('Location: /faq.php');
+    header('Location: /page_link/faq');
     exit;
 }
 
@@ -76,7 +72,7 @@ $question
     $mail->send();
 
     $_SESSION['faq_success'] = "Votre message a bien été envoyé !";
-    header('Location: /page_link/faq.php');
+    header('Location: /page_link/faq');
     exit;
 
 } catch (Exception $e) {
@@ -84,6 +80,6 @@ $question
         "Erreur lors de l'envoi du message.",
         $mail->ErrorInfo
     ];
-    header('Location: /page_link/faq.php');
+    header('Location: /page_link/faq');
     exit;
 }
