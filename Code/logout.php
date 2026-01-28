@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 if (isset($_COOKIE['remember_me'])) {

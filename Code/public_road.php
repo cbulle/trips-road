@@ -1,17 +1,9 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
-include_once __DIR__ . '/fonctions/InfoItineraire.php';
-include_once __DIR__ . '/fonctions/getCoordonneesDepuisFavoris.php';
-include_once __DIR__ . '/fonctions/geocoderVilleEnDirect.php';
-
 /** @var PDO $pdo */
 
 $id_roadtrip = $_GET['id'] ?? null;
 if (!$id_roadtrip) { header("Location: index.php"); exit; }
 
-// 1. Récupération Roadtrip avec vérification "Public"
-// On récupère aussi le pseudo de l'auteur
 $sql = "SELECT r.*, u.pseudo, u.photo_profil 
         FROM roadtrip r 
         JOIN utilisateurs u ON r.id_utilisateur = u.id 
@@ -22,13 +14,11 @@ $roadTrip = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$roadTrip) { die("Road trip introuvable."); }
 
-// Sécurité : Si ce n'est pas public et que je ne suis pas l'auteur -> Dehors
 $isMyRoadTrip = (isset($_SESSION['utilisateur']['id']) && $_SESSION['utilisateur']['id'] == $roadTrip['id_utilisateur']);
 if ($roadTrip['visibilite'] !== 'public' && !$isMyRoadTrip) {
     die("Ce road trip est privé.");
 }
 
-// 2. Récupération Trajets
 $stmt = $pdo->prepare("SELECT * FROM trajet WHERE road_trip_id = ? ORDER BY numero");
 $stmt->execute([$id_roadtrip]);
 $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -36,14 +26,11 @@ $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $etapes = [];
 $jsMapData = [];
 
-// 3. Boucle de préparation des données (IDENTIQUE A VUROADTRIP)
 foreach ($trajets as $trajet) {
-    // Récup sous-étapes
     $stmt = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero");
     $stmt->execute([$trajet['id']]);
     $sousEtapes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Récup photos pour chaque sous-étape
     foreach ($sousEtapes as &$se) {
         $stmtPhoto = $pdo->prepare("SELECT * FROM sous_etape_photos WHERE sous_etape_id = ?");
         $stmtPhoto->execute([$se['id']]);
@@ -53,17 +40,12 @@ foreach ($trajets as $trajet) {
     
     $etapes[$trajet['id']] = $sousEtapes;
 
-    // Géocodage Départ / Arrivée
-    // Note: En mode public, on n'utilise pas les favoris du visiteur pour géocoder les points de l'auteur.
-    // On tape directement dans le Cache ou l'API.
-    
     $coordsDep = getCoordonneesDepuisCache($trajet['depart'], $pdo);
     if (!$coordsDep) $coordsDep = geocoderVilleEnDirect($trajet['depart'], $pdo);
 
     $coordsArr = getCoordonneesDepuisCache($trajet['arrivee'], $pdo);
     if (!$coordsArr) $coordsArr = geocoderVilleEnDirect($trajet['arrivee'], $pdo);
 
-    // Géocodage Sous-étapes
     $sousEtapesCoords = [];
     foreach ($sousEtapes as $se) {
         if (!empty($se['ville'])) {
@@ -100,15 +82,6 @@ foreach ($trajets as $trajet) {
         'sousEtapes' => $sousEtapesCoords,
         'hasCoords' => ($coordsDep && $coordsArr) ? true : false
     ];
-}
-
-function getTransportIcon($type) {
-    switch(strtolower($type)) {
-        case 'voiture': return '🚗';
-        case 'velo': case 'vélo': return '🚴';
-        case 'marche': case 'à pied': return '🚶';
-        default: return '🚗';
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -174,7 +147,6 @@ function getTransportIcon($type) {
                 <div class="trajet-details-column">
                     <?php 
                     $listeEtapes = $etapes[$t['id']] ?? [];
-                    // Construction Timeline
                     $timeline = [];
                     $timeline[] = ['ville' => $t['depart'], 'is_departure' => true, 'heure_depart' => $t['heure_depart'] ?? null];
                     foreach ($listeEtapes as $etape) { $timeline[] = $etape; }

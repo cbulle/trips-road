@@ -35,10 +35,11 @@ switch($url) {
         break;
 
     case "/vuRoadTrip":
-        include_once ROOT . "vuRoadTrip.php";
         include_once ROOTFUNCTIONS . "geocoderVilleEnDirect.php";
         include_once ROOTFUNCTIONS . "getCoordonneesDepuisFavoris.php";
         include_once ROOTFUNCTIONS . "InfoItineraire.php";
+        include_once ROOTFUNCTIONS . "getTransportIcon.php";
+        include_once ROOT . "vuRoadTrip.php";
         break;
 
     case "/profil":
@@ -145,8 +146,8 @@ switch($url) {
     case "/accessibilite": include_once ROOT . "accessibilite.php"; break;
     case "/favoris": include_once ROOT . "favoris.php"; break;
     case "/historique": include_once ROOT . "historique.php"; break;
-    case "/public_road": include_once ROOT . "public_road.php"; include_once ROOTFUNCTIONS . "geocoderVilleEnDirect.php"; include_once ROOTFUNCTIONS . "InfoItineraire.php"; break;
-    case "/shared": include_once ROOT . "shared.php"; include_once ROOTFUNCTIONS . "InfoItineraire.php"; break;
+    case "/public_road": include_once ROOT . "public_road.php"; include_once ROOTFUNCTIONS . "geocoderVilleEnDirect.php"; include_once ROOTFUNCTIONS . "InfoItineraire.php"; include_once ROOTFUNCTIONS . "gettTransportIcon.php"; break;
+    case "/shared": include_once ROOT . "shared.php"; include_once ROOTFUNCTIONS . "InfoItineraire.php"; include_once ROOTFUNCTIONS . "gettTransportIcon.php"; break;
 
     case "/page_link/cgu": include_once ROOTLINK . "cgu.php"; break;
     case "/page_link/contact": include_once ROOTLINK . "contact.php"; break;
