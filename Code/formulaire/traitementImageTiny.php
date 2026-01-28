@@ -14,24 +14,27 @@ if (isset($_FILES['file'])) {
     }
 
     $nouveauNom = "rt_img_" . uniqid() . "_" . bin2hex(random_bytes(4)) . "." . $extension;
-    
-    $dossierCible = WEBROOT;
+
+    $sousDossier = 'uploads/sousetapes/';
+    $dossierCible = WEBROOT . $sousDossier;
+
+    // Vérifier et créer le dossier s'il n'existe pas
     if (!is_dir($dossierCible)) {
         mkdir($dossierCible, 0755, true);
     }
+
     $cheminFinal = $dossierCible . $nouveauNom;
 
     if (move_uploaded_file($file['tmp_name'], $cheminFinal)) {
-        
+
         $scriptPath = $_SERVER['SCRIPT_NAME'];
         $webRoot = dirname(dirname($scriptPath));
-        
+
         if ($webRoot === '/' || $webRoot === '\\') {
             $webRoot = '';
         }
-        
-        $location = $webRoot . '/uploads/sousetapes/' . $nouveauNom;
-        
+        $location = $webRoot . '/' . $sousDossier . $nouveauNom;
+
         $location = str_replace('\\', '/', $location);
 
         echo json_encode(['location' => $location]);

@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let userFavorites = [];
     try {
-        const respFav = await fetch('/fonctions/get_lieux_favoris.php');
+        const respFav = await fetch('/get_lieux_favoris');
         if(respFav.ok) {
             userFavorites = await respFav.json();
         }
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function loadMapFavorites() {
         try {
-            const resp = await fetch('/fonctions/get_lieux_favoris.php');
+            const resp = await fetch('/get_lieux_favoris');
             const favoris = await resp.json();
             favoris.forEach(fav => {
                 const lat = parseFloat(fav.latitude);
@@ -830,16 +830,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 /* --- GESTION DES IMAGES --- */
                 image_title: true,
                 automatic_uploads: true,
-                // L'URL de ton script PHP créé à l'étape 1
-                images_upload_url: '/formulaire/traitementImageTiny.php', 
+                images_upload_url: '/upload_image',
                 file_picker_types: 'image',
                 
-                // Empêche TinyMCE de convertir les URLs en relatif "../uploads" qui casseraient sur d'autres pages
-                relative_urls: false, 
+                relative_urls: false,
                 remove_script_host: false,
                 convert_urls: true,
 
-                // Callback pour la compression et l'upload
                 file_picker_callback: (cb, value, meta) => {
                     const input = document.createElement('input');
                     input.setAttribute('type', 'file');
@@ -890,14 +887,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                                         lastModified: Date.now() 
                                     });
 
-                                    // Ajout au cache de TinyMCE pour déclencher l'upload automatique
                                     const id = 'blobid' + (new Date()).getTime();
                                     const blobCache = tinymce.activeEditor.editorUpload.blobCache;
                                     const blobInfo = blobCache.create(id, newFile, blob);
                                     
                                     blobCache.add(blobInfo);
 
-                                    // Appelle le callback pour afficher l'image (en base64) en attendant l'upload réel
                                     cb(blobInfo.blobUri(), { title: file.name });
                                     
                                 }, 'image/jpeg', 0.7); 
@@ -959,7 +954,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('segmentFormContainer').style.display = 'none';
     };
 
-    // ... (Code précédent inchangé) ...
 
     // ============================================================
     // 8. SAUVEGARDE FINALE (VERSION OPTIMISÉE IUT)
@@ -994,8 +988,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            // --- FONCTION DE NETTOYAGE ---
-            // Cette fonction crée une copie propre des données pour l'envoi
             const cleanSegmentsForSave = (segmentsSource) => {
                 return segmentsSource.map((s, index) => {
                     const timeInput = document.querySelector(`li[data-index="${index}"] .legend-time-input`);
@@ -1003,8 +995,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Nettoyage des sous-étapes
                     const cleanSousEtapes = s.sousEtapes.map(se => {
                         let desc = se.remarque || "";
-                        // REGEX MAGIQUE : Elle retire les images en base64 (src="data:image...")
-                        // qui font planter le serveur, mais garde les images uploadées (src="/uploads/...")
                         desc = desc.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, '[Image trop lourde retirée - Utilisez le bouton upload]');
                         
                         return {
@@ -1029,24 +1019,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             };
 
-            // 1. On nettoie les données
             const cleanTrajets = cleanSegmentsForSave(segments);
             console.log("Données nettoyées prêtes à l'envoi :", cleanTrajets);
 
-            // 2. On utilise la technique du BLOB (Fichier virtuel)
-            // C'est indispensable pour contourner la limite 'max_input_vars' du serveur IUT
             const jsonString = JSON.stringify(cleanTrajets);
             const blob = new Blob([jsonString], { type: 'application/json' });
             formData.append('trajets_file', blob, 'trajets.json');
 
-            // Ajout d'un tableau vide pour 'villes' pour éviter l'erreur PHP
             formData.append('villes', JSON.stringify([]));
 
             // 3. Envoi
             const resp = await fetch('/creationRoadTrip', { method: 'POST', body: formData });
             
-            // Lecture de la réponse brute pour débogage si le JSON plante
-            const textResp = await resp.text(); 
+            const textResp = await resp.text();
             
             try {
                 const json = JSON.parse(textResp);

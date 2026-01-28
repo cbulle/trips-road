@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../bd/lec_bd.php';
 header('Content-Type: application/json');
 
 try {
@@ -13,13 +12,11 @@ try {
     $lat = $input['lat'] ?? null;
     $lon = $input['lon'] ?? null;
 
-    // Vérifier si la ville existe déjà dans lieux_geocodes
     $stmt = $pdo->prepare("SELECT nom, lat, lon FROM lieux_geocodes WHERE nom = ?");
     $stmt->execute([$nom]);
     $ville = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($ville) {
-        // La ville existe déjà, on retourne ses coordonnées
         echo json_encode([
             'success' => true,
             'cached' => true,
