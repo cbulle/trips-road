@@ -118,13 +118,13 @@
 
             <?php if (isset($_SESSION['utilisateur'])): ?>
 
-                <li><a href="../Roadtrip">Roads-Trips</a></li>
-                <li><a href="../mesRoadTrips">Mes Roads-Trips</a></li>
-                <li><a href="../favoris">Favoris</a></li>
-                <li><a href="../historique">Historique</a></li>
-                <li><a href="../profil">Paramètres de compte</a></li>
-                <li><a href="../page_link/faq">Aide / FAQ</a></li>
-                <li><a href="../page_link/contact">À propos / Contact</a></li>
+                <li><a href="/Roadtrip">Roads-Trips</a></li>
+                <li><a href="/mesRoadTrips">Mes Roads-Trips</a></li>
+                <li><a href="/favoris">Favoris</a></li>
+                <li><a href="/historique">Historique</a></li>
+                <li><a href="/profil">Paramètres de compte</a></li>
+                <li><a href="/page_link/faq">Aide / FAQ</a></li>
+                <li><a href="/page_link/contact">À propos / Contact</a></li>
                 <li><a href="/logout">Déconnexion</a></li>
 
             <?php else: ?>
