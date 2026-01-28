@@ -23,7 +23,7 @@
 </head>
 <body>
 
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 
 <main class="main-index">
     <div class="index_container">

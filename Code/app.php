@@ -13,12 +13,8 @@ switch($url) {
         break;
 
     case "/amis":
-        if($_SERVER['REQUEST_METHOD'] === 'GET') {
-            include_once ROOT . "amis.php";
-        } else {
-            include_once ROOTFORM . "form_amis.php";
-        }
-        break;
+        include_once ROOTFORM . "form_amis.php";
+        include_once ROOT . "amis.php";
 
     case "/creationRoadTrip":
         if($_SERVER['REQUEST_METHOD'] === 'GET') {
