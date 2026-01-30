@@ -9,7 +9,7 @@
 <body>
 <container class="container">
     <?php
-    include_once __DIR__ . "/modules/header.php"
+    include_once ROOT . "/modules/header.php"
     ?>
     <main>
         <div class="main">
@@ -17,10 +17,10 @@
             <div class="formulaire">
                 <div class="in_form">
                     <div class="toggle-box">
-                        <button class="toggle-btn active" id="btnLogin" onclick="window.location.href='login'">Se connecter</button>
-                        <button class="toggle-btn" id="btnRegister" onclick="window.location.href='register'">S'inscrire</button>
+                        <button class="toggle-btn" id="btnLogin" onclick="window.location.href='login'">Se connecter</button>
+                        <button class="toggle-btn active" id="btnRegister" onclick="window.location.href='register'">S'inscrire</button>
                     </div>
-                    <form id="registerForm" class="form-box" action = "register" method = "post">
+                    <form id="registerForm" class="form-box" action = "/register" method = "post">
                         <h2 id="login-title">Inscription </h2>
 
                         <label for="pseudo">Pseudo</label>
@@ -73,7 +73,7 @@
         </div>
     </main>
     <?php
-    include_once __DIR__ . "/modules/footer.php"
+    include_once ROOT . "/modules/footer.php"
     ?>
     <script src = "js/profil.js"></script>
 </body>

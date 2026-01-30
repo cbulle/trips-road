@@ -2,17 +2,6 @@
   Formulaire d'inscription et de connexion
 =======================================*/
 
-function showLogin() {
-    document.getElementById('btnLogin').classList.add('active');
-    document.getElementById('btnRegister').classList.remove('active');
-}
-
-function showRegister() {
-    document.getElementById('btnLogin').classList.remove('active');
-    document.getElementById('btnRegister').classList.add('active');
-}
-
- 
 function openModal() {
     const modal = document.querySelector('.formulaire'); 
     if (modal) {
