@@ -155,7 +155,7 @@
     </div>
 </main>
 
-<?php include_once __DIR__ . "/modules/footer.php"; ?>
+<?php include_once ROOT . "/modules/footer.php"; ?>
 
 </body>
 </html>

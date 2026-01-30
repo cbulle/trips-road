@@ -86,7 +86,7 @@ if (isset($_GET['id'])) {
 
   </head>
   <body>
-    <?php include_once __DIR__ . "/modules/header.php" ?>
+    <?php include_once ROOT . "/modules/header.php" ?>
     
     <h1 class="TitreRT"><?php echo $modeEdition ? "Modifier mon RoadTrip" : "Créer un RoadTrip"; ?></h1>
 
@@ -217,7 +217,7 @@ if (isset($_GET['id'])) {
       <img id="imageModalContent" class="image-modal-content" src="" alt="photo en grand">
     </div>
 
-    <?php include_once __DIR__ . "/modules/footer.php" ?>
+    <?php include_once ROOT . "/modules/footer.php" ?>
 
     <script src="/js/map.js"></script>
   </body>

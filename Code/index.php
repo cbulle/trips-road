@@ -23,7 +23,7 @@ $userId = $_SESSION['utilisateur']['id'] ?? null;
 <body>
    
 <?php     
-include_once __DIR__ . "/modules/header.php"
+include_once ROOT . "/modules/header.php"
 ?>
 
 <main class="main-index">
@@ -116,7 +116,7 @@ include_once __DIR__ . "/modules/header.php"
       
      
 <?php     
-include_once __DIR__ . "/modules/footer.php"
+include_once ROOT . "/modules/footer.php"
 ?>
 <input type="hidden" id="userCity" value="<?php echo isset($_SESSION['utilisateur']['ville']) ? $_SESSION['utilisateur']['ville'] : ''; ?>">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>

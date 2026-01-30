@@ -1,7 +1,6 @@
 <?php
 /** @var PDO $pdo */
 
-// Redirection si pas connecté
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /login');
     exit;
@@ -17,8 +16,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'clear') {
     exit;
 }
 
-// --- RÉCUPÉRATION DES DONNÉES ---
-// On joint historique -> roadtrip -> utilisateurs (pour avoir le nom du créateur)
 $stmt = $pdo->prepare("
     SELECT h.date_visite, r.*, u.nom, u.prenom 
     FROM historique h
@@ -72,7 +69,7 @@ $historique = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 
 <main class="main-index">
     <div class="index_container">
@@ -99,14 +96,14 @@ $historique = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($historique as $item): ?>
                     <div class="roadtrip-card">
                         <?php 
-                        // Gestion Image
                         $imagePath = "default_trip.jpg";
                         if (!empty($item['photo'])) $imagePath = $item['photo'];
                         elseif (!empty($item['photo_cover'])) $imagePath = $item['photo_cover'];
                         ?>
                         
                         <img src="/uploads/roadtrips/<?= htmlspecialchars($imagePath) ?>" 
-                             alt="Photo du road trip" class="roadtrip-photo">
+                             alt="Photo du road trip" class="roadtrip-photo"
+
 
                         <h3><?= htmlspecialchars($item['titre']) ?></h3>
                         
@@ -133,7 +130,7 @@ $historique = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </main>
 
-<?php include_once __DIR__ . "/modules/footer.php"; ?>
+<?php include_once ROOT . "/modules/footer.php"; ?>
 
 </body>
 </html>

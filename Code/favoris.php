@@ -59,7 +59,7 @@ function getIconForCategory($cat) {
     <script src="https://kit.fontawesome.com/d76759a8b0.js" crossorigin="anonymous"></script>
 </head>
 <body>
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 
 <main class="main-index">
     <div class="index_container">
@@ -159,6 +159,6 @@ function getIconForCategory($cat) {
     </div>
 </main>
 
-<?php include_once __DIR__ . "/modules/footer.php"; ?>
+<?php include_once ROOT . "/modules/footer.php"; ?>
 </body>
 </html>

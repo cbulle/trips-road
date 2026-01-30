@@ -17,7 +17,7 @@ $user = $_SESSION['utilisateur'];
 </head>
 <body>
 
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 <main class="profil-container">
 
     <aside class="profil-sidebar">
@@ -148,7 +148,7 @@ $user = $_SESSION['utilisateur'];
     </section>
 </main>
 
-<?php include_once __DIR__ . "/modules/footer.php"; ?>
+<?php include_once ROOT . "/modules/footer.php"; ?>
 
 </body>
 </html>

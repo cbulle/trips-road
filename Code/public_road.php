@@ -105,7 +105,7 @@ foreach ($trajets as $trajet) {
 </head>
 <body>
 
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 
 <div class="roadtrip-vu">
     <div class="roadtrip-header">
@@ -253,13 +253,12 @@ foreach ($trajets as $trajet) {
     <?php endforeach; ?>    
 </div>
 
-<?php include_once __DIR__ . "/modules/footer.php"; ?>
+<?php include_once ROOT . "/modules/footer.php"; ?>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 <script>
-    // Passage des données PHP vers JS
     const roadTripData = <?php echo json_encode($jsMapData); ?>;
 </script>
 <script src="js/roadtrip.js"></script> 

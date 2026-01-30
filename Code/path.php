@@ -1,4 +1,5 @@
 <?php
+
 const ROOT = __DIR__ . "/";
 const WEBROOT = ROOT . "webroot/";
 const ROOTLINK = ROOT . "page_link/";

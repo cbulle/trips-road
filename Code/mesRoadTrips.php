@@ -26,7 +26,7 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </head>
 <body>
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 
 <h1>Mes Road Trips</h1>
 

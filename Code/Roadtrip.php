@@ -51,7 +51,7 @@ if ($id_utilisateur) {
     </style>
 </head>
 <body>
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 
 <h1>Road Trips Publics</h1>
 
@@ -111,7 +111,7 @@ if ($id_utilisateur) {
 </div>
 <?php endif; ?>
 
-<?php include_once __DIR__ . "/modules/footer.php"; ?>
+<?php include_once ROOT . "/modules/footer.php"; ?>
 
 </body>
 </html>
