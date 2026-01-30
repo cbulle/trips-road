@@ -1,9 +1,4 @@
 <?php
-// Code/formulaire/fav_lieu.php
-
-require_once __DIR__ . '/../include/init.php';
-require_once __DIR__ . '/../bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 header('Content-Type: application/json');
@@ -54,7 +49,6 @@ try {
     }
 
 } catch (PDOException $e) {
-    // En cas d'erreur SQL, on renvoie le détail pour aider au débogage
     echo json_encode(['success' => false, 'message' => 'Erreur BD: ' . $e->getMessage()]);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Erreur : ' . $e->getMessage()]);

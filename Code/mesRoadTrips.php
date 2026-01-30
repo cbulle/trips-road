@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
@@ -49,7 +46,10 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php if (!empty($rt['photo'])): ?>
                 <img src="/uploads/roadtrips/<?= htmlspecialchars($rt['photo']) ?>" 
                      alt="Photo du road trip" class="roadtrip-photo">
+            <?php else : ?>
+                <img src="/img/imgBase.png" alt="Photo du road trip" class="roadtrip-photo">
             <?php endif; ?>
+
 
             <div style="padding: 10px 10px 0 10px;">
                 <span class="badge-statut <?= $classeCss ?>">
@@ -61,19 +61,19 @@ $roadtrips = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p><?= htmlspecialchars($rt['description']) ?></p>
 
             <div class="roadtrip-buttons">
-                <a class="btn-view" href="vuRoadTrip?id=<?= $rt['id'] ?>">
+                <a class="btn-view" href="/vuRoadTrip?id=<?= $rt['id'] ?>">
                     <i class="material-icons">visibility</i>
                 </a>
 
-                <a class="btn-edit" href="creationRoadTrip?id=<?= $rt['id'] ?>">
+                <a class="btn-edit" href="/creationRoadTrip?id=<?= $rt['id'] ?>">
                     <i class="material-icons">edit</i>
                 </a>
 
-                <a class="btn-share" href="generate_shared_link?id=<?= $rt['id'] ?>">
+                <a class="btn-share" href="/generate_shared_link?id=<?= $rt['id'] ?>">
                     <i class="material-icons">share</i>
                 </a>
 
-                <a class="btn-delete" href="delete_RoadTrip?id=<?= $rt['id'] ?>"
+                <a class="btn-delete" href="/delete_RoadTrip?id=<?= $rt['id'] ?>"
                    onclick="return confirm('Voulez-vous vraiment supprimer ce road trip ?');">
                     <i class="material-icons">delete</i>
                 </a>
@@ -106,7 +106,7 @@ endif;
 ?>
 
 <script src ="/js/profil.js"></script>
-<?php include_once __DIR__ . "/modules/footer.php"; ?>
+<?php include_once ROOT . "/modules/footer.php"; ?>
 
 </body>
 </html>

@@ -1,10 +1,4 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
-include_once __DIR__ . '/fonctions/InfoItineraire.php';
-include_once __DIR__ . '/fonctions/getCoordonneesDepuisFavoris.php';
-include_once __DIR__ . '/fonctions/geocoderVilleEnDirect.php';
-
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
@@ -34,71 +28,62 @@ foreach ($trajets as $trajet) {
     $stmt = $pdo->prepare("SELECT * FROM sous_etape WHERE trajet_id = ? ORDER BY numero");
     $stmt->execute([$trajet['id']]);
     $sousEtapes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     foreach ($sousEtapes as &$se) {
         $stmtPhoto = $pdo->prepare("SELECT * FROM sous_etape_photos WHERE sous_etape_id = ?");
         $stmtPhoto->execute([$se['id']]);
         $se['photos'] = $stmtPhoto->fetchAll(PDO::FETCH_ASSOC);
     }
     unset($se);
-    
+
     $etapes[$trajet['id']] = $sousEtapes;
 
     // Géocodage
-    $coordsDep = getCoordonneesDepuisFavoris($trajet['depart'], $id_utilisateur, $pdo) 
-                 ?: (getCoordonneesDepuisCache($trajet['depart'], $pdo) 
-                 ?: geocoderVilleEnDirect($trajet['depart'], $pdo));
+    $coordsDep = getCoordonneesDepuisFavoris($trajet['depart'], $id_utilisateur, $pdo)
+            ?: (getCoordonneesDepuisCache($trajet['depart'], $pdo)
+                    ?: geocoderVilleEnDirect($trajet['depart'], $pdo));
 
-    $coordsArr = getCoordonneesDepuisFavoris($trajet['arrivee'], $id_utilisateur, $pdo) 
-                 ?: (getCoordonneesDepuisCache($trajet['arrivee'], $pdo) 
-                 ?: geocoderVilleEnDirect($trajet['arrivee'], $pdo));
+    $coordsArr = getCoordonneesDepuisFavoris($trajet['arrivee'], $id_utilisateur, $pdo)
+            ?: (getCoordonneesDepuisCache($trajet['arrivee'], $pdo)
+                    ?: geocoderVilleEnDirect($trajet['arrivee'], $pdo));
 
     $sousEtapesCoords = [];
     foreach ($sousEtapes as $se) {
         if (!empty($se['ville'])) {
-            $coords = getCoordonneesDepuisFavoris($se['ville'], $id_utilisateur, $pdo) 
-                      ?: (getCoordonneesDepuisCache($se['ville'], $pdo) 
-                      ?: geocoderVilleEnDirect($se['ville'], $pdo));
+            $coords = getCoordonneesDepuisFavoris($se['ville'], $id_utilisateur, $pdo)
+                    ?: (getCoordonneesDepuisCache($se['ville'], $pdo)
+                            ?: geocoderVilleEnDirect($se['ville'], $pdo));
 
             if ($coords) {
                 $sousEtapesCoords[] = [
-                    'lat' => $coords['lat'],
-                    'lon' => $coords['lon'],
-                    'nom' => $se['ville'],
-                    'heure' => $se['heure'] ?? '',
-                    'remarque' => $se['description'] ?? ''
+                        'lat' => $coords['lat'],
+                        'lon' => $coords['lon'],
+                        'nom' => $se['ville'],
+                        'heure' => $se['heure'] ?? '',
+                        'remarque' => $se['description'] ?? ''
                 ];
             }
         }
     }
-    
-    $jsMapData[] = [ 
-        'id' => $trajet['id'],
-        'titre' => $trajet['titre'],
-        'mode' => strtolower($trajet['mode_transport']),
-        'depart' => [
-            'lat' => $coordsDep ? $coordsDep['lat'] : null, 
-            'lon' => $coordsDep ? $coordsDep['lon'] : null, 
-            'nom' => $trajet['depart']
-        ],
-        'arrivee' => [
-            'lat' => $coordsArr ? $coordsArr['lat'] : null, 
-            'lon' => $coordsArr ? $coordsArr['lon'] : null, 
-            'nom' => $trajet['arrivee']
-        ],
-        'heure_depart' => $trajet['heure_depart'],
-        'sousEtapes' => $sousEtapesCoords,
-        'hasCoords' => ($coordsDep && $coordsArr) ? true : false
-    ];
-}
 
-function getTransportIcon($type) {
-    switch(strtolower($type)) {
-        case 'voiture': return '🚗';
-        case 'velo': case 'vélo': return '🚴';
-        case 'marche': case 'à pied': return '🚶';
-        default: return '🚗';
-    }
+    $jsMapData[] = [
+            'id' => $trajet['id'],
+            'titre' => $trajet['titre'],
+            'mode' => strtolower($trajet['mode_transport']),
+            'depart' => [
+                    'lat' => $coordsDep ? $coordsDep['lat'] : null,
+                    'lon' => $coordsDep ? $coordsDep['lon'] : null,
+                    'nom' => $trajet['depart']
+            ],
+            'arrivee' => [
+                    'lat' => $coordsArr ? $coordsArr['lat'] : null,
+                    'lon' => $coordsArr ? $coordsArr['lon'] : null,
+                    'nom' => $trajet['arrivee']
+            ],
+            'heure_depart' => $trajet['heure_depart'],
+            'sousEtapes' => $sousEtapesCoords,
+            'hasCoords' => ($coordsDep && $coordsArr) ? true : false
+    ];
 }
 ?>
 <!DOCTYPE html>

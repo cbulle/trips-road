@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../include/init.php';
-
 header('Content-Type: application/json');
 
 if (isset($_FILES['file'])) {
@@ -16,25 +14,27 @@ if (isset($_FILES['file'])) {
     }
 
     $nouveauNom = "rt_img_" . uniqid() . "_" . bin2hex(random_bytes(4)) . "." . $extension;
-    
-    $dossierCible = WEBROOT;
+
+    $sousDossier = 'uploads/sousetapes/';
+    $dossierCible = WEBROOT . $sousDossier;
+
+    // Vérifier et créer le dossier s'il n'existe pas
     if (!is_dir($dossierCible)) {
         mkdir($dossierCible, 0755, true);
     }
+
     $cheminFinal = $dossierCible . $nouveauNom;
 
     if (move_uploaded_file($file['tmp_name'], $cheminFinal)) {
-        
-        // --- CALCUL DU CHEMIN WEB (URL) CORRIGÉ ---
+
         $scriptPath = $_SERVER['SCRIPT_NAME'];
         $webRoot = dirname(dirname($scriptPath));
-        
+
         if ($webRoot === '/' || $webRoot === '\\') {
             $webRoot = '';
         }
-        
-        $location = $webRoot . '/uploads/sousetapes/' . $nouveauNom;
-        
+        $location = $webRoot . '/' . $sousDossier . $nouveauNom;
+
         $location = str_replace('\\', '/', $location);
 
         echo json_encode(['location' => $location]);
@@ -47,4 +47,3 @@ if (isset($_FILES['file'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Aucun fichier reçu.']);
 }
-?>

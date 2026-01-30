@@ -1,10 +1,4 @@
 <?php
-require_once __DIR__ . '/lec_bd.php'; 
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 $userId = $_SESSION['utilisateur']['id'] ?? null;
 
 $sql = '

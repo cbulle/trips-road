@@ -1,5 +1,3 @@
-<?php require_once '../include/init.php'; ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,12 +6,12 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<?php include_once __DIR__ . "/../modules/header.php"; ?>
+<?php include_once ROOT . "modules/header.php"; ?>
 
 <main class="main-index">
     <div class="index_container">
 
-<form action="/../formulaire/traitement_oublie.php" method="POST">
+<form action=/traitement_oublie" method="POST">
     <h2>Réinitialisation du mot de passe</h2>
     <label for="email">Votre adresse email :</label>
     <input type="email" name="email" required>
@@ -21,6 +19,6 @@
 </form>
 </main>
 
-<?php include_once __DIR__ . "/../modules/footer.php"; ?>
+<?php include_once ROOT . "modules/footer.php"; ?>
 </body>
 </html>

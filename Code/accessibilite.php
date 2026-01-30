@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-
 if (!isset($_SESSION['utilisateur'])) {
     header("Location: login");
     exit;
@@ -21,14 +19,14 @@ $user = $_SESSION['utilisateur'];
     <title>Accessibilité</title>
 </head>
 <body>
-    <?php include __DIR__ . "/modules/header.php" ?>
+    <?php include ROOT . "/modules/header.php" ?>
 <main class="accessibilite-container">
 
     <aside class="profil-sidebar">
         <div class="user-brief">
             <?php
             $photoProfil = !empty($_SESSION['utilisateur']['photo_profil']) ? htmlspecialchars($_SESSION['utilisateur']['photo_profil']) : "User.png";
-            $photoUrl = (file_exists(__DIR__ . "/uploads/pp/$photoProfil")) ? "/uploads/pp/$photoProfil" : "img/User.png";
+            $photoUrl = (file_exists(WEBROOT . "/uploads/pp/$photoProfil")) ? "/uploads/pp/$photoProfil" : "img/User.png";
             ?>
             <div class="avatar-circle small" style="background-image: url('<?= $photoUrl ?>');"></div>
             <h3><?= htmlspecialchars($user['prenom']) . ' ' . htmlspecialchars($user['nom']) ?></h3>
@@ -36,10 +34,10 @@ $user = $_SESSION['utilisateur'];
         
         <nav class="profil-nav">
             <ul>
-                <li><a href="mesRoadTrips.php">Mes Road-Trips</a></li>
-                <li><a href="profil.php" class="">Paramètres du compte</a></li>
-                <li><a href="accessibilite.php" class="active">Accessibilité</a></li>
-                <li><a href="/logout.php" class="logout">Déconnexion</a></li>
+                <li><a href="/mesRoadTrips">Mes Road-Trips</a></li>
+                <li><a href="/profil" class="">Paramètres du compte</a></li>
+                <li><a href="/accessibilite" class="active">Accessibilité</a></li>
+                <li><a href="/logout" class="logout">Déconnexion</a></li>
             </ul>
         </nav>
     </aside>
@@ -93,7 +91,7 @@ $user = $_SESSION['utilisateur'];
 
 
 </main>
-    <?php include __DIR__ . "/modules/footer.php" ?>
+    <?php include ROOT . "/modules/footer.php" ?>
     <script src="/js/map.js"></script>
 </body>
 </html>

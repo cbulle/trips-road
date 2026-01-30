@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/include/init.php';
-include_once __DIR__ . '/bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
 if (!isset($_SESSION['utilisateur']['id'])) {
@@ -79,8 +76,7 @@ function getIconForCategory($cat) {
                 <?php foreach ($favorisRT as $fav): ?>
                     <div class="roadtrip-card">
                         <?php 
-                        // Gestion de l'image : on vérifie 'photo' et 'photo_cover' pour être sûr
-                        $imagePath = "default_trip.jpg"; // Image par défaut
+                        $imagePath = "default_trip.jpg";
                         $hasImage = false;
 
                         if (!empty($fav['photo'])) {
@@ -104,7 +100,7 @@ function getIconForCategory($cat) {
                         <p class="date-ajout"><small>Ajouté le <?= date('d/m/Y', strtotime($fav['date_ajout'])) ?></small></p>
                         
                         <div class="roadtrip-buttons">
-                            <a class="btn-view" href="public_road.php?id=<?= $fav['id'] ?>">Voir</a>
+                            <a class="btn-view" href="/public_road?id=<?= $fav['id'] ?>">Voir</a>
                             <a class="btn-delete" href="/favo?id=<?= $fav['id'] ?>&action=remove&redirect=favoris"
                                onclick="return confirm('Retirer ce road trip de vos favoris ?');">
                                 <i class="fas fa-trash"></i> Retirer

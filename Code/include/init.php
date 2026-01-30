@@ -25,7 +25,16 @@ if (empty($_SESSION['utilisateur']['id']) && isset($_COOKIE['remember_me'])) {
             $stmt->execute([$selector]);
             $auth_token = $stmt->fetch();
 
+<<<<<<< HEAD
             if ($auth_token && hash_equals($auth_token['hashed_validator'], hash('sha256', $validator))) {
+=======
+        $stmt = $pdo->prepare("SELECT * FROM user_tokens WHERE selector = ? AND expires_at > NOW()");
+        $stmt->execute([$selector]);
+        $auth_token = $stmt->fetch();
+
+        if ($auth_token) {
+            if (hash_equals($auth_token['hashed_validator'], hash('sha256', $validator))) {
+>>>>>>> d225ce3979b3d21acd6703fbce843cc23436292f
                 $stmtUser = $pdo->prepare("SELECT * FROM utilisateurs WHERE id = ?");
                 $stmtUser->execute([$auth_token['user_id']]);
                 $user = $stmtUser->fetch();

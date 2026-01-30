@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/formulaire/form_amis.php';
-include_once __DIR__ . '/bd/lec_bd.php';
 /** @var PDO $pdo
  * @var int    $utilisateur_id
  * @var string $recherche
@@ -25,7 +23,7 @@ include_once __DIR__ . '/bd/lec_bd.php';
 </head>
 <body>
 
-<?php include_once __DIR__ . "/modules/header.php"; ?>
+<?php include_once ROOT . "/modules/header.php"; ?>
 
 <main class="main-index">
     <div class="index_container">

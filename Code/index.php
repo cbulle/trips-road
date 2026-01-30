@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/include/init.php';
 $userId = $_SESSION['utilisateur']['id'] ?? null;
 ?>
 

@@ -1,10 +1,6 @@
 <?php
-require_once __DIR__ . '/../include/init.php';
-include_once __DIR__ . '/../bd/lec_bd.php';
-
 /** @var PDO $pdo */
 
-// Vérification de sécurité
 if (!isset($_SESSION['utilisateur']['id'])) {
     header('Location: /login');
     exit;
@@ -31,7 +27,7 @@ if (!$roadtrip) {
 }
 
 if (!empty($roadtrip['photo'])) {
-    $cheminImageRt = __DIR__ . '/../uploads/roadtrips/' . $roadtrip['photo'];
+    $cheminImageRt = WEBROOT . 'uploads/roadtrips/' . $roadtrip['photo'];
     if (file_exists($cheminImageRt)) {
         unlink($cheminImageRt);
     }
@@ -49,10 +45,9 @@ $stmt = $pdo->prepare($sqlPhotos);
 $stmt->execute(['id_rt' => $id_roadtrip]);
 $photosSousEtapes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// 4. Suppression physique des photos des sous-étapes
 foreach ($photosSousEtapes as $photoNom) {
     if (!empty($photoNom)) {
-        $cheminPhoto = __DIR__ . '/../uploads/sousetapes/' . $photoNom;
+        $cheminPhoto = WEBROOT . 'uploads/sousetapes/' . $photoNom;
         if (file_exists($cheminPhoto)) {
             unlink($cheminPhoto);
         }
@@ -62,6 +57,5 @@ foreach ($photosSousEtapes as $photoNom) {
 $delete = $pdo->prepare("DELETE FROM roadtrip WHERE id = :id");
 $delete->execute(['id' => $id_roadtrip]);
 
-// Retour à la liste avec un message
 header("Location: /../mesRoadTrips?msg=supprime");
 exit;

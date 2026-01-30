@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "^7.0",
+        "tinymce/tinymce": "^8.3"
+    }
+}
