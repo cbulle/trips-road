@@ -72,6 +72,8 @@ if ($id_utilisateur) {
             <?php if (!empty($rt['photo'])): ?>
                 <img src="/uploads/roadtrips/<?= htmlspecialchars($rt['photo']) ?>" 
                      alt="Photo du road trip" class="roadtrip-photo">
+            <?php else : ?>
+                <img src="/img/imgBase.png" alt="Photo par défaut du road trip" class="roadtrip-photo">
             <?php endif; ?>
 
             <h3><?= htmlspecialchars($rt['titre']) ?></h3>
@@ -91,7 +93,7 @@ if ($id_utilisateur) {
             </p>
 
             <div class="roadtrip-buttons">
-                <a class="btn-view" href="public_road?id=<?= $rt['id'] ?>">
+                <a class="btn-view" href="/public_road?id=<?= $rt['id'] ?>">
                     <i class="material-icons">visibility</i>
                 </a>
                 
