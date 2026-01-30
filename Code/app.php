@@ -2,10 +2,10 @@
 session_start();
 require_once __DIR__ . "/path.php";
 
-$url = $_SERVER['PATH_INFO'] ?? "";
+$url = $_SERVER['PATH_INFO'] ?? "/";
 
 switch($url) {
-    case "":
+    case "/":
         include_once ROOT . "index.php";
         break;
 
