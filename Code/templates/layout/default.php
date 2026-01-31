@@ -19,6 +19,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
@@ -44,33 +45,191 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->fetch('css') ?>
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Cake</span>PHP</a>
-        </div>
-        <div class="top-nav-links">
-            <a target="_blank" rel="noopener" href="https://book.cakephp.org/5/">Documentation</a>
-            <a target="_blank" rel="noopener" href="https://api.cakephp.org/">API</a>
-        </div>
+<header>
+    <nav>
+        <ul>
+            <li class="nav-item">
+                <div class="bar_rech">
+                    <input type="search" id="searchInput" class="search-input" placeholder="Recherche..."
+                           autocomplete="off">
+                    <table class="search-results" id="results-table">
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="btn">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item" id="link_access">
+                <a href="/accessibilite">
+                    <i class="material-icons">settings_accessibility</i>
+                    <span>Paramètres</span>
+                </a>
+            </li>
+
+            <li class="title" id="link_Titre">
+                <a href="/index" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>Trips &
+                    Roads</a>
+            </li>
+
+            <?php if (isset($_SESSION['utilisateur'])): ?>
+
+                <li class="nav-item" id="link_Chat">
+                    <a href="/messagerie">
+                        <i class="material-icons">chat_bubble</i>
+                        <span>Messagerie</span>
+                    </a>
+                </li>
+
+                <li class="nav-item" id="link_Amis">
+                    <a href="/amis">
+                        <i class="material-icons">group</i>
+                        <span>Amis</span>
+                    </a>
+                </li>
+
+                <li class="nav-item" id="link_Crea">
+                    <a href="/creationRoadTrip" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
+                        <i class="material-icons">add_box</i>
+                        <span>Créer un Road-Trip</span>
+                    </a>
+                </li>
+
+            <?php endif; ?>
+
+
+            <li class="nav-item" id="link_PP">
+                <?php //if (isset($_SESSION['utilisateur'])): ?>
+
+                <span class="profil-box">
+
+                             <?php
+                             /*if (isset($_SESSION['utilisateur']['photo_profil']) && !empty($_SESSION['utilisateur']['photo_profil'])) {
+                                 $photoProfil = htmlspecialchars($_SESSION['utilisateur']['photo_profil']);
+
+                             } else {
+                                 $photoProfil = "User.png";
+
+                             }
+                             $serverPathUploads = WEBROOT . "uploads/pp/" . $photoProfil;
+                             if (!file_exists($serverPathUploads)) {
+                                 $photoPath = __DIR__ . "/../img/$photoProfil";
+
+                             } else {
+                                 $photoPath = "/uploads/pp/$photoProfil";
+                             }*/
+                             ?>
+                            <a href="/profil"><img class="profil-photo" src="<?= "" ?>" alt="Photo de profil"> </a>
+                    <span class="profil-nom">
+                        <?= "Test" ?>
+                        <?= "TEST" ?>
+                        </span>
+                    <li class="nav-item" id="link_Deco">
+                    <a class="pp_logout" href="/logout">
+                        <i class="material-icons">logout</i>
+                        <span>Déconnexion</span>
+                    </a>
+                    </li>
+                    </span>
+
+                <?php //else: ?>
+
+                <a href="/login">
+                    <i class="material-icons">account_circle</i>
+                    <span>Se connecter</span>
+                </a>
+
+                <?php //endif; ?>
+            </li>
+
+        </ul>
+
+
+        <input type="checkbox" id="burger">
+        <label for="burger" class="burger"><span></span></label>
+
+        <ul class="ul_burger">
+
+            <?php //if (isset($_SESSION['utilisateur'])): ?>
+
+            <li><a href="/Roadtrip">Roads-Trips</a></li>
+            <li><a href="/mesRoadTrips">Mes Roads-Trips</a></li>
+            <li><a href="/favoris">Favoris</a></li>
+            <li><a href="/historique">Historique</a></li>
+            <li><a href="/profil">Paramètres de compte</a></li>
+            <li><a href="/page_link/faq">Aide / FAQ</a></li>
+            <li><a href="/page_link/contact">À propos / Contact</a></li>
+            <li><a href="/logout">Déconnexion</a></li>
+
+            <?php //else: ?>
+
+            <li><a href="../Roadtrip">Roads-Trips</a></li>
+            <li><a href="/id">Se connecter</a></li>
+
+            <?php //endif; ?>
+
+        </ul>
+
     </nav>
-    <main class="main">
-        <div class="container">
-            <?= $this->Flash->render() ?>
-            <?= $this->fetch('content') ?>
-        </div>
+</header>
+<?php
+$showMain = $this->fetch('showMain', true);
+$mainClass = $this->fetch('mainClass', 'main-index');
+?>
+
+<?php if ($showMain): ?>
+    <main class=<?= $mainClass ?>>
+        <?= $this->Flash->render() ?>
+        <?= $this->fetch('content') ?>
     </main>
-    <footer>
-    </footer>
-    <?= $this->Html->script([
-        'encryption',
-        'index',
-        'map',
-        'messagerie',
-        'profil',
-        'recherche',
-        'roadtrip',
-        'vuRoadTrip',
-    ]) ?>
-    <?= $this->fetch('script') ?>
+<?php else: ?>
+    <?= $this->Flash->render() ?>
+    <?= $this->fetch('content') ?>
+<?php endif; ?>
+
+<footer>
+    <div class="footer-container">
+        <div class="image-container">
+            <img src="../img/logoProjet.png" alt="Logo du site web">
+        </div>
+
+        <div class="social-media">
+            <a href="https://www.instagram.com" class="social-icon" target="_blank">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.facebook.com" class="social-icon" target="_blank">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://www.x.com" class="social-icon" target="_blank">
+                <i class="fa-brands fa-x-twitter"></i>
+            </a>
+        </div>
+
+        <ul class="footer-links">
+            <li><a href="../page_link/contact" class="un"> Contact </a></li>
+            <li><a href="../page_link/cgu" class="deux">CGU</a></li>
+            <li><a href="../page_link/politique" class="trois">Politique de confidentialité</a></li>
+            <li><a href="../page_link/faq" class="quatre">FAQ</a></li>
+            <li><a href="../Roadtrip" class="cinq">Road-Trip</a></li>
+            <li><a href="../page_link/cookie" class="six">Gestion des cookies</a></li>
+        </ul>
+    </div>
+</footer>
+<?= $this->Html->script([
+    'encryption',
+    'index',
+    'map',
+    'messagerie',
+    'profil',
+    'recherche',
+    'roadtrip',
+    'vuRoadTrip',
+]) ?>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://unpkg.com/leaflet-markercluster/dist/leaflet.markercluster.js"></script>
+<?= $this->fetch('script') ?>
 </body>
 </html>
