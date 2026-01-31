@@ -20,6 +20,10 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <html>
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <script src="https://kit.fontawesome.com/d76759a8b0.js" crossorigin="anonymous"></script>
+
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
@@ -74,7 +78,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                     Roads</a>
             </li>
 
-            <?php if (isset($_SESSION['utilisateur'])): ?>
+            <?php //if (isset($_SESSION['utilisateur'])): ?>
 
                 <li class="nav-item" id="link_Chat">
                     <a href="/messagerie">
@@ -91,13 +95,13 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                 </li>
 
                 <li class="nav-item" id="link_Crea">
-                    <a href="/creationRoadTrip" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
+                    <a href="/add_r_t" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
                         <i class="material-icons">add_box</i>
                         <span>Créer un Road-Trip</span>
                     </a>
                 </li>
 
-            <?php endif; ?>
+            <?php //endif; ?>
 
 
             <li class="nav-item" id="link_PP">
@@ -121,7 +125,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                                  $photoPath = "/uploads/pp/$photoProfil";
                              }*/
                              ?>
-                            <a href="/profil"><img class="profil-photo" src="<?= "" ?>" alt="Photo de profil"> </a>
+                            <a href="/view"><img class="profil-photo" src="<?= "" ?>" alt="Photo de profil"> </a>
                     <span class="profil-nom">
                         <?= "Test" ?>
                         <?= "TEST" ?>
@@ -158,7 +162,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <li><a href="/mesRoadTrips">Mes Roads-Trips</a></li>
             <li><a href="/favoris">Favoris</a></li>
             <li><a href="/historique">Historique</a></li>
-            <li><a href="/profil">Paramètres de compte</a></li>
+            <li><a href="/view">Paramètres de compte</a></li>
             <li><a href="/page_link/faq">Aide / FAQ</a></li>
             <li><a href="/page_link/contact">À propos / Contact</a></li>
             <li><a href="/logout">Déconnexion</a></li>

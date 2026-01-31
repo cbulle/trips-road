@@ -1,11 +1,13 @@
 <div class="index_container">
     <h2>Bienvenue sur Trips & Roads !</h2>
     <p>Planifiez et partagez vos road trips facilement.</p>
-    <a href="/creationRoadTrip"><button type="submit">Créer un nouveau Road Trip</button></a>
+    <a href="/creationRoadTrip">
+        <button type="submit">Créer un nouveau Road Trip</button>
+    </a>
 </div>
 
 <div class="search-container">
-    <input type="text" id="poiSearch" placeholder="Rechercher un lieu..." />
+    <input type="text" id="poiSearch" placeholder="Rechercher un lieu..."/>
     <button id="searchBtn">🔍 Rechercher</button>
     <ul id="searchResults" class="searching-results"></ul>
 </div>
@@ -70,7 +72,8 @@
             </div>
 
             <div class="category-info">
-                <p class="info-text">💡 <strong>Astuce :</strong> Cliquez sur la carte pour changer votre position de recherche</p>
+                <p class="info-text">💡 <strong>Astuce :</strong> Cliquez sur la carte pour changer votre position de
+                    recherche</p>
                 <p class="info-zone">📍 Zone de recherche : <strong>2 km</strong> autour de votre position</p>
             </div>
 
@@ -79,6 +82,7 @@
             </button>
         </div>
 
-        <div id="userMap" style="height: 600px; flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+        <div id="userMap"
+             style="height: 600px; flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
     </div>
 </div>
