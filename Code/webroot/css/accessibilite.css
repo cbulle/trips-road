@@ -1,0 +1,266 @@
+.accessibilite-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid; 
+    grid-template-columns: 280px 1fr; 
+    gap: 30px;
+    font-size: 1.2rem;
+}
+
+/* --- Sidebar --- */
+.profil-sidebar {
+    background: var(--beige_fonce);
+    padding : 20px;
+    border-radius: 13px;
+}
+
+.user-brief {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.user-brief h3 {
+    margin-top: 10px;
+    color: var(--bleu_fonce);
+    font-size: 1.33rem;
+}
+
+.profil-nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.profil-nav li {
+    margin-bottom: 8px;
+}
+
+.profil-nav a {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: var(--gris_fonce);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.profil-nav a:hover {
+    background-color: rgba(255,255,255,0.5);
+    color: var(--bleu_fonce);
+}
+
+.profil-nav a.active {
+    background-color: var(--bleu_fonce);
+    color: var(--white);
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: background-color 1s ease;
+}
+
+.profil-nav a.logout {
+    color: var(--rouge);
+    margin-top: 20px;
+    border: 1px solid rgba(191, 9, 47, 0.2);
+}
+
+.profil-nav a.logout:hover {
+    background-color: var(--rouge);
+    color: var(--white);
+}
+
+/* --- Contenu Principal  --- */
+.profil-content {
+    background-color: var(--beige_fonce);
+    padding: 40px;
+    border-radius: 13px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);;
+}
+
+.card-header h1 {
+    color: var(--bleu_fonce);
+    margin-bottom: 5px;
+    font-size: 1.8rem;
+}
+
+.card-header p {
+    color: var(--gris_clair);
+    margin-bottom: 30px;
+}
+
+/* ==========================================
+   PAGE ACCESSIBILITÉ - STYLE GLOBAL
+   ========================================== */
+
+.cont_access {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 20px;
+}
+
+
+.AccessForm {
+    background-color: var(--beige_fonce);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: background-color 0.5s ease;
+}
+
+#login-title {
+    color: var(--bleu_fonce);
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 2rem;
+    border-bottom: 2px solid var(--orange);
+    padding-bottom: 10px;
+}
+
+.access-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.access-item label {
+    font-weight: bold;
+    color: var(--bleu_fonce_ecriture);
+    cursor: pointer;
+}
+
+/* ==========================================
+   STYLE DES SLIDERS (SWITCH)
+   ========================================== */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gris_clair);
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--white);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--vert_btn);
+}
+
+#checkboxSombre:checked + .slider {
+    background-color: var(--bleu_fonce);
+}
+
+#checkboxMalvoyant:checked + .slider {
+    background-color: var(--orange_malvoyant);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* ==========================================
+   OPTIONS DU MODE DALTONIEN
+   ========================================= */
+
+.daltonism-container {
+    margin-top: 10px;
+    padding: 15px;
+    background: var(--beige);
+    border-radius: 12px;
+    border-left: 5px solid var(--bleu_clair);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.daltonism-container label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: var(--bleu_fonce_ecriture);
+    cursor: pointer;
+    padding: 5px;
+    transition: background 0.3s;
+}
+
+.daltonism-container label:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+}
+
+.daltonism-container input[type="radio"] {
+    accent-color: var(--orange);
+    width: 18px;
+    height: 18px;
+}
+
+
+
+/* ==============================
+              Favoris
+============================== */
+
+ .btn-favori {
+            background: var(--orange_sombre);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-favori.active {
+            background: var(--rouge);
+        }
+        .btn-favori:hover {
+            background: var(--rouge);
+        }
+        .btn-favori.active:hover {
+            background: var(--rouge);
+        }
+
+@media (max-width: 768px) {
+    .accessibilite-container {
+        grid-template-columns: 1fr;
+    }   
+}

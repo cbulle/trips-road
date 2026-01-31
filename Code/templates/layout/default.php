@@ -22,16 +22,26 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        <?= $cakeDescription ?>:
         <?= $this->fetch('title') ?>
     </title>
     <?= $this->Html->meta('icon') ?>
 
-    <?= $this->Html->css(['normalize.min', 'milligram.min', 'fonts', 'cake']) ?>
+    <?= $this->Html->css([
+        'accessibilite',
+        'favoris',
+        'footer',
+        'form',
+        'header',
+        'index',
+        'messagerie',
+        'messaging-realtime',
+        'page_link',
+        'profil',
+        'style'
+    ]) ?>
 
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
-    <?= $this->fetch('script') ?>
 </head>
 <body>
     <nav class="top-nav">
@@ -51,5 +61,16 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     </main>
     <footer>
     </footer>
+    <?= $this->Html->script([
+        'encryption',
+        'index',
+        'map',
+        'messagerie',
+        'profil',
+        'recherche',
+        'roadtrip',
+        'vuRoadTrip',
+    ]) ?>
+    <?= $this->fetch('script') ?>
 </body>
 </html>
