@@ -14,9 +14,9 @@
 
     <nav class="profil-nav">
         <ul>
-            <li><a href="/mesRoadTrips">Mes Road-Trips</a></li>
-            <li><a href="/profil" class="active">Paramètres du compte</a></li>
-            <li><a href="/accessibilite" class="access">Accessibilité</a></li>
+            <li><a href="/explore">Mes Road-Trips</a></li>
+            <li><a href="/view" class="active">Paramètres du compte</a></li>
+            <li><a href="/accessibility" class="access">Accessibilité</a></li>
             <li><a href="/logout" class="logout">Déconnexion</a></li>
         </ul>
     </nav>

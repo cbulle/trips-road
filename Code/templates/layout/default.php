@@ -67,7 +67,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             </li>
 
             <li class="nav-item" id="link_access">
-                <a href="/accessibilite">
+                <a href="/accessibility">
                     <i class="material-icons">settings_accessibility</i>
                     <span>Paramètres</span>
                 </a>
@@ -158,8 +158,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 
             <?php //if (isset($_SESSION['utilisateur'])): ?>
 
-            <li><a href="/Roadtrip">Roads-Trips</a></li>
-            <li><a href="/mesRoadTrips">Mes Roads-Trips</a></li>
+            <li><a href="/explore_public">Roads-Trips</a></li>
+            <li><a href="/explore">Mes Roads-Trips</a></li>
             <li><a href="/favoris">Favoris</a></li>
             <li><a href="/historique">Historique</a></li>
             <li><a href="/view">Paramètres de compte</a></li>
