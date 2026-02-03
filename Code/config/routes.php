@@ -33,7 +33,7 @@ return function (RouteBuilder $routes): void {
     $routes->setRouteClass(DashedRoute::class);
 
     $routes->scope('/', function (RouteBuilder $builder): void {
-        $builder->connect('/', ['controller' => 'Roadtrips', 'action' => 'display', 'index']);
+        $builder->connect('/', ['controller' => 'Roadtrips', 'action' => 'index']);
         $builder->connect('/index', ['controller' => 'Roadtrips', 'action' => 'index']);
         $builder->connect('/view', ['controller' => 'Users', 'action' => 'view']);
         $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);

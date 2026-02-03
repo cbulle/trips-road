@@ -166,6 +166,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <li><a href="/page_link/faq">Aide / FAQ</a></li>
             <li><a href="/page_link/contact">À propos / Contact</a></li>
             <li><a href="/logout">Déconnexion</a></li>
+            <li><a href="/logout">Déconnexion</a></li>
 
             <?php //else: ?>
 

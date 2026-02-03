@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
-class RoadtripsController extends AppController
+class
+RoadtripsController extends AppController
 {
     public function index(){}
     public function addRT(){}
