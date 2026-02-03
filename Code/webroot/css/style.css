@@ -23,7 +23,7 @@
 
 html.dark {
   background-color: #132440;
-  --orange: #2E8B57; 
+  --orange: #2E8B57;
   --vert_btn: #BF092F;
   --bleu_fonce: #062a47;
   --beige: #E0C58B;
@@ -101,11 +101,11 @@ html.daltonien .icon-send path {
 }
 
 html.SombreBtn {
-  --orange_sombre: #2E8B57; 
+  --orange_sombre: #2E8B57;
 }
 
 html.MalvoyantBtn {
-  --orange_malvoyant: #2E8B57; 
+  --orange_malvoyant: #2E8B57;
 }
 
 
@@ -121,7 +121,7 @@ html.MalvoyantBtn {
 }
 
 main{
-    flex: 1; 
+    flex: 1;
 }
 
 html {
@@ -129,16 +129,16 @@ html {
   font-family: 'Poppins', Arial, sans-serif;
   background-color: var(--beige);
   margin: 0;
-  padding: 0; 
+  padding: 0;
   font-size: 16px;
   transition: all 0.5s ease;
 }
 
 body {
-    min-height: 100vh; 
-    display: flex;    
-    flex-direction: column; 
-    margin: 0;         
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
 }
 
 
@@ -152,7 +152,7 @@ button, input, select, textarea, label{
   }
 
 /*===================================
-          Photo-Profil 
+          Photo-Profil
 =====================================*/
 .profil-box {
   position: relative;
@@ -162,7 +162,7 @@ button, input, select, textarea, label{
 }
 
 .profil-photo {
-  position: relative ; 
+  position: relative ;
   width: 70px;
   height: 70px;
   border-radius: 50%;
@@ -200,7 +200,7 @@ button, input, select, textarea, label{
   color: var(--beige);
   background-color: var(--bleu_clair);
   padding : 15px;
-  margin-bottom: 15px; 
+  margin-bottom: 15px;
 }
 
 
@@ -215,12 +215,12 @@ button, input, select, textarea, label{
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.sidebar #addEtape, 
-.sidebar #btnCalculer, 
-.sidebar #btnModifier, 
-.sidebar #saveRoadtrip, 
-.sidebar #btnLegende, 
-.sidebar #btnRecalculer, 
+.sidebar #addEtape,
+.sidebar #btnCalculer,
+.sidebar #btnModifier,
+.sidebar #saveRoadtrip,
+.sidebar #btnLegende,
+.sidebar #btnRecalculer,
 .sidebar #btnAddSegment{
   padding: 10px;
   border-radius: 15px;
@@ -272,7 +272,7 @@ button, input, select, textarea, label{
   border-radius: 5px
 }
 
-#newBlockForm #inputStartBlock, 
+#newBlockForm #inputStartBlock,
 #newBlockForm #inputEndBlock{
   padding: 10px;
   border-radius: 15px;
@@ -342,7 +342,7 @@ button, input, select, textarea, label{
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
-    flex: 1; 
+    flex: 1;
 }
 
 .btn-block-cancel {
@@ -356,7 +356,7 @@ button, input, select, textarea, label{
 }
 
 .btn-block-validate {
-    background-color: var(--bleu_clair); 
+    background-color: var(--bleu_clair);
     color: white;
 }
 
@@ -375,9 +375,9 @@ button, input, select, textarea, label{
   padding: 0;
   margin: 0;
   list-style: none;
-  background: var(--beige); 
+  background: var(--beige);
   border: 1px solid var(--bleu_clair);
-  border-radius: 10px; 
+  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
@@ -396,7 +396,7 @@ button, input, select, textarea, label{
 }
 
 .ui-state-active, .ui-menu-item:hover .ui-menu-item-wrapper {
-  background: var(--bleu_clair) !important; 
+  background: var(--bleu_clair) !important;
   color: white !important;
   text-decoration: none;
 }
@@ -441,9 +441,9 @@ padding: 6px 10px;
 ============================== */
 
 .segment-form-container {
-  transition: opacity 0.3s ease; 
+  transition: opacity 0.3s ease;
   opacity: 1;
-  overflow-y: auto; 
+  overflow-y: auto;
   padding: 15px;
   position: relative;
   background: var(--beige_fonce);
@@ -489,12 +489,12 @@ padding: 6px 10px;
 .roadtrip-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
+  justify-content: space-between;
   background: var(--beige_fonce);
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  height: 100%;            
+  height: 100%;
 }
 
 .roadtrip-card h3 {
@@ -624,49 +624,49 @@ padding: 6px 10px;
         .trajet-info h2{
             text-align: left;
         }
-        
+
         .trajet-titre {
             margin: 0 0 10px 0;
             font-size: 1.5em;
             font-weight: bold;
         }
-        
+
         .trajet-details {
             display: flex;
             gap: 20px;
             align-items: center;
             font-size: 0.95em;
         }
-        
+
         .trajet-detail-item {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-        
+
         .transport-icon {
-            font-size: 1.5em; 
+            font-size: 1.5em;
         }
-        
+
         .toggle-icon {
             font-size: 1.5em;
             transition: transform 0.3s;
         }
-        
+
         .card-vu.active .toggle-icon {
             transform: rotate(180deg);
         }
-        
+
         .sous-etapes-container {
             display: none;
             padding: 20px;
             background-color: var(--beige_fonce);
         }
-        
+
         .sous-etapes-container.active {
             display: block;
         }
-        
+
         .sous-etape-card {
             background: var(--beige_visu);
             padding: 15px;
@@ -675,19 +675,19 @@ padding: 6px 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             border-left: 4px solid var(--orange);
         }
-        
+
         .sous-etape-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .sous-etape-header h3 {
             margin: 0;
             color: #333;
         }
-        
+
         .numero-etape {
             background: var(--orange);
             color: white;
@@ -696,7 +696,7 @@ padding: 6px 10px;
             font-size: 0.85em;
             font-weight: bold;
         }
-        
+
         .sous-etape-info {
             display: flex;
             gap: 20px;
@@ -704,20 +704,20 @@ padding: 6px 10px;
             font-size: 14px;
             color: #666;
         }
-        
+
         .sous-etape-info span {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-        
+
         .photos-container {
             display: flex;
             gap: 10px;
             overflow-x: auto;
             padding: 10px 0;
         }
-        
+
         .photos-container img {
             height: 150px;
             border-radius: 5px;
@@ -725,11 +725,11 @@ padding: 6px 10px;
             cursor: pointer;
             transition: transform 0.2s;
         }
-        
+
         .photos-container img:hover {
             transform: scale(1.05);
         }
-        
+
         #imageModal {
             animation: fadeIn 0.3s;
         }
@@ -912,7 +912,7 @@ padding: 6px 10px;
 
 .map-container {
   position: sticky;
-  top: 20px;       
+  top: 20px;
 }
 
 /* ==============================
@@ -1037,7 +1037,7 @@ padding: 6px 10px;
   border-radius: 15px;
   box-shadow: 0 3px 8px var(--noir);
   margin-top: 15px;
-  width: 90%;       
+  width: 90%;
   max-width: 600px;
 }
 
@@ -1211,7 +1211,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 ============================== */
 .sous-etape-card p {
   margin-top: 5px;
-  margin-bottom: 15px; 
+  margin-bottom: 15px;
 }
 
 .sous-etape-card ul,
@@ -1228,11 +1228,11 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 .sous-etape-card table {
   width: 100%;
-  border-collapse: collapse; 
+  border-collapse: collapse;
   margin: 15px 0;
   font-size: 0.95rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px; 
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -1249,11 +1249,11 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   padding: 10px;
   border: 1px solid #ddd;
   color: var(--bleu_fonce_ecriture);
-  background-color: var(--beige_fonce); 
+  background-color: var(--beige_fonce);
 }
 
 .sous-etape-card tr:nth-child(even) td {
-  background-color: rgba(255, 255, 255, 0.8); 
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 .sous-etape-card a {
@@ -1300,8 +1300,8 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 .legend-toggle-btn {
   margin-left: auto;
-  font-weight: bold; 
-  border: none; 
+  font-weight: bold;
+  border: none;
   background: none;
   cursor: pointer;
   color: var(--orange);
@@ -1344,7 +1344,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
   margin-left: 5px;
 }
 .legend-sub-item-content {
-  display: flex; 
+  display: flex;
   align-items: center;
 }
 .legend-sub-text {
@@ -1359,7 +1359,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     display: inline-flex;
     gap: 8px;
     margin-left: 10px;
-    margin-right: auto; 
+    margin-right: auto;
     align-items: center;
 }
 
@@ -1372,13 +1372,13 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     padding: 4px 8px;
     transition: all 0.3s ease;
     color: var(--gris_clair);
-    opacity: 0.7; 
+    opacity: 0.7;
 }
 
 .transport-btn:hover {
     background-color: var(--orange);
     border-color: var(--orange);
-    transform: translateY(-2px); 
+    transform: translateY(-2px);
     opacity: 1;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
@@ -1397,16 +1397,16 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border: none;
     cursor: pointer;
     font-size: 1.4rem;
-    color: var(--bleu_fonce); 
+    color: var(--bleu_fonce);
     margin-right: 5px;
-    transition: all 0.5s ease; 
+    transition: all 0.5s ease;
     padding: 0 5px;
     opacity: 0.8;
 }
 
 .settings-btn:hover {
-    transform: rotate(90deg); 
-    color: var(--orange); 
+    transform: rotate(90deg);
+    color: var(--orange);
     opacity: 1;
 }
 
@@ -1445,7 +1445,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 .pref-checkbox {
     margin-right: 10px;
     cursor: pointer;
-    accent-color: var(--orange); 
+    accent-color: var(--orange);
     width: 16px;
     height: 16px;
 }
@@ -1459,40 +1459,40 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     font-size: 0.95rem;
     color: var(--bleu_fonce_ecriture);
     line-height: 1.5;
-    word-wrap: break-word; 
+    word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .tinymce-content img {
     display: block;
-    max-width: 100% !important; 
-    height: auto !important;    
-    margin: 10px 0;            
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 10px 0;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-.tinymce-content ul, 
+.tinymce-content ul,
 .tinymce-content ol {
-    margin: 10px 0 10px 20px !important; 
+    margin: 10px 0 10px 20px !important;
     padding-left: 15px !important;
 }
 
 .tinymce-content ul {
-    list-style-type: disc !important; 
+    list-style-type: disc !important;
 }
 
 .tinymce-content ol {
-    list-style-type: decimal !important; 
+    list-style-type: decimal !important;
 }
 
 .tinymce-content li {
     display: list-item !important;
     margin-bottom: 5px;
-    padding-left: 5px; 
+    padding-left: 5px;
 }
 
-.tinymce-content ul ul, 
+.tinymce-content ul ul,
 .tinymce-content ol ul {
     list-style-type: circle !important;
 }
@@ -1544,7 +1544,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 .trajet-header:hover {
-    background-color: #eaeaea; 
+    background-color: #eaeaea;
 }
 
 .toggle-icon {
@@ -1559,7 +1559,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 ============================== */
 
 .sous-etapes-container {
-    display: none; 
+    display: none;
     padding: 20px;
     background-color: var(--beige_visu);
     border-top: 1px solid #ddd;
@@ -1576,7 +1576,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 .trajet-details-column {
     flex: 1;
-    min-width: 0; 
+    min-width: 0;
     max-width: 50%;
     overflow: visible; /* Permet au contenu de déborder si nécessaire */
 }
@@ -1592,7 +1592,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 .map-trajet {
     width: 100%;
-    height: 600px !important; 
+    height: 600px !important;
     border-radius: 10px;
     border: 1px solid #ccc;
 }
@@ -1784,14 +1784,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     font-size: 14px;
     border: 2px solid white;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    position: relative; 
+    position: relative;
     z-index: 100;
 }
 
 .marker-offset-left {
     margin-left: -18px !important;
     margin-top: -10px !important;
-    z-index: 110 !important; 
+    z-index: 110 !important;
 }
 .marker-offset-right {
     margin-left: 18px !important;
@@ -1887,7 +1887,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border: none !important;
 }
 
-.ui-menu-item:hover .ui-menu-item-name, 
+.ui-menu-item:hover .ui-menu-item-name,
 .ui-state-active .ui-menu-item-name {
     color: var(--orange) !important;
 }
@@ -1899,20 +1899,20 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 @media (max-width: 1024px) {
 
   .main-container {
-    flex-direction: column; 
+    flex-direction: column;
     padding: 10px;
     gap: 0;
   }
 
   .sidebar {
-    width: 100%; 
+    width: 100%;
     max-width: 100%;
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
     box-sizing: border-box;
-    order: 1; 
+    order: 1;
   }
 
-  .segment-form-container, 
+  .segment-form-container,
   #segmentFormContainer {
     width: 100%;
     max-width: 100%;
@@ -1920,14 +1920,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     order: 2; /
   }
 
-  .sidebar select, 
-  .sidebar input, 
+  .sidebar select,
+  .sidebar input,
   .sidebar textarea,
   .sidebar button ,
   .sidebar label,
-  .sidebar #legend h3, 
+  .sidebar #legend h3,
   h1.TitreRT, h3{
-    font-size: 2.5rem; 
+    font-size: 2.5rem;
   }
 }
 /* ==============================
@@ -2000,4 +2000,53 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 .horaire-calcule:not(.horaire-loader) {
     animation: fadeIn 0.3s ease-out;
+}
+
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background-color: #2ecc71;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    animation: slideIn 0.3s ease-out forwards;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.toast-notification.fade-out {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.status-termine {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.status-brouillon {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
 }

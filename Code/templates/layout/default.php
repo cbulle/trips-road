@@ -14,7 +14,6 @@
  * @var \App\View\AppView $this
  */
 
-$cakeDescription = 'CakePHP: the rapid development php framework';
 ?>
 <!DOCTYPE html>
 <html>
@@ -101,7 +100,7 @@ $currentUser = $this->request->getAttribute('identity');
                         <?php
                         $pp = $currentUser->profile_picture ?: 'User.png';
                         ?>
-                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'view']) ?>">
+                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">
                             <?= $this->Html->image('../uploads/pp/' . $pp, ['class' => 'profil-photo', 'alt' => 'Profil']) ?>
                         </a>
 
@@ -141,13 +140,18 @@ $currentUser = $this->request->getAttribute('identity');
 
         <ul class="ul_burger">
             <?php if ($currentUser): ?>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'index']) ?>">Roads-Trips Publics</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Roads-Trips Publics</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Comments', 'action' => 'index']) ?>">Commentaire</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Mon Compte</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'index']) ?>">Favoris</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'JSP', 'action' => 'index']) ?>">Historque</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profil']) ?>">Paramètres du compte</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'faq']) ?>">Aide / FAQ</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'contact']) ?>">A propos / Contact</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">Déconnexion</a></li>
+
             <?php else: ?>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'index']) ?>">Voir les RoadTrips</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Voir les RoadTrips</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se connecter</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'add']) ?>">S'inscrire</a></li>
             <?php endif; ?>

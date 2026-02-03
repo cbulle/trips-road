@@ -98,8 +98,10 @@ class UsersController extends AppController
 
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Profil mis à jour.'));
+                return $this->redirect(['controller' => 'Users', 'action' => 'profile']);
             } else {
                 $this->Flash->error(__('Erreur lors de la mise à jour.'));
+                return $this->redirect(['controller' => 'Users', 'action' => 'profile']);
             }
         }
 
