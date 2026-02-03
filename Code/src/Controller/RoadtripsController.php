@@ -45,9 +45,13 @@ class RoadtripsController extends AppController
     {
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
+        $show_share = $this->request->getQuery('show_share');
+
+        $share_url = $this->request->getSession()->read('share_url');
+
         $this->paginate = [
             'limit' => 12,
-            'order' => ['created' => 'DESC']
+            'order' => ['id' => 'DESC']
         ];
 
         $query = $this->Roadtrips->find()
@@ -55,7 +59,8 @@ class RoadtripsController extends AppController
 
         $roadtrips = $this->paginate($query);
 
-        $this->set(compact('roadtrips'));
+        $this->set(compact('roadtrips', 'show_share', 'share_url'));
+
         $this->render('my_roadtrips');
     }
 
@@ -191,6 +196,23 @@ class RoadtripsController extends AppController
         }
 
         return $this->redirect(['action' => 'myRoadtrips']);
+    }
+
+    public function publicRoadtrips(){
+
+    }
+
+    // src/Controller/RoadtripsController.php
+
+    public function share($id = null)
+    {
+        $token = md5((string)$id . uniqid()); // À améliorer avec ta logique de shared_roadtrips
+
+        $link = \Cake\Routing\Router::url(['controller' => 'Roadtrips', 'action' => 'view', 'token' => $token], true);
+
+        $this->request->getSession()->write('share_url', $link);
+
+        return $this->redirect(['action' => 'myRoadtrips', '?' => ['show_share' => 1]]);
     }
 
     private function _mapJsonToCakeEntities($jsonString)

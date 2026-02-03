@@ -18,7 +18,7 @@ if (!empty($fileName) && file_exists($physicalPath)) {
 
     <nav class="profil-nav">
         <ul>
-            <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes
+            <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => '#']) ?>">Mes
                     Road-Trips</a></li>
             <li><a href="#" class="active">Paramètres du compte</a></li>
             <li>
@@ -39,8 +39,7 @@ if (!empty($fileName) && file_exists($physicalPath)) {
     <?= $this->Form->create($user, [
         'id' => 'profilForm',
         'class' => 'form_modif',
-        'type' => 'file', // Indispensable pour l'upload
-        // CakePHP remplit automatiquement les champs avec les données de $user
+        'type' => 'file',
     ]) ?>
 
     <div class="form-section photo-section">

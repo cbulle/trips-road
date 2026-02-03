@@ -39,8 +39,6 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);
         $builder->connect('/add', ['controller' => 'Users', 'action' => 'add']);
         $builder->connect('/add_r_t', ['controller' => 'Roadtrips', 'action' => 'add./']);
-        $builder->connect('/explore', ['controller' => 'Roadtrips', 'action' => 'explore']);
-        $builder->connect('/explore_public', ['controller' => 'Roadtrips', 'action' => 'explorePublic']);
         $builder->connect('/accessibility', ['controller' => 'Users', 'action' => 'accessibility']);
 
         /*
