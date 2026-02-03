@@ -43,6 +43,13 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/explore_public', ['controller' => 'Roadtrips', 'action' => 'explorePublic']);
         $builder->connect('/accessibility', ['controller' => 'Users', 'action' => 'accessibility']);
 
+        $builder->scope('/messages', function (RouteBuilder $builder) {
+            $builder->connect('/', ['controller' => 'Messages', 'action' => 'index']);
+            $builder->connect('/:id', ['controller' => 'Messages', 'action' => 'view']);
+            $builder->post('/send-message', ['controller' => 'Messages', 'action' => 'sendMessage']);
+            $builder->post('/get-or-create', ['controller' => 'Messages', 'action' => 'getOrCreateConversation']);
+        });
+
         /*
          * ...and connect the rest of 'Pages' controller's URLs.
          */

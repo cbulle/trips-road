@@ -143,6 +143,7 @@ $currentUser = $this->request->getAttribute('identity');
             <?php if ($currentUser): ?>
                 <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'index']) ?>">Roads-Trips Publics</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Comments', 'action' => 'index']) ?>">Commentaire</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Mon Compte</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">Déconnexion</a></li>
             <?php else: ?>

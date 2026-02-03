@@ -96,6 +96,15 @@ class ConversationsTable extends Table
         $rules->add($rules->existsIn(['user_one_id'], 'UserOnes'), ['errorField' => 'user_one_id']);
         $rules->add($rules->existsIn(['user_two_id'], 'UserTwos'), ['errorField' => 'user_two_id']);
 
+
+        $rules->add(
+            $rules->isUnique(['user_one_id', 'user_two_id']),
+            ['errorField' => 'user_one_id', 'message' => 'Cette conversation existe déjà']
+        );
+
+        $rules->add($rules->existsIn(['user_one_id'], 'UserOnes'));
+        $rules->add($rules->existsIn(['user_two_id'], 'UserTwos'));
+
         return $rules;
     }
 }
