@@ -140,7 +140,7 @@ $currentUser = $this->request->getAttribute('identity');
 
         <ul class="ul_burger">
             <?php if ($currentUser): ?>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'index']) ?>">Roads-Trips Publics</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Roads-Trips Publics</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'index']) ?>">Favoris</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'JSP', 'action' => 'index']) ?>">Historque</a></li>
@@ -151,7 +151,7 @@ $currentUser = $this->request->getAttribute('identity');
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">Déconnexion</a></li>
 
             <?php else: ?>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'explore-public']) ?>">Voir les RoadTrips</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Voir les RoadTrips</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se connecter</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'add']) ?>">S'inscrire</a></li>
             <?php endif; ?>
