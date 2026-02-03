@@ -6,17 +6,12 @@ namespace App\Controller;
 use Cake\Event\EventInterface;
 use Cake\View\JsonView;
 
-<<<<<<< HEAD
-class
-RoadtripsController extends AppController
-=======
 /**
  * Roadtrips Controller
  *
  * @property \App\Model\Table\RoadtripsTable $Roadtrips
  */
 class RoadtripsController extends AppController
->>>>>>> d23b0e272c42a722790079172222c6414c6ef19c
 {
     public function initialize(): void
     {
