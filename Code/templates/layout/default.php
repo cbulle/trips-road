@@ -49,131 +49,107 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->fetch('css') ?>
 </head>
 <body>
+<?php
+$currentUser = $this->request->getAttribute('identity');
+?>
+
 <header>
     <nav>
         <ul>
             <li class="nav-item">
                 <div class="bar_rech">
-                    <input type="search" id="searchInput" class="search-input" placeholder="Recherche..."
-                           autocomplete="off">
-                    <table class="search-results" id="results-table">
-                        <tbody>
-                        </tbody>
-                    </table>
-                    <div class="btn">
-                        <i class="fas fa-search"></i>
-                    </div>
+                    <input type="search" id="searchInput" class="search-input" placeholder="Recherche..." autocomplete="off">
+                    <div class="btn"><i class="fas fa-search"></i></div>
                 </div>
             </li>
 
-            <li class="nav-item" id="link_access">
-                <a href="/accessibility">
-                    <i class="material-icons">settings_accessibility</i>
-                    <span>Paramètres</span>
-                </a>
-            </li>
-
             <li class="title" id="link_Titre">
-                <a href="/index" <?= ($_SERVER['REQUEST_URI'] === '/index.php') ? 'class="active"' : '' ?>>Trips &
-                    Roads</a>
+                <a href="<?= $this->Url->build('/') ?>">Trips & Roads</a>
             </li>
 
-            <?php //if (isset($_SESSION['utilisateur'])): ?>
+            <?php if ($currentUser): ?>
+                <li class="nav-item" id="link_access">
+                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'accessibility']) ?>">
+                        <i class="material-icons">settings_accessibility</i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
 
                 <li class="nav-item" id="link_Chat">
-                    <a href="/messagerie">
+                    <a href="<?= $this->Url->build(['controller' => 'Messages', 'action' => 'index']) ?>">
                         <i class="material-icons">chat_bubble</i>
                         <span>Messagerie</span>
                     </a>
                 </li>
 
                 <li class="nav-item" id="link_Amis">
-                    <a href="/amis">
+                    <a href="<?= $this->Url->build(['controller' => 'Friendships', 'action' => 'index']) ?>">
                         <i class="material-icons">group</i>
                         <span>Amis</span>
                     </a>
                 </li>
 
                 <li class="nav-item" id="link_Crea">
-                    <a href="/add_r_t" <?= ($_SERVER['REQUEST_URI'] === '/creationRoadTrip.php') ? 'class="active"' : '' ?>>
+                    <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'add']) ?>">
                         <i class="material-icons">add_box</i>
                         <span>Créer un Road-Trip</span>
                     </a>
                 </li>
 
-            <?php //endif; ?>
+                <li class="nav-item" id="link_PP">
+                    <span class="profil-box">
+                        <?php
+                        $pp = $currentUser->profile_picture ?: 'User.png';
+                        ?>
+                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'view']) ?>">
+                            <?= $this->Html->image('../uploads/pp/' . $pp, ['class' => 'profil-photo', 'alt' => 'Profil']) ?>
+                        </a>
 
-
-            <li class="nav-item" id="link_PP">
-                <?php //if (isset($_SESSION['utilisateur'])): ?>
-
-                <span class="profil-box">
-
-                             <?php
-                             /*if (isset($_SESSION['utilisateur']['photo_profil']) && !empty($_SESSION['utilisateur']['photo_profil'])) {
-                                 $photoProfil = htmlspecialchars($_SESSION['utilisateur']['photo_profil']);
-
-                             } else {
-                                 $photoProfil = "User.png";
-
-                             }
-                             $serverPathUploads = WEBROOT . "uploads/pp/" . $photoProfil;
-                             if (!file_exists($serverPathUploads)) {
-                                 $photoPath = __DIR__ . "/../img/$photoProfil";
-
-                             } else {
-                                 $photoPath = "/uploads/pp/$photoProfil";
-                             }*/
-                             ?>
-                            <a href="/view"><img class="profil-photo" src="<?= "" ?>" alt="Photo de profil"> </a>
-                    <span class="profil-nom">
-                        <?= "Test" ?>
-                        <?= "TEST" ?>
+                        <span class="profil-nom">
+                            <?= h($currentUser->username ?? $currentUser->prenom) ?>
                         </span>
-                    <li class="nav-item" id="link_Deco">
-                    <a class="pp_logout" href="/logout">
-                        <i class="material-icons">logout</i>
-                        <span>Déconnexion</span>
-                    </a>
-                    </li>
+
+                        <li class="nav-item" id="link_Deco">
+                            <a class="pp_logout" href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">
+                                <i class="material-icons">logout</i>
+                                <span>Déconnexion</span>
+                            </a>
+                        </li>
                     </span>
+                </li>
 
-                <?php //else: ?>
+            <?php else: ?>
+                <li class="nav-item" id="link_access">
+                    <a href="<?= $this->Url->build(['controller' => 'Pages', 'action' => 'display', 'accessibility']) ?>">
+                        <i class="material-icons">settings_accessibility</i>
+                        <span>Accessibilité</span>
+                    </a>
+                </li>
 
-                <a href="/login">
-                    <i class="material-icons">account_circle</i>
-                    <span>Se connecter</span>
-                </a>
-
-                <?php //endif; ?>
-            </li>
+                <li class="nav-item">
+                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">
+                        <i class="material-icons">account_circle</i>
+                        <span>Se connecter</span>
+                    </a>
+                </li>
+            <?php endif; ?>
 
         </ul>
-
 
         <input type="checkbox" id="burger">
         <label for="burger" class="burger"><span></span></label>
 
         <ul class="ul_burger">
-
-            <?php //if (isset($_SESSION['utilisateur'])): ?>
-
-            <li><a href="/explore_public">Roads-Trips</a></li>
-            <li><a href="/explore">Mes Roads-Trips</a></li>
-            <li><a href="/favoris">Favoris</a></li>
-            <li><a href="/historique">Historique</a></li>
-            <li><a href="/view">Paramètres de compte</a></li>
-            <li><a href="/page_link/faq">Aide / FAQ</a></li>
-            <li><a href="/page_link/contact">À propos / Contact</a></li>
-            <li><a href="/logout">Déconnexion</a></li>
-
-            <?php //else: ?>
-
-            <li><a href="../Roadtrip">Roads-Trips</a></li>
-            <li><a href="/id">Se connecter</a></li>
-
-            <?php //endif; ?>
-
+            <?php if ($currentUser): ?>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'index']) ?>">Roads-Trips Publics</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Mon Compte</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">Déconnexion</a></li>
+            <?php else: ?>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'index']) ?>">Voir les RoadTrips</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se connecter</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'add']) ?>">S'inscrire</a></li>
+            <?php endif; ?>
         </ul>
 
     </nav>
