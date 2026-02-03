@@ -61,9 +61,9 @@ L’application repose sur **OpenStreetMap** pour la cartographie et une archite
 
 ## Technologies utilisées  
 
-- **Frontend** : HTML5, CSS3, PHP8.4
-- **Backend** : 
-- **Base de données** :   
+- **Frontend** : HTML5, CSS3, JavaScript
+- **Backend** : PHP 8.4
+- **Base de données** : MariaDB
 - **Cartographie** : OpenStreetMap  
 - **Gestion de projet** : UML, GitLab
 
