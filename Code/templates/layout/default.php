@@ -138,10 +138,14 @@ $currentUser = $this->request->getAttribute('identity');
         <input type="checkbox" id="burger">
         <label for="burger" class="burger"><span></span></label>
 
+
         <ul class="ul_burger">
             <?php if ($currentUser): ?>
                 <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Roads-Trips Publics</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Comments', 'action' => 'index']) ?>">Commentaire</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Mon Compte</a></li>
+
                 <li><a href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'index']) ?>">Favoris</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'JSP', 'action' => 'index']) ?>">Historque</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profil']) ?>">Paramètres du compte</a></li>
