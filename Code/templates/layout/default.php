@@ -101,7 +101,7 @@ $currentUser = $this->request->getAttribute('identity');
                         <?php
                         $pp = $currentUser->profile_picture ?: 'User.png';
                         ?>
-                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'view']) ?>">
+                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">
                             <?= $this->Html->image('../uploads/pp/' . $pp, ['class' => 'profil-photo', 'alt' => 'Profil']) ?>
                         </a>
 
