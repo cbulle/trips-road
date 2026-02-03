@@ -84,7 +84,7 @@ class CommentsTable extends Table
         $validator
             ->scalar('body')
             ->requirePresence('body', 'create')
-            ->notEmptyString('body');
+            ->allowEmptyString('body');
 
         $validator
             ->integer('rating')
