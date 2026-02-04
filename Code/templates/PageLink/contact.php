@@ -14,56 +14,56 @@
                 <h3>Email</h3>
                 <p>tripsandroads@gmail.com</p>
             </div>
-
-
         </div>
 
         <div class="contact-form">
             <h1>Envoyez-nous un message</h1>
 
-            <?php if (isset($successMessage)): ?>
-                <p class="success-message"><?= $successMessage ?></p>
-            <?php elseif (isset($errorMessage)): ?>
-                <p class="error-message"><?= $errorMessage ?></p>
-            <?php endif; ?>
+            <?= $this->Flash->render() ?>
 
-            <?php if (!empty($errors)): ?>
-                <ul class="error-messages">
-                    <?php foreach ($errors as $error): ?>
-                        <li><?= $error ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
+            <?= $this->Form->create(null) ?>
 
+            <?= $this->Form->control('nom', [
+                'label' => 'Votre Nom',
+                'required' => true,
+                'placeholder' => 'Jean Dupont',
+                'container' => ['class' => 'form-group']
+            ]) ?>
 
-            <form action="" method="POST">
-                <div class="form-group">
-                    <label for="nom">Votre Nom</label>
-                    <input type="text" id="nom" name="nom" required placeholder="Jean Dupont">
-                </div>
+            <?= $this->Form->control('email', [
+                'label' => 'Votre Email',
+                'type' => 'email',
+                'required' => true,
+                'placeholder' => 'jean@exemple.com',
+                'container' => ['class' => 'form-group']
+            ]) ?>
 
-                <div class="form-group">
-                    <label for="email">Votre Email</label>
-                    <input type="email" id="email" name="email" required placeholder="jean@exemple.com">
-                </div>
+            <?= $this->Form->control('sujet', [
+                'type' => 'select',
+                'label' => 'Sujet',
+                'options' => [
+                    'Question générale' => 'Question générale',
+                    'Support technique / Bug' => 'Support technique / Bug',
+                    'Partenariat' => 'Partenariat',
+                    'Autre' => 'Autre'
+                ],
+                'required' => true,
+                'container' => ['class' => 'form-group']
+            ]) ?>
 
-                <div class="form-group">
-                    <label for="sujet">Sujet</label>
-                    <select id="sujet" name="sujet" required>
-                        <option value="Question générale">Question générale</option>
-                        <option value="Support technique / Bug">Support technique / Bug</option>
-                        <option value="Partenariat">Partenariat</option>
-                        <option value="Autre">Autre</option>
-                    </select>
-                </div>
+            <?= $this->Form->control('message', [
+                'type' => 'textarea',
+                'label' => 'Message',
+                'required' => true,
+                'placeholder' => 'Comment pouvons-nous vous aider ?',
+                'container' => ['class' => 'form-group'],
+                'cols' => 50,
+                'rows' => 5,
+            ]) ?>
 
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea id="message" name="message" required placeholder="Comment pouvons-nous vous aider ?"></textarea>
-                </div>
+            <?= $this->Form->button('Envoyer le message', ['type' => 'submit']) ?>
 
-                <button type="submit">Envoyer le message</button>
-            </form>
+            <?= $this->Form->end() ?>
         </div>
 
     </div>
