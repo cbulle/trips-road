@@ -148,8 +148,6 @@ $currentUser = $this->request->getAttribute('identity');
 
                 <li><a href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'index']) ?>">Favoris</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'JSP', 'action' => 'index']) ?>">Historque</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profil']) ?>">Paramètres du compte</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'faq']) ?>">Aide / FAQ</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'contact']) ?>">A propos / Contact</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">Déconnexion</a></li>
