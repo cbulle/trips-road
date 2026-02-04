@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\UsersController;
+use App\Controller\FriendshipsController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Controller\UsersController Test Case
+ * App\Controller\FriendshipsController Test Case
  *
- * @link \App\Controller\UsersController
+ * @link \App\Controller\FriendshipsController
  */
-class UsersControllerTest extends TestCase
+class FriendshipsControllerTest extends TestCase
 {
     use IntegrationTestTrait;
 
@@ -22,23 +22,14 @@ class UsersControllerTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.Users',
-        'app.NotificationPreferences',
-        'app.Comments',
-        'app.FavoritePlaces',
-        'app.Favorites',
         'app.Friendships',
-        'app.Histories',
-        'app.PointsOfInterests',
-        'app.Roadtrips',
-        'app.UserTokens',
     ];
 
     /**
      * Test index method
      *
      * @return void
-     * @link \App\Controller\UsersController::index()
+     * @link \App\Controller\FriendshipsController::index()
      */
     public function testIndex(): void
     {
@@ -49,7 +40,7 @@ class UsersControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @link \App\Controller\UsersController::view()
+     * @link \App\Controller\FriendshipsController::view()
      */
     public function testView(): void
     {
@@ -60,7 +51,7 @@ class UsersControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @link \App\Controller\UsersController::add()
+     * @link \App\Controller\FriendshipsController::add()
      */
     public function testAdd(): void
     {
@@ -71,7 +62,7 @@ class UsersControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @link \App\Controller\UsersController::edit()
+     * @link \App\Controller\FriendshipsController::edit()
      */
     public function testEdit(): void
     {
@@ -82,7 +73,7 @@ class UsersControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @link \App\Controller\UsersController::delete()
+     * @link \App\Controller\FriendshipsController::delete()
      */
     public function testDelete(): void
     {
