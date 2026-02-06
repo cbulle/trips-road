@@ -400,4 +400,9 @@ class RoadtripsController extends AppController
 
         return $cakeTrips;
     }
+
+    public function historique()
+    {
+
+    }
 }
