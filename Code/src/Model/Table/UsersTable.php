@@ -15,7 +15,7 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\CommentsTable&\Cake\ORM\Association\HasMany $Comments
  * @property \App\Model\Table\FavoritePlacesTable&\Cake\ORM\Association\HasMany $FavoritePlaces
  * @property \App\Model\Table\FavoritesTable&\Cake\ORM\Association\HasMany $Favorites
- * @property \App\Model\Table\FriendsTable&\Cake\ORM\Association\HasMany $Friends
+ * @property \App\Model\Table\FriendshipsTable&\Cake\ORM\Association\HasMany $Friendships
  * @property \App\Model\Table\HistoriesTable&\Cake\ORM\Association\HasMany $Histories
  * @property \App\Model\Table\PointsOfInterestsTable&\Cake\ORM\Association\HasMany $PointsOfInterests
  * @property \App\Model\Table\RoadtripsTable&\Cake\ORM\Association\HasMany $Roadtrips
@@ -67,7 +67,7 @@ class UsersTable extends Table
         $this->hasMany('Favorites', [
             'foreignKey' => 'user_id',
         ]);
-        $this->hasMany('Friends', [
+        $this->hasMany('Friendships', [
             'foreignKey' => 'user_id',
         ]);
         $this->hasMany('Histories', [

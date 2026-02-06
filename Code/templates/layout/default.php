@@ -88,6 +88,8 @@ $currentUser = $this->request->getAttribute('identity');
                     <a href="<?= $this->Url->build(['controller' => 'Friendships', 'action' => 'index']) ?>">
                         <i class="material-icons">group</i>
                         <span>Amis</span>
+
+
                     </a>
                 </li>
 

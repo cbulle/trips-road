@@ -3,18 +3,18 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\FriendsTable;
+use App\Model\Table\FriendshipsTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\FriendsTable Test Case
+ * App\Model\Table\FriendshipsTable Test Case
  */
 class FriendsTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\FriendsTable
+     * @var \App\Model\Table\FriendshipsTable
      */
     protected $Friends;
 
@@ -24,7 +24,7 @@ class FriendsTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.Friends',
+        'app.Friendships',
         'app.Users',
     ];
 
@@ -36,8 +36,8 @@ class FriendsTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Friends') ? [] : ['className' => FriendsTable::class];
-        $this->Friends = $this->getTableLocator()->get('Friends', $config);
+        $config = $this->getTableLocator()->exists('Friendships') ? [] : ['className' => FriendshipsTable::class];
+        $this->Friends = $this->getTableLocator()->get('Friendships', $config);
     }
 
     /**
@@ -56,7 +56,7 @@ class FriendsTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @link \App\Model\Table\FriendsTable::validationDefault()
+     * @link \App\Model\Table\FriendshipsTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -67,7 +67,7 @@ class FriendsTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @link \App\Model\Table\FriendsTable::buildRules()
+     * @link \App\Model\Table\FriendshipsTable::buildRules()
      */
     public function testBuildRules(): void
     {
