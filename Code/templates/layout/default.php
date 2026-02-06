@@ -31,8 +31,8 @@
     <title>
         <?= $this->fetch('title') ?>
     </title>
-    <?= $this->Html->meta('icon') ?>
 
+    <?= $this->Html->meta('icon', '/img/logoProjet.png', ['type' => 'image/png']) ?>
     <?= $this->Html->css([
         'accessibilite',
         'favoris',
