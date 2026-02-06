@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Road Trip Planner</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href= "css/form.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 <container class="container">
@@ -21,7 +22,7 @@
                         <button class="toggle-btn" id="btnRegister" onclick="window.location.href='register'">S'inscrire</button>
                     </div>
 
-                    <form id="loginForm" class="form-box" action="login" method="post">
+                    <form id="loginForm" class="form-box" action="/login" method="post">
                         <h2 id="register-title">Connexion</h2>
 
                         <label for="email">Adresse email</label>
@@ -35,14 +36,33 @@
                             <a href="fonctions/oublie.php">Mot de passe oublié ?</a>
                         </div>
                         <button type="submit">Se connecter</button>
+                        <div id="g_id_onload"
+                            data-client_id="995499019090-anmh1d4m4obifri1fs9egue2p5417f8h.apps.googleusercontent.com"
+                            data-context="signin"
+                            data-ux_mode="popup"
+                            data-callback="handleCredentialResponse"
+                            data-auto_prompt="false">
+                        </div>
+                        
+                        <div class="g_id_signin"
+                            data-type="standard"
+                            data-shape="rectangular"
+                            data-theme="outline"
+                            data-text="signin_with"
+                            data-size="large"
+                            data-logo_alignment="left">
+                        </div>
+                    
                     </form>
                 </div>
             </div>
         </div>
     </main>
+</container>
     <?php
     include_once __DIR__ . "/modules/footer.php"
     ?>
-    <script src="js/profil.js"></script>
+    <script src="webroot/js/profil.js"></script>
+    <script src="webroot/js/login.js"></script>
 </body>
 </html>

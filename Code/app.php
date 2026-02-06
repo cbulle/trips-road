@@ -8,6 +8,12 @@ $url = $_SERVER['PATH_INFO'] ?? "/";
 
 switch($url) {
     case "/":
+<<<<<<< HEAD
+        include_once ROOT . "index.php";
+        break;
+
+=======
+>>>>>>> d225ce3979b3d21acd6703fbce843cc23436292f
     case "/index":
         include_once ROOT . "index.php";
         break;
@@ -118,6 +124,11 @@ switch($url) {
     case "/get_lieux_favoris":
         include_once ROOT . "fonctions/get_lieux_favoris.php";
         break;
+<<<<<<< HEAD
+    case "/google-auth": 
+        include_once ROOTFORM . "google_auth.php";
+        break;
+=======
 
     case "/fav_lieu":
         include_once ROOTFORM . "fav_lieu.php";
@@ -155,8 +166,10 @@ switch($url) {
         else include_once ROOTFORM . "form_faq.php";
         break;
 
+>>>>>>> d225ce3979b3d21acd6703fbce843cc23436292f
     default:
         http_response_code(404);
         include_once ROOT . "404.php";
         break;
+    
 }

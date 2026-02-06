@@ -68,24 +68,24 @@
 
                     <span class="profil-box"> 
                          
-                             <?php
-                            if (isset($_SESSION['utilisateur']['photo_profil']) && !empty($_SESSION['utilisateur']['photo_profil'])) {
-                                $photoProfil = htmlspecialchars($_SESSION['utilisateur']['photo_profil']);
-                            
-                            } else {
-                                $photoProfil = "User.png"; 
-                                
+                             <?php                                                  
+                            $photoProfil = $_SESSION['utilisateur']['photo_profil'] ?? "User.png";
+                            if (empty($photoProfil)) { $photoProfil = "User.png"; }
+
+                            if (strpos($photoProfil, 'http') === 0) {
+                                $photoPath = $photoProfil;
                             }
-                            $serverPathUploads = WEBROOT . "uploads/pp/" . $photoProfil;
-                            if (!file_exists($serverPathUploads)) {
-                                $photoPath = __DIR__ . "/../img/$photoProfil"; 
-                                
+                            elseif (file_exists(WEBROOT . "uploads/pp/" . $photoProfil)) {
+                                $photoPath = "/uploads/pp/" . $photoProfil;
                             }
-                             else {
-                                $photoPath = "/uploads/pp/$photoProfil";
+                            else {
+                                $photoPath = "/img/User.png";
                             }
                             ?>
-                            <a  href="/profil"><img class="profil-photo" src="<?= $photoPath ?>" alt="Photo de profil"> </a>
+
+<a href="/profil">
+    <img class="profil-photo" src="<?= $photoPath ?>" alt="Photo de profil"> 
+</a>
                     <span class="profil-nom">
                         <?= htmlspecialchars($_SESSION['utilisateur']['nom']) ?>
                         <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?>

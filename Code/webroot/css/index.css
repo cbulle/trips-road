@@ -1,6 +1,25 @@
 /* ==============================
         Indexx 
 ============================== */
+
+
+
+.main-index .Btn {
+    padding: 12px 25px;
+    background: var(--bleu_clair);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.main-index .Btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--bleu_fonce);
+}
 .main-index main {
     padding: 2rem;
     background-color: var(--beige);
@@ -100,22 +119,7 @@
     box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
 }
 
-.search-container button {
-    padding: 12px 25px;
-    background: var(--bleu_clair);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
 
-.search-container button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-}
 
 .searching-results {
     position: absolute;
