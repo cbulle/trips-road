@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use Cake\Http\Exception\ForbiddenException;
+
 /**
  * Friendships Controller
  *
@@ -65,18 +67,14 @@ class FriendshipsController extends AppController
                     'friend_id' => $userId,
                 ]
             ])
-            ->contain([
-                'Users' => function ($q) use ($userId) {
-                    return $q->where(['Users.id !=' => $userId]);
-                }
-            ])
+            ->contain(['Users', 'FriendsUsers'])
             ->all();
 
         foreach ($friends as $friendship) {
             $friendship->friend =
                 $friendship->user_id === $userId
-                    ? $friendship->user
-                    : $friendship->friend;
+                    ? $friendship->FriendsUsers
+                    : $friendship->user;
         }
 
         $requests = $this->Friendships->find()

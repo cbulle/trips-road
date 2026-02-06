@@ -10,7 +10,6 @@
 
         <div class="container">
 
-            <!-- 🔍 Recherche utilisateurs -->
             <div class="column">
                 <h3>Rechercher un utilisateur</h3>
 
@@ -110,7 +109,7 @@
                     <p>Vous n'avez pas encore d'amis.</p>
                 <?php endif; ?>
 
-                <!-- 📩 Demandes reçues -->
+
                 <h3 style="margin-top:30px;">Demandes d'amis reçues</h3>
 
                 <?php if (!empty($requests)): ?>
