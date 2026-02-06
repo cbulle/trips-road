@@ -20,9 +20,12 @@ class RoadtripsController extends AppController
 
     }
 
-    /**
-     * Index method
-     */
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        parent::beforeFilter($event);
+        $this->Authentication->addUnauthenticatedActions(['index', 'publicRoadtrips', 'view']);
+    }
+
     public function index()
     {
         $this->paginate = [
@@ -274,7 +277,6 @@ class RoadtripsController extends AppController
                             'nom' => $se->city,
                             'heure' => $se->duration ? $se->duration->format('H:i') : '',
                             'description' => $se->description,
-                            // On passe les photos directement ici pour le JS
                             'photos' => $se->sub_step_photos
                         ];
                     }

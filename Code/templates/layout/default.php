@@ -127,7 +127,7 @@ $currentUser = $this->request->getAttribute('identity');
 
             <?php else: ?>
                 <li class="nav-item" id="link_access">
-                    <a href="<?= $this->Url->build(['controller' => 'Pages', 'action' => 'display', 'accessibility']) ?>">
+                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'accessibility']) ?>">
                         <i class="material-icons">settings_accessibility</i>
                         <span>Accessibilité</span>
                     </a>
