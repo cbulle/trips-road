@@ -63,19 +63,27 @@ class FriendshipsController extends AppController
             ->where([
                 'status' => 'accepted',
                 'OR' => [
-                    'user_id' => $userId,
-                    'friend_id' => $userId,
+                    ['user_id' => $userId],
+                    ['friend_id' => $userId],
                 ]
             ])
             ->contain(['Users', 'FriendsUsers'])
             ->all();
 
         foreach ($friends as $friendship) {
-            $friendship->friend =
-                $friendship->user_id === $userId
-                    ? $friendship->FriendsUsers
-                    : $friendship->user;
+            // Si l'ami est dans user_id
+            if ($friendship->user_id == $userId && !empty($friendship->FriendsUsers)) {
+                $friendship->friend = $friendship->FriendsUsers;
+            }
+            // Si l'ami est dans friend_id
+            elseif ($friendship->friend_id == $userId && !empty($friendship->Users)) {
+                $friendship->friend = $friendship->Users;
+            }
+            else {
+                $friendship->friend = null; // sécurité
+            }
         }
+
 
         $requests = $this->Friendships->find()
             ->where([

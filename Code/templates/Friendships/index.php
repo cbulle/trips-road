@@ -69,41 +69,41 @@
                 <?php if (!empty($friends)): ?>
                     <ul style="list-style:none;padding:0;">
                         <?php foreach ($friends as $friend): ?>
-                            <?php $u = $friend->friend; ?>
+                            <?php if (!empty($friend->friend)): ?>
+                                <?php $u = $friend->friend; ?>
+                                <li class="ami-item">
+                                    <div class="ami-info">
+                                        <?php if (!empty($u->profile_picture)): ?>
+                                            <img src="/uploads/pp/<?= h($u->profile_picture) ?>" class="ami-photo">
+                                        <?php else: ?>
+                                            <div class="ami-placeholder">
+                                                <?= strtoupper(substr($u->first_name,0,1) . substr($u->last_name,0,1)) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <span><?= h($u->last_name . ' ' . $u->first_name) ?></span>
+                                    </div>
 
-                            <li class="ami-item">
-                                <div class="ami-info">
-                                    <?php if (!empty($u->profile_picture)): ?>
-                                        <img src="/uploads/pp/<?= h($u->profile_picture) ?>"
-                                             class="ami-photo">
-                                    <?php else: ?>
-                                        <div class="ami-placeholder">
-                                            <?= strtoupper($u->first_name[0] . $u->last_name[0]) ?>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div class="ami-actions">
+                                        <?= $this->Html->link(
+                                            '<i class="material-icons">chat</i> Message',
+                                            ['controller' => 'Messages', 'action' => 'start', $u->id],
+                                            ['escape' => false, 'class' => 'btn-message']
+                                        ) ?>
 
-                                    <span><?= h($u->last_name . ' ' . $u->first_name) ?></span>
-                                </div>
-
-                                <div class="ami-actions">
-                                    <?= $this->Html->link(
-                                        '<i class="material-icons">chat</i> Message',
-                                        ['controller' => 'Messages', 'action' => 'start', $u->id],
-                                        ['escape' => false, 'class' => 'btn-message']
-                                    ) ?>
-
-                                    <?= $this->Form->postLink(
-                                        '<i class="material-icons">delete</i> Supprimer',
-                                        ['action' => 'delete', $friend->id],
-                                        [
-                                            'escape' => false,
-                                            'class' => 'btn-supprimer',
-                                            'confirm' => 'Voulez-vous vraiment supprimer cet ami ?'
-                                        ]
-                                    ) ?>
-                                </div>
-                            </li>
+                                        <?= $this->Form->postLink(
+                                            '<i class="material-icons">delete</i> Supprimer',
+                                            ['action' => 'delete', $friend->id],
+                                            [
+                                                'escape' => false,
+                                                'class' => 'btn-supprimer',
+                                                'confirm' => 'Voulez-vous vraiment supprimer cet ami ?'
+                                            ]
+                                        ) ?>
+                                    </div>
+                                </li>
+                            <?php endif; ?>
                         <?php endforeach; ?>
+
                     </ul>
                 <?php else: ?>
                     <p>Vous n'avez pas encore d'amis.</p>
