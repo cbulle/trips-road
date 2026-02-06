@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     calculerTousLesSegments();
 });
 
-const mapInstances = {};
+const mapInstancesVue = {};
 const colorsPalette = [
     '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
     '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4',
@@ -119,11 +119,11 @@ async function initStepMap(id) {
     }
 
     // Si la carte existe déjà, on la redimensionne juste
-    if (mapInstances[id]) {
+    if (mapInstancesVue[id]) {
         setTimeout(() => {
-            mapInstances[id].invalidateSize();
+            mapInstancesVue[id].invalidateSize();
             if(data.layerGroup) {
-                 mapInstances[id].fitBounds(data.layerGroup.getBounds(), { padding: [30, 30] });
+                 mapInstancesVue[id].fitBounds(data.layerGroup.getBounds(), { padding: [30, 30] });
             }
         }, 100);
         return;
@@ -135,7 +135,7 @@ async function initStepMap(id) {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    mapInstances[id] = map;
+    mapInstancesVue[id] = map;
 
     const color = data.color || '#0B667D';
 

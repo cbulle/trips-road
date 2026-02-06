@@ -57,7 +57,7 @@ $this->assign('mainClass', '');
                 </p>
 
                 <div class="roadtrip-buttons">
-                    <a class="btn-view" href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'viewPublic', $rt->id]) ?>">
+                    <a class="btn-view" href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'view', $rt->id]) ?>">
                         <i class="material-icons">visibility</i>
                     </a>
 
