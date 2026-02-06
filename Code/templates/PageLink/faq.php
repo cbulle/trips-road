@@ -141,24 +141,6 @@
 
         <?= $this->Form->button('Poser votre question', ['type' => 'submit']); ?>
         <?= $this->Form->end();?>
-
-
-<!--        <form action="/../formulaire/form_faq.php" method="POST">-->
-<!---->
-<!--            <label for="nom">Nom :</label>-->
-<!--            <input type="text" name="nom" id="nom" value="--><?php //= isset($nom) ? $nom : '' ?><!--" required>-->
-<!---->
-<!--            <label for="email">Email :</label>-->
-<!--            <input type="email" name="email" id="email" value="--><?php //= isset($email) ? $email : '' ?><!--" required>-->
-<!---->
-<!--            <label for="sujet">Sujet :</label>-->
-<!--            <input type="text" name="sujet" id="sujet" value="--><?php //= isset($sujet) ? $sujet : '' ?><!--" required>-->
-<!---->
-<!--            <label for="question">Votre question :</label>-->
-<!--            <textarea name="question" id="question" rows="4" required>--><?php //= isset($question) ? $question : '' ?><!--</textarea>-->
-<!---->
-<!--            <button type="submit">Poser la question</button>-->
-<!--        </form>-->
     </section>
 
 
