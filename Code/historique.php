@@ -11,24 +11,25 @@ $id_utilisateur = $_SESSION['utilisateur']['id'];
 
 // --- ACTION : SUPPRIMER L'HISTORIQUE ---
 if (isset($_GET['action']) && $_GET['action'] === 'clear') {
-    $stmt = $pdo->prepare("DELETE FROM historique WHERE id_utilisateur = :uid");
-    $stmt->execute(['uid' => $id_utilisateur]);
+    $stmt = $pdo->prepare("DELETE FROM historique WHERE id_utilisateur = :id");
+    $stmt->execute(['id' => $id_utilisateur]);
     header('Location: historique.php');
     exit;
 }
 
 // --- RÉCUPÉRATION DES DONNÉES ---
 // On joint historique -> roadtrip -> utilisateurs (pour avoir le nom du créateur)
+// Remplacez votre requête SQL actuelle par celle-ci (plus tolérante) :
 $stmt = $pdo->prepare("
     SELECT h.date_visite, r.*, u.nom, u.prenom 
     FROM historique h
     JOIN roadtrip r ON h.id_roadtrip = r.id
-    JOIN utilisateurs u ON r.id_utilisateur = u.id
-    WHERE h.id_utilisateur = :uid
+    LEFT JOIN utilisateurs u ON r.id_utilisateur = u.id
+    WHERE h.id_utilisateur = :id
     ORDER BY h.date_visite DESC
     LIMIT 50
 ");
-$stmt->execute(['uid' => $id_utilisateur]);
+$stmt->execute(['id' => $id_utilisateur]);
 $historique = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
