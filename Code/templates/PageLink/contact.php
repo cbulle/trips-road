@@ -56,7 +56,9 @@
                 'label' => 'Message',
                 'required' => true,
                 'placeholder' => 'Comment pouvons-nous vous aider ?',
+                'cols' => 50,
                 'container' => ['class' => 'form-group']
+
             ]) ?>
 
             <?= $this->Form->button('Envoyer le message', ['type' => 'submit']) ?>

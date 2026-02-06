@@ -46,7 +46,41 @@ class PageLinkController extends AppController
     }
 
     public function faq(){
+        if ($this->request->is('post')) {
 
+            $data = $this->request->getData();
+
+            if (!empty($data['email']) && !empty($data['question'])) {
+
+                try {
+                    $mailer = new Mailer('default');
+
+                    $mailer
+                        ->setTransport('default')
+                        ->setFrom(['tripsandroad@gmail.com' => 'Site Trips & Roads'])
+                        ->setTo('tripsandroad@gmail.com')
+                        ->setReplyTo($data['email'], $data['nom'])
+                        ->setSubject('FAQ Site : ' . ($data['sujet'] ?? 'Aucun sujet'))
+                        ->deliver(
+                            "Nouvelle question reçu depuis le site web :\n\n" .
+                            "Nom : " . ($data['nom'] ?? 'Non renseigné') . "\n" .
+                            "Email : " . $data['email'] . "\n" .
+                            "Sujet : " . ($data['sujet'] ?? 'Autre') . "\n\n" .
+                            "--------------------------------------------------\n" .
+                            "Question :\n" . $data['question']
+                        );
+
+                    $this->Flash->success('Votre question a bien été envoyé ! Nous vous répondrons dès que possible.');
+                    return $this->redirect(['action' => 'faq']);
+
+                } catch (\Exception $e) {
+                    $this->Flash->error('Erreur technique lors de l\'envoi : ' . $e->getMessage());
+                }
+
+            } else {
+                $this->Flash->error('Veuillez remplir tous les champs obligatoires.');
+            }
+        }
     }
 
     public function cgu(){

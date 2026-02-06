@@ -104,21 +104,29 @@
             <p class="confirmation-message"><?= $message ?></p>
         <?php endif; ?>
 
-        <?= $this->Form->create(); ?>
+        <?= $this->Flash->render() ?>
 
-            <?= $this->Form->control('Nom', ['id' => 'nom', 'title' => 'nom']) ;?>
+        <?= $this->Form->create(null); ?>
+
+            <?= $this->Form->control('Nom', ['id' => 'nom',
+                'title' => 'nom',
+                'name' => 'nom',
+                'required' => true,
+                ]) ;?>
 
             <?= $this->Form->control('email', [
                 'type' => 'email',
                 'name' => 'email',
-                'id' => 'email',
+                'required' => true,
+                'id' => 'email'
             ]); ?>
 
 
             <?= $this->Form->control('Sujet', [
                 'label' => 'Sujet',
                 'name' => 'sujet',
-                'id' => 'sujet',
+                'required' => true,
+                'id' => 'sujet'
             ]); ?>
 
         <?= $this->Form->control('Message', [
@@ -126,10 +134,12 @@
             'label' => 'Votre question:',
             'name' => 'question',
             'id' => 'question',
+            'required' => true,
             'rows' => 4,
+            'cols' => 200,
         ]); ?>
 
-        <?= $this->Form->button('Poser votre question'); ?>
+        <?= $this->Form->button('Poser votre question', ['type' => 'submit']); ?>
         <?= $this->Form->end();?>
 
 
