@@ -1,5 +1,6 @@
 <main class="main-index">
     <div class="index_container">
+
         <h2>Mes Amis</h2>
 
         <?php if (!empty($message)): ?>
@@ -10,6 +11,7 @@
 
         <div class="container">
 
+            <!-- Recherche d'utilisateurs -->
             <div class="column">
                 <h3>Rechercher un utilisateur</h3>
 
@@ -27,10 +29,8 @@
                         <?php foreach ($users as $u): ?>
                             <li class="ami-item">
                                 <div class="ami-info">
-
                                     <?php if (!empty($u->profile_picture)): ?>
-                                        <img src="/uploads/pp/<?= h($u->profile_picture) ?>"
-                                             class="ami-photo">
+                                        <img src="/uploads/pp/<?= h($u->profile_picture) ?>" class="ami-photo">
                                     <?php else: ?>
                                         <div class="ami-placeholder">
                                             <?= strtoupper(substr($u->first_name, 0, 1)) ?>
@@ -41,87 +41,85 @@
                                 </div>
 
                                 <?php if ($u->friendship_status === null): ?>
-                                    <?= $this->Html->link(
+                                    <?= $this->Form->postLink(
                                         'Ajouter',
                                         ['action' => 'add', $u->id],
-                                        ['class' => 'button']
+                                        [
+                                            'class' => 'button',
+                                            'confirm' => 'Envoyer une demande d’ami ?'
+                                        ]
                                     ) ?>
-
                                 <?php elseif ($u->friendship_status === 'pending'): ?>
                                     <span>Demande envoyée</span>
-
                                 <?php elseif ($u->friendship_status === 'accepted'): ?>
                                     <span>Ami</span>
                                 <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
-
                 <?php elseif (!empty($search)): ?>
                     <p>Aucun utilisateur trouvé.</p>
                 <?php endif; ?>
             </div>
 
-            <!-- 👥 Amis -->
+            <!-- Mes amis -->
             <div class="column">
                 <h3>Mes amis</h3>
 
                 <?php if (!empty($friends)): ?>
                     <ul style="list-style:none;padding:0;">
-                        <?php foreach ($friends as $friend): ?>
-                            <?php if (!empty($friend->friend)): ?>
-                                <?php $u = $friend->friend; ?>
-                                <li class="ami-item">
-                                    <div class="ami-info">
-                                        <?php if (!empty($u->profile_picture)): ?>
-                                            <img src="/uploads/pp/<?= h($u->profile_picture) ?>" class="ami-photo">
-                                        <?php else: ?>
-                                            <div class="ami-placeholder">
-                                                <?= strtoupper(substr($u->first_name,0,1) . substr($u->last_name,0,1)) ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        <span><?= h($u->last_name . ' ' . $u->first_name) ?></span>
-                                    </div>
+                        <?php foreach ($friends as $f):
+                            $u = $f['friend'];
+                            $friendshipId = $f['friendship_id'];
+                            ?>
+                            <li class="ami-item">
+                                <div class="ami-info">
+                                    <?php if (!empty($u->profile_picture)): ?>
+                                        <img src="/uploads/pp/<?= h($u->profile_picture) ?>" class="ami-photo">
+                                    <?php else: ?>
+                                        <div class="ami-placeholder">
+                                            <?= strtoupper(substr($u->first_name,0,1) . substr($u->last_name,0,1)) ?>
+                                        </div>
+                                    <?php endif; ?>
 
-                                    <div class="ami-actions">
-                                        <?= $this->Html->link(
-                                            '<i class="material-icons">chat</i> Message',
-                                            ['controller' => 'Messages', 'action' => 'start', $u->id],
-                                            ['escape' => false, 'class' => 'btn-message']
-                                        ) ?>
+                                    <span><?= h($u->last_name . ' ' . $u->first_name) ?></span>
+                                </div>
 
-                                        <?= $this->Form->postLink(
-                                            '<i class="material-icons">delete</i> Supprimer',
-                                            ['action' => 'delete', $friend->id],
-                                            [
-                                                'escape' => false,
-                                                'class' => 'btn-supprimer',
-                                                'confirm' => 'Voulez-vous vraiment supprimer cet ami ?'
-                                            ]
-                                        ) ?>
-                                    </div>
-                                </li>
-                            <?php endif; ?>
+                                <div class="ami-actions">
+                                    <?= $this->Html->link(
+                                        '<i class="material-icons">chat</i> Message',
+                                        ['controller' => 'Messages', 'action' => 'start', $u->id],
+                                        ['escape' => false, 'class' => 'btn-message']
+                                    ) ?>
+
+                                    <?= $this->Form->postLink(
+                                        '<i class="material-icons">delete</i> Supprimer',
+                                        ['action' => 'delete', $friendshipId],
+                                        [
+                                            'escape' => false,
+                                            'class' => 'btn-supprimer',
+                                            'confirm' => 'Voulez-vous vraiment supprimer cet ami ?'
+                                        ]
+                                    ) ?>
+                                </div>
+                            </li>
                         <?php endforeach; ?>
-
                     </ul>
                 <?php else: ?>
                     <p>Vous n'avez pas encore d'amis.</p>
                 <?php endif; ?>
 
-
+                <!-- Demandes d'amis reçues -->
                 <h3 style="margin-top:30px;">Demandes d'amis reçues</h3>
 
                 <?php if (!empty($requests)): ?>
                     <ul style="list-style:none;padding:0;">
                         <?php foreach ($requests as $request): ?>
                             <?php $u = $request->user; ?>
-
                             <li class="ami-item">
                                 <div class="ami-info">
                                     <?php if (!empty($u->profile_picture)): ?>
-                                        <img src="/uploads/pp/<?= h($u->profile_picture) ?>"
-                                             class="ami-photo">
+                                        <img src="/uploads/pp/<?= h($u->profile_picture) ?>" class="ami-photo">
                                     <?php else: ?>
                                         <div class="ami-placeholder">
                                             <?= strtoupper($u->first_name[0]) ?>
@@ -150,6 +148,7 @@
                     <p>Aucune demande en attente.</p>
                 <?php endif; ?>
             </div>
+
         </div>
     </div>
 </main>

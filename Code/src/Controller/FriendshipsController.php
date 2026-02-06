@@ -24,6 +24,7 @@ class FriendshipsController extends AppController
 
         $search = $this->request->getQuery('search');
         $users = [];
+        $friends = [];
 
         if (!empty($search)) {
             $users = $this->fetchTable('Users')
@@ -40,50 +41,34 @@ class FriendshipsController extends AppController
 
             $friendships = $this->Friendships->find()
                 ->where([
+                    'status' => 'accepted',
                     'OR' => [
                         ['user_id' => $userId],
                         ['friend_id' => $userId],
                     ]
                 ])
-                ->all()
-                ->indexBy(function ($row) use ($userId) {
-                    return $row->user_id === $userId
-                        ? $row->friend_id
-                        : $row->user_id;
-                })
-                ->toArray();
+                ->contain(['Users', 'FriendsUsers'])
+                ->all();
 
-            foreach ($users as $user) {
-                $user->friendship_status =
-                    $friendships[$user->id]->status ?? null;
+
+            foreach ($friendships as $f) {
+                if ($f->user_id == $userId) {
+                    if(!empty($f->friends_users)) {
+                        $friends[] = [
+                            'friend' => $f->friends_user,
+                            'friendship_id' => $f->id
+                        ];
+                    }
+                } else {
+                    if(!empty($f->user)) {
+                        $friends[] = [
+                            'friend' => $f->user,
+                            'friendship_id' => $f->id
+                        ];
+                    }
+                }
             }
         }
-
-        $friends = $this->Friendships->find()
-            ->where([
-                'status' => 'accepted',
-                'OR' => [
-                    ['user_id' => $userId],
-                    ['friend_id' => $userId],
-                ]
-            ])
-            ->contain(['Users', 'FriendsUsers'])
-            ->all();
-
-        foreach ($friends as $friendship) {
-            // Si l'ami est dans user_id
-            if ($friendship->user_id == $userId && !empty($friendship->FriendsUsers)) {
-                $friendship->friend = $friendship->FriendsUsers;
-            }
-            // Si l'ami est dans friend_id
-            elseif ($friendship->friend_id == $userId && !empty($friendship->Users)) {
-                $friendship->friend = $friendship->Users;
-            }
-            else {
-                $friendship->friend = null; // sécurité
-            }
-        }
-
 
         $requests = $this->Friendships->find()
             ->where([
@@ -121,12 +106,12 @@ class FriendshipsController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($friendId = null)
     {
         $this->request->allowMethod(['post']);
-        $friendId = (int)$this->request->getData('friend_id');
-
+        $friendId = (int)$friendId;
         $userId = $this->Authentication->getIdentity()->id;
+
 
         if ($userId === $friendId) {
             $this->Flash->error('Action invalide.');
@@ -159,14 +144,16 @@ class FriendshipsController extends AppController
         ]);
 
         if ($this->Friendships->save($friendship)) {
-            $this->loadModel('Notifications');
-            $this->Notifications->save(
-                $this->Notifications->newEntity([
+            $notificationsTable = $this->fetchTable('Notifications');
+
+            $notificationsTable->save(
+                $notificationsTable->newEntity([
                     'user_id' => $friendId,
                     'type' => 'friend_request',
                     'message' => 'Nouvelle demande d’ami'
                 ])
             );
+
 
             $this->Flash->success('Demande envoyée.');
         } else {
@@ -184,24 +171,15 @@ class FriendshipsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete()
+    public function delete($id = null)
     {
+        $this->request->allowMethod(['post', 'delete']);
+
         $userId = $this->Authentication->getIdentity()->id;
-        $friendId = (int)$this->request->getData('friend_id');
 
+        $friendship = $this->Friendships->get($id);
 
-        $friendship = $this->Friendships->find()
-            ->where([
-                'OR' => [
-                    ['user_id' => $userId, 'friend_id' => $friendId],
-                    ['user_id' => $friendId, 'friend_id' => $userId],
-                ]
-            ])
-            ->firstOrFail();
-        if (
-            $friendship->user_id !== $userId &&
-            $friendship->friend_id !== $userId
-        ) {
+        if ($friendship->user_id !== $userId && $friendship->friend_id !== $userId) {
             throw new ForbiddenException();
         }
 
@@ -210,7 +188,7 @@ class FriendshipsController extends AppController
 
         $this->Flash->success('Ami supprimé.');
         return $this->redirect(['action' => 'index']);
-
     }
+
 
 }
