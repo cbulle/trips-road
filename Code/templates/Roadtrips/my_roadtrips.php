@@ -95,21 +95,3 @@ $this->assign('mainClass', '');
         </div>
     </div>
 <?php endif; ?>
-
-<script>
-    function closeShareModal() {
-        document.getElementById('shareModal').style.display = 'none';
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    function copyShareUrl() {
-        var copyText = document.getElementById("shareUrl");
-        copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(copyText.value);
-
-        var successMsg = document.getElementById("copySuccess");
-        successMsg.style.display = "block";
-        setTimeout(function() { successMsg.style.display = "none"; }, 2000);
-    }
-</script>

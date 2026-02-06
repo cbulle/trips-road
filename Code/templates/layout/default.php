@@ -21,6 +21,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
     <script src="https://kit.fontawesome.com/d76759a8b0.js" crossorigin="anonymous"></script>
 
     <?= $this->Html->charset() ?>
@@ -148,8 +151,6 @@ $currentUser = $this->request->getAttribute('identity');
 
                 <li><a href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'index']) ?>">Favoris</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'JSP', 'action' => 'index']) ?>">Historque</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profil']) ?>">Paramètres du compte</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'faq']) ?>">Aide / FAQ</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'contact']) ?>">A propos / Contact</a></li>
                 <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">Déconnexion</a></li>
@@ -216,9 +217,10 @@ $mainClass = $this->fetch('mainClass', 'main-index');
     'roadtrip',
     'vuRoadTrip',
 ]) ?>
+<?= $this->fetch('script') ?>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script src="https://unpkg.com/leaflet-markercluster/dist/leaflet.markercluster.js"></script>
-<?= $this->fetch('script') ?>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>

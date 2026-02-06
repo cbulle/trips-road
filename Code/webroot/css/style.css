@@ -2050,3 +2050,51 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     color: #856404;
     border: 1px solid #ffeeba;
 }
+
+.tinymce-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.photos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.popup-photo {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.popup-photo:hover {
+    transform: scale(1.1);
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-style: italic;
+    color: #666;
+}
+
+.author-pp {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.map-trajet {
+    width: 100%;
+    height: 300px;
+    background-color: #eee;
+    margin-top: 15px;
+}

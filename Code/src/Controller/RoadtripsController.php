@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Cake\Event\EventInterface;
+use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
 
 /**
@@ -64,23 +65,6 @@ class RoadtripsController extends AppController
     }
 
     /**
-     * View method
-     */
-    public function view($id = null)
-    {
-        $roadtrip = $this->Roadtrips->get($id, [
-            'contain' => [
-                'Users',
-                'Trips' => ['SubSteps'],
-                'Comments' => ['Users'],
-                'PointsOfInterests'
-            ]
-        ]);
-
-        $this->set(compact('roadtrip'));
-    }
-
-    /**
      * Add method
      */
     public function add()
@@ -97,7 +81,7 @@ class RoadtripsController extends AppController
                 $ext = pathinfo($photo->getClientFilename(), PATHINFO_EXTENSION);
                 $newName = 'rt_' . uniqid() . '.' . $ext;
                 $photo->moveTo(WWW_ROOT . 'uploads/roadtrips/' . $newName);
-                $data['photo_url'] = $newName; // Le nom dans la BD
+                $data['photo_url'] = $newName;
             }
 
             $jsonTrajets = '[]';
@@ -231,7 +215,6 @@ class RoadtripsController extends AppController
         $this->set(compact('roadtrips', 'favorisIds', 'userId'));
     }
 
-    // src/Controller/RoadtripsController.php
 
     public function share($id = null)
     {
@@ -242,6 +225,143 @@ class RoadtripsController extends AppController
         $this->request->getSession()->write('share_url', $link);
 
         return $this->redirect(['action' => 'myRoadtrips', '?' => ['show_share' => 1]]);
+    }
+
+    public function viewPublic($id = null)
+    {
+        try {
+            $roadtrip = $this->Roadtrips->get($id, [
+                'contain' => [
+                    'Users',
+                    'Trips' => [
+                        'sort' => ['Trips.order_number' => 'ASC'],
+                        'SubSteps' => [
+                            'sort' => ['SubSteps.order_number' => 'ASC'],
+                            'SubStepPhotos'
+                        ]
+                    ]
+                ]
+            ]);
+        } catch (\Cake\Datasource\Exception\RecordNotFoundException $e) {
+            $this->Flash->error(__('Road trip introuvable.'));
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $currentUserId = $this->request->getAttribute('identity')?->getIdentifier();
+        $isMyRoadTrip = ($currentUserId === $roadtrip->user_id);
+
+        if ($roadtrip->visibility !== 'public' && !$isMyRoadTrip) {
+            $this->Flash->error(__('Ce road trip est privé.'));
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $jsMapData = [];
+
+        $geocodedPlacesTable = $this->fetchTable('GeocodedPlaces');
+
+        foreach ($roadtrip->trips as $trip) {
+
+            $coordsDep = $this->_getCoordinates($trip->departure, $geocodedPlacesTable);
+            $coordsArr = $this->_getCoordinates($trip->arrival, $geocodedPlacesTable);
+
+            $sousEtapesCoords = [];
+            foreach ($trip->sub_steps as $se) {
+                if (!empty($se->city)) {
+                    $coords = $this->_getCoordinates($se->city, $geocodedPlacesTable);
+                    if ($coords) {
+                        $sousEtapesCoords[] = [
+                            'lat' => $coords['lat'],
+                            'lon' => $coords['lon'],
+                            'nom' => $se->city,
+                            'heure' => $se->duration ? $se->duration->format('H:i') : '',
+                            'remarque' => $se->description ?? ''
+                        ];
+                    }
+                }
+            }
+
+            $jsMapData[] = [
+                'id' => $trip->id,
+                'titre' => $trip->title,
+                'mode' => strtolower($trip->transport_mode),
+                'depart' => [
+                    'lat' => $coordsDep['lat'] ?? null,
+                    'lon' => $coordsDep['lon'] ?? null,
+                    'nom' => $trip->departure
+                ],
+                'arrivee' => [
+                    'lat' => $coordsArr['lat'] ?? null,
+                    'lon' => $coordsArr['lon'] ?? null,
+                    'nom' => $trip->arrival
+                ],
+                'heure_depart' => $trip->departure_time ? $trip->departure_time->format('H:i') : null,
+                'sousEtapes' => $sousEtapesCoords,
+                'hasCoords' => ($coordsDep && $coordsArr)
+            ];
+        }
+
+        $jsMapDataJson = json_encode($jsMapData);
+
+        $this->set(compact('roadtrip', 'jsMapDataJson', 'isMyRoadTrip'));
+    }
+    protected function _getCoordinates($nomVille, $table)
+    {
+        if (empty($nomVille)) return null;
+
+        $cleanName = trim($nomVille);
+
+        $place = $table->find()
+            ->where(['name' => $cleanName])
+            ->first();
+
+        if ($place) {
+             \Cake\Log\Log::debug("Found in cache: " . $cleanName);
+
+            return [
+                'lat' => $place->latitude,
+                'lon' => $place->longitude
+            ];
+        }
+
+        try {
+            $http = new \Cake\Http\Client();
+            $response = $http->get('https://nominatim.openstreetmap.org/search', [
+                'q' => $cleanName,
+                'format' => 'json',
+                'limit' => 1,
+                'accept-language' => 'fr'
+            ], [
+                'headers' => ['User-Agent' => 'SaeRoadTripApp_PublicView']
+            ]);
+
+            if ($response->isOk()) {
+                $json = $response->getJson();
+                if (!empty($json) && isset($json[0]['lat'])) {
+                    $lat = $json[0]['lat'];
+                    $lon = $json[0]['lon'];
+
+                    $newPlace = $table->newEmptyEntity();
+                    $newPlace->name = $cleanName;
+                    $newPlace->latitude = $lat;
+                    $newPlace->longitude = $lon;
+
+                    $newPlace->last_used = \Cake\I18n\FrozenTime::now();
+
+                    $table->save($newPlace);
+
+                    return ['lat' => $lat, 'lon' => $lon];
+                }
+            }
+        } catch (\Exception $e) {
+            \Cake\Log\Log::error("Erreur Geocoding API: " . $e->getMessage());
+            return null;
+        }
+
+        return null;
+    }
+
+    public function viewPerso($id = null)
+    {
     }
 
     private function _mapJsonToCakeEntities($jsonString)
