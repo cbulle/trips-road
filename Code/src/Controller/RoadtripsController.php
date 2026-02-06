@@ -227,7 +227,7 @@ class RoadtripsController extends AppController
         return $this->redirect(['action' => 'myRoadtrips', '?' => ['show_share' => 1]]);
     }
 
-    public function viewPublic($id = null)
+    public function view($id = null)
     {
         try {
             $roadtrip = $this->Roadtrips->get($id, [
@@ -248,16 +248,15 @@ class RoadtripsController extends AppController
         }
 
         $currentUserId = $this->request->getAttribute('identity')?->getIdentifier();
-        $isMyRoadTrip = ($currentUserId === $roadtrip->user_id);
+        $isOwner = ($currentUserId === $roadtrip->user_id);
 
-        if ($roadtrip->visibility !== 'public' && !$isMyRoadTrip) {
+        if (!$isOwner && $roadtrip->visibility !== 'public') {
             $this->Flash->error(__('Ce road trip est privé.'));
-            return $this->redirect(['action' => 'index']);
+            return $this->redirect(['action' => 'index']); // ou explorePublic
         }
 
-        $jsMapData = [];
-
         $geocodedPlacesTable = $this->fetchTable('GeocodedPlaces');
+        $jsMapData = [];
 
         foreach ($roadtrip->trips as $trip) {
 
@@ -274,7 +273,9 @@ class RoadtripsController extends AppController
                             'lon' => $coords['lon'],
                             'nom' => $se->city,
                             'heure' => $se->duration ? $se->duration->format('H:i') : '',
-                            'remarque' => $se->description ?? ''
+                            'description' => $se->description,
+                            // On passe les photos directement ici pour le JS
+                            'photos' => $se->sub_step_photos
                         ];
                     }
                 }
@@ -302,7 +303,7 @@ class RoadtripsController extends AppController
 
         $jsMapDataJson = json_encode($jsMapData);
 
-        $this->set(compact('roadtrip', 'jsMapDataJson', 'isMyRoadTrip'));
+        $this->set(compact('roadtrip', 'jsMapDataJson', 'isOwner'));
     }
     protected function _getCoordinates($nomVille, $table)
     {

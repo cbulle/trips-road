@@ -51,7 +51,7 @@ $this->assign('mainClass', '');
                 <p><?= h($this->Text->truncate($rt->description, 100)) ?></p>
 
                 <div class="roadtrip-buttons">
-                    <a class="btn-view" href="<?= $this->Url->build(['action' => 'view', $rt->id]) ?>">
+                    <a class="btn-view" href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'view', $rt->id]) ?>">
                         <i class="material-icons">visibility</i>
                     </a>
 

@@ -2092,9 +2092,25 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     object-fit: cover;
 }
 
-.map-trajet {
-    width: 100%;
-    height: 300px;
-    background-color: #eee;
+.sous-etapes-content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
     margin-top: 15px;
 }
+
+.leaflet-pane img,
+.leaflet-tile-container img {
+    max-width: none !important;
+    max-height: none !important;
+    width: auto;
+    padding: 0;
+}
+
+#map-global {
+    background-color: #ddd;
+    z-index: 1;
+}
+
+
+
