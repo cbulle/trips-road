@@ -3,33 +3,40 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Mailer\Mailer;
 class PageLinkController extends AppController
 {
 
     public function contact(){
-        // 1. On vérifie d'abord si on est en train de soumettre le formulaire (POST)
         if ($this->request->is('post')) {
 
-            // 2. On récupère les données du formulaire
             $data = $this->request->getData();
 
-            // 3. Validation simple (vous pouvez étoffer selon vos besoins)
             if (!empty($data['email']) && !empty($data['message'])) {
 
-                // --- LOGIQUE D'ENVOI D'EMAIL ---
-                // Pour l'instant, on simule que l'envoi marche toujours ($success = true).
-                // Plus tard, vous mettrez ici : $success = $mailer->send(...);
-                $success = true;
+                try {
+                    $mailer = new Mailer('default');
 
-                // 4. On gère le résultat
-                if ($success) {
-                    $this->Flash->success('Votre message a bien été envoyé !');
+                    $mailer
+                        ->setTransport('default')
+                        ->setFrom(['tripsandroad@gmail.com' => 'Site Trips & Roads'])
+                        ->setTo('tripsandroad@gmail.com')
+                        ->setReplyTo($data['email'], $data['nom'])
+                        ->setSubject('Contact Site : ' . ($data['sujet'] ?? 'Aucun sujet'))
+                        ->deliver(
+                            "Nouveau message reçu depuis le site web :\n\n" .
+                            "Nom : " . ($data['nom'] ?? 'Non renseigné') . "\n" .
+                            "Email : " . $data['email'] . "\n" .
+                            "Sujet : " . ($data['sujet'] ?? 'Autre') . "\n\n" .
+                            "--------------------------------------------------\n" .
+                            "Message :\n" . $data['message']
+                        );
 
-                    // On redirige vers la même page pour vider le formulaire (PRG Pattern)
+                    $this->Flash->success('Votre message a bien été envoyé ! Nous vous répondrons sous peu.');
                     return $this->redirect(['action' => 'contact']);
-                } else {
-                    $this->Flash->error('Une erreur est survenue lors de l\'envoi.');
+
+                } catch (\Exception $e) {
+                    $this->Flash->error('Erreur technique lors de l\'envoi : ' . $e->getMessage());
                 }
 
             } else {
