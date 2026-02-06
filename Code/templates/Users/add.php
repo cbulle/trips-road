@@ -9,25 +9,52 @@
                 <button class="toggle-btn active" disabled>S'inscrire</button>
             </div>
 
+            <?= $this->Flash->render() ?>
+
             <?= $this->Form->create($user, ['class' => 'form-box', 'type' => 'file']) ?>
             <h2 id="login-title">Inscription</h2>
 
-            <?= $this->Form->control('username', ['label' => 'Pseudo', 'required' => true]) ?>
-            <?= $this->Form->control('last_name', ['label' => 'Nom', 'required' => true]) ?>
-            <?= $this->Form->control('first_name', ['label' => 'Prénom', 'required' => true]) ?>
-            <?= $this->Form->control('email', ['label' => 'Email', 'required' => true]) ?>
+            <div class="form-row">
+                <?= $this->Form->control('last_name', ['label' => 'Nom', 'required' => true]) ?>
+                <?= $this->Form->control('first_name', ['label' => 'Prénom', 'required' => true]) ?>
+                <?= $this->Form->control('username', ['label' => 'Pseudo', 'required' => true]) ?>
+            </div>
 
-            <?= $this->Form->control('password', ['label' => 'Mot de passe', 'required' => true]) ?>
-            <?= $this->Form->control('address', ['label' => 'Adresse']) ?>
-            <?= $this->Form->control('zipcode', ['label' => 'Code postal']) ?>
-            <?= $this->Form->control('city', ['label' => 'Ville']) ?>
-            <?= $this->Form->control('phone', ['label' => 'Téléphone']) ?>
-            <?= $this->Form->control('birth_date', ['label' => 'Date de naissance', 'type' => 'date', 'min' => '1900-01-01']) ?>
+            <div class="form-row">
+                <?= $this->Form->control('email', ['label' => 'Email', 'required' => true]) ?>
+                <?= $this->Form->control('password', ['label' => 'Mot de passe', 'required' => true]) ?>
+            </div>
 
-            <label for="image">Photo de profil</label>
-            <?= $this->Form->file('image', ['accept' => 'image/*']) ?>
+            <label style="margin-top: 15px; display:block;">Date de naissance</label>
+            <div class="date-select-container">
+                <?= $this->Form->control('birth_day', [
+                    'label' => false,
+                    'type' => 'select',
+                    'options' => $days,
+                    'empty' => 'Jour',
+                    'class' => 'form-select'
+                ]); ?>
 
-            <button type="submit">S'inscrire</button>
+                <?= $this->Form->control('birth_month', [
+                    'label' => false,
+                    'type' => 'select',
+                    'options' => [
+                        '01' => 'Janv.', '02' => 'Fevr.', '03' => 'Mars', '04' => 'Avril',
+                        '05' => 'Mai', '06' => 'Juin', '07' => 'Juill', '08' => 'Août',
+                        '09' => 'Sept', '10' => 'Oct', '11' => 'Nov', '12' => 'Déc',
+                    ],
+                    'empty' => 'Mois'
+                ]);?>
+
+                <?= $this->Form->control('birth_year', [
+                    'label' => false,
+                    'type' => 'select',
+                    'options' => $years,
+                    'empty' => 'Année',
+                    'class' => 'form-select'
+                ]); ?>
+            </div>
+            <?= $this->Form->button('S\'inscrire', ['class' => 'submit-btn']); ?>
             <?= $this->Form->end() ?>
         </div>
     </div>
