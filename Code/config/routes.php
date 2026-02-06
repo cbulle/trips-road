@@ -30,51 +30,37 @@ use Cake\Routing\RouteBuilder;
  * if required.
  */
 return function (RouteBuilder $routes): void {
-    /*
-     * The default class to use for all routes
-     *
-     * The following route classes are supplied with CakePHP and are appropriate
-     * to set as the default:
-     *
-     * - Route
-     * - InflectedRoute
-     * - DashedRoute
-     *
-     * If no call is made to `Router::defaultRouteClass()`, the class used is
-     * `Route` (`Cake\Routing\Route\Route`)
-     *
-     * Note that `Route` does not do any inflections on URLs which will result in
-     * inconsistently cased URLs when used with `{plugin}`, `{controller}` and
-     * `{action}` markers.
-     */
     $routes->setRouteClass(DashedRoute::class);
 
     $routes->scope('/', function (RouteBuilder $builder): void {
-        /*
-         * Here, we are connecting '/' (base path) to a controller called 'Pages',
-         * its action called 'display', and we pass a param to select the view file
-         * to use (in this case, templates/Pages/home.php)...
-         */
-        $builder->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+        $builder->connect('/', ['controller' => 'Roadtrips', 'action' => 'index']);
+        $builder->connect('/index', ['controller' => 'Roadtrips', 'action' => 'index']);
+        $builder->connect('/view', ['controller' => 'Users', 'action' => 'view']);
+        $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);
+        $builder->connect('/add', ['controller' => 'Users', 'action' => 'add']);
+        $builder->connect('/add_r_t', ['controller' => 'Roadtrips', 'action' => 'add./']);
+        $builder->connect('/accessibility', ['controller' => 'Users', 'action' => 'accessibility']);
+
+        $builder->scope('/messages', function (RouteBuilder $builder) {
+            $builder->connect('/', ['controller' => 'Messages', 'action' => 'index']);
+            $builder->connect('/:id', ['controller' => 'Messages', 'action' => 'view']);
+            $builder->post('/send-message', ['controller' => 'Messages', 'action' => 'sendMessage']);
+            $builder->post('/get-or-create', ['controller' => 'Messages', 'action' => 'getOrCreateConversation']);
+        });
+
+        $builder->scope('/page_link', function (RouteBuilder $builder): void {
+            $builder->connect('/contact', ['controller' => 'PageLink', 'action' => 'contact']);
+            $builder->connect('/cgu', ['controller' => 'PageLink', 'action' => 'cgu']);
+            $builder->connect('/faq', ['controller' => 'PageLink', 'action' => 'faq']);
+            $builder->connect('/politique', ['controller' => 'PageLink', 'action' => 'politique']);
+            $builder->connect('/cookie', ['controller' => 'PageLink', 'action' => 'cookie']);
+        });
 
         /*
          * ...and connect the rest of 'Pages' controller's URLs.
          */
         $builder->connect('/pages/*', 'Pages::display');
 
-        /*
-         * Connect catchall routes for all controllers.
-         *
-         * The `fallbacks` method is a shortcut for
-         *
-         * ```
-         * $builder->connect('/{controller}', ['action' => 'index']);
-         * $builder->connect('/{controller}/{action}/*', []);
-         * ```
-         *
-         * It is NOT recommended to use fallback routes after your initial prototyping phase!
-         * See https://book.cakephp.org/5/en/development/routing.html#fallbacks-method for more information
-         */
         $builder->fallbacks();
     });
 
