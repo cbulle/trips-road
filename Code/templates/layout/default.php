@@ -47,7 +47,8 @@
         'messaging-realtime',
         'page_link',
         'profil',
-        'style'
+        'roadTrip',
+        'style',
     ]) ?>
 
     <?= $this->fetch('meta') ?>
@@ -106,7 +107,6 @@ $currentUser = $this->request->getAttribute('identity');
                     <span class="profil-box">
                         <?php
                         $pp = $currentUser->profile_picture ?: 'User.png';
-                        // CORRECTION : Utilisation de webroot pour le chemin absolu correct
                         $ppUrl = $this->Url->webroot('uploads/pp/' . $pp);
                         ?>
                         <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">

@@ -42,31 +42,6 @@ class RoadtripsController extends AppController
         $this->set(compact('roadtrips'));
     }
 
-    /**
-     * Mes Road Trips
-     */
-    public function myRoadtrips()
-    {
-        $userId = $this->request->getAttribute('identity')->getIdentifier();
-
-        $show_share = $this->request->getQuery('show_share');
-
-        $share_url = $this->request->getSession()->read('share_url');
-
-        $this->paginate = [
-            'order' => ['id' => 'DESC']
-        ];
-
-        $query = $this->Roadtrips->find()
-            ->where(['user_id' => $userId]);
-
-        $roadtrips = $this->paginate($query);
-
-        $this->set(compact('roadtrips', 'show_share', 'share_url'));
-
-        $this->render('my_roadtrips');
-    }
-
     public function getLieuxFavoris()
     {
         $this->request->allowMethod(['get', 'ajax']);
@@ -318,12 +293,41 @@ class RoadtripsController extends AppController
         return $this->redirect(['action' => 'myRoadtrips']);
     }
 
-    public function publicRoadtrips()
+    public function myRoadtrips()
     {
-        $userId = $this->request->getAttribute('identity')?->getIdentifier();
+        $userId = $this->request->getAttribute('identity')->getIdentifier();
+
+        $user = $this->fetchTable('Users')->get($userId);
+
+        $show_share = $this->request->getQuery('show_share');
+        $share_url = $this->request->getSession()->read('share_url');
 
         $this->paginate = [
-            'limit' => 12
+            'order' => ['id' => 'DESC']
+        ];
+
+        $query = $this->Roadtrips->find()
+            ->where(['user_id' => $userId]);
+
+        $roadtrips = $this->paginate($query);
+
+        $this->set(compact('roadtrips', 'show_share', 'share_url', 'user'));
+
+        $this->render('my_roadtrips');
+    }
+
+    public function publicRoadtrips()
+    {
+        $identity = $this->request->getAttribute('identity');
+        $userId = $identity ? $identity->getIdentifier() : null;
+
+        $user = null;
+        if ($userId) {
+            $user = $this->fetchTable('Users')->get($userId);
+        }
+
+        $this->paginate = [
+            'order' => ['id' => 'DESC']
         ];
 
         $query = $this->Roadtrips->find()
@@ -337,20 +341,18 @@ class RoadtripsController extends AppController
         if ($userId) {
             try {
                 $favoritesTable = $this->fetchTable('Favorites');
-
                 $favorisIds = $favoritesTable->find()
                     ->select(['roadtrip_id'])
                     ->where(['user_id' => $userId])
                     ->all()
                     ->extract('roadtrip_id')
                     ->toArray();
-
             } catch (\Exception $e) {
                 $favorisIds = [];
             }
         }
 
-        $this->set(compact('roadtrips', 'favorisIds', 'userId'));
+        $this->set(compact('roadtrips', 'favorisIds', 'userId', 'user'));
     }
 
 
@@ -442,7 +444,7 @@ class RoadtripsController extends AppController
 
         $this->set(compact('roadtrip', 'jsMapDataJson', 'isOwner'));
     }
-    
+
     private function _formatTripsForJs($trips)
     {
         $data = [];
@@ -540,10 +542,6 @@ class RoadtripsController extends AppController
         }
 
         return null;
-    }
-
-    public function viewPerso($id = null)
-    {
     }
 
     private function _mapJsonToCakeEntities($jsonString)
