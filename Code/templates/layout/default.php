@@ -49,6 +49,7 @@
         'profil',
         'roadTrip',
         'style',
+        'view',
     ]) ?>
 
     <?= $this->fetch('meta') ?>
