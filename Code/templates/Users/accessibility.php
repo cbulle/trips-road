@@ -11,7 +11,8 @@
 
     <nav class="profil-nav">
         <ul>
-            <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => '#']) ?>">Mes Road-Trips</a></li>
+            <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Road-Trips</a></li>
+            <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Road-Trips publics</a></li>
             <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Paramètres du compte</a></li>
             <li><a href="#" class="active">Accessibilité</a></li>
             <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>" class="logout">Déconnexion</a></li>

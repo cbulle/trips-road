@@ -104,21 +104,29 @@
             <p class="confirmation-message"><?= $message ?></p>
         <?php endif; ?>
 
-        <?= $this->Form->create(); ?>
+        <?= $this->Flash->render() ?>
 
-            <?= $this->Form->control('Nom', ['id' => 'nom', 'title' => 'nom']) ;?>
+        <?= $this->Form->create(null); ?>
+
+            <?= $this->Form->control('Nom', ['id' => 'nom',
+                'title' => 'nom',
+                'name' => 'nom',
+                'required' => true,
+                ]) ;?>
 
             <?= $this->Form->control('email', [
                 'type' => 'email',
                 'name' => 'email',
-                'id' => 'email',
+                'required' => true,
+                'id' => 'email'
             ]); ?>
 
 
             <?= $this->Form->control('Sujet', [
                 'label' => 'Sujet',
                 'name' => 'sujet',
-                'id' => 'sujet',
+                'required' => true,
+                'id' => 'sujet'
             ]); ?>
 
         <?= $this->Form->control('Message', [
@@ -126,29 +134,13 @@
             'label' => 'Votre question:',
             'name' => 'question',
             'id' => 'question',
+            'required' => true,
             'rows' => 4,
+            'cols' => 200,
         ]); ?>
 
-        <?= $this->Form->button('Poser votre question'); ?>
+        <?= $this->Form->button('Poser votre question', ['type' => 'submit']); ?>
         <?= $this->Form->end();?>
-
-
-<!--        <form action="/../formulaire/form_faq.php" method="POST">-->
-<!---->
-<!--            <label for="nom">Nom :</label>-->
-<!--            <input type="text" name="nom" id="nom" value="--><?php //= isset($nom) ? $nom : '' ?><!--" required>-->
-<!---->
-<!--            <label for="email">Email :</label>-->
-<!--            <input type="email" name="email" id="email" value="--><?php //= isset($email) ? $email : '' ?><!--" required>-->
-<!---->
-<!--            <label for="sujet">Sujet :</label>-->
-<!--            <input type="text" name="sujet" id="sujet" value="--><?php //= isset($sujet) ? $sujet : '' ?><!--" required>-->
-<!---->
-<!--            <label for="question">Votre question :</label>-->
-<!--            <textarea name="question" id="question" rows="4" required>--><?php //= isset($question) ? $question : '' ?><!--</textarea>-->
-<!---->
-<!--            <button type="submit">Poser la question</button>-->
-<!--        </form>-->
     </section>
 
 

@@ -5,12 +5,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let userFavorites = [];
     try {
-        const respFav = await fetch('/get_lieux_favoris');
+        const urlFav = typeof URL_GET_FAVORIS !== 'undefined' ? URL_GET_FAVORIS : '/roadtrips/get-lieux-favoris';
+
+        const respFav = await fetch(urlFav, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' } // Important pour CakePHP
+        });
+
         if(respFav.ok) {
             userFavorites = await respFav.json();
         }
     } catch (e) {
-        console.log("Erreur chargement favoris", e);
+        console.log("Erreur chargement favoris (Dropdowns)", e);
     }
 
     // ============================================================
@@ -72,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         date.setHours(hours, minutes, 0);
         date.setSeconds(date.getSeconds() + travelSeconds);
         return date.getHours().toString().padStart(2, '0') + ":" +
-               date.getMinutes().toString().padStart(2, '0');
+            date.getMinutes().toString().padStart(2, '0');
     }
 
     // ============================================================
@@ -128,12 +133,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function loadMapFavorites() {
         try {
-            const resp = await fetch('/get_lieux_favoris');
+            const urlFav = typeof URL_GET_FAVORIS !== 'undefined' ? URL_GET_FAVORIS : '/roadtrips/get-lieux-favoris';
+
+            const resp = await fetch(urlFav, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
             const favoris = await resp.json();
             favoris.forEach(fav => {
                 const lat = parseFloat(fav.latitude);
                 const lon = parseFloat(fav.longitude);
-                const marker = L.marker([lat, lon], { icon: favoriteIcon }).addTo(map);
+                const marker = L.marker([lat, lon], {icon: favoriteIcon}).addTo(map);
                 const container = document.createElement('div');
                 container.style.textAlign = 'center';
                 container.innerHTML = `
@@ -182,7 +191,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         setTimeout(() => {
                             const allInputs = document.querySelectorAll('.subEtapeNom');
                             const lastInput = allInputs[allInputs.length - 1];
-                            if(lastInput) {
+                            if (lastInput) {
                                 lastInput.value = fav.nom_lieu;
                                 lastInput.style.backgroundColor = '#d6eaf8';
                             }
@@ -194,8 +203,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 marker.bindPopup(container);
             });
-        } catch (e) { console.error("Erreur chargement favoris", e); }
+        } catch (e) {
+            console.error("Erreur chargement favoris", e);
+        }
     }
+
     loadMapFavorites();
 
     // ============================================================
@@ -204,13 +216,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statusSelect = document.getElementById('roadtripStatut');
     const visibilitySelect = document.getElementById('roadtripVisibilite');
 
-    if(visibilitySelect) {
+    if (visibilitySelect) {
         visibilitySelect.disabled = false;
     }
 
-    if(statusSelect) {
+    if (statusSelect) {
         statusSelect.addEventListener('change', () => {
-             if(visibilitySelect) visibilitySelect.disabled = false;
+            if (visibilitySelect) visibilitySelect.disabled = false;
         });
     }
 
@@ -222,17 +234,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         /* List of the countries avalaible for research of a city (the API will only search the name in those
         country) All europe is here*/
         const europeCodes = [
-            "fr","be","ch","lu", // France, Belguim, Switzerland, Luxemburg
-            "de","at","li", // Germany, Austria, Liechtenstein
-            "it","sm","va", // Italy, San-Marino, Vatican city
-            "es","pt","ad", // Spain, Portugal, Andorra
-            "gb","ie", // Great Britain, Ireland
-            "nl","dk","no","se","fi","is", // Netherlands, Danemark, Norway, Sweden, Finland, Iceland
-            "pl","cz","sk","hu", // Poland, Czech Republic, Slovakia, Hungary
-            "ee","lv","lt", // Estonia, latvia, lethuania
-            "ro","bg","gr","cy","mt", // Romania, Bulgaria, Greece, Cyprus, Malta
-            "si","hr","ba","rs","me","al","mk","xk", // Slovenia, Croatia, Bosnia, Serbia, Montenegro, Albania, North Macedonia, Kosovo
-            "ua","md","by","ge","am","az" // Ukraine, Moldova, Belarus, Georgia, Armenia, Azerbaidjan
+            "fr", "be", "ch", "lu", // France, Belguim, Switzerland, Luxemburg
+            "de", "at", "li", // Germany, Austria, Liechtenstein
+            "it", "sm", "va", // Italy, San-Marino, Vatican city
+            "es", "pt", "ad", // Spain, Portugal, Andorra
+            "gb", "ie", // Great Britain, Ireland
+            "nl", "dk", "no", "se", "fi", "is", // Netherlands, Danemark, Norway, Sweden, Finland, Iceland
+            "pl", "cz", "sk", "hu", // Poland, Czech Republic, Slovakia, Hungary
+            "ee", "lv", "lt", // Estonia, latvia, lethuania
+            "ro", "bg", "gr", "cy", "mt", // Romania, Bulgaria, Greece, Cyprus, Malta
+            "si", "hr", "ba", "rs", "me", "al", "mk", "xk", // Slovenia, Croatia, Bosnia, Serbia, Montenegro, Albania, North Macedonia, Kosovo
+            "ua", "md", "by", "ge", "am", "az" // Ukraine, Moldova, Belarus, Georgia, Armenia, Azerbaidjan
         ].join(',');
 
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr&countrycodes=${europeCodes}`;
@@ -251,16 +263,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     function addMarker(lieu, coords, type, popupContent) {
         const marker = L.marker(coords).addTo(map).bindPopup(popupContent);
         if (!markers[lieu]) markers[lieu] = [];
-        markers[lieu].push({ marker, type });
+        markers[lieu].push({marker, type});
         return marker;
     }
 
-    function getNomSimple(nom) { return nom ? nom.split(',')[0].trim() : ''; }
+    function getNomSimple(nom) {
+        return nom ? nom.split(',')[0].trim() : '';
+    }
 
     function initAutocomplete(element) {
         if (!element) return;
 
-        element.addEventListener('input', function() {
+        element.addEventListener('input', function () {
             this.removeAttribute('data-lat');
             this.removeAttribute('data-lon');
             this.removeAttribute('data-full-name');
@@ -269,23 +283,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         // -----------------------------------------------------------------------
 
         $(element).autocomplete({
-            source: function(request, response) {
+            source: function (request, response) {
                 // Appel API Photon
                 const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(request.term)}&lang=fr&limit=15`;
 
                 $.ajax({
                     url: url,
                     method: "GET",
-                    success: function(data) {
+                    success: function (data) {
                         let suggestions = [];
                         let seen = new Set();
 
                         // Liste des codes pays européens pour le filtrage
                         const europeanCountryCodes = [
-                            "FR","BE","CH","LU","DE","AT","LI","IT","SM","VA","ES","PT","AD",
-                            "GB","IE","NL","DK","NO","SE","FI","IS","PL","CZ","SK","HU","EE",
-                            "LV","LT","RO","BG","GR","CY","MT","SI","HR","BA","RS","ME","AL",
-                            "MK","XK","UA","MD","BY","GE","AM","AZ"
+                            "FR", "BE", "CH", "LU", "DE", "AT", "LI", "IT", "SM", "VA", "ES", "PT", "AD",
+                            "GB", "IE", "NL", "DK", "NO", "SE", "FI", "IS", "PL", "CZ", "SK", "HU", "EE",
+                            "LV", "LT", "RO", "BG", "GR", "CY", "MT", "SI", "HR", "BA", "RS", "ME", "AL",
+                            "MK", "XK", "UA", "MD", "BY", "GE", "AM", "AZ"
                         ];
 
                         data.features.forEach(item => {
@@ -325,7 +339,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             },
             minLength: 3,
-            select: function(event, ui) {
+            select: function (event, ui) {
                 $(this).val(ui.item.full_name);
                 $(this).attr('data-full-name', ui.item.full_name);
                 $(this).attr('data-lat', ui.item.lat);
@@ -335,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 return false;
             }
-        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+        }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>").append($("<div>").html(item.label)).appendTo(ul);
         };
     }
@@ -351,13 +365,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (currentInput.value && currentInput.value < prevInput.value) {
                         currentInput.value = prevInput.value;
                         const idx = currentInput.closest('li').dataset.index;
-                        if(segments[idx]) segments[idx].date = prevInput.value;
+                        if (segments[idx]) segments[idx].date = prevInput.value;
                     }
                 }
             }
             currentInput.onchange = (e) => {
                 const idx = e.target.closest('li').dataset.index;
-                if(segments[idx]) segments[idx].date = e.target.value;
+                if (segments[idx]) segments[idx].date = e.target.value;
                 updateDateConstraints();
             };
         }
@@ -388,8 +402,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (t.sousEtapes && t.sousEtapes.length > 0) {
                 for (const se of t.sousEtapes) {
                     const c = await getCoordonnees(se.nom);
-                    if(c) {
-                        sousEtapesWithCoords.push({ ...se, coords: c });
+                    if (c) {
+                        sousEtapesWithCoords.push({...se, coords: c});
                         addMarker(se.nom, c, "sous_etape", `<b>${se.nom}</b><br>${se.heure}`);
                     }
                 }
@@ -425,7 +439,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         let coordsList = [startCoords];
         if (existingData && existingData.sousEtapes) {
-            existingData.sousEtapes.forEach(se => { if(se.coords) coordsList.push(se.coords); });
+            existingData.sousEtapes.forEach(se => {
+                if (se.coords) coordsList.push(se.coords);
+            });
         }
         coordsList.push(endCoords);
 
@@ -438,7 +454,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const route = data.routes[0];
 
             const color = segmentColors[index % segmentColors.length];
-            const line = L.geoJSON(route.geometry, { color: color, weight: 5 }).addTo(map);
+            const line = L.geoJSON(route.geometry, {color: color, weight: 5}).addTo(map);
 
             const segData = {
                 line,
@@ -465,10 +481,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             clone.querySelector('.toggleSousEtapes').innerHTML = `${getNomSimple(startName)} → ${getNomSimple(endName)}`;
 
             const dateInput = clone.querySelector('.legend-date-input');
-            if(segData.date) dateInput.value = segData.date;
+            if (segData.date) dateInput.value = segData.date;
 
             const timeInput = clone.querySelector('.legend-time-input');
-            if(existingData && existingData.heure_depart) {
+            if (existingData && existingData.heure_depart) {
                 timeInput.value = existingData.heure_depart;
                 segData.heure_depart = existingData.heure_depart;
             } else {
@@ -500,7 +516,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             updateDateConstraints();
             updateLegendHtml(index);
 
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     function createFavSelectForInput(targetInputId) {
@@ -513,17 +531,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         let optionsHtml = '<option value="">⭐ Choisir un favori...</option>';
         userFavorites.forEach(fav => {
             const icon = (fav.categorie === 'restaurant') ? '🍽️' :
-                         (fav.categorie === 'hotel') ? '🏨' : '📍';
+                (fav.categorie === 'hotel') ? '🏨' : '📍';
             optionsHtml += `<option value="${fav.nom_lieu}">${icon} ${fav.nom_lieu}</option>`;
         });
         select.innerHTML = optionsHtml;
 
-        select.addEventListener('change', function() {
+        select.addEventListener('change', function () {
             const input = document.getElementById(targetInputId);
-            if(input && this.value) {
+            if (input && this.value) {
                 input.value = this.value;
                 input.style.backgroundColor = '#e8f8f5';
-                setTimeout(() => { input.style.backgroundColor = ''; }, 500);
+                setTimeout(() => {
+                    input.style.backgroundColor = '';
+                }, 500);
             }
         });
 
@@ -584,7 +604,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             document.getElementById('btnValidateBlock').addEventListener('click', async () => {
                 const btn = document.getElementById('btnValidateBlock');
-                btn.disabled = true; btn.textContent = "Calcul...";
+                btn.disabled = true;
+                btn.textContent = "Calcul...";
 
                 let startName, startCoords;
                 const inputStartEl = document.getElementById('inputStartBlock');
@@ -596,7 +617,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     startName = inputStartEl.value.trim();
                     startCoords = (lat && lon) ? [parseFloat(lat), parseFloat(lon)] : await getCoordonnees(startName);
 
-                    if(!startCoords) { alert('Départ introuvable'); btn.disabled=false; return; }
+                    if (!startCoords) {
+                        alert('Départ introuvable');
+                        btn.disabled = false;
+                        return;
+                    }
                     addMarker(startName, startCoords, "ville", startName);
                 } else {
                     startName = currentStartCity;
@@ -610,7 +635,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const endCoords = (eLat && eLon) ? [parseFloat(eLat), parseFloat(eLon)] : await getCoordonnees(endName);
 
-                if(!endCoords) { alert('Arrivée introuvable'); btn.disabled=false; return; }
+                if (!endCoords) {
+                    alert('Arrivée introuvable');
+                    btn.disabled = false;
+                    return;
+                }
 
                 await _ajouterSegmentEntre(startName, startCoords, endName, endCoords, segments.length, strategies['Voiture']);
                 addMarker(endName, endCoords, "ville", endName);
@@ -644,7 +673,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Préparation des coordonnées (Long,Lat pour OSRM)
         let points = [seg.startCoord];
         if (seg.sousEtapes) {
-            seg.sousEtapes.forEach(se => { if(se.coords) points.push(se.coords); });
+            seg.sousEtapes.forEach(se => {
+                if (se.coords) points.push(se.coords);
+            });
         }
         points.push(seg.endCoord);
         const coordString = points.map(p => `${p[1]},${p[0]}`).join(';');
@@ -688,6 +719,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Erreur de mise à jour de la route :", e);
         }
     }
+
     // ============================================================
     // 7. ÉDITEUR SOUS-ÉTAPES ET LÉGENDE (MODIFIÉ)
     // ============================================================
@@ -698,7 +730,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateLegendHtml(index) {
         const seg = segments[index];
         const li = document.querySelector(`li[data-index="${index}"]`);
-        if(!li || !seg.heure_depart) return;
+        if (!li || !seg.heure_depart) return;
 
         const ul = li.querySelector('.sousEtapesList');
         let html = ``;
@@ -722,7 +754,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return (h * 3600) + (m * 60);
         }
 
-        if(seg.legs) {
+        if (seg.legs) {
             // Parcours des sous-étapes et des "legs" (tronçons entre 2 points)
             seg.legs.forEach((leg, i) => {
                 // On ajoute le temps de trajet du tronçon
@@ -755,8 +787,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             openSegmentEditor(e.target.closest('li').dataset.index);
         }
         if (e.target.classList.contains('toggleSousEtapes')) {
-             const ul = e.target.closest('li').querySelector('.sousEtapesList');
-             ul.style.display = (ul.style.display === 'none') ? 'block' : 'none';
+            const ul = e.target.closest('li').querySelector('.sousEtapesList');
+            ul.style.display = (ul.style.display === 'none') ? 'block' : 'none';
         }
     });
 
@@ -789,17 +821,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             let optionsHtml = '<option value="">⭐ Insérer un favori...</option>';
             userFavorites.forEach(fav => {
                 const icon = (fav.categorie === 'restaurant') ? '🍽️' :
-                             (fav.categorie === 'hotel') ? '🏨' : '📍';
+                    (fav.categorie === 'hotel') ? '🏨' : '📍';
                 optionsHtml += `<option value="${fav.nom_lieu}">${icon} ${fav.nom_lieu}</option>`;
             });
 
             selectFav.innerHTML = optionsHtml;
 
-            selectFav.addEventListener('change', function() {
-                if(this.value) {
+            selectFav.addEventListener('change', function () {
+                if (this.value) {
                     inputNom.value = this.value;
                     inputNom.style.backgroundColor = '#e8f8f5';
-                    setTimeout(() => { inputNom.style.backgroundColor = ''; }, 500);
+                    setTimeout(() => {
+                        inputNom.style.backgroundColor = '';
+                    }, 500);
                 }
             });
 
@@ -825,7 +859,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 height: 300,
                 menubar: false,
                 statusbar: false,
-                language: 'fr_FR',
+                // language: 'fr_FR',
 
                 plugins: 'image link lists table code help wordcount',
                 toolbar: 'undo redo | bold italic | bullist numlist | link image | table | code',
@@ -896,7 +930,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                                     blobCache.add(blobInfo);
 
-                                    cb(blobInfo.blobUri(), { title: file.name });
+                                    cb(blobInfo.blobUri(), {title: file.name});
 
                                 }, 'image/jpeg', 0.7);
                             };
@@ -928,7 +962,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const idEditor = div.querySelector('.subEtapeRemarque').id;
             const remarque = tinymce.get(idEditor) ? tinymce.get(idEditor).getContent() : "";
 
-            if(!nom || !heure) continue;
+            if (!nom || !heure) continue;
 
             // --- CORRECTION ICI ---
             let coords = null;
@@ -944,8 +978,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             // ----------------------
 
-            if(coords) {
-                newSubs.push({ nom, heure, remarque, coords, lat: coords[0], lon: coords[1] });
+            if (coords) {
+                newSubs.push({nom, heure, remarque, coords, lat: coords[0], lon: coords[1]});
                 addMarker(nom, coords, "sous_etape", `<b>${nom}</b><br>${heure}`);
             } else {
                 alert(`Impossible de localiser : ${nom}. Veuillez sélectionner une suggestion dans la liste.`);
@@ -959,33 +993,40 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // ============================================================
-    // 8. SAUVEGARDE FINALE (VERSION OPTIMISÉE IUT)
+    // 8. SAUVEGARDE FINALE (CORRIGÉE POUR CAKEPHP & BDD ANGLAISE)
     // ============================================================
 
     document.getElementById('saveRoadtrip').onclick = async (e) => {
-        if(segments.length === 0) return alert('Aucun trajet !');
+        if(segments.length === 0) return alert('Votre RoadTrip est vide ! Ajoutez au moins un trajet.');
 
         const btn = document.getElementById('saveRoadtrip');
         const oldTxt = btn.textContent;
-        btn.textContent = "Préparation et envoi...";
+        btn.textContent = "Sauvegarde en cours...";
         btn.disabled = true;
 
         try {
             const formData = new FormData();
-            if (e.target.dataset.id) formData.append('id_roadtrip', e.target.dataset.id);
-            formData.append('titre', document.getElementById('roadtripTitle').value);
-            formData.append('description', document.getElementById('roadtripDescription').value);
-            formData.append('visibilite', document.getElementById('roadtripVisibilite').value);
-            formData.append('statut', document.getElementById('roadtripStatut').value);
 
-            // Gestion Photo de couverture
+            if (e.target.dataset.id) {
+                formData.append('id', e.target.dataset.id);
+            }
+
+            formData.append('title', document.getElementById('roadtripTitle').value);
+            formData.append('description', document.getElementById('roadtripDescription').value);
+            formData.append('visibility', document.getElementById('roadtripVisibilite').value); // 'prive', 'public', 'amis'
+            formData.append('status', document.getElementById('roadtripStatut').value);         // 'brouillon', 'termine'
+
             const fileInput = document.getElementById('roadtripPhoto');
             if(fileInput.files.length > 0) {
                 const originalFile = fileInput.files[0];
                 if(originalFile.type.startsWith('image/')) {
-                    // On compresse aussi la photo de couverture pour être gentil avec le serveur
-                    const compressedFile = await compresserImageJS(originalFile, 0.7, 1200);
-                    formData.append('photo_cover', compressedFile);
+                    try {
+                        const compressedFile = await compresserImageJS(originalFile, 0.7, 1200);
+                        formData.append('photo_cover', compressedFile); // Nom 'photo_cover' utilisé dans le Controller
+                    } catch (err) {
+                        console.warn("Erreur compression, envoi fichier original", err);
+                        formData.append('photo_cover', originalFile);
+                    }
                 } else {
                     formData.append('photo_cover', originalFile);
                 }
@@ -995,17 +1036,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return segmentsSource.map((s, index) => {
                     const timeInput = document.querySelector(`li[data-index="${index}"] .legend-time-input`);
 
-                    // Nettoyage des sous-étapes
                     const cleanSousEtapes = s.sousEtapes.map(se => {
                         let desc = se.remarque || "";
-                        desc = desc.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, '[Image trop lourde retirée - Utilisez le bouton upload]');
+                        desc = desc.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, '[Image trop lourde retirée]');
 
                         return {
                             nom: se.nom,
                             heure: se.heure,
-                            remarque: desc, // Description nettoyée
-                            lat: se.lat || se.coords[0],
-                            lon: se.lon || se.coords[1]
+                            remarque: desc,
+                            lat: se.lat || (se.coords ? se.coords[0] : null),
+                            lon: se.lon || (se.coords ? se.coords[1] : null)
                         };
                     });
 
@@ -1014,8 +1054,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         departLat: s.startCoord[0], departLon: s.startCoord[1],
                         arrivee: s.endName,
                         arriveeLat: s.endCoord[0], arriveeLon: s.endCoord[1],
-                        mode: s.modeTransport,
-                        date: s.date,
+                        mode: s.modeTransport, // 'Voiture', 'Velo', etc.
+                        date_trajet: s.date,
                         heure_depart: timeInput ? timeInput.value : '08:00',
                         sousEtapes: cleanSousEtapes
                     };
@@ -1023,35 +1063,55 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             const cleanTrajets = cleanSegmentsForSave(segments);
-            console.log("Données nettoyées prêtes à l'envoi :", cleanTrajets);
 
             const jsonString = JSON.stringify(cleanTrajets);
             const blob = new Blob([jsonString], { type: 'application/json' });
             formData.append('trajets_file', blob, 'trajets.json');
 
-            formData.append('villes', JSON.stringify([]));
+            const saveUrl = typeof SAVE_URL !== 'undefined' ? SAVE_URL : '/roadtrips/add';
+            const csrfToken = typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '';
 
-            // 3. Envoi
-            const resp = await fetch('/creationRoadTrip', { method: 'POST', body: formData });
-
-            const textResp = await resp.text();
-
-            try {
-                const json = JSON.parse(textResp);
-                if(json.success) {
-                    alert("Sauvegardé avec succès ! 💾");
-                    window.location.href = "/mesRoadTrips";
-                } else {
-                    alert("Erreur retournée par le serveur : " + json.message);
+            const resp = await fetch(saveUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken,
+                    'Accept': 'application/json'
                 }
-            } catch(e) {
-                console.error("Erreur parsing JSON. Réponse brute du serveur :", textResp);
-                alert("Erreur technique (500). Regardez la console (F12) pour voir la réponse du serveur.");
+            });
+
+
+            if (resp.ok) {
+                const json = await resp.json();
+                if(json.success) {
+                    alert("🎉 Sauvegardé avec succès !");
+                    window.location.href = "/roadtrips/my-roadtrips";
+                } else {
+                    alert("Erreur : " + (json.message || "Erreur inconnue"));
+                }
+            } else {
+                const errorJson = await resp.json().catch(() => ({})); // On essaie de lire le JSON d'erreur
+                console.error("Erreur Serveur:", errorJson);
+
+                let errorMsg = "Une erreur est survenue lors de la sauvegarde.";
+
+                if (errorJson.details) {
+                    errorMsg += "\n\nDétails :";
+                    for (const [field, errors] of Object.entries(errorJson.details)) {
+                        const msg = Object.values(errors).join(', ');
+                        errorMsg += `\n- ${field} : ${msg}`;
+                    }
+                } else if (errorJson.message) {
+                    errorMsg += "\n" + errorJson.message;
+                }
+
+                alert(errorMsg);
             }
 
         } catch(e) {
-            console.error("Erreur JS :", e);
-            alert("Une erreur inattendue est survenue : " + e.message);
+            console.error("Erreur JS Critique :", e);
+            alert("Une erreur technique inattendue est survenue. Vérifiez la console.");
         } finally {
             btn.textContent = oldTxt;
             btn.disabled = false;
