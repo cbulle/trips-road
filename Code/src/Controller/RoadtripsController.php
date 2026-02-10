@@ -255,6 +255,52 @@ class RoadtripsController extends AppController
             return $this->redirect(['action' => 'index']); // ou explorePublic
         }
 
+        // ============================================================
+        // AJOUT : GESTION DE L'HISTORIQUE
+        // ============================================================
+        
+        // Vérifier si l'utilisateur est connecté
+        $identity = $this->request->getAttribute('identity');
+        
+        if ($identity) {
+            $userId = $identity->getIdentifier();
+            
+            // On charge le modèle Historique (qui pointe vers la table histories)
+            $historiqueTable = $this->fetchTable('Historique');
+
+            // 1. On regarde si l'utilisateur a déjà vu ce roadtrip
+            $existingHistory = $historiqueTable->find()
+                ->where([
+                    'user_id' => $userId,
+                    'roadtrip_id' => $id
+                ])
+                ->first();
+
+            if ($existingHistory) {
+                // CAS A : Il l'a déjà vu -> On met à jour la date pour qu'il remonte en premier
+                // Si tu utilises la colonne 'created', on ne peut pas la changer facilement.
+                // Si tu as 'date_visite', on la met à jour.
+                
+                // Option 1 : Si tu as une colonne 'modified' ou 'date_visite'
+                $existingHistory->date_visite = new \Cake\I18n\FrozenTime(); 
+                $historiqueTable->save($existingHistory);
+            } else {
+                // CAS B : C'est la première fois -> On crée une nouvelle entrée
+                $newHistory = $historiqueTable->newEmptyEntity();
+                $newHistory->user_id = $userId;
+                $newHistory->roadtrip_id = $id;
+                // Définir la date (si ce n'est pas automatique via 'created')
+                $newHistory->date_visite = new \Cake\I18n\FrozenTime(); 
+                
+                $historiqueTable->save($newHistory);
+            }
+        }
+        // ============================================================
+        // FIN AJOUT
+        // ============================================================
+
+        $this->set(compact('roadtrip'));
+
         $geocodedPlacesTable = $this->fetchTable('GeocodedPlaces');
         $jsMapData = [];
 
@@ -406,13 +452,11 @@ class RoadtripsController extends AppController
      */
     public function historique()
     {
-        // CORRECTION : On utilise fetchTable au lieu de loadModel
+        // On charge le modèle défini ci-dessus
         $historiqueTable = $this->fetchTable('Historique');
 
-        // Récupérer l'ID de l'utilisateur connecté
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Faire la requête sur la table récupérée
         $query = $historiqueTable->find()
             ->contain([
                 'Roadtrips' => [
@@ -420,8 +464,8 @@ class RoadtripsController extends AppController
                 ]
             ])
             ->where(['Historique.user_id' => $userId])
-            // Vérifie bien si ta colonne de date s'appelle 'date_visite' ou 'created'
-            ->order(['Historique.date_visite' => 'DESC']); 
+            // ATTENTION : Si ta colonne s'appelle 'date_visite', remplace 'created' ci-dessous
+            ->order(['Historique.created' => 'DESC']); 
 
         try {
             $historique = $this->paginate($query, ['limit' => 12]);
@@ -432,19 +476,13 @@ class RoadtripsController extends AppController
         $this->set(compact('historique'));
     }
 
-    /**
-     * Action pour le bouton "Tout effacer"
-     */
     public function deleteHistorique()
     {
         $this->request->allowMethod(['post', 'delete']);
         
-        // CORRECTION : On utilise fetchTable ici aussi
         $historiqueTable = $this->fetchTable('Historique');
-        
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Suppression via la table récupérée
         $historiqueTable->deleteAll(['user_id' => $userId]);
 
         $this->Flash->success('Votre historique a été vidé.');

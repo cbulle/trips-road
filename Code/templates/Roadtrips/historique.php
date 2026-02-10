@@ -63,16 +63,15 @@ $this->assign('mainClass', 'historique-view-page'); // Classe pour le CSS global
                     <h3><?= h($roadtrip->title) ?></h3>
                     
                     <span class="date-visite">
-                        <?php 
-                            // Gestion de la date (compatible string ou objet FrozenTime)
-                            $dateVisite = $item->date_visite ?? $item->created; 
-                            if (is_object($dateVisite) && method_exists($dateVisite, 'format')) {
-                                echo 'Vu le ' . $dateVisite->format('d/m/Y à H:i');
-                            } else {
-                                echo 'Vu le ' . date('d/m/Y à H:i', strtotime($dateVisite));
-                            }
-                        ?>
-                    </span>
+    <?php 
+        // On essaie de trouver la bonne colonne de date
+        $dateObj = $item->created ?? $item->date_visite ?? null;
+
+        if ($dateObj) {
+            echo 'Vu le ' . $dateObj->format('d/m/Y à H:i');
+        }
+    ?>
+</span>
 
                     <p>
                         <?= $this->Text->truncate(
