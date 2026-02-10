@@ -48,6 +48,14 @@ return function (RouteBuilder $routes): void {
             $builder->post('/get-or-create', ['controller' => 'Messages', 'action' => 'getOrCreateConversation']);
         });
 
+        $builder->scope('/page_link', function (RouteBuilder $builder): void {
+            $builder->connect('/contact', ['controller' => 'PageLink', 'action' => 'contact']);
+            $builder->connect('/cgu', ['controller' => 'PageLink', 'action' => 'cgu']);
+            $builder->connect('/faq', ['controller' => 'PageLink', 'action' => 'faq']);
+            $builder->connect('/politique', ['controller' => 'PageLink', 'action' => 'politique']);
+            $builder->connect('/cookie', ['controller' => 'PageLink', 'action' => 'cookie']);
+        });
+
         /*
          * ...and connect the rest of 'Pages' controller's URLs.
          */

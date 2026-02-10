@@ -167,6 +167,19 @@ class MessagesController extends AppController
             'is_read' => false,
             'delivered_at' => date('Y-m-d H:i:s')
         ]);
+        $blocked = $this->Friendships->find()
+            ->where([
+                'status' => 'blocked',
+                'OR' => [
+                    ['user_id' => $userId, 'friend_id' => $recipientId],
+                    ['user_id' => $recipientId, 'friend_id' => $userId],
+                ]
+            ])
+            ->count();
+
+        if ($blocked) {
+            return $this->sendJsonResponse(false, 'Utilisateur bloqué', 403);
+        }
 
         if ($this->Messages->save($message)) {
 

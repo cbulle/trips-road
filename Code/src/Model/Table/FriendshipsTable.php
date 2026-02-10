@@ -9,10 +9,10 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Friends Model
+ * Friendships Model
  *
  * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\FriendsTable&\Cake\ORM\Association\BelongsTo $Friends
+ * @property \App\Model\Table\FriendshipsTable&\Cake\ORM\Association\BelongsTo $Friendships
  *
  * @method \App\Model\Entity\Friend newEmptyEntity()
  * @method \App\Model\Entity\Friend newEntity(array $data, array $options = [])
@@ -30,7 +30,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class FriendsTable extends Table
+class FriendshipsTable extends Table
 {
     /**
      * Initialize method
@@ -43,16 +43,18 @@ class FriendsTable extends Table
         parent::initialize($config);
 
         $this->setTable('friends');
-        $this->setDisplayField(['user_id', 'friend_id']);
-        $this->setPrimaryKey(['user_id', 'friend_id']);
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Users', [
+            'className' => 'Users',
             'foreignKey' => 'user_id',
             'joinType' => 'INNER',
         ]);
-        $this->belongsTo('Friends', [
+
+        $this->belongsTo('FriendsUsers', [
+            'className' => 'Users',
             'foreignKey' => 'friend_id',
             'joinType' => 'INNER',
         ]);
@@ -67,8 +69,17 @@ class FriendsTable extends Table
     public function validationDefault(Validator $validator): Validator
     {
         $validator
-            ->scalar('status')
-            ->allowEmptyString('status');
+            ->integer('user_id')
+            ->notEmptyString('user_id')
+
+            ->integer('friend_id')
+            ->notEmptyString('friend_id')
+            ->add('friend_id', 'differentUser', [
+                'rule' => function ($value, $context) {
+                    return $value !== ($context['data']['user_id'] ?? null);
+                },
+                'message' => 'Vous ne pouvez pas vous ajouter vous-même',
+            ]);
 
         return $validator;
     }
@@ -80,11 +91,5 @@ class FriendsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules): RulesChecker
-    {
-        $rules->add($rules->existsIn(['user_id'], 'Users'), ['errorField' => 'user_id']);
-        $rules->add($rules->existsIn(['friend_id'], 'Friends'), ['errorField' => 'friend_id']);
 
-        return $rules;
-    }
 }
