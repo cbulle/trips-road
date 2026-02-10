@@ -103,10 +103,17 @@ $currentUser = $this->request->getAttribute('identity');
                 <li class="nav-item" id="link_PP">
                     <span class="profil-box">
                         <?php
-                        $pp = $currentUser->profile_picture ?: 'User.png';
-                        // CORRECTION : Utilisation de webroot pour le chemin absolu correct
-                        $ppUrl = $this->Url->webroot('uploads/pp/' . $pp);
+                        $fileName = $currentUser->profile_picture;
+
+                        $physicalPath = WWW_ROOT . 'uploads' . DS . 'pp' . DS . $fileName;
+
+                        if (!empty($fileName) && file_exists($physicalPath)) {
+                            $ppUrl = $this->Url->build('/uploads/pp/' . $fileName);
+                        } else {
+                            $ppUrl = $this->Url->build('/img/User.png');
+                        }
                         ?>
+
                         <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">
                             <img src="<?= $ppUrl ?>" class="profil-photo" alt="Profil">
                         </a>
@@ -114,17 +121,17 @@ $currentUser = $this->request->getAttribute('identity');
                         <span class="profil-nom">
                             <?= h($currentUser->username ?? $currentUser->prenom) ?>
                         </span>
-
-                        <li class="nav-item" id="link_Deco">
-                            <a class="pp_logout"
-                               href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">
-                                <i class="material-icons">logout</i>
-                                <span>Déconnexion</span>
-                            </a>
-                        </li>
                     </span>
+
                 </li>
 
+                <li class="nav-item" id="link_Deco">
+                    <a class="pp_logout"
+                       href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">
+                        <i class="material-icons">logout</i>
+                        <span>Déconnexion</span>
+                    </a>
+                </li>
             <?php else: ?>
                 <li class="nav-item" id="link_access">
                     <a href="<?= $this->Url->build(['controller' => 'Pages', 'action' => 'display', 'accessibility']) ?>">

@@ -54,7 +54,7 @@ if (!empty($fileName) && file_exists($physicalPath)) {
                     'id' => 'image',
                     'label' => false,
                     'accept' => 'image/*',
-                    'templates' => ['inputContainer' => '{{content}}'] // On retire le wrapper div de Cake
+                    'templates' => ['inputContainer' => '{{content}}']
                 ]) ?>
             </div>
         </div>

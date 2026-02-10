@@ -9,11 +9,10 @@
                 <button class="toggle-btn active" disabled>S'inscrire</button>
             </div>
 
-            <?= $this->Flash->render() ?>
 
             <?= $this->Form->create($user, ['class' => 'form-box', 'type' => 'file']) ?>
             <h2 id="login-title">Inscription</h2>
-
+            <?= $this->Flash->render() ?>
             <div class="form-row">
                 <?= $this->Form->control('last_name', ['label' => 'Nom', 'required' => true]) ?>
                 <?= $this->Form->control('first_name', ['label' => 'Prénom', 'required' => true]) ?>
@@ -56,6 +55,8 @@
             </div>
             <?= $this->Form->button('S\'inscrire', ['class' => 'submit-btn']); ?>
             <?= $this->Form->end() ?>
+
         </div>
     </div>
 </div>
+
