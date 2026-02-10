@@ -29,6 +29,8 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <?= $this->Html->css('https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css') ?>
+
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
@@ -45,7 +47,9 @@
         'messaging-realtime',
         'page_link',
         'profil',
-        'style'
+        'roadTrip',
+        'style',
+        'view',
     ]) ?>
 
     <?= $this->fetch('meta') ?>
@@ -104,7 +108,6 @@ $currentUser = $this->request->getAttribute('identity');
                     <span class="profil-box">
                         <?php
                         $pp = $currentUser->profile_picture ?: 'User.png';
-                        // CORRECTION : Utilisation de webroot pour le chemin absolu correct
                         $ppUrl = $this->Url->webroot('uploads/pp/' . $pp);
                         ?>
                         <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">
@@ -127,7 +130,7 @@ $currentUser = $this->request->getAttribute('identity');
 
             <?php else: ?>
                 <li class="nav-item" id="link_access">
-                    <a href="<?= $this->Url->build(['controller' => 'Pages', 'action' => 'display', 'accessibility']) ?>">
+                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'accessibility']) ?>">
                         <i class="material-icons">settings_accessibility</i>
                         <span>Accessibilité</span>
                     </a>
@@ -237,6 +240,9 @@ $mainClass = $this->fetch('mainClass', 'main-index');
 
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<?= $this->Html->script('https://code.jquery.com/jquery-3.6.0.min.js') ?>
+<?= $this->Html->script('https://code.jquery.com/ui/1.13.3/jquery-ui.min.js') ?>
+<?= $this->Html->script('/js/tinymce/tinymce.min.js') ?>
 
 <?= $this->Html->script([
     'encryption',

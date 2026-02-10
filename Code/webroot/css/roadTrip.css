@@ -1,0 +1,332 @@
+.dashboard-container {
+    max-width: 100%;
+    margin: 40px auto;
+    padding: 0 40px;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    min-height: 80vh;
+}
+
+.profil-sidebar {
+    width: 340px;
+    background: var(--beige_fonce);
+    padding: 20px;
+    border-radius: 13px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    height: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.user-brief {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.avatar-circle.small {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--beige_fonce);
+    border: 3px solid var(--white);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.user-brief h3 {
+    margin-top: 10px;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.sidebar-title {
+    color: var(--bleu_fonce);
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 5px 0 15px 0;
+    line-height: 1.2;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+}
+
+.sidebar-create-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    background-color: var(--orange);
+    color: white;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.sidebar-create-btn:hover {
+    background-color: var(--orange_sombre);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.profil-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profil-nav li {
+    margin: 0;
+}
+
+.profil-nav a {
+    display: block;
+    padding: 10px 15px; /* Liens plus compacts verticalement */
+    text-decoration: none;
+    color: var(--bleu_fonce_ecriture);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-align: center;
+    background-color: rgba(255,255,255, 0.4);
+}
+
+.profil-nav a:hover {
+    background-color: rgba(255,255,255,0.9);
+    color: var(--bleu_fonce);
+    transform: translateY(-2px);
+}
+
+.profil-nav a.active {
+    background-color: var(--bleu_fonce);
+    color: var(--white);
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border-color: var(--bleu_fonce);
+}
+
+.profil-nav a.logout {
+    color: var(--rouge);
+    margin-top: 15px; /* Espace avant déconnexion réduit */
+    border: 1px solid rgba(191, 9, 47, 0.2);
+    background-color: transparent;
+}
+
+.profil-nav a.logout:hover {
+    background-color: var(--rouge);
+    color: var(--white);
+}
+
+/* --- CONTENU DROITE --- */
+.dashboard-content {
+    flex: 1;
+    width: 0;
+}
+
+.roadtrip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    width: 100%;
+}
+
+.roadtrip-card {
+    background: var(--white);
+    border-radius: 13px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.roadtrip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+}
+
+.roadtrip-photo {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-badges {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 2;
+}
+
+.badge-statut {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    backdrop-filter: blur(4px);
+}
+
+.statut-brouillon {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--orange_sombre);
+}
+
+.statut-termine {
+    background: var(--vert);
+    color: white;
+}
+
+.card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.roadtrip-card h3 {
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    margin-top: 0;
+    line-height: 1.3;
+}
+
+.roadtrip-card p {
+    color: var(--gris_fonce);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.creator-info {
+    font-size: 0.85rem;
+    color: var(--gris_clair);
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px dashed #eee;
+}
+
+.roadtrip-actions {
+    padding: 15px 20px;
+    background-color: #f8f8f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--gris_clair);
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+}
+
+.action-btn.view:hover { color: var(--bleu_clair); }
+.action-btn.edit:hover { color: var(--orange); }
+.action-btn.share:hover { color: var(--bleu_fonce); }
+.action-btn.delete:hover { color: var(--rouge); }
+
+@media (max-width: 1280px) {
+    .dashboard-container {
+        padding: 0 20px;
+        gap: 25px;
+    }
+    .profil-sidebar {
+        width: 280px;
+        padding: 15px;
+    }
+    .avatar-circle.small {
+        width: 70px;
+        height: 70px;
+    }
+    .user-brief h3 {
+        font-size: 1.1rem;
+    }
+    .sidebar-title {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+    }
+    .sidebar-create-btn {
+        padding: 10px;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+    }
+    .profil-nav a {
+        padding: 8px 10px;
+        font-size: 0.95rem;
+    }
+    .roadtrip-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-container {
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .profil-sidebar {
+        width: 100%;
+        position: relative;
+        top: 0;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+    .sidebar-create-btn {
+        max-width: 400px;
+        margin-bottom: 20px;
+    }
+    .profil-nav {
+        width: 100%;
+    }
+    .profil-nav ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .profil-nav li {
+        flex: 1 1 auto;
+        min-width: 140px;
+    }
+    .profil-nav a.logout {
+        margin-top: 0;
+    }
+}
