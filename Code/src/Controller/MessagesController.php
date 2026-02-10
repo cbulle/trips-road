@@ -1,308 +1,168 @@
 <?php
-
 namespace App\Controller;
 
-use Cake\Utility\Security;
+use Cake\Http\Exception\ForbiddenException;
 
-/**
- * Messages Controller - Version Simplifiée
- *
- * Gère les conversations et les messages chiffrés
- * - Les messages sont chiffrés côté serveur (AES-256-CBC)
- * - Déchiffrement côté serveur pour l'affichage
- * - PAS d'upload de fichiers
- */
 class MessagesController extends AppController
 {
-    public function initialize(): void
-    {
-        parent::initialize();
-
-        $this->Messages = $this->fetchTable('Messages');
-        $this->Conversations = $this->fetchTable('Conversations');
-    }
-
-
-
     /**
-     * Liste les conversations de l'utilisateur connecté
-     * GET /messages
+     * Liste des conversations
      */
     public function index()
     {
-        $userId = $this->Authentication->getIdentity()->id;
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
 
-        // Récupérer les conversations
-        $conversations = $this->Conversations->find()
+        $messagesTable = $this->fetchTable('Messages');
+        $usersTable    = $this->fetchTable('Users');
+
+        // Dernier message par ami
+        $lastMessages = $messagesTable->find()
+            ->select([
+                'id',
+                'sender_id',
+                'recipient_id',
+                'body',
+                'created'
+            ])
             ->where([
                 'OR' => [
-                    'Conversations.user_one_id' => $userId,
-                    'Conversations.user_two_id' => $userId,
+                    'sender_id' => $userId,
+                    'recipient_id' => $userId
                 ]
             ])
-            ->contain(['UserOnes', 'UserTwos', 'Messages'])
-            ->order(['Conversations.modified' => 'DESC'])
+            ->orderDesc('created')
             ->all();
 
-        // Enrichir les données
-        $enriched = [];
-        foreach ($conversations as $conv) {
-            $amiId = ($conv->user_one_id === $userId) ? $conv->user_two_id : $conv->user_one_id;
-            $ami = ($conv->user_one_id === $userId) ? $conv->user_two : $conv->user_one;
+        $conversations = [];
 
-            $unreadCount = $this->Messages->find()
+        foreach ($lastMessages as $msg) {
+            $amiId = ($msg->sender_id === $userId)
+                ? $msg->recipient_id
+                : $msg->sender_id;
+
+            if (isset($conversations[$amiId])) {
+                continue;
+            }
+
+            $ami = $usersTable->get($amiId);
+
+            $unreadCount = $messagesTable->find()
                 ->where([
-                    'conversation_id' => $conv->id,
+                    'sender_id' => $amiId,
                     'recipient_id' => $userId,
-                    'is_read' => false
+                    'is_read' => 0
                 ])
                 ->count();
 
-            $lastMessage = $this->Messages->find()
-                ->where(['conversation_id' => $conv->id])
-                ->order(['created' => 'DESC'])
-                ->first();
-
-            $conv->ami_id = $amiId;
-            $conv->ami = $ami;
-            $conv->unread_count = $unreadCount;
-            $conv->last_message = $lastMessage ? mb_substr($lastMessage->body, 0, 50) : '';
-
-            $enriched[] = $conv;
+            $conversations[$amiId] = (object)[
+                'id' => $amiId,
+                'ami' => $ami,
+                'last_message' => $msg->body,
+                'unread_count' => $unreadCount
+            ];
         }
 
-        $this->set(compact('enriched', 'userId'));
-    }
-
-    /**
-     * Affiche une conversation spécifique
-     * GET /messages/:id
-     */
-    public function view($conversationId = null)
-    {
-        if (!$conversationId) {
-            return $this->redirect(['action' => 'index']);
-        }
-
-        $userId = $this->Authentication->getIdentity()->id;
-
-        // Récupérer la conversation
-        $conversation = $this->Conversations->get($conversationId, [
-            'contain' => ['UserOnes', 'UserTwos']
+        $this->set([
+            'enriched' => array_values($conversations),
+            'userId' => $userId
         ]);
-
-        // Vérifier l'accès
-        if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) {
-            throw new \Cake\Http\Exception\ForbiddenException('Accès refusé');
-        }
-
-        // Identifier l'ami
-        $amiId = ($conversation->user_one_id === $userId) ? $conversation->user_two_id : $conversation->user_one_id;
-        $ami = ($conversation->user_one_id === $userId) ? $conversation->user_two : $conversation->user_one;
-
-        // Marquer les messages comme lus
-        $this->Messages->updateAll(
-            ['is_read' => true, 'read_at' => date('Y-m-d H:i:s')],
-            [
-                'conversation_id' => $conversationId,
-                'recipient_id' => $userId,
-                'is_read' => false
-            ]
-        );
-
-        // Récupérer les messages
-        $messages = $this->Messages->find()
-            ->where(['conversation_id' => $conversationId])
-            ->contain(['Senders'])
-            ->order(['Messages.created' => 'ASC'])
-            ->all();
-
-        // Déchiffrer les messages
-        foreach ($messages as $message) {
-            $message->body = $this->decryptMessage($message->body, $conversationId);
-        }
-
-        $this->set(compact('conversation', 'ami', 'amiId', 'messages', 'userId'));
     }
 
     /**
-     * Envoyer un message chiffré
-     * POST /messages/send-message
+     * Démarrer une discussion avec un ami
      */
-    public function sendMessage()
+    public function start($amiId = null)
     {
-        $userId = $this->Authentication->getIdentity()->id;
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
+        $amiId  = (int)$amiId;
 
-        if (!$this->request->is('post')) {
-            return $this->sendJsonResponse(false, 'Method not allowed', 405);
+        if ($userId === $amiId) {
+            throw new ForbiddenException();
         }
 
-        $conversationId = $this->request->getData('conversation_id');
-        $recipientId = $this->request->getData('recipient_id');
-        $messageBody = $this->request->getData('body') ?? $this->request->getData('message');
-
-        if (!$conversationId || !$recipientId || !$messageBody) {
-            return $this->sendJsonResponse(false, 'Données manquantes', 400);
-        }
-
-        // Vérifier l'accès
-        try {
-            $conversation = $this->Conversations->get($conversationId);
-        } catch (\Exception $e) {
-            return $this->sendJsonResponse(false, 'Conversation not found', 404);
-        }
-
-        if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) {
-            return $this->sendJsonResponse(false, 'Accès refusé', 403);
-        }
-
-        // Chiffrer et sauvegarder
-        $encryptedMessage = $this->encryptMessage($messageBody, $conversationId);
-
-        $message = $this->Messages->newEntity([
-            'conversation_id' => $conversationId,
-            'sender_id' => $userId,
-            'recipient_id' => $recipientId,
-            'body' => $encryptedMessage,
-            'is_read' => false,
-            'delivered_at' => date('Y-m-d H:i:s')
-        ]);
-        $blocked = $this->Friendships->find()
+        // Vérifier qu'ils sont amis
+        $isFriend = $this->fetchTable('Friendships')->find()
             ->where([
-                'status' => 'blocked',
+                'status' => 'accepted',
                 'OR' => [
-                    ['user_id' => $userId, 'friend_id' => $recipientId],
-                    ['user_id' => $recipientId, 'friend_id' => $userId],
-                ]
-            ])
-            ->count();
-
-        if ($blocked) {
-            return $this->sendJsonResponse(false, 'Utilisateur bloqué', 403);
-        }
-
-        if ($this->Messages->save($message)) {
-
-
-            return $this->sendJsonResponse(true, 'Message sent', 200, [
-                'message_id' => $message->id
-            ]);
-        }
-
-        return $this->sendJsonResponse(false, 'Error saving message', 500);
-    }
-
-    /**
-     * Créer ou récupérer une conversation
-     * POST /messages/get-or-create
-     */
-    public function getOrCreateConversation()
-    {
-        $userId = $this->Authentication->getIdentity()->id;
-
-        if (!$this->request->is('post')) {
-            return $this->sendJsonResponse(false, 'Method not allowed', 405);
-        }
-
-        $recipientId = $this->request->getData('recipient_id');
-
-        if (!$recipientId) {
-            return $this->sendJsonResponse(false, 'recipient_id manquant', 400);
-        }
-
-        // Chercher une conversation existante
-        $conversation = $this->Conversations->find()
-            ->where([
-                'OR' => [
-                    ['user_one_id' => $userId, 'user_two_id' => $recipientId],
-                    ['user_one_id' => $recipientId, 'user_two_id' => $userId],
+                    ['user_id' => $userId, 'friend_id' => $amiId],
+                    ['user_id' => $amiId, 'friend_id' => $userId],
                 ]
             ])
             ->first();
 
-        if (!$conversation) {
-            // Créer une nouvelle
-            $conversation = $this->Conversations->newEntity([
-                'user_one_id' => $userId,
-                'user_two_id' => $recipientId
-            ]);
-
-            if (!$this->Conversations->save($conversation)) {
-                return $this->sendJsonResponse(false, 'Error creating conversation', 500);
-            }
+        if (!$isFriend) {
+            throw new ForbiddenException();
         }
 
-        return $this->sendJsonResponse(true, 'Success', 200, [
-            'conversation_id' => $conversation->id
-        ]);
+        return $this->redirect(['action' => 'view', $amiId]);
     }
 
     /**
-     * Chiffrer un message - AES-256-CBC
+     * Voir une discussion
      */
-    private function encryptMessage(string $message, int $conversationId): string
+    public function view($amiId = null)
     {
-        $key = hash('sha256', 'roadtrip_conv_' . $conversationId . Security::getSalt());
-        $iv = openssl_random_pseudo_bytes(16);
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
+        $amiId  = (int)$amiId;
 
-        $encrypted = openssl_encrypt(
-            $message,
-            'AES-256-CBC',
-            hash('sha256', $key, true),
-            OPENSSL_RAW_DATA,
-            $iv
+        $ami = $this->fetchTable('Users')->get($amiId);
+
+        $messages = $this->fetchTable('Messages')->find()
+            ->where([
+                'OR' => [
+                    ['sender_id' => $userId, 'recipient_id' => $amiId],
+                    ['sender_id' => $amiId, 'recipient_id' => $userId],
+                ]
+            ])
+            ->orderAsc('created')
+            ->all();
+
+        // Marquer comme lus
+        $this->fetchTable('Messages')->updateAll(
+            [
+                'is_read' => 1,
+                'read_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'sender_id' => $amiId,
+                'recipient_id' => $userId,
+                'is_read' => 0
+            ]
         );
 
-        return base64_encode($iv . $encrypted);
+        $this->set(compact(
+            'messages',
+            'ami',
+            'userId',
+            'amiId'
+        ));
     }
 
     /**
-     * Déchiffrer un message - AES-256-CBC
+     * Envoyer un message
      */
-    private function decryptMessage(string $encryptedMessage, int $conversationId): string
+    public function sendMessage()
     {
-        try {
-            $key = hash('sha256', 'roadtrip_conv_' . $conversationId . Security::getSalt());
-            $data = base64_decode($encryptedMessage, true);
+        $this->request->allowMethod(['post']);
 
-            if ($data === false) {
-                return $encryptedMessage;
-            }
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
+        $amiId  = (int)$this->request->getData('ami_id');
+        $body   = trim($this->request->getData('body'));
 
-            $iv = substr($data, 0, 16);
-            $encrypted = substr($data, 16);
-
-            $decrypted = openssl_decrypt(
-                $encrypted,
-                'AES-256-CBC',
-                hash('sha256', $key, true),
-                OPENSSL_RAW_DATA,
-                $iv
-            );
-
-            return $decrypted !== false ? $decrypted : $encryptedMessage;
-        } catch (\Exception $e) {
-            return $encryptedMessage;
-        }
-    }
-
-    /**
-     * Helper pour réponses JSON
-     */
-    private function sendJsonResponse(bool $success, string $message, int $statusCode = 200, array $data = []): \Cake\Http\Response
-    {
-        $response = [
-            'success' => $success,
-            'message' => $message
-        ];
-
-        if (!empty($data)) {
-            $response = array_merge($response, $data);
+        if ($body === '') {
+            return $this->redirect($this->referer());
         }
 
-        return $this->response
-            ->withStatus($statusCode)
-            ->withType('application/json')
-            ->withStringBody(json_encode($response));
+        $message = $this->fetchTable('Messages')->newEntity([
+            'sender_id' => $userId,
+            'recipient_id' => $amiId,
+            'body' => $body,
+            'is_read' => 0
+        ]);
+
+        $this->fetchTable('Messages')->saveOrFail($message);
+
+        return $this->redirect(['action' => 'view', $amiId]);
     }
 }
