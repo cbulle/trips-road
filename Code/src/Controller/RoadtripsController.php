@@ -579,4 +579,55 @@ class RoadtripsController extends AppController
 
         return $cakeTrips;
     }
+
+    /**
+     * Affiche l'historique de l'utilisateur
+     */
+    public function historique()
+    {
+        // CORRECTION : On utilise fetchTable au lieu de loadModel
+        $historiqueTable = $this->fetchTable('Historique');
+
+        // Récupérer l'ID de l'utilisateur connecté
+        $userId = $this->request->getAttribute('identity')->getIdentifier();
+
+        // Faire la requête sur la table récupérée
+        $query = $historiqueTable->find()
+            ->contain([
+                'Roadtrips' => [
+                    'Users' 
+                ]
+            ])
+            ->where(['Historique.user_id' => $userId])
+            // Vérifie bien si ta colonne de date s'appelle 'date_visite' ou 'created'
+            ->order(['Historique.date_visite' => 'DESC']); 
+
+        try {
+            $historique = $this->paginate($query, ['limit' => 12]);
+        } catch (\Exception $e) {
+            return $this->redirect(['action' => 'historique']);
+        }
+
+        $this->set(compact('historique'));
+    }
+
+    /**
+     * Action pour le bouton "Tout effacer"
+     */
+    public function deleteHistorique()
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        
+        // CORRECTION : On utilise fetchTable ici aussi
+        $historiqueTable = $this->fetchTable('Historique');
+        
+        $userId = $this->request->getAttribute('identity')->getIdentifier();
+
+        // Suppression via la table récupérée
+        $historiqueTable->deleteAll(['user_id' => $userId]);
+
+        $this->Flash->success('Votre historique a été vidé.');
+
+        return $this->redirect(['action' => 'historique']);
+    }
 }
