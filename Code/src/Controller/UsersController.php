@@ -72,7 +72,6 @@ class UsersController extends AppController
                     $data['birth_day']
                 );
 
-                // Calcul de l'âge
                 try {
                     $birthDate = new \DateTime($birthDateStr);
                     $today = new \DateTime();
