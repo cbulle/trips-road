@@ -38,7 +38,7 @@ class FriendshipsController extends AppController
                 ])
                 ->limit(20)
                 ->all();
-
+        }
             $friendships = $this->Friendships->find()
                 ->where([
                     'status' => 'accepted',
@@ -52,23 +52,23 @@ class FriendshipsController extends AppController
 
 
             foreach ($friendships as $f) {
-                if ($f->user_id == $userId) {
-                    if(!empty($f->friends_users)) {
-                        $friends[] = [
-                            'friend' => $f->friends_user,
-                            'friendship_id' => $f->id
-                        ];
-                    }
-                } else {
-                    if(!empty($f->user)) {
-                        $friends[] = [
-                            'friend' => $f->user,
-                            'friendship_id' => $f->id
-                        ];
-                    }
+                if ($f->user_id == $userId && !empty($f->friends_user)) {
+                    $friends[] = [
+                        'friend' => $f->friends_user,
+                        'friendship_id' => $f->id
+                    ];
                 }
+
+                // Si je suis le friend_id → l’ami est user
+                if ($f->friend_id == $userId && !empty($f->user)) {
+                    $friends[] = [
+                        'friend' => $f->user,
+                        'friendship_id' => $f->id
+                    ];
+                }
+
             }
-        }
+
 
         $requests = $this->Friendships->find()
             ->where([
