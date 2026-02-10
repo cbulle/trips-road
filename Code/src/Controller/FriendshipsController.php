@@ -109,9 +109,9 @@ class FriendshipsController extends AppController
     public function add($friendId = null)
     {
         $this->request->allowMethod(['post']);
-        $friendId = (int)$friendId;
-        $userId = $this->Authentication->getIdentity()->id;
 
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
+        $friendId = (int)$friendId;
 
         if ($userId === $friendId) {
             $this->Flash->error('Action invalide.');
@@ -123,7 +123,7 @@ class FriendshipsController extends AppController
             return $this->redirect(['action' => 'index']);
         }
 
-        $exists = $this->Friendships->find()
+        $friendship = $this->Friendships->find()
             ->where([
                 'OR' => [
                     ['user_id' => $userId, 'friend_id' => $friendId],
@@ -132,11 +132,38 @@ class FriendshipsController extends AppController
             ])
             ->first();
 
-        if ($exists) {
-            $this->Flash->warning('Relation déjà existante.');
-            return $this->redirect(['action' => 'index']);
+        // ✅ Relation déjà existante
+        if ($friendship) {
+
+            // ❌ Déjà amis
+            if ($friendship->status === 'accepted') {
+                $this->Flash->warning('Vous êtes déjà amis.');
+                return $this->redirect(['action' => 'index']);
+            }
+
+            // ⏳ Demande déjà en attente
+            if ($friendship->status === 'pending') {
+                $this->Flash->warning('Une demande est déjà en attente.');
+                return $this->redirect(['action' => 'index']);
+            }
+
+            // 🔄 Cas "deleted" → on réactive
+            if ($friendship->status === 'deleted') {
+                $friendship->user_id = $userId;
+                $friendship->friend_id = $friendId;
+                $friendship->status = 'pending';
+
+                if ($this->Friendships->save($friendship)) {
+                    $this->Flash->success('Nouvelle demande d’ami envoyée.');
+                } else {
+                    $this->Flash->error('Erreur lors de la réactivation.');
+                }
+
+                return $this->redirect(['action' => 'index']);
+            }
         }
 
+        // ➕ Nouvelle relation
         $friendship = $this->Friendships->newEntity([
             'user_id' => $userId,
             'friend_id' => $friendId,
@@ -144,24 +171,71 @@ class FriendshipsController extends AppController
         ]);
 
         if ($this->Friendships->save($friendship)) {
-            $notificationsTable = $this->fetchTable('Notifications');
-
-            $notificationsTable->save(
-                $notificationsTable->newEntity([
-                    'user_id' => $friendId,
-                    'type' => 'friend_request',
-                    'message' => 'Nouvelle demande d’ami'
-                ])
-            );
-
-
-            $this->Flash->success('Demande envoyée.');
+            $this->Flash->success('Demande d’ami envoyée.');
         } else {
             $this->Flash->error('Erreur lors de l’envoi.');
         }
 
         return $this->redirect(['action' => 'index']);
     }
+
+    public function accept($id = null)
+    {
+        $this->request->allowMethod(['post', 'get']);
+
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
+
+        $friendship = $this->Friendships->find()
+            ->where([
+                'id' => $id,
+                'friend_id' => $userId,
+                'status' => 'pending'
+            ])
+            ->first();
+
+        if (!$friendship) {
+            $this->Flash->error('Demande introuvable.');
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $friendship->status = 'accepted';
+
+        if ($this->Friendships->save($friendship)) {
+            $this->Flash->success('Demande d’ami acceptée.');
+        } else {
+            $this->Flash->error('Erreur lors de l’acceptation.');
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+    public function reject($id = null)
+    {
+        $this->request->allowMethod(['post', 'get']);
+
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
+
+        $friendship = $this->Friendships->find()
+            ->where([
+                'id' => $id,
+                'friend_id' => $userId,
+                'status' => 'pending'
+            ])
+            ->first();
+
+        if (!$friendship) {
+            $this->Flash->error('Demande introuvable.');
+            return $this->redirect(['action' => 'index']);
+        }
+
+        if ($this->Friendships->delete($friendship)) {
+            $this->Flash->success('Demande d’ami refusée.');
+        } else {
+            $this->Flash->error('Erreur lors du refus.');
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+
 
 
     /**
