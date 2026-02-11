@@ -20,15 +20,15 @@ $this->assign('mainClass', '');
         'id' => $roadtrip->id,
         'titre' => $roadtrip->title,
         'description' => $roadtrip->description,
-        'statut' => $roadtrip->status ?? 'brouillon', // Adapte selon ta colonne BDD
+        'statut' => $roadtrip->status ?? 'brouillon',
         'visibilite' => $roadtrip->visibility,
         'photo' => $roadtrip->photo_url
     ]) ?>;
 
     const EXISTING_TRAJETS = <?= json_encode($existingTrajets) ?>;
 
-    const SAVE_URL = "<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $roadtrip->id]) ?>";
-
+    // Construction de l'URL de sauvegarde correcte
+    const SAVE_URL = "<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $modeEdition ? $roadtrip->id : null]) ?>";
     const CSRF_TOKEN = "<?= $this->request->getAttribute('csrfToken') ?>";
 </script>
 
@@ -97,7 +97,7 @@ $this->assign('mainClass', '');
 
             <button id="saveRoadtrip" type="button"
                     data-id="<?= $modeEdition ? $roadtrip->id : '' ?>"
-                    data-url="<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $roadtrip->id]) ?>">
+                    data-url="<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $modeEdition ? $roadtrip->id : null]) ?>">
                 <?= $modeEdition ? "Mettre à jour" : "Sauvegarder" ?>
             </button>
         </div>
@@ -159,7 +159,8 @@ $this->assign('mainClass', '');
 <template id="template-sub-etape">
     <div class="subEtape sub-etape-form">
         <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom">
-        <textarea class="subEtapeRemarque" placeholder="Remarque (facultatif)"></textarea>
+
+        <div class="subEtapeEditorContainer"></div>
 
         <label style="font-size:0.8em; font-weight:bold;">Temps passé sur place (estimation)</label>
         <input type="time" class="subEtapeHeure" required>

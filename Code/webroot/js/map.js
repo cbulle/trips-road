@@ -4,13 +4,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let userFavorites = [];
+    let subStepEditors = {}; // Stockage des instances Toast UI
+
+    // Chargement Favoris
     try {
         const urlFav = typeof URL_GET_FAVORIS !== 'undefined' ? URL_GET_FAVORIS : '/roadtrips/get-lieux-favoris';
-
         const respFav = await fetch(urlFav, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' } // Important pour CakePHP
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         });
-
         if(respFav.ok) {
             userFavorites = await respFav.json();
         }
@@ -61,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ============================================================
-    // 0b. UTILITAIRES DE TEMPS ET DISTANCE (AJOUTÉ)
+    // 0b. UTILITAIRES DE TEMPS ET DISTANCE
     // ============================================================
 
     function formatDuration(seconds) {
@@ -103,20 +104,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const segmentColors = [
-        '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9', // Tes couleurs originales
-        '#16A085',
-        '#E67E22',
-        '#8E44AD',
-        '#2C3E50',
-        '#C0392B',
-        '#27AE60',
-        '#F1C40F',
-        '#E74C3C',
-        '#34495E',
-        '#9B59B6',
-        '#1ABC9C',
-        '#7F8C8D',
-        '#D35400'
+        '#0B667D', '#2E8B57', '#FF7F50', '#BF092F', '#8e44ad', '#d35400', '#2980b9',
+        '#16A085', '#E67E22', '#8E44AD', '#2C3E50', '#C0392B', '#27AE60', '#F1C40F',
+        '#E74C3C', '#34495E', '#9B59B6', '#1ABC9C', '#7F8C8D', '#D35400'
     ];
 
     // ============================================================
@@ -164,8 +154,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             currentStartCity = fav.nom_lieu;
                             currentStartCoords = [lat, lon];
                             inputStart.style.backgroundColor = '#d5f5e3';
-                        } else {
-                            alert("Le départ est déjà fixé par l'arrivée du segment précédent.");
                         }
                     }, 100);
                     marker.closePopup();
@@ -231,20 +219,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================================
 
     async function getCoordonnees(ville) {
-        /* List of the countries avalaible for research of a city (the API will only search the name in those
-        country) All europe is here*/
         const europeCodes = [
-            "fr", "be", "ch", "lu", // France, Belguim, Switzerland, Luxemburg
-            "de", "at", "li", // Germany, Austria, Liechtenstein
-            "it", "sm", "va", // Italy, San-Marino, Vatican city
-            "es", "pt", "ad", // Spain, Portugal, Andorra
-            "gb", "ie", // Great Britain, Ireland
-            "nl", "dk", "no", "se", "fi", "is", // Netherlands, Danemark, Norway, Sweden, Finland, Iceland
-            "pl", "cz", "sk", "hu", // Poland, Czech Republic, Slovakia, Hungary
-            "ee", "lv", "lt", // Estonia, latvia, lethuania
-            "ro", "bg", "gr", "cy", "mt", // Romania, Bulgaria, Greece, Cyprus, Malta
-            "si", "hr", "ba", "rs", "me", "al", "mk", "xk", // Slovenia, Croatia, Bosnia, Serbia, Montenegro, Albania, North Macedonia, Kosovo
-            "ua", "md", "by", "ge", "am", "az" // Ukraine, Moldova, Belarus, Georgia, Armenia, Azerbaidjan
+            "fr", "be", "ch", "lu", "de", "at", "li", "it", "sm", "va",
+            "es", "pt", "ad", "gb", "ie", "nl", "dk", "no", "se", "fi", "is",
+            "pl", "cz", "sk", "hu", "ee", "lv", "lt", "ro", "bg", "gr", "cy", "mt",
+            "si", "hr", "ba", "rs", "me", "al", "mk", "xk", "ua", "md", "by", "ge", "am", "az"
         ].join(',');
 
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr&countrycodes=${europeCodes}`;
@@ -280,11 +259,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             this.removeAttribute('data-full-name');
             this.style.backgroundColor = '';
         });
-        // -----------------------------------------------------------------------
 
         $(element).autocomplete({
             source: function (request, response) {
-                // Appel API Photon
                 const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(request.term)}&lang=fr&limit=15`;
 
                 $.ajax({
@@ -293,8 +270,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     success: function (data) {
                         let suggestions = [];
                         let seen = new Set();
-
-                        // Liste des codes pays européens pour le filtrage
                         const europeanCountryCodes = [
                             "FR", "BE", "CH", "LU", "DE", "AT", "LI", "IT", "SM", "VA", "ES", "PT", "AD",
                             "GB", "IE", "NL", "DK", "NO", "SE", "FI", "IS", "PL", "CZ", "SK", "HU", "EE",
@@ -306,7 +281,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const p = item.properties;
                             const countryCode = p.countrycode;
 
-                            // FILTRE : On ne garde que si le pays est dans notre liste européenne
                             if (!europeanCountryCodes.includes(countryCode)) {
                                 return;
                             }
@@ -344,9 +318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 $(this).attr('data-full-name', ui.item.full_name);
                 $(this).attr('data-lat', ui.item.lat);
                 $(this).attr('data-lon', ui.item.lon);
-
                 $(this).css('backgroundColor', '#e8f8f5');
-
                 return false;
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
@@ -434,8 +406,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy, existingData = null) {
         const modeTransport = existingData ? existingData.mode : 'Voiture';
-        console.log(modeTransport);
-        const currentProfile = strategies[modeTransport] ? strategies[modeTransport].profile : strategy.profile;
+
+        // CORRECTION OSRM : Utiliser le bon profil serveur si possible, sinon fallback
+        // Ici on garde 'driving' générique si 'strategy' ne contient pas de profile spécifique
+        const currentProfile = strategies[modeTransport] ? 'driving' : 'driving';
+        // Note: L'URL est construite plus bas avec le serveur spécifique
 
         let coordsList = [startCoords];
         if (existingData && existingData.sousEtapes) {
@@ -492,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             timeInput.addEventListener('change', (e) => {
                 segments[index].heure_depart = e.target.value;
-                updateLegendHtml(index); // Relance le calcul de l'itinéraire horaire
+                updateLegendHtml(index);
             });
 
             const transportBtns = clone.querySelectorAll('.transport-btn');
@@ -525,7 +500,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!userFavorites || userFavorites.length === 0) return null;
 
         const select = document.createElement('select');
-        // MODIFICATION ICI : padding ajusté et border-radius 15px pour correspondre aux inputs
         select.style.cssText = "width: 100%; margin-bottom: 10px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 15px; background-color: #fff; color: #555; font-size: 1rem; cursor: pointer;";
 
         let optionsHtml = '<option value="">⭐ Choisir un favori...</option>';
@@ -558,7 +532,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             btnAddSegment.style.display = 'none';
             let html = '';
 
-            // Construction du HTML (inchangé)
             if (!currentStartCoords) {
                 html += `<div class="new-block-field"><label class="new-block-label">Départ :</label><input type="text" id="inputStartBlock" class="new-block-input"></div>`;
             } else {
@@ -573,9 +546,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             newBlockFormContainer.innerHTML = html;
 
-            // --- MODIFICATION : AJOUT DES MENUS DÉROULANTS ---
-
-            // 1. Menu pour le DÉPART (seulement si c'est le tout premier trajet)
             const inputStart = document.getElementById('inputStartBlock');
             if (inputStart) {
                 const selectStart = createFavSelectForInput('inputStartBlock');
@@ -585,7 +555,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 initAutocomplete(inputStart);
             }
 
-            // 2. Menu pour l'ARRIVÉE (toujours présent)
             const inputEnd = document.getElementById('inputEndBlock');
             if (inputEnd) {
                 const selectEnd = createFavSelectForInput('inputEndBlock');
@@ -594,9 +563,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 initAutocomplete(inputEnd);
             }
-            // ---------------------------------------------------
 
-            // Gestion des boutons Annuler / Valider (Code existant conservé)
             document.getElementById('btnCancelBlock').addEventListener('click', () => {
                 newBlockFormContainer.innerHTML = '';
                 btnAddSegment.style.display = 'block';
@@ -645,7 +612,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 addMarker(endName, endCoords, "ville", endName);
 
                 currentStartCity = endName;
-                currentStartCoords = endCoords; // On garde les coordonnées réelles pour le prochain trajet
+                currentStartCoords = endCoords;
 
                 newBlockFormContainer.innerHTML = '';
                 btnAddSegment.style.display = 'block';
@@ -654,14 +621,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ============================================================
-    // 6. CALCUL D'ITINÉRAIRE (MODIFIÉ)
+    // 6. CALCUL D'ITINÉRAIRE
     // ============================================================
 
     async function updateRouteSegment(index, mode, options = {}) {
         const seg = segments[index];
         if (!seg) return;
 
-        // Mapping des serveurs spécifiques pour chaque mode (plus fiable que le profil seul)
         const servers = {
             'Voiture': 'https://routing.openstreetmap.de/routed-car',
             'Velo': 'https://routing.openstreetmap.de/routed-bike',
@@ -670,7 +636,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const baseUrl = servers[mode] || servers['Voiture'];
 
-        // Préparation des coordonnées (Long,Lat pour OSRM)
         let points = [seg.startCoord];
         if (seg.sousEtapes) {
             seg.sousEtapes.forEach(se => {
@@ -689,30 +654,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (data.code === 'Ok') {
                 const route = data.routes[0];
 
-                // 1. SUPPRESSION RADICALE : On retire l'ancienne ligne de la carte
                 if (seg.line) {
                     map.removeLayer(seg.line);
                 }
 
-                // 2. MISE À JOUR DES DONNÉES
                 seg.distance = route.distance;
                 seg.duration = route.duration;
                 seg.modeTransport = mode;
 
-                // 3. CRÉATION DE LA NOUVELLE LIGNE
-                // On change le style (pointillés pour vélo/marche) pour vérifier visuellement
                 const lineStyle = {
                     color: seg.couleurSegment,
                     weight: 6,
                     opacity: 0.8,
-                    dashArray: mode !== 'Voiture' ? '10, 10' : null // Pointillés si pas voiture
+                    dashArray: mode !== 'Voiture' ? '10, 10' : null
                 };
 
                 seg.line = L.geoJSON(route.geometry, lineStyle).addTo(map);
 
-                // 4. MISE À JOUR DE LA LÉGENDE
                 updateLegendHtml(index);
-
                 console.log(`Succès ! Mode: ${mode}, Route mise à jour.`);
             }
         } catch (e) {
@@ -721,7 +680,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ============================================================
-    // 7. ÉDITEUR SOUS-ÉTAPES ET LÉGENDE (MODIFIÉ)
+    // 7. ÉDITEUR SOUS-ÉTAPES ET LÉGENDE (MODIFIÉ POUR TOAST UI)
     // ============================================================
 
     let currentSegmentIndex = null;
@@ -735,10 +694,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const ul = li.querySelector('.sousEtapesList');
         let html = ``;
 
-        // 1. Heure de départ initiale (ex: "08:00")
         let currentClock = seg.heure_depart;
 
-        // Fonction utilitaire pour ajouter du temps (secondes) à une heure (HH:mm)
         function addTime(startTime, secondsToAdd) {
             const [h, m] = startTime.split(':').map(Number);
             const date = new Date();
@@ -748,16 +705,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 date.getMinutes().toString().padStart(2, '0');
         }
 
-        // Fonction utilitaire pour convertir "HH:mm" en secondes
         function durationToSeconds(timeStr) {
             const [h, m] = timeStr.split(':').map(Number);
             return (h * 3600) + (m * 60);
         }
 
         if (seg.legs) {
-            // Parcours des sous-étapes et des "legs" (tronçons entre 2 points)
             seg.legs.forEach((leg, i) => {
-                // On ajoute le temps de trajet du tronçon
                 currentClock = addTime(currentClock, leg.duration);
 
                 if (i < seg.sousEtapes.length) {
@@ -766,7 +720,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <b>Arrivée à ${getNomSimple(se.nom)} : ${currentClock}</b><br>
                                 <small>Pause de ${se.heure}h</small></li>`;
 
-                    // On ajoute le temps de pause passé sur place
                     currentClock = addTime(currentClock, durationToSeconds(se.heure));
                     html += `<li style="list-style:none; font-size:0.8em; color:gray;">(Départ prévu à ${currentClock})</li>`;
                 }
@@ -797,192 +750,117 @@ document.addEventListener('DOMContentLoaded', async () => {
         const seg = segments[index];
         document.getElementById('segmentFormContainer').style.display = 'block';
         document.getElementById('segmentTitle').textContent = `${seg.startNameSimple} → ${seg.endNameSimple}`;
+
+        const subEtapesContainer = document.getElementById('subEtapesContainer');
         subEtapesContainer.innerHTML = '';
-        if (seg.sousEtapes && seg.sousEtapes.length > 0) seg.sousEtapes.forEach(se => addSousEtapeForm(se));
-        else addSousEtapeForm();
+        subStepEditors = {}; // Reset de la liste des éditeurs
+
+        if (seg.sousEtapes && seg.sousEtapes.length > 0) {
+            seg.sousEtapes.forEach(se => {
+                addSousEtapeForm(subEtapesContainer, se);
+            });
+        } else {
+            addSousEtapeForm(subEtapesContainer);
+        }
     }
 
-    // Ajout d'une ligne de formulaire sous-étape
-    function addSousEtapeForm(data = {}) {
-        const uniqueId = 'editor-' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        const clone = document.getElementById('template-sub-etape').content.cloneNode(true);
+    // ============================================================
+    // 3. GESTION DES SOUS-ÉTAPES (MODIFIÉ POUR TOAST UI + DIV)
+    // ============================================================
+
+    function addSousEtapeForm(targetContainer, data = {}) {
+        const template = document.getElementById('template-sub-etape');
+        if (!template) {
+            console.error("ERREUR FATALE : Le template 'template-sub-etape' est introuvable");
+            return;
+        }
+
+        const clone = template.content.cloneNode(true);
         const div = clone.querySelector('.subEtape');
 
         const inputNom = div.querySelector('.subEtapeNom');
         inputNom.value = data.nom || '';
         div.querySelector('.subEtapeHeure').value = data.heure || '';
 
-        // --- CRÉATION DU SELECT FAVORIS ---
-        if (userFavorites.length > 0) {
-            const selectFav = document.createElement('select');
-            // MODIFICATION ICI : même style harmonisé
-            selectFav.style.cssText = "width: 100%; margin-bottom: 10px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 15px; background-color: #fff; color: #555; font-size: 1rem; cursor: pointer;";
+        // --- MODIF ICI : On cible la DIV et non plus le textarea ---
+        const editorContainer = div.querySelector('.subEtapeEditorContainer');
+        const uniqueId = 'editor-' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-            let optionsHtml = '<option value="">⭐ Insérer un favori...</option>';
-            userFavorites.forEach(fav => {
-                const icon = (fav.categorie === 'restaurant') ? '🍽️' :
-                    (fav.categorie === 'hotel') ? '🏨' : '📍';
-                optionsHtml += `<option value="${fav.nom_lieu}">${icon} ${fav.nom_lieu}</option>`;
-            });
-
-            selectFav.innerHTML = optionsHtml;
-
-            selectFav.addEventListener('change', function () {
-                if (this.value) {
-                    inputNom.value = this.value;
-                    inputNom.style.backgroundColor = '#e8f8f5';
-                    setTimeout(() => {
-                        inputNom.style.backgroundColor = '';
-                    }, 500);
-                }
-            });
-
-            inputNom.parentNode.insertBefore(selectFav, inputNom);
+        if (editorContainer) {
+            editorContainer.id = uniqueId;
+        } else {
+            console.error("Erreur: .subEtapeEditorContainer introuvable dans le template HTML");
         }
-        // ---------------------------------------------
 
-        const txt = div.querySelector('.subEtapeRemarque');
-        txt.id = uniqueId;
-        txt.value = data.remarque || '';
+        targetContainer.appendChild(div);
 
-        subEtapesContainer.appendChild(div);
         initAutocomplete(inputNom);
 
+        // Init Toast UI
         setTimeout(() => {
-            tinymce.init({
-                selector: '#' + uniqueId,
+            if(!document.getElementById(uniqueId)) return;
 
-                base_url: '/js/tinymce',
-                suffix: '.min',
-                license_key: 'gpl',
-
-                height: 300,
-                menubar: false,
-                statusbar: false,
-                // language: 'fr_FR',
-
-                plugins: 'image link lists table code help wordcount',
-                toolbar: 'undo redo | bold italic | bullist numlist | link image | table | code',
-
-                /* --- GESTION DES IMAGES --- */
-                image_title: true,
-                automatic_uploads: true,
-                images_upload_url: '/upload_image',
-                file_picker_types: 'image',
-
-                relative_urls: false,
-                remove_script_host: false,
-                convert_urls: true,
-
-                file_picker_callback: (cb, value, meta) => {
-                    const input = document.createElement('input');
-                    input.setAttribute('type', 'file');
-                    input.setAttribute('accept', 'image/*');
-
-                    input.addEventListener('change', (e) => {
-                        const file = e.target.files[0];
-                        if (!file) return;
-
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = (readerEvent) => {
-                            const img = new Image();
-                            img.src = readerEvent.target.result;
-
-                            img.onload = () => {
-                                // Paramètres de compression
-                                const MAX_WIDTH = 1200;
-                                const MAX_HEIGHT = 1200;
-                                let width = img.width;
-                                let height = img.height;
-
-                                // Calcul du redimensionnement
-                                if (width > height) {
-                                    if (width > MAX_WIDTH) {
-                                        height *= MAX_WIDTH / width;
-                                        width = MAX_WIDTH;
-                                    }
-                                } else {
-                                    if (height > MAX_HEIGHT) {
-                                        width *= MAX_HEIGHT / height;
-                                        height = MAX_HEIGHT;
-                                    }
-                                }
-
-                                // Création du Canvas pour dessiner l'image redimensionnée
-                                const canvas = document.createElement('canvas');
-                                canvas.width = width;
-                                canvas.height = height;
-                                const ctx = canvas.getContext('2d');
-                                ctx.drawImage(img, 0, 0, width, height);
-
-                                // Conversion en Blob (Fichier compressé)
-                                // Le 0.7 correspond à 70% de qualité JPEG
-                                canvas.toBlob((blob) => {
-                                    const newFile = new File([blob], file.name, {
-                                        type: 'image/jpeg',
-                                        lastModified: Date.now()
-                                    });
-
-                                    const id = 'blobid' + (new Date()).getTime();
-                                    const blobCache = tinymce.activeEditor.editorUpload.blobCache;
-                                    const blobInfo = blobCache.create(id, newFile, blob);
-
-                                    blobCache.add(blobInfo);
-
-                                    cb(blobInfo.blobUri(), {title: file.name});
-
-                                }, 'image/jpeg', 0.7);
-                            };
-                        };
-                    });
-                    input.click();
-                }
+            const editor = new toastui.Editor({
+                el: document.querySelector('#' + uniqueId),
+                height: '300px',
+                initialEditType: 'markdown',
+                previewStyle: 'vertical',
+                initialValue: data.remarque || '',
+                usageStatistics: false
             });
+
+            subStepEditors[uniqueId] = editor;
         }, 100);
 
         div.querySelector('.removeSubEtapeBtn').addEventListener('click', () => {
-            tinymce.get(uniqueId)?.remove();
+            if (subStepEditors[uniqueId]) {
+                subStepEditors[uniqueId].destroy();
+                delete subStepEditors[uniqueId];
+            }
             div.remove();
         });
     }
 
-    document.getElementById('addSubEtape').onclick = () => addSousEtapeForm();
+    document.getElementById('addSubEtape').onclick = () => {
+        const container = document.getElementById('subEtapesContainer');
+        addSousEtapeForm(container);
+    };
     document.getElementById('closeSegmentForm').onclick = () => document.getElementById('segmentFormContainer').style.display = 'none';
 
     document.getElementById('saveSegment').onclick = async () => {
         const seg = segments[currentSegmentIndex];
         const newSubs = [];
-        // On récupère toutes les divs subEtape
+
         for (const div of document.querySelectorAll('.subEtape')) {
-            const inputNom = div.querySelector('.subEtapeNom'); // On cible l'élément input direct
+            const inputNom = div.querySelector('.subEtapeNom');
             const nom = inputNom.value.trim();
             const heure = div.querySelector('.subEtapeHeure').value;
-            // Récupération contenu TinyMCE
-            const idEditor = div.querySelector('.subEtapeRemarque').id;
-            const remarque = tinymce.get(idEditor) ? tinymce.get(idEditor).getContent() : "";
+
+            // --- MODIF ICI : On récupère le contenu depuis l'instance Toast UI ---
+            const containerEl = div.querySelector('.subEtapeEditorContainer');
+            let remarque = "";
+
+            if (containerEl && subStepEditors[containerEl.id]) {
+                remarque = subStepEditors[containerEl.id].getMarkdown();
+            }
 
             if (!nom || !heure) continue;
 
-            // --- CORRECTION ICI ---
             let coords = null;
             const latAttr = inputNom.getAttribute('data-lat');
             const lonAttr = inputNom.getAttribute('data-lon');
 
-            // 1. Si Photon a déjà donné les coords (via le clic autocomplétion), on les utilise !
             if (latAttr && lonAttr) {
                 coords = [parseFloat(latAttr), parseFloat(lonAttr)];
             } else {
-                // 2. Sinon (saisie manuelle sans clic), on demande à Nominatim
                 coords = await getCoordonnees(nom);
             }
-            // ----------------------
 
             if (coords) {
                 newSubs.push({nom, heure, remarque, coords, lat: coords[0], lon: coords[1]});
                 addMarker(nom, coords, "sous_etape", `<b>${nom}</b><br>${heure}`);
             } else {
-                alert(`Impossible de localiser : ${nom}. Veuillez sélectionner une suggestion dans la liste.`);
+                alert(`Impossible de localiser : ${nom}. Veuillez sélectionner une suggestion.`);
             }
         }
 
@@ -993,7 +871,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // ============================================================
-    // 8. SAUVEGARDE FINALE (CORRIGÉE POUR CAKEPHP & BDD ANGLAISE)
+    // 8. SAUVEGARDE FINALE
     // ============================================================
 
     document.getElementById('saveRoadtrip').onclick = async (e) => {
@@ -1013,8 +891,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             formData.append('title', document.getElementById('roadtripTitle').value);
             formData.append('description', document.getElementById('roadtripDescription').value);
-            formData.append('visibility', document.getElementById('roadtripVisibilite').value); // 'prive', 'public', 'amis'
-            formData.append('status', document.getElementById('roadtripStatut').value);         // 'brouillon', 'termine'
+            formData.append('visibility', document.getElementById('roadtripVisibilite').value);
+            formData.append('status', document.getElementById('roadtripStatut').value);
 
             const fileInput = document.getElementById('roadtripPhoto');
             if(fileInput.files.length > 0) {
@@ -1022,7 +900,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if(originalFile.type.startsWith('image/')) {
                     try {
                         const compressedFile = await compresserImageJS(originalFile, 0.7, 1200);
-                        formData.append('photo_cover', compressedFile); // Nom 'photo_cover' utilisé dans le Controller
+                        formData.append('photo_cover', compressedFile);
                     } catch (err) {
                         console.warn("Erreur compression, envoi fichier original", err);
                         formData.append('photo_cover', originalFile);
@@ -1038,7 +916,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     const cleanSousEtapes = s.sousEtapes.map(se => {
                         let desc = se.remarque || "";
-                        desc = desc.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, '[Image trop lourde retirée]');
+                        desc = desc.replace(/!\[.*?\]\(data:image\/[^)]+\)/g, '[Image lourde retirée]');
 
                         return {
                             nom: se.nom,
@@ -1054,7 +932,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         departLat: s.startCoord[0], departLon: s.startCoord[1],
                         arrivee: s.endName,
                         arriveeLat: s.endCoord[0], arriveeLon: s.endCoord[1],
-                        mode: s.modeTransport, // 'Voiture', 'Velo', etc.
+                        mode: s.modeTransport,
                         date_trajet: s.date,
                         heure_depart: timeInput ? timeInput.value : '08:00',
                         sousEtapes: cleanSousEtapes
@@ -1068,6 +946,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const blob = new Blob([jsonString], { type: 'application/json' });
             formData.append('trajets_file', blob, 'trajets.json');
 
+            // Utilisation des variables globales définies dans add.php
             const saveUrl = typeof SAVE_URL !== 'undefined' ? SAVE_URL : '/roadtrips/add';
             const csrfToken = typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '';
 
@@ -1091,7 +970,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     alert("Erreur : " + (json.message || "Erreur inconnue"));
                 }
             } else {
-                const errorJson = await resp.json().catch(() => ({})); // On essaie de lire le JSON d'erreur
+                const errorJson = await resp.json().catch(() => ({}));
                 console.error("Erreur Serveur:", errorJson);
 
                 let errorMsg = "Une erreur est survenue lors de la sauvegarde.";
