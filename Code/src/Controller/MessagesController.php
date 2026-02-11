@@ -106,6 +106,10 @@ class MessagesController extends AppController
         $userId = $this->Authentication->getIdentity()->getIdentifier();
         $amiId  = (int)$amiId;
 
+        if (!$amiId) {
+            return $this->redirect(['action' => 'index']);
+        }
+
         $ami = $this->fetchTable('Users')->get($amiId);
 
         $messages = $this->fetchTable('Messages')->find()
@@ -130,12 +134,14 @@ class MessagesController extends AppController
                 'is_read' => 0
             ]
         );
+        $conversation_id = $amiId;
 
         $this->set(compact(
             'messages',
             'ami',
             'userId',
-            'amiId'
+            'amiId',
+            'conversation_id'
         ));
     }
 
