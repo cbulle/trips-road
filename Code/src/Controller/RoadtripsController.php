@@ -6,6 +6,7 @@ namespace App\Controller;
 use Cake\Event\EventInterface;
 use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
+use Cake\Http\Client;
 
 /**
  * Roadtrips Controller
@@ -488,5 +489,71 @@ class RoadtripsController extends AppController
         $this->Flash->success('Votre historique a été vidé.');
 
         return $this->redirect(['action' => 'historique']);
+    }
+
+    public function genererRoadtripGratuit()
+    {
+        $this->request->allowMethod(['post', 'ajax']);
+        
+        // 1. Les données envoyées par ton formulaire Javascript
+        $depart = $this->request->getData('depart') ?? 'Paris';
+        $destination = $this->request->getData('destination') ?? 'Marseille';
+        $duree = $this->request->getData('duree') ?? '5 jours';
+
+        // 2. Le Prompt hyper strict pour l'IA
+        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree. 
+        Tu dois répondre UNIQUEMENT par un objet JSON valide. Ne dis pas 'bonjour', n'ajoute pas de texte avant ou après.
+        Format attendu :
+        {
+            \"titre\": \"Titre du roadtrip\",
+            \"description\": \"Description courte\",
+            \"etapes\": [
+                { \"ville\": \"Nom de la ville\", \"lieux\": \"2 choses à voir\" }
+            ]
+        }";
+
+        // 3. Appel à l'API gratuite de Gemini
+        $client = new Client();
+        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0'; // Colle ta clé ici
+        
+        // On utilise le modèle "flash" qui est le plus rapide et inclus dans le plan gratuit
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+
+        // Structure requise par Google
+        $payload = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $client->post($url, $payload, ['type' => 'json']);
+
+        // 4. Traitement de la réponse
+        if ($response->isOk()) {
+            $apiData = $response->getJson();
+            
+            // L'API Google range le texte généré à cet endroit précis :
+            $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            
+            // ASTUCE DE PRO : Souvent les IA rajoutent "```json" au début. On nettoie la chaîne pour être sûr !
+            $aiTextClean = str_replace(['```json', '```'], '', $aiText);
+            
+            // On transforme le texte en vrai tableau PHP
+            $roadtripGenere = json_decode(trim($aiTextClean), true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // Succès ! On renvoie ça à l'utilisateur
+                return $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['success' => true, 'data' => $roadtripGenere]));
+            }
+        }
+
+        // Si on arrive ici, c'est qu'il y a eu un bug
+        return $this->response->withType('application/json')
+            ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
     }
 }
