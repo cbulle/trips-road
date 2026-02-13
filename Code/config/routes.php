@@ -38,7 +38,8 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/view', ['controller' => 'Users', 'action' => 'view']);
         $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);
         $builder->connect('/add', ['controller' => 'Users', 'action' => 'add']);
-        $builder->connect('/add_r_t', ['controller' => 'Roadtrips', 'action' => 'add./']);
+        $builder->connect('/add_r_t', ['controller' => 'Roadtrips', 'action' => 'add']);
+        $builder->connect('/public_r_t', ['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']);
         $builder->connect('/accessibility', ['controller' => 'Users', 'action' => 'accessibility']);
 
         $builder->scope('/messages', function (RouteBuilder $builder) {
