@@ -9,17 +9,21 @@ class HistoriqueTable extends Table
     {
         parent::initialize($config);
 
-        // Si ta table s'appelle exactement 'historique' (singulier) en base de données
-        $this->setTable('historique'); 
+        // 1. LA LIGNE IMPORTANTE : On force le nom de la table
+        $this->setTable('histories'); 
+
+        // 2. Clé primaire (généralement 'id')
         $this->setPrimaryKey('id');
 
-        // La relation : Un historique appartient à un Roadtrip
+        // 3. Gestion automatique des dates (created/modified)
+        $this->addBehavior('Timestamp');
+
+        // 4. Les relations
         $this->belongsTo('Roadtrips', [
             'foreignKey' => 'roadtrip_id',
-            'joinType' => 'INNER' // Ignore les historiques de roadtrips supprimés
+            'joinType' => 'INNER'
         ]);
 
-        // La relation : Un historique appartient à l'utilisateur qui regarde
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
         ]);

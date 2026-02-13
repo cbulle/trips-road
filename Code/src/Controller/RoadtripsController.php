@@ -6,6 +6,7 @@ namespace App\Controller;
 use Cake\Event\EventInterface;
 use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
+use Cake\Http\Client;
 
 /**
  * Roadtrips Controller
@@ -28,18 +29,52 @@ class RoadtripsController extends AppController
 
     public function index()
     {
+        $identity = $this->request->getAttribute('identity');
+        $userId = $identity ? $identity->getIdentifier() : null;
+
+        $user = null;
+        if ($userId) {
+            $user = $this->fetchTable('Users')->get($userId);
+        }
+
         $this->paginate = [
             'limit' => 12,
+            'order' => ['Roadtrips.id' => 'DESC']
         ];
 
         $query = $this->Roadtrips->find()
             ->contain(['Users'])
             ->where(['visibility' => 'public'])
-            ->order(['Roadtrips.created' => 'DESC']);
+            ->order(['Roadtrips.id' => 'DESC']);
 
         $roadtrips = $this->paginate($query);
 
-        $this->set(compact('roadtrips'));
+        $randomRoadtrips = $this->Roadtrips->find()
+            ->contain(['Users'])
+            ->where([
+                'visibility' => 'public',
+                'status' => 'completed'
+            ])
+            ->order('RAND()')
+            ->limit(3)
+            ->all();
+
+        $favorisIds = [];
+        if ($userId) {
+            try {
+                $favoritesTable = $this->fetchTable('Favorites');
+                $favorisIds = $favoritesTable->find()
+                    ->select(['roadtrip_id'])
+                    ->where(['user_id' => $userId])
+                    ->all()
+                    ->extract('roadtrip_id')
+                    ->toArray();
+            } catch (\Exception $e) {
+                $favorisIds = [];
+            }
+        }
+// légère modifs a faire
+        $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
     public function getLieuxFavoris()
@@ -395,6 +430,52 @@ class RoadtripsController extends AppController
             return $this->redirect(['action' => 'index']); // ou explorePublic
         }
 
+        // ============================================================
+        // AJOUT : GESTION DE L'HISTORIQUE
+        // ============================================================
+
+        // Vérifier si l'utilisateur est connecté
+        $identity = $this->request->getAttribute('identity');
+
+        if ($identity) {
+            $userId = $identity->getIdentifier();
+
+            // On charge le modèle Historique (qui pointe vers la table histories)
+            $historiqueTable = $this->fetchTable('Historique');
+
+            // 1. On regarde si l'utilisateur a déjà vu ce roadtrip
+            $existingHistory = $historiqueTable->find()
+                ->where([
+                    'user_id' => $userId,
+                    'roadtrip_id' => $id
+                ])
+                ->first();
+
+            if ($existingHistory) {
+                // CAS A : Il l'a déjà vu -> On met à jour la date pour qu'il remonte en premier
+                // Si tu utilises la colonne 'created', on ne peut pas la changer facilement.
+                // Si tu as 'date_visite', on la met à jour.
+
+                // Option 1 : Si tu as une colonne 'modified' ou 'date_visite'
+                $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
+                $historiqueTable->save($existingHistory);
+            } else {
+                // CAS B : C'est la première fois -> On crée une nouvelle entrée
+                $newHistory = $historiqueTable->newEmptyEntity();
+                $newHistory->user_id = $userId;
+                $newHistory->roadtrip_id = $id;
+                // Définir la date (si ce n'est pas automatique via 'created')
+                $newHistory->date_visite = new \Cake\I18n\FrozenTime();
+
+                $historiqueTable->save($newHistory);
+            }
+        }
+        // ============================================================
+        // FIN AJOUT
+        // ============================================================
+
+        $this->set(compact('roadtrip'));
+
         $geocodedPlacesTable = $this->fetchTable('GeocodedPlaces');
         $jsMapData = [];
 
@@ -580,27 +661,21 @@ class RoadtripsController extends AppController
         return $cakeTrips;
     }
 
-    /**
-     * Affiche l'historique de l'utilisateur
-     */
+
     public function historique()
     {
-        // CORRECTION : On utilise fetchTable au lieu de loadModel
         $historiqueTable = $this->fetchTable('Historique');
 
-        // Récupérer l'ID de l'utilisateur connecté
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Faire la requête sur la table récupérée
         $query = $historiqueTable->find()
             ->contain([
                 'Roadtrips' => [
-                    'Users' 
+                    'Users'
                 ]
             ])
             ->where(['Historique.user_id' => $userId])
-            // Vérifie bien si ta colonne de date s'appelle 'date_visite' ou 'created'
-            ->order(['Historique.date_visite' => 'DESC']); 
+            ->order(['Historique.date_visite' => 'DESC']);
 
         try {
             $historique = $this->paginate($query, ['limit' => 12]);
@@ -611,23 +686,114 @@ class RoadtripsController extends AppController
         $this->set(compact('historique'));
     }
 
-    /**
-     * Action pour le bouton "Tout effacer"
-     */
     public function deleteHistorique()
     {
         $this->request->allowMethod(['post', 'delete']);
-        
-        // CORRECTION : On utilise fetchTable ici aussi
+
         $historiqueTable = $this->fetchTable('Historique');
-        
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Suppression via la table récupérée
         $historiqueTable->deleteAll(['user_id' => $userId]);
 
         $this->Flash->success('Votre historique a été vidé.');
 
         return $this->redirect(['action' => 'historique']);
+    }
+
+    public function genererRoadtripGratuit()
+    {
+        $this->request->allowMethod(['post', 'ajax']);
+
+        $depart = $this->request->getData('depart') ?? 'Paris';
+        $destination = $this->request->getData('destination') ?? 'Marseille';
+        $duree = $this->request->getData('duree') ?? '5 jours';
+
+        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree.
+        Tu dois répondre UNIQUEMENT par un objet JSON valide. Ne dis pas 'bonjour', n'ajoute pas de texte avant ou après.
+        Format attendu :
+        {
+            \"titre\": \"Titre du roadtrip\",
+            \"description\": \"Description courte\",
+            \"etapes\": [
+                { \"ville\": \"Nom de la ville\", \"lieux\": \"2 choses à voir\" }
+            ]
+        }";
+
+        $client = new Client();
+        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0';
+
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+
+        $payload = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $client->post($url, $payload, ['type' => 'json']);
+
+        if ($response->isOk()) {
+            $apiData = $response->getJson();
+
+            $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
+            $aiTextClean = str_replace(['```json', '```'], '', $aiText);
+
+            $roadtripGenere = json_decode(trim($aiTextClean), true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['success' => true, 'data' => $roadtripGenere]));
+            }
+        }
+
+        return $this->response->withType('application/json')
+            ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
+    }
+
+    public function uploadStepImage()
+    {
+        $this->request->allowMethod(['post', 'ajax']);
+        $this->viewBuilder()->disableAutoLayout();
+
+        $image = $this->request->getData('image');
+        $response = ['success' => false, 'message' => 'Aucune image reçue.'];
+
+        if ($image instanceof \Laminas\Diactoros\UploadedFile && $image->getError() === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($image->getClientFilename(), PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+            if (in_array($ext, $allowed)) {
+                $newName = 'step_' . uniqid() . '.' . $ext;
+                $destinationPath = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . 'steps' . DS;
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true); // Crée le dossier s'il n'existe pas
+                }
+
+                try {
+                    $image->moveTo($destinationPath . $newName);
+
+                    $url = \Cake\Routing\Router::url('/uploads/roadtrips/steps/' . $newName, true);
+
+                    $response = [
+                        'success' => true,
+                        'url' => $url
+                    ];
+                } catch (\Exception $e) {
+                    $response['message'] = "Erreur lors de l'enregistrement du fichier.";
+                }
+            } else {
+                $response['message'] = "Format d'image non autorisé.";
+            }
+        }
+
+        return $this->response
+            ->withType('application/json')
+            ->withStringBody(json_encode($response));
     }
 }

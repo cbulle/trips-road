@@ -6,16 +6,7 @@
  */
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messagerie</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="/css/messagerie.css">
-</head>
-<body>
+
 <main class="main-index">
     <div class="messagerie-container">
         <div class="conversations-list">
@@ -51,5 +42,3 @@
         </div>
     </div>
 </main>
-</body>
-</html>

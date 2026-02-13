@@ -1,114 +1,110 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Roadtrip[]|\Cake\Collection\CollectionInterface $historique
+ * @var iterable<\App\Model\Entity\History> $historique
  */
 
-// Configuration de la page
 $this->assign('title', '🕓 Mon Historique');
-$this->assign('mainClass', 'historique-view-page'); // Classe pour le CSS global si besoin
+$this->assign('mainClass', 'historique-page'); // Classe spécifique si besoin
 ?>
 
-<div class="index_container">
+<div>
     
-    <div class="header-tools">
+    <div class="header-tools" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1>🕓 Mon Historique</h1>
+        
         <?php if (!$historique->isEmpty()): ?>
             <?= $this->Form->postLink(
-    '<i class="fas fa-trash-alt"></i> Tout effacer',
-    ['action' => 'deleteHistorique'], // <--- C'est ici qu'on change le nom
-    [
-        'escape' => false,
-        'class' => 'btn-clear-history',
-        'confirm' => 'Voulez-vous vraiment effacer tout votre historique ?'
-    ]
-) ?>
+                '<i class="material-icons" style="vertical-align: middle; font-size: 18px;">delete_sweep</i> Tout effacer',
+                ['action' => 'deleteHistorique'],
+                [
+                    'escape' => false,
+                    'class' => 'btn-clear-history', // Tu pourras styliser ce bouton spécifique
+                    'style' => 'background: #e74c3c; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;',
+                    'confirm' => 'Voulez-vous vraiment effacer tout votre historique ?'
+                ]
+            ) ?>
         <?php endif; ?>
     </div>
 
+    <?= $this->Flash->render() ?>
+
     <?php if ($historique->isEmpty()): ?>
-        <div style="text-align: center; padding: 50px;">
-            <p>Vous n'avez consulté aucun road trip récemment.</p>
+        <p style="text-align: center; margin-top: 50px; color: #666;">
+            Vous n'avez consulté aucun road trip récemment.
+        </p>
+        <div style="text-align: center;">
             <?= $this->Html->link(
                 'Explorer les road trips',
                 ['controller' => 'Roadtrips', 'action' => 'publicRoadtrips'],
-                ['class' => 'btn-explore'] // Ajout d'une classe si nécessaire
+                ['class' => 'btn-view', 'style' => 'padding: 10px 20px; text-decoration: none;']
             ) ?>
         </div>
     <?php else: ?>
+
         <div class="roadtrip-grid">
             <?php foreach ($historique as $item): ?>
                 <?php 
-                    // On suppose que $item est l'entité Roadtrip jointe à l'historique
-                    // ou que $item est l'entité Historique contenant le Roadtrip.
-                    // Adapté ici pour un objet $roadtrip direct.
-                    $roadtrip = $item->roadtrip ?? $item; // Fallback selon votre structure
+                    // On récupère le roadtrip associé à l'entrée d'historique
+                    $rt = $item->roadtrip;
                     
-                    // Gestion Image (Logique CakePHP avec Url Helper)
-                    $imageName = 'default_trip.jpg';
-                    if (!empty($roadtrip->photo)) {
-                        $imageName = $roadtrip->photo;
-                    } elseif (!empty($roadtrip->photo_cover)) {
-                        $imageName = $roadtrip->photo_cover;
-                    }
-                    
-                    $imageUrl = $this->Url->webroot('uploads/roadtrips/' . $imageName);
+                    // Si le roadtrip a été supprimé entre temps, on évite le crash
+                    if (!$rt) continue; 
                 ?>
 
                 <div class="roadtrip-card">
-                    <img src="<?= $imageUrl ?>" 
-                         alt="Photo du road trip <?= h($roadtrip->title) ?>" 
-                         class="roadtrip-photo" loading="lazy">
 
-                    <h3><?= h($roadtrip->title) ?></h3>
+                    <?php
+                    // --- TA LOGIQUE D'IMAGE (Adaptée) ---
+                    $urlImage = '/img/imgBase.png'; // Image par défaut
                     
-                    <span class="date-visite">
-                        <?php 
-                            // Gestion de la date (compatible string ou objet FrozenTime)
-                            $dateVisite = $item->date_visite ?? $item->created; 
-                            if (is_object($dateVisite) && method_exists($dateVisite, 'format')) {
-                                echo 'Vu le ' . $dateVisite->format('d/m/Y à H:i');
-                            } else {
-                                echo 'Vu le ' . date('d/m/Y à H:i', strtotime($dateVisite));
-                            }
-                        ?>
+                    // On vérifie photo_url (comme dans ton fichier public)
+                    // On garde aussi une compatibilité si tu as 'photo' ou 'photo_cover' dans ta BDD
+                    $photoName = $rt->photo_url ?? $rt->photo ?? $rt->photo_cover ?? null;
+
+                    if (!empty($photoName)) {
+                        $cheminPhysique = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $photoName;
+                        if (file_exists($cheminPhysique)) {
+                            $urlImage = '/uploads/roadtrips/' . $photoName;
+                        }
+                    }
+                    ?>
+
+                    <?= $this->Html->image($urlImage, [
+                        'alt' => 'Photo du road trip',
+                        'class' => 'roadtrip-photo',
+                        'url' => ['action' => 'view', $rt->id] // Rend l'image cliquable
+                    ]) ?>
+
+                    <h3><?= h($rt->title) ?></h3>
+
+                    <span class="status-badge" style="background-color: #34495e; color: #fff;">
+                        👁️ Vu le <?= $item->created->format('d/m/Y') ?>
                     </span>
 
-                    <p>
-                        <?= $this->Text->truncate(
-                            $roadtrip->description,
-                            80,
-                            ['ellipsis' => '...', 'exact' => false]
-                        ) ?>
-                    </p>
+                    <p><?= h($this->Text->truncate($rt->description, 100)) ?></p>
 
-                    <p>
-                        <small>Par 
-                            <?= h(($roadtrip->user->last_name ?? '') . ' ' . ($roadtrip->user->first_name ?? $roadtrip->user->username ?? 'Inconnu')) ?>
-                        </small>
+                    <p class="creator-info">
+                        Proposé par :
+                        <strong>
+                            <?= h($rt->user->username ?? 'Utilisateur inconnu') ?>
+                        </strong>
                     </p>
 
                     <div class="roadtrip-buttons">
-                        <?= $this->Html->link(
-                            '<i class="fas fa-eye"></i> Revoir',
-                            ['controller' => 'Roadtrips', 'action' => 'view', $roadtrip->id],
-                            ['class' => 'btn-view', 'escape' => false]
-                        ) ?>
+                        <a class="btn-view" href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'view', $rt->id]) ?>" title="Revoir ce roadtrip">
+                            <i class="material-icons">visibility</i>
+                        </a>
 
-                        <?= $this->Html->link(
-                            '<i class="far fa-star"></i> Favoris',
-                            [
-                                'controller' => 'Favorites', 
-                                'action' => 'add', 
-                                $roadtrip->id, 
-                                '?' => ['redirect' => 'historique'] // Gestion de la redirection
-                            ],
-                            ['class' => 'btn-edit', 'escape' => false]
-                        ) ?>
+                        <a class="btn-favori"
+                           href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'add', $rt->id, '?' => ['redirect' => 'historique']]) ?>" title="Ajouter aux favoris">
+                            <i class="material-icons">favorite_border</i>
+                        </a>
                     </div>
+
                 </div>
             <?php endforeach; ?>
         </div>
-    <?php endif; ?>
 
+    <?php endif; ?>
 </div>

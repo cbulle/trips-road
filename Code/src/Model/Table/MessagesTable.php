@@ -18,6 +18,7 @@ class MessagesTable extends Table
         parent::initialize($config);
 
         $this->setTable('messages');
+        $this->setEntityClass(\App\Model\Entity\Message::class);
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 

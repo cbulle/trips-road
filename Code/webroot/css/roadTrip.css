@@ -1,60 +1,318 @@
-.dashboard-container {
-    max-width: 100%;
-    margin: 40px auto;
-    padding: 0 40px;
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    min-height: 80vh;
+/* ==============================
+   SECTION 1 : HERO & BOUTONS
+============================== */
+.hero-actions {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: var(--beige);
 }
 
-.profil-sidebar {
-    width: 340px;
-    background: var(--beige_fonce);
-    padding: 20px;
-    border-radius: 13px;
-    flex-shrink: 0;
-    position: sticky;
+.hero-content h1 {
+    color: var(--bleu_fonce);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.hero-content p {
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 25px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 1rem;
+}
+
+.btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-action.primary {
+    background-color: var(--orange);
+    color: white;
+}
+
+.btn-action.secondary {
+    background-color: var(--bleu_clair);
+    color: white;
+}
+
+/* ==============================
+   SECTION 2 : ROAD TRIPS (VITRINE)
+============================== */
+.featured-section {
+    padding: 20px 40px 40px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.featured-section h2 {
+    text-align: center;
+    color: var(--bleu_fonce);
+    margin-bottom: 30px;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Grille Responsive */
+.roadtrips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* Style des cartes miniatures */
+.mini-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+    border: 1px solid #eee;
+}
+
+.mini-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card-img {
+    height: 180px;
+    background-color: #ddd;
+    background-size: cover;
+    background-position: center;
+}
+
+.card-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.card-info h3 {
+    margin: 0 0 10px 0;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.1rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--beige_visu);
+    color: var(--bleu_fonce);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* ==============================
+   SECTION 3 : MAP FULL WIDTH & SIDEBAR
+============================== */
+.full-map-container {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    min-height: 500px;
+    overflow: hidden;
+}
+
+#userMap {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* --- BARRE DE RECHERCHE FLOTTANTE --- */
+.floating-search {
+    position: absolute;
     top: 20px;
-    height: auto;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 100;
+}
+
+.search-input-group {
+    display: flex;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-radius: 30px;
+}
+
+.floating-search input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 30px 0 0 30px;
+    outline: none;
+    font-size: 1rem;
+}
+
+.floating-search button {
+    padding: 12px 25px;
+    background: var(--bleu_clair);
+    border: none;
+    border-radius: 0 30px 30px 0;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.map-sidebar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
+    width: 320px;
+    background: transparent;
+    box-shadow: none;
+    z-index: 90;
+    transition: transform 0.3s ease-in-out;
     display: flex;
     flex-direction: column;
+    pointer-events: none;
 }
 
-.user-brief {
-    text-align: center;
+.map-sidebar > * {
+    pointer-events: auto;
+}
+
+.sidebar-content {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    height: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 40px;
+    background-color: var(--bleu_clair);
+    color: white;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    z-index: -1;
+    box-shadow: 3px 0 5px rgba(0,0,0,0.2);
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+}
+
+.sidebar-toggle #toggleIcon{
+    position: relative;
+    left: 25px;
+}
+
+.sidebar-toggle:hover {
+    background-color: var(--bleu_fonce);
+}
+
+.map-sidebar.closed {
+    transform: translateX(-340px);
+}
+
+.category-header {
+    border-bottom: 2px solid var(--gris_clair);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
     margin-bottom: 15px;
 }
 
-.avatar-circle.small {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    background-color: var(--beige_fonce);
-    border: 3px solid var(--white);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.category-info {
+    background: var(--beige_visu);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
 }
 
-.user-brief h3 {
-    margin-top: 10px;
-    color: var(--bleu_fonce_ecriture);
+.clear-filter-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--rouge);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* =======================================================
+   NOUVEAU : LAYOUT DASHBOARD (Mes Roadtrips / Publics)
+   C'est ici que la magie opère pour remettre la sidebar à gauche
+======================================================= */
+
+/* 1. Le conteneur principal : Active le mode colonnes Flexbox */
+.dashboard-container {
+    display: flex;             
+    align-items: flex-start;   
+    gap: 40px;                 
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: 80vh;
+}
+
+/* 2. La Sidebar : On fixe sa largeur et sa position */
+.profil-sidebar {
+    width: 280px !important;   
+    flex-shrink: 0;            
+    background: var(--beige_fonce, #E0C58B);
+    padding: 20px;
+    border-radius: 13px;
+    position: sticky;
+    top: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    z-index: 10;
+}
+
+/* Titre et boutons dans la sidebar */
+.profil-sidebar .sidebar-title {
     font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0;
-}
-
-.sidebar-title {
     color: var(--bleu_fonce);
-    font-size: 1.5rem;
     text-align: center;
-    margin: 5px 0 15px 0;
-    line-height: 1.2;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
     padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255,255,255,0.3);
 }
 
 .sidebar-create-btn {
@@ -62,271 +320,145 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    width: 100%;
     background-color: var(--orange);
     color: white;
-    padding: 12px 15px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 8px;
     font-weight: bold;
-    font-size: 1rem;
-    text-align: center;
     margin-bottom: 20px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    text-decoration: none;
 }
-
 .sidebar-create-btn:hover {
-    background-color: var(--orange_sombre);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    background-color: var(--orange_sombre);
 }
 
+/* Navigation latérale */
 .profil-nav ul {
     list-style: none;
     padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
-
 .profil-nav li {
-    margin: 0;
+    margin-bottom: 5px;
 }
-
 .profil-nav a {
     display: block;
-    padding: 10px 15px; /* Liens plus compacts verticalement */
-    text-decoration: none;
-    color: var(--bleu_fonce_ecriture);
+    padding: 10px 15px;
     border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    font-weight: 500;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    text-align: center;
-    background-color: rgba(255,255,255, 0.4);
+    color: var(--bleu_fonce_ecriture);
+    transition: background 0.3s;
+    text-decoration: none;
 }
-
-.profil-nav a:hover {
-    background-color: rgba(255,255,255,0.9);
+.profil-nav a:hover, .profil-nav a.active {
+    background-color: rgba(255,255,255,0.5);
+    font-weight: bold;
     color: var(--bleu_fonce);
-    transform: translateY(-2px);
 }
-
-.profil-nav a.active {
-    background-color: var(--bleu_fonce);
-    color: var(--white);
-    font-weight: 700;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    border-color: var(--bleu_fonce);
-}
-
 .profil-nav a.logout {
     color: var(--rouge);
-    margin-top: 15px; /* Espace avant déconnexion réduit */
-    border: 1px solid rgba(191, 9, 47, 0.2);
-    background-color: transparent;
+    margin-top: 15px;
+    border: 1px solid rgba(191,9,47,0.2);
 }
 
-.profil-nav a.logout:hover {
-    background-color: var(--rouge);
-    color: var(--white);
+/* 3. La zone de droite (Grille de contenu) */
+.dashboard-content, 
+.roadtrip-grid {
+    flex: 1;                   
+    width: 0; /* Évite les débordements */
 }
 
-/* --- CONTENU DROITE --- */
-.dashboard-content {
-    flex: 1;
-    width: 0;
-}
-
+/* 4. La grille des cartes (3 colonnes auto) */
 .roadtrip-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
-    width: 100%;
 }
 
+/* Style des cartes dans la grille */
 .roadtrip-card {
-    background: var(--white);
+    background: white;
     border-radius: 13px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    border: 1px solid #eee;
     display: flex;
     flex-direction: column;
-    height: 100%;
     position: relative;
-    border: 1px solid rgba(0,0,0,0.05);
 }
-
 .roadtrip-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
-
 .roadtrip-photo {
     width: 100%;
-    height: 200px;
+    height: 180px;
     object-fit: cover;
 }
-
-.card-badges {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 2;
-}
-
-.badge-statut {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    backdrop-filter: blur(4px);
-}
-
-.statut-brouillon {
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--orange_sombre);
-}
-
-.statut-termine {
-    background: var(--vert);
-    color: white;
-}
-
 .card-body {
-    padding: 20px;
+    padding: 15px;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    flex: 1;
 }
-
-.roadtrip-card h3 {
-    color: var(--bleu_fonce_ecriture);
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-    margin-top: 0;
-    line-height: 1.3;
-}
-
-.roadtrip-card p {
-    color: var(--gris_fonce);
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 20px;
-    flex-grow: 1;
-}
-
-.creator-info {
-    font-size: 0.85rem;
-    color: var(--gris_clair);
-    margin-top: auto;
-    padding-top: 15px;
-    border-top: 1px dashed #eee;
-}
-
 .roadtrip-actions {
-    padding: 15px 20px;
-    background-color: #f8f8f8;
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #eee;
+    background: #f9f9f9;
 }
-
 .action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
     color: var(--gris_clair);
-    background: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: color 0.2s;
+    text-decoration: none;
 }
-
-.action-btn:hover {
-    transform: scale(1.05);
-}
-
-.action-btn.view:hover { color: var(--bleu_clair); }
-.action-btn.edit:hover { color: var(--orange); }
-.action-btn.share:hover { color: var(--bleu_fonce); }
+.action-btn:hover { color: var(--bleu_fonce); }
 .action-btn.delete:hover { color: var(--rouge); }
 
-@media (max-width: 1280px) {
-    .dashboard-container {
-        padding: 0 20px;
-        gap: 25px;
-    }
-    .profil-sidebar {
-        width: 280px;
-        padding: 15px;
-    }
-    .avatar-circle.small {
-        width: 70px;
-        height: 70px;
-    }
-    .user-brief h3 {
-        font-size: 1.1rem;
-    }
-    .sidebar-title {
-        font-size: 1.3rem;
-        margin-bottom: 10px;
-    }
-    .sidebar-create-btn {
-        padding: 10px;
-        font-size: 0.95rem;
-        margin-bottom: 15px;
-    }
-    .profil-nav a {
-        padding: 8px 10px;
-        font-size: 0.95rem;
-    }
-    .roadtrip-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-    }
+/* Badges */
+.card-badges {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
 }
+.badge-statut {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.statut-termine { background-color: var(--vert); color: white; }
+.statut-brouillon { background-color: var(--beige); color: var(--orange_sombre); border: 1px solid var(--orange); }
 
+/* ==============================
+   RESPONSIVE GLOBAL
+============================== */
 @media (max-width: 900px) {
+    /* Dashboard passe en colonne */
     .dashboard-container {
         flex-direction: column;
-        margin-top: 20px;
     }
     .profil-sidebar {
-        width: 100%;
+        width: 100% !important;
         position: relative;
         top: 0;
-        height: auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
+        margin-bottom: 30px;
     }
-    .sidebar-create-btn {
-        max-width: 400px;
-        margin-bottom: 20px;
+    
+    /* Map Homepage */
+    .full-map-container {
+        height: 60vh;
     }
-    .profil-nav {
-        width: 100%;
+    .map-sidebar {
+        width: 280px;
+        transform: translateX(-300px);
     }
-    .profil-nav ul {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-    }
-    .profil-nav li {
-        flex: 1 1 auto;
-        min-width: 140px;
-    }
-    .profil-nav a.logout {
-        margin-top: 0;
+    .map-sidebar.open {
+        transform: translateX(0);
     }
 }
