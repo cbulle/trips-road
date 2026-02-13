@@ -42,6 +42,7 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/accessibility', ['controller' => 'Users', 'action' => 'accessibility']);
 
         $builder->scope('/messages', function (RouteBuilder $builder) {
+            $builder->resources('Messages');
             $builder->connect('/', ['controller' => 'Messages', 'action' => 'index']);
             $builder->connect('/:id', ['controller' => 'Messages', 'action' => 'view']);
             $builder->post('/send-message', ['controller' => 'Messages', 'action' => 'sendMessage']);
