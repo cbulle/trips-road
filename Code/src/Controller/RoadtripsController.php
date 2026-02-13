@@ -73,7 +73,7 @@ class RoadtripsController extends AppController
                 $favorisIds = [];
             }
         }
-// légère modifs a faire
+// légère modifs a faire 
         $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
@@ -433,13 +433,13 @@ class RoadtripsController extends AppController
         // ============================================================
         // AJOUT : GESTION DE L'HISTORIQUE
         // ============================================================
-
+        
         // Vérifier si l'utilisateur est connecté
         $identity = $this->request->getAttribute('identity');
-
+        
         if ($identity) {
             $userId = $identity->getIdentifier();
-
+            
             // On charge le modèle Historique (qui pointe vers la table histories)
             $historiqueTable = $this->fetchTable('Historique');
 
@@ -455,9 +455,9 @@ class RoadtripsController extends AppController
                 // CAS A : Il l'a déjà vu -> On met à jour la date pour qu'il remonte en premier
                 // Si tu utilises la colonne 'created', on ne peut pas la changer facilement.
                 // Si tu as 'date_visite', on la met à jour.
-
+                
                 // Option 1 : Si tu as une colonne 'modified' ou 'date_visite'
-                $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
+                $existingHistory->date_visite = new \Cake\I18n\FrozenTime(); 
                 $historiqueTable->save($existingHistory);
             } else {
                 // CAS B : C'est la première fois -> On crée une nouvelle entrée
@@ -465,8 +465,8 @@ class RoadtripsController extends AppController
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
                 // Définir la date (si ce n'est pas automatique via 'created')
-                $newHistory->date_visite = new \Cake\I18n\FrozenTime();
-
+                $newHistory->date_visite = new \Cake\I18n\FrozenTime(); 
+                
                 $historiqueTable->save($newHistory);
             }
         }
@@ -689,7 +689,7 @@ class RoadtripsController extends AppController
     public function deleteHistorique()
     {
         $this->request->allowMethod(['post', 'delete']);
-
+        
         $historiqueTable = $this->fetchTable('Historique');
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
@@ -703,12 +703,14 @@ class RoadtripsController extends AppController
     public function genererRoadtripGratuit()
     {
         $this->request->allowMethod(['post', 'ajax']);
-
+        
+        // 1. Les données envoyées par ton formulaire Javascript
         $depart = $this->request->getData('depart') ?? 'Paris';
         $destination = $this->request->getData('destination') ?? 'Marseille';
         $duree = $this->request->getData('duree') ?? '5 jours';
 
-        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree.
+        // 2. Le Prompt hyper strict pour l'IA
+        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree. 
         Tu dois répondre UNIQUEMENT par un objet JSON valide. Ne dis pas 'bonjour', n'ajoute pas de texte avant ou après.
         Format attendu :
         {
@@ -719,11 +721,14 @@ class RoadtripsController extends AppController
             ]
         }";
 
+        // 3. Appel à l'API gratuite de Gemini
         $client = new Client();
-        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0';
-
+        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0'; // Colle ta clé ici
+        
+        // On utilise le modèle "flash" qui est le plus rapide et inclus dans le plan gratuit
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
+        // Structure requise par Google
         $payload = [
             'contents' => [
                 [
@@ -736,64 +741,28 @@ class RoadtripsController extends AppController
 
         $response = $client->post($url, $payload, ['type' => 'json']);
 
+        // 4. Traitement de la réponse
         if ($response->isOk()) {
             $apiData = $response->getJson();
-
+            
+            // L'API Google range le texte généré à cet endroit précis :
             $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-
+            
+            // ASTUCE DE PRO : Souvent les IA rajoutent "```json" au début. On nettoie la chaîne pour être sûr !
             $aiTextClean = str_replace(['```json', '```'], '', $aiText);
-
+            
+            // On transforme le texte en vrai tableau PHP
             $roadtripGenere = json_decode(trim($aiTextClean), true);
 
             if (json_last_error() === JSON_ERROR_NONE) {
+                // Succès ! On renvoie ça à l'utilisateur
                 return $this->response->withType('application/json')
                     ->withStringBody(json_encode(['success' => true, 'data' => $roadtripGenere]));
             }
         }
 
+        // Si on arrive ici, c'est qu'il y a eu un bug
         return $this->response->withType('application/json')
             ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
-    }
-
-    public function uploadStepImage()
-    {
-        $this->request->allowMethod(['post', 'ajax']);
-        $this->viewBuilder()->disableAutoLayout();
-
-        $image = $this->request->getData('image');
-        $response = ['success' => false, 'message' => 'Aucune image reçue.'];
-
-        if ($image instanceof \Laminas\Diactoros\UploadedFile && $image->getError() === UPLOAD_ERR_OK) {
-            $ext = strtolower(pathinfo($image->getClientFilename(), PATHINFO_EXTENSION));
-            $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-            if (in_array($ext, $allowed)) {
-                $newName = 'step_' . uniqid() . '.' . $ext;
-                $destinationPath = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . 'steps' . DS;
-
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true); // Crée le dossier s'il n'existe pas
-                }
-
-                try {
-                    $image->moveTo($destinationPath . $newName);
-
-                    $url = \Cake\Routing\Router::url('/uploads/roadtrips/steps/' . $newName, true);
-
-                    $response = [
-                        'success' => true,
-                        'url' => $url
-                    ];
-                } catch (\Exception $e) {
-                    $response['message'] = "Erreur lors de l'enregistrement du fichier.";
-                }
-            } else {
-                $response['message'] = "Format d'image non autorisé.";
-            }
-        }
-
-        return $this->response
-            ->withType('application/json')
-            ->withStringBody(json_encode($response));
     }
 }
