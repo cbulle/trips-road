@@ -336,3 +336,24 @@ function formatDuration(seconds) {
     if (h > 0) return `${h}h ${m}min`;
     return `${m} min`;
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    marked.setOptions({
+        breaks: true,
+        gfm: true
+    });
+
+    document.querySelectorAll('.markdown-to-html').forEach(function(el) {
+        const markdownText = el.getAttribute('data-markdown');
+
+        if (markdownText) {
+            const rawHtml = marked.parse(markdownText);
+
+            const cleanHtml = DOMPurify.sanitize(rawHtml);
+
+            el.innerHTML = cleanHtml;
+        } else {
+            el.innerHTML = '';
+        }
+    });
+});

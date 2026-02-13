@@ -580,27 +580,21 @@ class RoadtripsController extends AppController
         return $cakeTrips;
     }
 
-    /**
-     * Affiche l'historique de l'utilisateur
-     */
+
     public function historique()
     {
-        // CORRECTION : On utilise fetchTable au lieu de loadModel
         $historiqueTable = $this->fetchTable('Historique');
 
-        // Récupérer l'ID de l'utilisateur connecté
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Faire la requête sur la table récupérée
         $query = $historiqueTable->find()
             ->contain([
                 'Roadtrips' => [
-                    'Users' 
+                    'Users'
                 ]
             ])
             ->where(['Historique.user_id' => $userId])
-            // Vérifie bien si ta colonne de date s'appelle 'date_visite' ou 'created'
-            ->order(['Historique.date_visite' => 'DESC']); 
+            ->order(['Historique.date_visite' => 'DESC']);
 
         try {
             $historique = $this->paginate($query, ['limit' => 12]);
@@ -611,23 +605,60 @@ class RoadtripsController extends AppController
         $this->set(compact('historique'));
     }
 
-    /**
-     * Action pour le bouton "Tout effacer"
-     */
     public function deleteHistorique()
     {
         $this->request->allowMethod(['post', 'delete']);
-        
-        // CORRECTION : On utilise fetchTable ici aussi
+
         $historiqueTable = $this->fetchTable('Historique');
-        
+
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Suppression via la table récupérée
         $historiqueTable->deleteAll(['user_id' => $userId]);
 
         $this->Flash->success('Votre historique a été vidé.');
 
         return $this->redirect(['action' => 'historique']);
+    }
+
+    public function uploadStepImage()
+    {
+        $this->request->allowMethod(['post', 'ajax']);
+        $this->viewBuilder()->disableAutoLayout();
+
+        $image = $this->request->getData('image');
+        $response = ['success' => false, 'message' => 'Aucune image reçue.'];
+
+        if ($image instanceof \Laminas\Diactoros\UploadedFile && $image->getError() === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($image->getClientFilename(), PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+            if (in_array($ext, $allowed)) {
+                $newName = 'step_' . uniqid() . '.' . $ext;
+                $destinationPath = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . 'steps' . DS;
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+
+                try {
+                    $image->moveTo($destinationPath . $newName);
+
+                    $url = \Cake\Routing\Router::url('/uploads/roadtrips/steps/' . $newName, true);
+
+                    $response = [
+                        'success' => true,
+                        'url' => $url
+                    ];
+                } catch (\Exception $e) {
+                    $response['message'] = "Erreur lors de l'enregistrement du fichier.";
+                }
+            } else {
+                $response['message'] = "Format d'image non autorisé.";
+            }
+        }
+
+        return $this->response
+            ->withType('application/json')
+            ->withStringBody(json_encode($response));
     }
 }

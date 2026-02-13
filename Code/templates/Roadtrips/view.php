@@ -16,7 +16,6 @@ $transportIcons = [
 ];
 $getIcon = fn($m) => $transportIcons[strtolower($m ?? '')] ?? '🚗';
 ?>
-
 <div class="roadtrip-view-container">
 
     <div class="roadtrip-hero">
@@ -132,7 +131,11 @@ $getIcon = fn($m) => $transportIcons[strtolower($m ?? '')] ?? '🚗';
                                         <?php endif; ?>
 
                                         <?php if (!empty($step['obj']->description)): ?>
-                                            <div class="step-desc tinymce-content"><?= $step['obj']->description ?></div>
+                                            <div class="step-desc markdown-to-html"
+                                                 data-markdown="<?= htmlspecialchars($step['obj']->description, ENT_QUOTES, 'UTF-8') ?>">
+                                                <span
+                                                    style="color:#999; font-size:0.85em;">Chargement du texte...</span>
+                                            </div>
                                         <?php endif; ?>
 
                                         <?php if (!empty($step['obj']->sub_step_photos)): ?>
@@ -163,7 +166,8 @@ $getIcon = fn($m) => $transportIcons[strtolower($m ?? '')] ?? '🚗';
                     </div>
 
                     <div class="map-sticky-wrapper">
-                        <div id="map-trajet-<?= $trip->id ?>" class="map-details" style="width:100%; height:100%;"></div>
+                        <div id="map-trajet-<?= $trip->id ?>" class="map-details"
+                             style="width:100%; height:100%;"></div>
                     </div>
 
                 </div>
