@@ -43,14 +43,12 @@ class FriendshipsTable extends Table
         parent::initialize($config);
 
         $this->setTable('friends');
-
-        // Clé primaire composite
-        $this->setPrimaryKey(['user_id', 'friend_id']);
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
 
-        // Utilisateur source
         $this->belongsTo('Users', [
+            'className' => 'Users',
             'foreignKey' => 'user_id',
             'joinType' => 'INNER',
         ]);

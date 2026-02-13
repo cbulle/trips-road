@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     initGlobalMap();
-    calculerTousLesSegments();
+    setTimeout(calculerTousLesSegments, 1000);
 });
 
 const viewMapInstances = {};
@@ -46,15 +46,15 @@ async function initGlobalMap() {
     let colorIndex = 0;
 
     for (const data of roadTripData) {
-        if (!data.hasCoords) continue;
+        if (!data.depart || !data.arrivee) continue;
 
         data.color = colorsPalette[colorIndex % colorsPalette.length];
 
         try {
             await drawRoute(map, data, data.color, false, markersCluster);
 
-            bounds.push([data.depart.lat, data.depart.lon]);
-            bounds.push([data.arrivee.lat, data.arrivee.lon]);
+            if(data.depart.lat) bounds.push([data.depart.lat, data.depart.lon]);
+            if(data.arrivee.lat) bounds.push([data.arrivee.lat, data.arrivee.lon]);
             if(data.sousEtapes) {
                 data.sousEtapes.forEach(s => { if(s.lat) bounds.push([s.lat, s.lon]); });
             }
@@ -76,8 +76,8 @@ async function initStepMap(id) {
 
     if (!divElement) return;
 
-    if (!data || !data.hasCoords) {
-        divElement.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#888;">Coordonnées en attente...</div>';
+    if (!data || !data.depart) {
+        divElement.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#888;">Données en attente...</div>';
         return;
     }
 
@@ -99,7 +99,6 @@ async function initStepMap(id) {
         await drawRoute(map, data, data.color || '#3388ff', true, null);
     }, 100);
 }
-
 async function drawRoute(map, data, color, fitBounds, clusterGroup) {
     let stepCounter = 1;
 
@@ -108,7 +107,7 @@ async function drawRoute(map, data, color, fitBounds, clusterGroup) {
     if(data.sousEtapes) {
         data.sousEtapes.forEach(s => {
             let popup = `<b>📍 ${s.nom}</b>`;
-            if(s.heure) popup += `<br>⏱️ Pause prévue: ${s.heure}`;
+            if(s.heure && s.heure !== "00:00:00") popup += `<br>⏱️ Pause: ${s.heure}`;
             createNumberedMarker(map, s, stepCounter++, color, popup, null, clusterGroup);
         });
     }
@@ -123,7 +122,7 @@ async function drawRoute(map, data, color, fitBounds, clusterGroup) {
         'à pied': 'https://routing.openstreetmap.de/routed-foot'
     };
 
-    const mode = data.mode || 'voiture';
+    const mode = (data.mode || 'voiture').toLowerCase();
     const baseUrl = servers[mode] || servers['voiture'];
 
     let coords = `${data.depart.lon},${data.depart.lat}`;
@@ -140,7 +139,7 @@ async function drawRoute(map, data, color, fitBounds, clusterGroup) {
         const resp = await fetch(url);
         const json = await resp.json();
 
-        if (json.code === 'Ok') {
+        if (json.code === 'Ok' && json.routes[0]) {
             const style = {
                 color: color,
                 weight: 5,
@@ -154,12 +153,13 @@ async function drawRoute(map, data, color, fitBounds, clusterGroup) {
             data.layerBounds = layer.getBounds();
         }
     } catch(e) {
-        console.warn("API Routage échouée, tracé ligne droite.");
+        console.warn("API Routage échouée, tracé ligne droite.", e);
         const points = [[data.depart.lat, data.depart.lon]];
         if(data.sousEtapes) data.sousEtapes.forEach(s => points.push([s.lat, s.lon]));
         points.push([data.arrivee.lat, data.arrivee.lon]);
 
         L.polyline(points, { color: color, dashArray: '5,10' }).addTo(map);
+        if(fitBounds) map.fitBounds(L.latLngBounds(points));
     }
 }
 
@@ -185,13 +185,14 @@ function createNumberedMarker(map, point, number, color, popupText, offset, clus
 window.toggleTrajet = function(id) {
     const content = document.getElementById('sous-etapes-' + id);
     const card = document.getElementById('card-' + id);
+
     const mapGlobal = document.getElementById('map-global');
 
     if (!content || !card) return;
 
-    const isOpening = (content.style.display === 'none' || content.style.display === '');
+    const isHidden = (content.style.display === 'none' || content.style.display === '');
 
-    if (!isOpening) {
+    if (!isHidden) {
         content.style.display = 'none';
         card.classList.remove('active');
         checkToggleGlobalMap();
@@ -206,9 +207,20 @@ window.toggleTrajet = function(id) {
 };
 
 function checkToggleGlobalMap() {
-    const active = document.querySelectorAll('.card-vu.active');
+    const active = document.querySelectorAll('.card-vu.active'); // card-vu est la classe que j'ai remise dans le PHP
     const mapGlobal = document.getElementById('map-global');
-    if(mapGlobal) mapGlobal.style.display = (active.length === 0) ? 'block' : 'none';
+
+    if(mapGlobal) {
+        if (active.length === 0) {
+            mapGlobal.style.display = 'block';
+            setTimeout(() => {
+                const map = L.map('map-global');
+                window.dispatchEvent(new Event('resize'));
+            }, 100);
+        } else {
+            mapGlobal.style.display = 'none';
+        }
+    }
 }
 
 function calculerTousLesSegments() {
@@ -222,7 +234,7 @@ async function processCardTimes(card) {
     const id = card.id.replace('card-', '');
     const data = getTrajetData(id);
 
-    if(!data || !data.hasCoords) return;
+    if(!data || !data.depart) return;
 
     const servers = {
         'voiture': 'https://routing.openstreetmap.de/routed-car',
@@ -248,39 +260,42 @@ async function processCardTimes(card) {
 
             let currentClock = data.heure_depart || '08:00';
 
-            const etapeElements = card.querySelectorAll('.sous-etape-card');
             const segmentInfos = card.querySelectorAll('.segment-info');
+            const stepRows = card.querySelectorAll('.step-row');
 
             legs.forEach((leg, index) => {
-                const durationSec = leg.duration;
-                const distanceKm = (leg.distance / 1000).toFixed(1);
-
                 if(segmentInfos[index]) {
                     const segDiv = segmentInfos[index];
-                    segDiv.querySelector('.segment-distance').textContent = `${distanceKm} km`;
-                    segDiv.querySelector('.segment-time').textContent = formatDuration(durationSec);
-                    segDiv.classList.add('segment-calculated');
+                    const distKm = (leg.distance / 1000).toFixed(1);
+
+                    segDiv.querySelector('.segment-distance').textContent = `${distKm} km`;
+                    segDiv.querySelector('.segment-time').textContent = formatDuration(leg.duration);
+
+                    segDiv.querySelectorAll('.segment-loader').forEach(el => el.remove());
                 }
 
-                const arrivalClock = addTime(currentClock, durationSec);
+                const arrivalClock = addTime(currentClock, leg.duration);
 
-                const targetCard = etapeElements[index + 1];
+                const targetRow = stepRows[index + 1];
 
-                if (targetCard) {
-                    const loader = targetCard.querySelector('.horaire-calcule');
-                    const pauseStr = targetCard.dataset.pause;
-                    const isLast = !targetCard.nextElementSibling;
+                if (targetRow) {
+                    const loader = targetRow.querySelector('.horaire-calcule');
 
                     if(loader) {
+                        const stepCard = targetRow.querySelector('.step-card');
+                        const pauseStr = stepCard ? stepCard.getAttribute('data-pause') : '00:00';
+                        const pauseSec = durationToSeconds(pauseStr);
+
+                        const isLast = (index === legs.length - 1);
+
                         if (isLast) {
                             loader.innerHTML = `🏁 Arrivée : <strong>${arrivalClock}</strong>`;
                         } else {
                             let html = `⏰ Arrivée : <strong>${arrivalClock}</strong>`;
 
-                            if (pauseStr && pauseStr !== '00:00' && pauseStr !== '00:00:00') {
-                                const pauseSeconds = durationToSeconds(pauseStr);
-                                const departureClock = addTime(arrivalClock, pauseSeconds);
-                                html += `<br><span class="horaire-depart-etape" style="color:var(--vert); display:block; margin-top:5px;">🚀 Repart : <strong>${departureClock}</strong></span>`;
+                            if (pauseSec > 0) {
+                                const departureClock = addTime(arrivalClock, pauseSec);
+                                html += `<br><span class="horaire-depart-etape" style="color:var(--vert); display:block; margin-top:5px; font-size:0.85em;">🚀 Repart : <strong>${departureClock}</strong></span>`;
                                 currentClock = departureClock;
                             } else {
                                 currentClock = arrivalClock;
@@ -309,10 +324,9 @@ function addTime(startTime, secondsToAdd) {
 function durationToSeconds(timeStr) {
     if(!timeStr) return 0;
     const parts = timeStr.split(':').map(Number);
-    let seconds = (parts[0] * 3600) + (parts[1] * 60);
-    if(parts.length === 3) {
-        seconds += parts[2];
-    }
+    let seconds = 0;
+    if(parts.length >= 2) seconds += (parts[0] * 3600) + (parts[1] * 60);
+    if(parts.length === 3) seconds += parts[2];
     return seconds;
 }
 
@@ -322,3 +336,24 @@ function formatDuration(seconds) {
     if (h > 0) return `${h}h ${m}min`;
     return `${m} min`;
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    marked.setOptions({
+        breaks: true,
+        gfm: true
+    });
+
+    document.querySelectorAll('.markdown-to-html').forEach(function(el) {
+        const markdownText = el.getAttribute('data-markdown');
+
+        if (markdownText) {
+            const rawHtml = marked.parse(markdownText);
+
+            const cleanHtml = DOMPurify.sanitize(rawHtml);
+
+            el.innerHTML = cleanHtml;
+        } else {
+            el.innerHTML = '';
+        }
+    });
+});

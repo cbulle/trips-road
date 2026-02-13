@@ -1,71 +1,111 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var object $conversation
  * @var object $ami
  * @var array $messages
  * @var int $userId
  * @var int $amiId
+ * @var array $enriched
  */
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messagerie</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="/css/messagerie.css">
-</head>
-<body>
+
 <main class="main-index">
     <div class="messagerie-container">
         <div class="conversations-list">
             <h2>Mes messages</h2>
-            <a href="<?= $this->Url->build(['action' => 'index']) ?>" class="back-button">
-                <i class="material-icons">arrow_back</i> Retour
-            </a>
-        </div>
 
-        <div class="chat-area">
-            <div class="chat-header">
-                <span><?= h($ami->prenom . ' ' . $ami->nom) ?></span>
-            </div>
-
-            <div class="messages-container" id="messagesContainer">
-                <?php foreach ($messages as $message): ?>
-                    <div class="message <?= ($message->sender_id === $userId) ? 'sent' : 'received' ?>">
-                        <div class="message-text">
-                            <?= h($message->body) ?>
+            <?php if (empty($enriched)): ?>
+                <p class="no-conversations">Aucune conversation</p>
+            <?php else: ?>
+                <?php foreach ($enriched as $conv): ?>
+                    <a href="<?= $this->Url->build(['action' => 'view', $conv->id]) ?>"
+                       class="conversation-item">
+                        <div class="conv-header">
+                                <span class="conv-name">
+                                    <?= h($conv->ami->prenom . ' ' . $conv->ami->nom) ?>
+                                </span>
+                            <?php if ($conv->unread_count > 0): ?>
+                                <span class="badge-unread"><?= $conv->unread_count ?></span>
+                            <?php endif; ?>
                         </div>
-                        <span class="message-time">
-                                <?= $message->created->format('H:i') ?>
-                            </span>
-                    </div>
+                        <p class="conv-preview">
+                            <?= h(mb_substr($conv->last_message, 0, 50)) ?>
+                        </p>
+                    </a>
                 <?php endforeach; ?>
-            </div>
+            <?php endif; ?>
+        </div>
+        <div class="chat-area">
 
-            <form class="message-form" id="messageForm" method="post" action="<?= $this->Url->build(['action' => 'sendMessage']) ?>">
-                    <textarea
-                        name="body"
-                        id="messageInput"
-                        placeholder="Votre message..."
-                        required></textarea>
+            <?php if (!empty($ami)): ?>
+
+                <div class="chat-header">
+                    <div class="chat-user-info">
+                        <?php if (!empty($ami->profile_picture)): ?>
+                            <img src="/uploads/pp/<?= h($ami->profile_picture) ?>">
+                        <?php else: ?>
+                            <div class="avatar-placeholder">
+                                <?= strtoupper(substr($ami->prenom, 0, 1)) ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <span><?= h($ami->prenom . ' ' . $ami->nom) ?></span>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messagesContainer">
+                    <?php foreach ($messages as $msg): ?>
+                        <div class="message <?= ($msg->sender_id == $userId) ? 'sent' : 'received' ?>">
+
+                            <?php if ($msg->sender_id != $userId): ?>
+                                <div class="message-avatar">
+                                    <?php if (!empty($ami->profile_picture)): ?>
+                                        <img src="/uploads/pp/<?= h($ami->profile_picture) ?>">
+                                    <?php else: ?>
+                                        <div class="avatar-placeholder-small">
+                                            <?= strtoupper(substr($ami->prenom, 0, 1)) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="message-content">
+                                <p><?= nl2br(h($msg->body)) ?></p>
+                                <span class="message-time">
+                                    <?= $msg->created->format('H:i') ?>
+                                </span>
+                            </div>
+
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <?= $this->Form->create(null, [
+                'url' => ['controller' => 'Messages', 'action' => 'sendMessage'], // On force l'action ici
+                'class' => 'message-form'
+            ]) ?>
+                <?= $this->Form->hidden('ami_id', ['value' => $amiId]) ?>
+                <?= $this->Form->control('body', [
+                'type' => 'textarea',
+                'label' => false,
+                'placeholder' => 'Écrivez votre message...',
+                'required' => true
+            ]) ?>
                 <button type="submit">
                     <i class="material-icons">send</i>
                 </button>
-            </form>
+                <?= $this->Form->end() ?>
+
+            <?php else: ?>
+
+                <div class="no-chat-selected">
+                    <i class="material-icons" id="chat_icon">chat_bubble</i>
+                    <p class="aaaa">Sélectionnez une conversation</p>
+                </div>
+
+            <?php endif; ?>
+
         </div>
     </div>
 </main>
-
-<script>
-    window.conversationId = <?= json_encode($conversation->id) ?>;
-    window.userId = <?= json_encode($userId) ?>;
-    window.amiId = <?= json_encode($amiId) ?>;
-</script>
-
-<script src="/js/messagerie.js"></script>
-</body>
-</html>
