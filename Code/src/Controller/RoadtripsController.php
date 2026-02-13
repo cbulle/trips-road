@@ -72,7 +72,7 @@ class RoadtripsController extends AppController
                 $favorisIds = [];
             }
         }
-
+// légère modifs a faire 
         $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
