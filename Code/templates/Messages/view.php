@@ -5,6 +5,7 @@
  * @var array $messages
  * @var int $userId
  * @var int $amiId
+ * @var array $enriched
  */
 ?>
 
@@ -81,7 +82,7 @@
                 </div>
 
                 <?= $this->Form->create(null, [
-                'url' => ['action' => 'sendMessage'],
+                'url' => ['controller' => 'Messages', 'action' => 'sendMessage'], // On force l'action ici
                 'class' => 'message-form'
             ]) ?>
                 <?= $this->Form->hidden('ami_id', ['value' => $amiId]) ?>

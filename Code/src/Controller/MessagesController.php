@@ -1,29 +1,21 @@
 <?php
 namespace App\Controller;
-
+use App\Model\Entity\Message;
 use Cake\Http\Exception\ForbiddenException;
 
 class MessagesController extends AppController
 {
     /**
-     * Liste des conversations
+     * Méthode privée pour récupérer la liste des conversations (DRY)
      */
-    public function index()
+    private function _getConversationsList($userId)
     {
-        $userId = $this->Authentication->getIdentity()->getIdentifier();
-
         $messagesTable = $this->fetchTable('Messages');
-        $usersTable    = $this->fetchTable('Users');
+        $usersTable = $this->fetchTable('Users');
 
         // Dernier message par ami
         $lastMessages = $messagesTable->find()
-            ->select([
-                'id',
-                'sender_id',
-                'recipient_id',
-                'body',
-                'created'
-            ])
+            ->select(['id', 'sender_id', 'recipient_id', 'body', 'created'])
             ->where([
                 'OR' => [
                     'sender_id' => $userId,
@@ -36,7 +28,7 @@ class MessagesController extends AppController
         $conversations = [];
 
         foreach ($lastMessages as $msg) {
-            $amiId = ($msg->sender_id === $userId)
+            $amiId = ($msg->sender_id == $userId)
                 ? $msg->recipient_id
                 : $msg->sender_id;
 
@@ -44,6 +36,7 @@ class MessagesController extends AppController
                 continue;
             }
 
+            // On récupère l'ami (attention s'il n'existe plus, ajouter un try/catch serait mieux)
             $ami = $usersTable->get($amiId);
 
             $unreadCount = $messagesTable->find()
@@ -57,30 +50,37 @@ class MessagesController extends AppController
             $conversations[$amiId] = (object)[
                 'id' => $amiId,
                 'ami' => $ami,
-                'last_message' => $msg->body,
+                'last_message' => $msg->body, // Sera décrypté automatiquement par l'Entité (voir étape 2)
                 'unread_count' => $unreadCount
             ];
         }
 
+        return array_values($conversations);
+    }
+
+    public function index()
+    {
+        $userId = $this->Authentication->getIdentity()->getIdentifier();
+
+        // Appel de la méthode partagée
+        $enriched = $this->_getConversationsList($userId);
+
         $this->set([
-            'enriched' => array_values($conversations),
+            'enriched' => $enriched,
             'userId' => $userId
         ]);
     }
 
-    /**
-     * Démarrer une discussion avec un ami
-     */
     public function start($amiId = null)
     {
         $userId = $this->Authentication->getIdentity()->getIdentifier();
-        $amiId  = (int)$amiId;
+        $amiId = (int)$amiId;
 
         if ($userId === $amiId) {
             throw new ForbiddenException();
         }
 
-        // Vérifier qu'ils sont amis
+        // Vérification amitié
         $isFriend = $this->fetchTable('Friendships')->find()
             ->where([
                 'status' => 'accepted',
@@ -98,17 +98,17 @@ class MessagesController extends AppController
         return $this->redirect(['action' => 'view', $amiId]);
     }
 
-    /**
-     * Voir une discussion
-     */
     public function view($amiId = null)
     {
         $userId = $this->Authentication->getIdentity()->getIdentifier();
-        $amiId  = (int)$amiId;
+        $amiId = (int)$amiId;
 
         if (!$amiId) {
             return $this->redirect(['action' => 'index']);
         }
+
+        // 1. On récupère la liste des conversations pour la sidebar (CORRECTION DU BUG)
+        $enriched = $this->_getConversationsList($userId);
 
         $ami = $this->fetchTable('Users')->get($amiId);
 
@@ -124,16 +124,10 @@ class MessagesController extends AppController
 
         // Marquer comme lus
         $this->fetchTable('Messages')->updateAll(
-            [
-                'is_read' => 1,
-                'read_at' => date('Y-m-d H:i:s')
-            ],
-            [
-                'sender_id' => $amiId,
-                'recipient_id' => $userId,
-                'is_read' => 0
-            ]
+            ['is_read' => 1, 'read_at' => date('Y-m-d H:i:s')],
+            ['sender_id' => $amiId, 'recipient_id' => $userId, 'is_read' => 0]
         );
+
         $conversation_id = $amiId;
 
         $this->set(compact(
@@ -141,34 +135,54 @@ class MessagesController extends AppController
             'ami',
             'userId',
             'amiId',
-            'conversation_id'
+            'conversation_id',
+            'enriched' // On passe la variable à la vue
         ));
     }
 
-    /**
-     * Envoyer un message
-     */
     public function sendMessage()
     {
         $this->request->allowMethod(['post']);
-
         $userId = $this->Authentication->getIdentity()->getIdentifier();
-        $amiId  = (int)$this->request->getData('ami_id');
-        $body   = trim($this->request->getData('body'));
+        $amiId = (int)$this->request->getData('ami_id');
+        $body = trim($this->request->getData('body'));
 
-        if ($body === '') {
-            return $this->redirect($this->referer());
+        $messagesTable = $this->fetchTable('Messages');
+        $convTable = $this->fetchTable('Conversations');
+
+        // 1. Trouver ou créer la conversation D'ABORD
+        $conversation = $convTable->find()
+            ->where(['OR' => [
+                ['user_one_id' => $userId, 'user_two_id' => $amiId],
+                ['user_one_id' => $amiId, 'user_two_id' => $userId],
+            ]])->first();
+
+        if (!$conversation) {
+            $conversation = $convTable->newEmptyEntity();
+            $conversation = $convTable->patchEntity($conversation, [
+                'user_one_id' => $userId,
+                'user_two_id' => $amiId
+            ]);
+            $convTable->save($conversation);
         }
 
-        $message = $this->fetchTable('Messages')->newEntity([
+        // 2. Créer le message en une seule fois avec toutes les données
+        // Le fait de passer 'body' dans le tableau de patchEntity FORCE l'appel à _setBody
+        $message = $messagesTable->newEmptyEntity();
+        $data = [
             'sender_id' => $userId,
             'recipient_id' => $amiId,
+            'conversation_id' => $conversation->id,
             'body' => $body,
             'is_read' => 0
-        ]);
+        ];
 
-        $this->fetchTable('Messages')->saveOrFail($message);
+        $message = $messagesTable->patchEntity($message, $data);
 
-        return $this->redirect(['action' => 'view', $amiId]);
+        if ($messagesTable->save($message)) {
+            return $this->redirect(['action' => 'view', $amiId]);
+        } else {
+            // ... gestion erreur
+        }
     }
 }
