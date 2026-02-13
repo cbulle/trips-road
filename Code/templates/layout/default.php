@@ -212,14 +212,17 @@ $mainClass = $this->fetch('mainClass', 'main-index');
 <?= $this->Html->script('https://code.jquery.com/jquery-3.6.0.min.js') ?>
 <?= $this->Html->script('https://code.jquery.com/ui/1.13.3/jquery-ui.min.js') ?>
 
-<?php // echo $this->Html->script('/js/tinymce/tinymce.min.js'); ?>
-
 <?php
 if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
     ?>
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script src="https://uicdn.toast.com/editor/latest/i18n/fr-fr.min.js"></script>
 <?php endif; ?>
 
+<?php if ($controller === 'Roadtrips' && $action === 'view'): ?>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<?php endif; ?>
 <?= $this->Html->script([
     'encryption',
     'index',
