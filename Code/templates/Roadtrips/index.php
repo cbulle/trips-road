@@ -3,42 +3,54 @@
         <h1>Prêt pour l'aventure ?</h1>
         <p>Créez votre propre itinéraire ou découvrez ceux de la communauté.</p>
         <div class="hero-buttons">
-            <a href="/creationRoadTrip" class="btn-action primary">
+            <a href="/add_r_t" class="btn-action primary">
                 <span>➕</span> Créer un Road Trip
             </a>
-            <a href="/roadtrips/public" class="btn-action secondary">
+            <a href="/public_r_t" class="btn-action secondary">
                 <span>🌍</span> Voir les Road Trips Publics
             </a>
         </div>
     </div>
 </section>
 
-<section class="featured-section">
+
+    <section class="featured-section">
     <h2>🌟 À la une</h2>
+    
     <div class="roadtrips-grid">
-        <article class="mini-card">
-            <div class="card-img" style="background-image: url('img/exemple1.jpg');"></div>
-            <div class="card-info">
-                <h3>Tour de Corse</h3>
-                <span class="badge">Terminé</span>
-            </div>
-        </article>
+        <?php if (isset($randomRoadtrips) && !$randomRoadtrips->isEmpty()): ?>
+            
+            <?php foreach ($randomRoadtrips as $rt): ?>
+                <?php
+                $urlImage = '/img/imgBase.png'; 
+                
+                if (!empty($rt->photo_url)) { 
+                    $cheminPhysique = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $rt->photo_url;
+                    if (file_exists($cheminPhysique)) {
+                        $urlImage = '/uploads/roadtrips/' . $rt->photo_url;
+                    }
+                }
+                ?>
 
-        <article class="mini-card">
-            <div class="card-img" style="background-image: url('img/exemple2.jpg');"></div>
-            <div class="card-info">
-                <h3>Alpes Suisses</h3>
-                <span class="badge">Brouillon</span>
+                <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'view', $rt->id]) ?>" class="mini-card-link" style="text-decoration:none; color:inherit; display:block;">
+                    <article class="mini-card">
+                        <div class="card-img" style="background-image: url('<?= $this->Url->build($urlImage) ?>');"></div>
+                        
+                        <div class="card-info">
+                            <h3><?= h($rt->title) ?></h3>
+                            
+                            <span class="badge">Terminé</span>
+                        </div>
+                    </article>
+                </a>
+            <?php endforeach; ?>
+            
+        <?php else: ?>
+            <div style="text-align:center; grid-column: 1 / -1; padding: 20px; background:white; border-radius:10px;">
+                <p style="color:#666; font-size: 1.1rem;">Aucun road trip à la une pour le moment.</p>
+                <p>Soyez le premier à en publier un !</p>
             </div>
-        </article>
-
-        <article class="mini-card">
-            <div class="card-img" style="background-image: url('img/exemple3.jpg');"></div>
-            <div class="card-info">
-                <h3>Route 66</h3>
-                <span class="badge">Terminé</span>
-            </div>
-        </article>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -103,7 +115,7 @@
         </div>
     </div>
 
-    <div id="userMap"></div>
+    <div id="map"></div>
 </section>
 
 <script>
@@ -113,11 +125,10 @@
 
         sidebar.classList.toggle('closed');
 
-        // Change la flèche de sens
         if (sidebar.classList.contains('closed')) {
-            icon.innerHTML = "▶"; // Flèche vers la droite pour ouvrir
+            icon.innerHTML = "▶"; 
         } else {
-            icon.innerHTML = "◀"; // Flèche vers la gauche pour fermer
+            icon.innerHTML = "◀";
         }
     }
 </script>

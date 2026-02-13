@@ -96,7 +96,7 @@
 
 .card-img {
     height: 180px;
-    background-color: #ddd; /* Couleur de fond si pas d'image */
+    background-color: #ddd;
     background-size: cover;
     background-position: center;
 }
@@ -126,17 +126,17 @@
    SECTION 3 : MAP FULL WIDTH & SIDEBAR
 ============================== */
 .full-map-container {
-    position: relative; /* Important pour le positionnement absolu des enfants */
+    position: relative;
     width: 100%;
-    height: 70vh; /* Hauteur de la carte (70% de la hauteur écran) */
+    height: 70vh;
     min-height: 500px;
-    overflow: hidden; /* Empêche le débordement */
+    overflow: hidden;
 }
 
 #userMap {
     width: 100%;
     height: 100%;
-    z-index: 1; /* La carte est au fond */
+    z-index: 1;
 }
 
 /* --- BARRE DE RECHERCHE FLOTTANTE --- */
@@ -147,7 +147,7 @@
     transform: translateX(-50%);
     width: 90%;
     max-width: 500px;
-    z-index: 100; /* Au dessus de la carte */
+    z-index: 100;
 }
 
 .search-input-group {
@@ -181,36 +181,28 @@
     left: 20px;
     bottom: 20px;
     width: 320px;
-
-    /* MODIFICATION : On enlève le fond et l'ombre ici */
     background: transparent;
     box-shadow: none;
-
     z-index: 90;
     transition: transform 0.3s ease-in-out;
     display: flex;
     flex-direction: column;
-    pointer-events: none; /* Laisse passer les clics autour si transparent */
+    pointer-events: none;
 }
 
-/* Important : on réactive les clics sur les enfants */
 .map-sidebar > * {
     pointer-events: auto;
 }
 
 .sidebar-content {
-    /* MODIFICATION : On déplace le style visuel ici */
-    background: rgba(255, 255, 255, 0.95); /* Ou var(--beige_fonce) */
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(5px);
     border-radius: 15px;
     box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-
     padding: 20px;
     overflow-y: auto;
     flex: 1;
     height: 100%;
-
-    /* MAGIE : On le met au-dessus du bouton */
     position: relative;
     z-index: 10;
 }
@@ -222,38 +214,33 @@
     transform: translateY(-50%);
     width: 24px;
     height: 40px;
-
     background-color: var(--bleu_clair);
     color: white;
     border: none;
     border-radius: 0 8px 8px 0;
     cursor: pointer;
-
     display: flex;
     align-items: center;
     justify-content: flex-end;
     z-index: -1;
     box-shadow: 3px 0 5px rgba(0,0,0,0.2);
-
     font-size: 0.8rem;
     transition: background-color 0.2s;
 }
-
 
 .sidebar-toggle #toggleIcon{
     position: relative;
     left: 25px;
 }
+
 .sidebar-toggle:hover {
-    background-color: var(--bleu_fonce); /* Changement de couleur au survol */
+    background-color: var(--bleu_fonce);
 }
 
-/* ÉTAT FERMÉ */
 .map-sidebar.closed {
-    transform: translateX(-340px); /* Cache la sidebar vers la gauche */
+    transform: translateX(-340px);
 }
 
-/* --- Styles internes de la sidebar (récupérés de ton code) --- */
 .category-header {
     border-bottom: 2px solid var(--gris_clair);
     padding-bottom: 10px;
@@ -289,28 +276,189 @@
     cursor: pointer;
 }
 
+/* =======================================================
+   NOUVEAU : LAYOUT DASHBOARD (Mes Roadtrips / Publics)
+   C'est ici que la magie opère pour remettre la sidebar à gauche
+======================================================= */
+
+/* 1. Le conteneur principal : Active le mode colonnes Flexbox */
+.dashboard-container {
+    display: flex;             
+    align-items: flex-start;   
+    gap: 40px;                 
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: 80vh;
+}
+
+/* 2. La Sidebar : On fixe sa largeur et sa position */
+.profil-sidebar {
+    width: 280px !important;   
+    flex-shrink: 0;            
+    background: var(--beige_fonce, #E0C58B);
+    padding: 20px;
+    border-radius: 13px;
+    position: sticky;
+    top: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    z-index: 10;
+}
+
+/* Titre et boutons dans la sidebar */
+.profil-sidebar .sidebar-title {
+    font-size: 1.2rem;
+    color: var(--bleu_fonce);
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 10px;
+}
+
+.sidebar-create-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: var(--orange);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+    text-decoration: none;
+}
+.sidebar-create-btn:hover {
+    transform: translateY(-2px);
+    background-color: var(--orange_sombre);
+}
+
+/* Navigation latérale */
+.profil-nav ul {
+    list-style: none;
+    padding: 0;
+}
+.profil-nav li {
+    margin-bottom: 5px;
+}
+.profil-nav a {
+    display: block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: var(--bleu_fonce_ecriture);
+    transition: background 0.3s;
+    text-decoration: none;
+}
+.profil-nav a:hover, .profil-nav a.active {
+    background-color: rgba(255,255,255,0.5);
+    font-weight: bold;
+    color: var(--bleu_fonce);
+}
+.profil-nav a.logout {
+    color: var(--rouge);
+    margin-top: 15px;
+    border: 1px solid rgba(191,9,47,0.2);
+}
+
+/* 3. La zone de droite (Grille de contenu) */
+.dashboard-content, 
+.roadtrip-grid {
+    flex: 1;                   
+    width: 0; /* Évite les débordements */
+}
+
+/* 4. La grille des cartes (3 colonnes auto) */
+.roadtrip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* Style des cartes dans la grille */
+.roadtrip-card {
+    background: white;
+    border-radius: 13px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.roadtrip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+.roadtrip-photo {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+.card-body {
+    padding: 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.roadtrip-actions {
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    background: #f9f9f9;
+}
+.action-btn {
+    color: var(--gris_clair);
+    transition: color 0.2s;
+    text-decoration: none;
+}
+.action-btn:hover { color: var(--bleu_fonce); }
+.action-btn.delete:hover { color: var(--rouge); }
+
+/* Badges */
+.card-badges {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+}
+.badge-statut {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.statut-termine { background-color: var(--vert); color: white; }
+.statut-brouillon { background-color: var(--beige); color: var(--orange_sombre); border: 1px solid var(--orange); }
+
 /* ==============================
-   RESPONSIVE
+   RESPONSIVE GLOBAL
 ============================== */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    /* Dashboard passe en colonne */
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .profil-sidebar {
+        width: 100% !important;
+        position: relative;
+        top: 0;
+        margin-bottom: 30px;
+    }
+    
+    /* Map Homepage */
     .full-map-container {
         height: 60vh;
     }
-
-    /* Sur mobile, la sidebar prend tout l'écran quand ouverte ou reste en bas ? */
-    /* Option : On la cache par défaut sur mobile */
     .map-sidebar {
         width: 280px;
-        transform: translateX(-300px); /* Fermé par défaut sur mobile si on veut */
+        transform: translateX(-300px);
     }
-
-    .map-sidebar.open { /* Si on veut l'ouvrir */
+    .map-sidebar.open {
         transform: translateX(0);
-    }
-
-    /* Bouton toggle plus visible sur mobile */
-    .sidebar-toggle {
-        height: 50px;
-        width: 40px;
     }
 }

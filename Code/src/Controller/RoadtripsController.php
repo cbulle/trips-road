@@ -28,18 +28,52 @@ class RoadtripsController extends AppController
 
     public function index()
     {
+        $identity = $this->request->getAttribute('identity');
+        $userId = $identity ? $identity->getIdentifier() : null;
+
+        $user = null;
+        if ($userId) {
+            $user = $this->fetchTable('Users')->get($userId);
+        }
+
         $this->paginate = [
             'limit' => 12,
+            'order' => ['Roadtrips.id' => 'DESC']
         ];
 
         $query = $this->Roadtrips->find()
             ->contain(['Users'])
             ->where(['visibility' => 'public'])
-            ->order(['Roadtrips.created' => 'DESC']);
+            ->order(['Roadtrips.id' => 'DESC']);
 
         $roadtrips = $this->paginate($query);
 
-        $this->set(compact('roadtrips'));
+        $randomRoadtrips = $this->Roadtrips->find()
+            ->contain(['Users'])
+            ->where([
+                'visibility' => 'public',
+                'status' => 'completed'
+            ])
+            ->order('RAND()')
+            ->limit(3)
+            ->all();
+
+        $favorisIds = [];
+        if ($userId) {
+            try {
+                $favoritesTable = $this->fetchTable('Favorites');
+                $favorisIds = $favoritesTable->find()
+                    ->select(['roadtrip_id'])
+                    ->where(['user_id' => $userId])
+                    ->all()
+                    ->extract('roadtrip_id')
+                    ->toArray();
+            } catch (\Exception $e) {
+                $favorisIds = [];
+            }
+        }
+
+        $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
     public function getLieuxFavoris()
