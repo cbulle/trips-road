@@ -802,11 +802,53 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const editor = new toastui.Editor({
                 el: document.querySelector('#' + uniqueId),
-                height: '300px',
-                initialEditType: 'markdown',
+                height: '350px',
+                initialEditType: 'wysiwyg',
                 previewStyle: 'vertical',
                 initialValue: data.remarque || '',
-                usageStatistics: false
+                placeholder: 'Décrivez cette étape et glissez-y vos photos !',
+                language: 'fr-FR',
+                usageStatistics: false,
+                hideModeSwitch: true,
+                toolbarItems: [
+                    ['heading', 'bold', 'italic', 'strike'],
+                    ['hr', 'quote'],
+                    ['ul', 'ol', 'task'],
+                    ['image', 'link']
+                ],
+                hooks: {
+                    addImageBlobHook: async (blob, callback) => {
+                        try {
+                            const compressedFile = await compresserImageJS(blob, 0.7, 1200);
+
+                            const formData = new FormData();
+                            formData.append('image', compressedFile);
+
+                            const response = await fetch(UPLOAD_IMAGE_URL, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-Token': CSRF_TOKEN
+                                }
+                            });
+
+                            if (response.ok) {
+                                const result = await response.json();
+                                if (result.success && result.url) {
+                                    callback(result.url, "Photo de l'étape");
+                                } else {
+                                    alert("Erreur serveur : " + result.message);
+                                }
+                            } else {
+                                alert("Échec de la connexion lors de l'envoi de l'image.");
+                            }
+                        } catch (error) {
+                            console.error("Erreur hook image:", error);
+                            alert("Impossible de traiter cette image.");
+                        }
+                    }
+                }
             });
 
             subStepEditors[uniqueId] = editor;

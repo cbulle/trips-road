@@ -15,6 +15,7 @@ $this->assign('mainClass', '');
     const USER_DEFAULT_CITY = "<?= h($userDefaultCity) ?>";
     const MODE_EDITION = <?= json_encode($modeEdition) ?>;
     const URL_GET_FAVORIS = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'getLieuxFavoris']) ?>";
+    const UPLOAD_IMAGE_URL = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'uploadStepImage']) ?>";
 
     const EXISTING_ROADTRIP = <?= json_encode([
         'id' => $roadtrip->id,
