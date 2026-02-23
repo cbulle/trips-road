@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Utility\Security;
+use Cake\Core\Configure;
 /**
  * Message Entity
  *
@@ -33,44 +35,36 @@ class Message extends Entity
      *
      * @var array<string, bool>
      */
-    private const CRYPTO_METHOD = 'aes-256-cbc';
-    private const CRYPTO_KEY = 'z%C*F-JaNdRgUkXp2s5v8y/B?E(G+KbP';
+
     protected array $_accessible = [
-        'conversation_id' => true,
-        'sender_id' => true,
-        'recipient_id' => true,
-        'body' => true,
-        'is_read' => true,
-        'created' => true,
-        'delivered_at' => true,
-        'read_at' => true,
-        'nonce' => true,
-        'conversation' => true,
-        'sender' => true,
-        'recipient' => true,
+        '*' => true,
+        'id' => false,
     ];
+
+
 
     /**
      * Mutateur : Chiffre le message avant la sauvegarde
      */
-    protected function _setBody(string $value): string
+    protected function _setBody(?string $value): ?string
     {
-        $ivLength = openssl_cipher_iv_length(self::CRYPTO_METHOD);
-        $iv = openssl_random_pseudo_bytes($ivLength);
-        $encrypted = openssl_encrypt($value, self::CRYPTO_METHOD, self::CRYPTO_KEY, 0, $iv);
+        if ($value === null || $value === '') {
+            return $value;
+        }
 
-        // On retourne la version cryptée qui sera écrite en BD
-        return base64_encode($iv . '::' . $encrypted);
+        $key = Configure::read('Security.messageKey');
+
+        return Security::encrypt($value, $key);
     }
 
-    protected function _getBody($value): string
-    {
-        if (empty($value)) return '';
-        $decoded = base64_decode($value, true);
-        if ($decoded === false || strpos($decoded, '::') === false) return (string)$value;
-
-        list($iv, $encrypted) = explode('::', $decoded, 2);
-        $decrypted = openssl_decrypt($encrypted, self::CRYPTO_METHOD, self::CRYPTO_KEY, 0, $iv);
-        return $decrypted ?: (string)$value;
+protected function _getBody(?string $value): ?string
+{
+    if ($value === null || $value === '') {
+        return $value;
     }
+
+    $key = Configure::read('Security.messageKey');
+
+    return Security::decrypt($value, $key);
+}
 }
