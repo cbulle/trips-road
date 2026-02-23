@@ -141,46 +141,51 @@ class MessagesController extends AppController
     }
 
     public function sendMessage()
-    {
-        $this->request->allowMethod(['post']);
-        $userId = $this->Authentication->getIdentity()->getIdentifier();
-        $amiId = (int)$this->request->getData('ami_id');
+{
+    $this->request->allowMethod(['post']);
+    $userId = $this->Authentication->getIdentity()->getIdentifier();
+    $amiId = (int)$this->request->getData('ami_id');
+    $body = trim($this->request->getData('body'));
 
-        $body = trim($this->request->getData('body'));
+    $messagesTable = $this->fetchTable('Messages');
+    $convTable = $this->fetchTable('Conversations');
 
-        $messagesTable = $this->fetchTable('Messages');
-        $convTable = $this->fetchTable('Conversations');
+    // 1. Trouver ou créer la conversation
+    $conversation = $convTable->find()
+        ->where(['OR' => [
+            ['user_one_id' => $userId, 'user_two_id' => $amiId],
+            ['user_one_id' => $amiId, 'user_two_id' => $userId],
+        ]])->first();
 
-        // 1. Trouver ou créer la conversation D'ABORD
-        $conversation = $convTable->find()
-            ->where(['OR' => [
-                ['user_one_id' => $userId, 'user_two_id' => $amiId],
-                ['user_one_id' => $amiId, 'user_two_id' => $userId],
-            ]])->first();
+    if (!$conversation) {
+        $conversation = $convTable->newEmptyEntity();
+        $conversation = $convTable->patchEntity($conversation, [
+            'user_one_id' => $userId,
+            'user_two_id' => $amiId
+        ]);
+        $convTable->save($conversation);
+    }
 
-        if (!$conversation) {
-            $conversation = $convTable->newEmptyEntity();
-            $conversation = $convTable->patchEntity($conversation, [
-                'user_one_id' => $userId,
-                'user_two_id' => $amiId
-            ]);
-            $convTable->save($conversation);
-        }
+    // 2. Créer le message
+    $message = $messagesTable->newEmptyEntity();
 
-        // 2. Créer le message en une seule fois avec toutes les données
-        // Le fait de passer 'body' dans le tableau de patchEntity FORCE l'appel à _setBody
-        $message = $messagesTable->newEmptyEntity();
-        $data = [
-            'sender_id' => $userId,
-            'recipient_id' => $amiId,
-            'conversation_id' => $conversation->id,
-            'body' => $body,
-            'is_read' => 0
-        ];
+    // On patche tout SAUF le body d'abord
+    $message = $messagesTable->patchEntity($message, [
+        'sender_id' => $userId,
+        'recipient_id' => $amiId,
+        'conversation_id' => $conversation->id,
+        'is_read' => 0
+    ]);
 
-        $message = $messagesTable->patchEntity($message, $data);
+    // On assigne le body manuellement pour déclencher le chiffrement (_setBody)
+    $message->body = $body;
 
-        $messagesTable->save($message);
-            return $this->redirect(['action' => 'view', $amiId]);
-       }
+    if ($messagesTable->save($message)) {
+        return $this->redirect(['action' => 'view', $amiId]);
+    }
+    
+    return $this->redirect(['action' => 'view', $amiId]);
+}
+
+    
 }

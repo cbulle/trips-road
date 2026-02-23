@@ -46,6 +46,7 @@ class Message extends Entity
     /**
      * Mutateur : Chiffre le message avant la sauvegarde
      */
+
     protected function _setBody(?string $value): ?string
     {
         if ($value === null || $value === '') {
@@ -53,18 +54,31 @@ class Message extends Entity
         }
 
         $key = Configure::read('Security.messageKey');
-
+        
+        // On chiffre. Le résultat binaire est parfait pour un LONGBLOB.
         return Security::encrypt($value, $key);
     }
 
-protected function _getBody(?string $value): ?string
-{
-    if ($value === null || $value === '') {
-        return $value;
+    /**
+     * DÉCHIFFREMENT : Gère la ressource BLOB et déchiffre pour l'affichage
+     */
+    protected function _getBody($value)
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+
+        // CORRECTIF : Si c'est une ressource (BLOB), on extrait le contenu
+        if (is_resource($value)) {
+            $value = stream_get_contents($value);
+        }
+
+        $key = Configure::read('Security.messageKey');
+
+        // On déchiffre la chaîne binaire obtenue
+        $decrypted = Security::decrypt($value, $key);
+
+        // Retourne le texte déchiffré, ou la valeur brute si c'est un ancien message
+        return $decrypted ?: $value;
     }
-
-    $key = Configure::read('Security.messageKey');
-
-    return Security::decrypt($value, $key);
-}
 }

@@ -57,10 +57,9 @@ class MessagesTable extends Table
             ->notEmptyString('recipient_id');
 
         $validator
-            ->scalar('body')
             ->maxLength('body', 4294967295)
             ->requirePresence('body', 'create')
-            ->notEmptyString('body');
+            ->allowEmptyString('body') ;
 
         $validator
             ->boolean('is_read')
