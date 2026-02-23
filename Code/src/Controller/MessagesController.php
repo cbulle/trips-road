@@ -145,6 +145,7 @@ class MessagesController extends AppController
         $this->request->allowMethod(['post']);
         $userId = $this->Authentication->getIdentity()->getIdentifier();
         $amiId = (int)$this->request->getData('ami_id');
+
         $body = trim($this->request->getData('body'));
 
         $messagesTable = $this->fetchTable('Messages');
@@ -179,10 +180,7 @@ class MessagesController extends AppController
 
         $message = $messagesTable->patchEntity($message, $data);
 
-        if ($messagesTable->save($message)) {
+        $messagesTable->save($message);
             return $this->redirect(['action' => 'view', $amiId]);
-        } else {
-            // ... gestion erreur
-        }
-    }
+       }
 }
