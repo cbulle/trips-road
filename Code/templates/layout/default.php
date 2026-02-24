@@ -39,6 +39,7 @@
 
     <?= $this->Html->css([
         'accessibilite',
+        'creationRT',
         'favoris',
         'footer',
         'form',

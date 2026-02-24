@@ -1,0 +1,588 @@
+/* ==============================
+  TITRE ET CONTENEUR PRINCIPAL (form.php)
+============================== */
+.TitreRT {
+    color: var(--beige);
+    background-color: var(--bleu_clair);
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+/* ==============================
+  SIDEBAR ET SES BOUTONS/INPUTS
+============================== */
+.sidebar {
+    width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: var(--beige_fonce);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.sidebar #btnAddSegment,
+.sidebar #saveRoadtrip,
+.sidebar #roadtripVisibilite {
+    padding: 10px;
+    border-radius: 15px;
+    background-color: #39b2a5;
+    width: 100%;
+}
+
+.sidebar #roadtripVisibilite {
+    width: 260px;
+}
+
+.sidebar #roadtripDescription {
+    border-radius: 15px;
+    margin-top: 7px;
+}
+
+.sidebar #saveContainer {
+    margin-top: 10px;
+}
+
+.sidebar #btnAddSegment:hover,
+.sidebar #saveRoadtrip:hover {
+    background-color: #2E8B57;
+    cursor: pointer;
+}
+
+.sidebar #roadtripTitle {
+    width: 260px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+/* ==============================
+  SÉLECTEUR DE STATUT
+============================== */
+.status-selector-container {
+    background-color: var(--beige);
+    border: 2px solid var(--orange);
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.status-selector-container label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: var(--orange);
+}
+
+.status-selector-container select {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 15px;
+    border: 1px solid var(--orange);
+    font-weight: bold;
+    background-color: white;
+}
+
+/* ==============================
+  FORMULAIRE D'AJOUT DE TRAJET (#newBlockForm)
+============================== */
+#newBlockForm {
+    margin-top: 15px;
+    border: 1px dashed #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.new-block-field {
+    margin-bottom: 15px;
+}
+
+.new-block-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1rem;
+}
+
+.new-block-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-sizing: border-box;
+    color: var(--gris_fonce);
+}
+
+.new-block-input:focus {
+    outline: none;
+    border-color: var(--bleu_clair);
+    box-shadow: 0 0 0 2px rgba(57, 178, 165, 0.2);
+}
+
+.new-block-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-block-action {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.btn-block-cancel {
+    background-color: var(--gris_clair);
+    color: var(--beige);
+}
+
+.btn-block-cancel:hover {
+    background-color: var(--noir);
+    transform: translateY(-2px);
+}
+
+.btn-block-validate {
+    background-color: var(--bleu_clair);
+    color: white;
+}
+
+.btn-block-validate:hover {
+    background-color: var(--vert);
+    transform: translateY(-2px);
+}
+
+/* ==============================
+  LÉGENDE ET TEMPLATES ITINÉRAIRE
+============================== */
+.sidebar #legend {
+    margin-top: 20px;
+    background: var(--beige_fonce);
+    border-radius: 15px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 6px var(--noir);
+}
+
+.sidebar #legend h3 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: var(--orange);
+}
+
+.sidebar #legendList li {
+    background-color: var(--beige);
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px var(--noir);
+    transition: background-color 0.3s;
+}
+
+.legend-segment-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.legend-color-indicator {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+}
+
+.legend-toggle-btn {
+    margin-left: auto;
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--orange);
+}
+
+/* ==============================
+  DATES ET HORAIRES (Dans la légende)
+============================== */
+.legend-date-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.legend-date-container label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.legend-date-input,
+.legend-time-input {
+    border: 1px solid var(--bleu_clair);
+    border-radius: 5px;
+    padding: 4px;
+    font-family: inherit;
+    color: var(--bleu_fonce_ecriture);
+    background: white;
+}
+
+/* ==============================
+  OPTIONS DE TRANSPORT ET PRÉFÉRENCES
+============================== */
+.transport-options {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 10px;
+    margin-right: auto;
+    align-items: center;
+}
+
+.transport-btn {
+    background-color: var(--beige);
+    border: 1px solid var(--beige_fonce);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    transition: all 0.3s ease;
+    color: var(--gris_clair);
+    opacity: 0.7;
+}
+
+.transport-btn:hover {
+    background-color: var(--orange);
+    border-color: var(--orange);
+    transform: translateY(-2px);
+    opacity: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.transport-btn.active {
+    background-color: var(--bleu_clair);
+    border-color: var(--bleu_fonce);
+    color: white;
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: var(--bleu_fonce);
+    margin-right: 5px;
+    transition: all 0.5s ease;
+    padding: 0 5px;
+    opacity: 0.8;
+}
+
+.settings-btn:hover {
+    transform: rotate(90deg);
+    color: var(--orange);
+    opacity: 1;
+}
+
+.route-preferences {
+    background-color: var(--beige);
+    border: 1px solid var(--bleu_clair);
+    padding: 15px;
+    margin: 10px 0 15px 0;
+    border-radius: 15px;
+    font-size: 0.95em;
+    color: var(--bleu_fonce_ecriture);
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+}
+
+.pref-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.pref-item:hover {
+    color: var(--orange);
+}
+
+.pref-checkbox {
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: var(--orange);
+    width: 16px;
+    height: 16px;
+}
+
+/* ==============================
+  GESTION DES SOUS-ÉTAPES
+============================== */
+#legendList .modifierSousEtapes {
+    width: 100%;
+    border-radius: 15px;
+    padding: 5px;
+    background-color: var(--orange);
+    border: none;
+    color: white;
+}
+
+#legendList .modifierSousEtapes:hover {
+    cursor: pointer;
+    background-color: var(--vert);
+}
+
+.sousEtapesList {
+    list-style: none;
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.segment-form-container, #segmentFormContainer {
+    display: none;
+    background: var(--beige_fonce);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 3px 8px var(--noir);
+    margin-top: 15px;
+    width: 90%;
+    max-width: 600px;
+}
+
+#segmentFormContainer h3 {
+    color: var(--orange);
+    margin-bottom: 10px;
+}
+
+.close-segment-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+}
+
+.subEtape-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background: var(--beige_fonce);
+    padding: 15px 0;
+    z-index: 10;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    margin-top: 15px;
+}
+
+#addSubEtape,
+#saveSegment {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    background-color: var(--bleu_clair);
+    border: none;
+    color: var(--beige);
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+#addSubEtape:hover,
+#saveSegment:hover {
+    background-color: var(--vert);
+    cursor: pointer;
+    transform: scale(1.03);
+}
+
+/* Template sous-étape individuel */
+.subEtape, .sub-etape-form {
+    background: #f2e9d6;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.subEtape input[type="text"],
+.subEtape input[type="time"] {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+.subEtapeNom {
+    border-radius: 15px;
+    padding: 8px 12px;
+}
+
+.sub-etape-remove-btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: none;
+    border: none;
+    color: var(--rouge);
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 5px;
+}
+
+/* ==============================
+  AUTOCOMPLETE (Suggestions de lieux)
+============================== */
+.ui-autocomplete {
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background: var(--white) !important;
+    border: 2px solid var(--bleu_clair) !important;
+    border-radius: 15px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.ui-menu-item {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.ui-menu-item-content, .ui-menu-item-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.ui-menu-item-name {
+    font-weight: bold;
+    color: var(--bleu_fonce);
+    font-size: 0.95rem;
+}
+
+.ui-menu-item-details {
+    font-size: 0.75rem;
+    color: var(--gris_clair);
+    margin-top: 2px;
+}
+
+.ui-state-active, .ui-menu-item:hover {
+    background: var(--beige) !important;
+    border: none !important;
+}
+
+.ui-menu-item:hover .ui-menu-item-name,
+.ui-state-active .ui-menu-item-name {
+    color: var(--orange) !important;
+}
+
+/* ==============================
+  CARTE LEAFLET
+============================== */
+.map-container, #map {
+    flex: 1;
+    width: 100%;
+    height: 875px;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.map-container {
+    position: sticky;
+    top: 20px;
+}
+
+/* ==============================
+  MODALE IMAGE (#imageModal)
+============================== */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+    cursor: zoom-out;
+}
+
+.image-modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ==============================
+   RESPONSIVE (Mobile & Tablette)
+============================== */
+@media (max-width: 1024px) {
+    .main-container {
+        flex-direction: column;
+        padding: 10px;
+        gap: 0;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        order: 1;
+    }
+
+    .segment-form-container,
+    #segmentFormContainer {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+        order: 2;
+    }
+
+    .sidebar select,
+    .sidebar input,
+    .sidebar textarea,
+    .sidebar button,
+    .sidebar label,
+    .sidebar #legend h3,
+    .TitreRT {
+        font-size: 2.5rem;
+    }
+}
