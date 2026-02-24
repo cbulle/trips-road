@@ -59,17 +59,6 @@ $this->assign('mainClass', 'dashboard-page');
         <?php if ($roadtrips->isEmpty()) : ?>
             <p class="empty-state">Aucun road trip public pour le moment.</p>
         <?php else : ?>
-
-            <?php
-            /*
-             * IMPORTANT : les modales ne sont PAS dans la grille CSS.
-             * Le grid crée un contexte qui peut interférer avec position:fixed.
-             * On fait deux foreach séparés :
-             *   1er foreach → les cartes (dans le grid)
-             *   2e foreach  → les modales (après le grid, dans main-content)
-             */
-            ?>
-
             <div class="roadtrip-grid">
                 <?php foreach ($roadtrips as $rt): ?>
 
@@ -141,15 +130,11 @@ $this->assign('mainClass', 'dashboard-page');
                 <?php endforeach; ?>
             </div>
 
-            <?php /* ==================================================
-                   2e BOUCLE : MODALES uniquement, hors du grid
-                   ================================================== */ ?>
-
             <?php foreach ($roadtrips as $rt): ?>
 
                 <?php $nbAvis = !empty($rt->comments) ? count($rt->comments) : 0; ?>
 
-                <?php /* ---- MODALE AVIS ---- */ ?>
+
                 <div id="modalAvis-<?= $rt->id ?>"
                      class="custom-modal"
                      onclick="if(event.target===this) closeRoadtripModal('modalAvis-<?= $rt->id ?>')">
