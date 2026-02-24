@@ -8,6 +8,11 @@ use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
 use Cake\Http\Client;
 
+/**
+ * Roadtrips Controller
+ *
+ * @property \App\Model\Table\RoadtripsTable $Roadtrips
+ */
 class RoadtripsController extends AppController
 {
     public function initialize(): void
@@ -47,7 +52,6 @@ class RoadtripsController extends AppController
             ->contain(['Users'])
             ->where([
                 'visibility' => 'public',
-                'status' => 'completed'
             ])
             ->order('RAND()')
             ->limit(3)
