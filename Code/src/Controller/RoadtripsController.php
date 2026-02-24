@@ -6,6 +6,7 @@ namespace App\Controller;
 use Cake\Event\EventInterface;
 use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
+use Cake\Http\Client;
 
 /**
  * Roadtrips Controller
@@ -51,28 +52,15 @@ class RoadtripsController extends AppController
         $randomRoadtrips = $this->Roadtrips->find()
             ->contain(['Users'])
             ->where([
+
                 'visibility' => 'public',
-                'status' => 'completed'
             ])
             ->order('RAND()')
             ->limit(3)
             ->all();
 
         $favorisIds = [];
-        if ($userId) {
-            try {
-                $favoritesTable = $this->fetchTable('Favorites');
-                $favorisIds = $favoritesTable->find()
-                    ->select(['roadtrip_id'])
-                    ->where(['user_id' => $userId])
-                    ->all()
-                    ->extract('roadtrip_id')
-                    ->toArray();
-            } catch (\Exception $e) {
-                $favorisIds = [];
-            }
-        }
-// légère modifs a faire 
+        
         $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
@@ -429,6 +417,52 @@ class RoadtripsController extends AppController
             return $this->redirect(['action' => 'index']); // ou explorePublic
         }
 
+        // ============================================================
+        // AJOUT : GESTION DE L'HISTORIQUE
+        // ============================================================
+        
+        // Vérifier si l'utilisateur est connecté
+        $identity = $this->request->getAttribute('identity');
+        
+        if ($identity) {
+            $userId = $identity->getIdentifier();
+            
+            // On charge le modèle Historique (qui pointe vers la table histories)
+            $historiqueTable = $this->fetchTable('Historique');
+
+            // 1. On regarde si l'utilisateur a déjà vu ce roadtrip
+            $existingHistory = $historiqueTable->find()
+                ->where([
+                    'user_id' => $userId,
+                    'roadtrip_id' => $id
+                ])
+                ->first();
+
+            if ($existingHistory) {
+                // CAS A : Il l'a déjà vu -> On met à jour la date pour qu'il remonte en premier
+                // Si tu utilises la colonne 'created', on ne peut pas la changer facilement.
+                // Si tu as 'date_visite', on la met à jour.
+                
+                // Option 1 : Si tu as une colonne 'modified' ou 'date_visite'
+                $existingHistory->date_visite = new \Cake\I18n\FrozenTime(); 
+                $historiqueTable->save($existingHistory);
+            } else {
+                // CAS B : C'est la première fois -> On crée une nouvelle entrée
+                $newHistory = $historiqueTable->newEmptyEntity();
+                $newHistory->user_id = $userId;
+                $newHistory->roadtrip_id = $id;
+                // Définir la date (si ce n'est pas automatique via 'created')
+                $newHistory->date_visite = new \Cake\I18n\FrozenTime(); 
+                
+                $historiqueTable->save($newHistory);
+            }
+        }
+        // ============================================================
+        // FIN AJOUT
+        // ============================================================
+
+        $this->set(compact('roadtrip'));
+
         $geocodedPlacesTable = $this->fetchTable('GeocodedPlaces');
         $jsMapData = [];
 
@@ -614,27 +648,21 @@ class RoadtripsController extends AppController
         return $cakeTrips;
     }
 
-    /**
-     * Affiche l'historique de l'utilisateur
-     */
+
     public function historique()
     {
-        // CORRECTION : On utilise fetchTable au lieu de loadModel
         $historiqueTable = $this->fetchTable('Historique');
 
-        // Récupérer l'ID de l'utilisateur connecté
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Faire la requête sur la table récupérée
         $query = $historiqueTable->find()
             ->contain([
                 'Roadtrips' => [
-                    'Users' 
+                    'Users'
                 ]
             ])
             ->where(['Historique.user_id' => $userId])
-            // Vérifie bien si ta colonne de date s'appelle 'date_visite' ou 'created'
-            ->order(['Historique.date_visite' => 'DESC']); 
+            ->order(['Historique.date_visite' => 'DESC']);
 
         try {
             $historique = $this->paginate($query, ['limit' => 12]);
@@ -645,23 +673,83 @@ class RoadtripsController extends AppController
         $this->set(compact('historique'));
     }
 
-    /**
-     * Action pour le bouton "Tout effacer"
-     */
     public function deleteHistorique()
     {
         $this->request->allowMethod(['post', 'delete']);
         
-        // CORRECTION : On utilise fetchTable ici aussi
         $historiqueTable = $this->fetchTable('Historique');
-        
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        // Suppression via la table récupérée
         $historiqueTable->deleteAll(['user_id' => $userId]);
 
         $this->Flash->success('Votre historique a été vidé.');
 
         return $this->redirect(['action' => 'historique']);
+    }
+
+    public function genererRoadtripGratuit()
+    {
+        $this->request->allowMethod(['post', 'ajax']);
+        
+        // 1. Les données envoyées par ton formulaire Javascript
+        $depart = $this->request->getData('depart') ?? 'Paris';
+        $destination = $this->request->getData('destination') ?? 'Marseille';
+        $duree = $this->request->getData('duree') ?? '5 jours';
+
+        // 2. Le Prompt hyper strict pour l'IA
+        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree. 
+        Tu dois répondre UNIQUEMENT par un objet JSON valide. Ne dis pas 'bonjour', n'ajoute pas de texte avant ou après.
+        Format attendu :
+        {
+            \"titre\": \"Titre du roadtrip\",
+            \"description\": \"Description courte\",
+            \"etapes\": [
+                { \"ville\": \"Nom de la ville\", \"lieux\": \"2 choses à voir\" }
+            ]
+        }";
+
+        // 3. Appel à l'API gratuite de Gemini
+        $client = new Client();
+        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0'; // Colle ta clé ici
+        
+        // On utilise le modèle "flash" qui est le plus rapide et inclus dans le plan gratuit
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+
+        // Structure requise par Google
+        $payload = [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ]
+        ];
+
+        $response = $client->post($url, $payload, ['type' => 'json']);
+
+        // 4. Traitement de la réponse
+        if ($response->isOk()) {
+            $apiData = $response->getJson();
+            
+            // L'API Google range le texte généré à cet endroit précis :
+            $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            
+            // ASTUCE DE PRO : Souvent les IA rajoutent "```json" au début. On nettoie la chaîne pour être sûr !
+            $aiTextClean = str_replace(['```json', '```'], '', $aiText);
+            
+            // On transforme le texte en vrai tableau PHP
+            $roadtripGenere = json_decode(trim($aiTextClean), true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // Succès ! On renvoie ça à l'utilisateur
+                return $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['success' => true, 'data' => $roadtripGenere]));
+            }
+        }
+
+        // Si on arrive ici, c'est qu'il y a eu un bug
+        return $this->response->withType('application/json')
+            ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
     }
 }
