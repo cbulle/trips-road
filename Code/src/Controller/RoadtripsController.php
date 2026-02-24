@@ -435,13 +435,12 @@ class RoadtripsController extends AppController
                 ->first();
 
             if ($existingHistory) {
-                $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
+                $existingHistory->created = new \Cake\I18n\FrozenTime();
                 $historiqueTable->save($existingHistory);
             } else {
                 $newHistory = $historiqueTable->newEmptyEntity();
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
-                $newHistory->date_visite = new \Cake\I18n\FrozenTime();
 
                 $historiqueTable->save($newHistory);
             }
@@ -647,8 +646,8 @@ class RoadtripsController extends AppController
                     'Users'
                 ]
             ])
-            ->where(['Historique.user_id' => $userId])
-            ->order(['Historique.date_visite' => 'DESC']);
+            ->where(['Histories.user_id' => $userId])
+            ->order(['Histories.created' => 'DESC']);
 
         try {
             $historique = $this->paginate($query, ['limit' => 12]);
@@ -693,7 +692,12 @@ class RoadtripsController extends AppController
         }";
 
         $client = new Client();
-        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0';
+        $apiKey = \Cake\Core\Configure::read('Gemini.apiKey');
+
+        if (!$apiKey) {
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => 'Clé API manquante.']));
+        }
 
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
@@ -728,9 +732,6 @@ class RoadtripsController extends AppController
             ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
     }
 
-    /**
-     * Reçoit l'image compressée de l'éditeur Markdown, la sauvegarde et renvoie l'URL.
-     */
     public function uploadStepImage()
     {
         $this->request->allowMethod(['post', 'ajax']);
@@ -755,7 +756,7 @@ class RoadtripsController extends AppController
 
                 $newName = 'step_' . uniqid() . '.' . $ext;
 
-                $dirPath = WWW_ROOT . 'uploads' . DS . 'steps';
+                $dirPath = WWW_ROOT . 'uploads' . DS . 'sousetapes';
 
                 if (!is_dir($dirPath)) {
                     mkdir($dirPath, 0777, true);
