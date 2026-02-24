@@ -52,28 +52,15 @@ class RoadtripsController extends AppController
         $randomRoadtrips = $this->Roadtrips->find()
             ->contain(['Users'])
             ->where([
+
                 'visibility' => 'public',
-                'status' => 'completed'
             ])
             ->order('RAND()')
             ->limit(3)
             ->all();
 
         $favorisIds = [];
-        if ($userId) {
-            try {
-                $favoritesTable = $this->fetchTable('Favorites');
-                $favorisIds = $favoritesTable->find()
-                    ->select(['roadtrip_id'])
-                    ->where(['user_id' => $userId])
-                    ->all()
-                    ->extract('roadtrip_id')
-                    ->toArray();
-            } catch (\Exception $e) {
-                $favorisIds = [];
-            }
-        }
-// légère modifs a faire 
+        
         $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 

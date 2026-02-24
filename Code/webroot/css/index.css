@@ -326,6 +326,26 @@
     }
 }
 
+
+input[type=range] {
+    accent-color: var(--orange);
+    height: 8px;
+    border-radius: 5px;
+    background: #e0e0e0;
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bleu_fonce);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 /*=========================
 Responsive
 =========================*/
