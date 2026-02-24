@@ -8,17 +8,11 @@ use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
 use Cake\Http\Client;
 
-/**
- * Roadtrips Controller
- *
- * @property \App\Model\Table\RoadtripsTable $Roadtrips
- */
 class RoadtripsController extends AppController
 {
     public function initialize(): void
     {
         parent::initialize();
-
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)
@@ -34,7 +28,7 @@ class RoadtripsController extends AppController
 
         $user = null;
         if ($userId) {
-            $user = $this->fetchTable('Users')->get($userId);
+            $user = $this->Roadtrips->Users->get($userId);
         }
 
         $this->paginate = [
@@ -62,8 +56,7 @@ class RoadtripsController extends AppController
         $favorisIds = [];
         if ($userId) {
             try {
-                $favoritesTable = $this->fetchTable('Favorites');
-                $favorisIds = $favoritesTable->find()
+                $favorisIds = $this->Roadtrips->Favorites->find()
                     ->select(['roadtrip_id'])
                     ->where(['user_id' => $userId])
                     ->all()
@@ -73,7 +66,6 @@ class RoadtripsController extends AppController
                 $favorisIds = [];
             }
         }
-// légère modifs a faire
         $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
@@ -193,7 +185,7 @@ class RoadtripsController extends AppController
                         ->withStringBody(json_encode([
                             'success' => false,
                             'message' => 'Erreur Critique Serveur (Exception)',
-                            'error_debug' => $e->getMessage(), // Le message technique
+                            'error_debug' => $e->getMessage(),
                             'file' => $e->getFile(),
                             'line' => $e->getLine()
                         ]));
@@ -288,7 +280,7 @@ class RoadtripsController extends AppController
                         ->withStringBody(json_encode([
                             'success' => false,
                             'message' => 'Erreur Critique Serveur (Exception)',
-                            'error_debug' => $e->getMessage(), // Le message technique
+                            'error_debug' => $e->getMessage(),
                             'file' => $e->getFile(),
                             'line' => $e->getLine()
                         ]));
@@ -298,16 +290,13 @@ class RoadtripsController extends AppController
         }
 
         $modeEdition = true;
-        $existingTrajets = $this->_formatTripsForJs($roadtrip->trips); // Assure-toi d'avoir cette méthode helper
+        $existingTrajets = $this->_formatTripsForJs($roadtrip->trips);
         $userDefaultCity = $this->request->getSession()->read('Auth.ville') ?? '';
 
         $this->set(compact('roadtrip', 'modeEdition', 'existingTrajets', 'userDefaultCity'));
         return $this->render('form');
     }
 
-    /**
-     * Delete method
-     */
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
@@ -332,7 +321,7 @@ class RoadtripsController extends AppController
     {
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
-        $user = $this->fetchTable('Users')->get($userId);
+        $user = $this->Roadtrips->Users->get($userId);
 
         $show_share = $this->request->getQuery('show_share');
         $share_url = $this->request->getSession()->read('share_url');
@@ -358,7 +347,7 @@ class RoadtripsController extends AppController
 
         $user = null;
         if ($userId) {
-            $user = $this->fetchTable('Users')->get($userId);
+            $user = $this->Roadtrips->Users->get($userId);
         }
 
         $this->paginate = [
@@ -375,8 +364,7 @@ class RoadtripsController extends AppController
         $favorisIds = [];
         if ($userId) {
             try {
-                $favoritesTable = $this->fetchTable('Favorites');
-                $favorisIds = $favoritesTable->find()
+                $favorisIds = $this->Roadtrips->Favorites->find()
                     ->select(['roadtrip_id'])
                     ->where(['user_id' => $userId])
                     ->all()
@@ -389,7 +377,6 @@ class RoadtripsController extends AppController
 
         $this->set(compact('roadtrips', 'favorisIds', 'userId', 'user'));
     }
-
 
     public function share($id = null)
     {
@@ -427,23 +414,15 @@ class RoadtripsController extends AppController
 
         if (!$isOwner && $roadtrip->visibility !== 'public') {
             $this->Flash->error(__('Ce road trip est privé.'));
-            return $this->redirect(['action' => 'index']); // ou explorePublic
+            return $this->redirect(['action' => 'index']);
         }
 
-        // ============================================================
-        // AJOUT : GESTION DE L'HISTORIQUE
-        // ============================================================
-
-        // Vérifier si l'utilisateur est connecté
         $identity = $this->request->getAttribute('identity');
 
         if ($identity) {
             $userId = $identity->getIdentifier();
+            $historiqueTable = $this->Roadtrips->Histories;
 
-            // On charge le modèle Historique (qui pointe vers la table histories)
-            $historiqueTable = $this->fetchTable('Historique');
-
-            // 1. On regarde si l'utilisateur a déjà vu ce roadtrip
             $existingHistory = $historiqueTable->find()
                 ->where([
                     'user_id' => $userId,
@@ -452,27 +431,17 @@ class RoadtripsController extends AppController
                 ->first();
 
             if ($existingHistory) {
-                // CAS A : Il l'a déjà vu -> On met à jour la date pour qu'il remonte en premier
-                // Si tu utilises la colonne 'created', on ne peut pas la changer facilement.
-                // Si tu as 'date_visite', on la met à jour.
-
-                // Option 1 : Si tu as une colonne 'modified' ou 'date_visite'
                 $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
                 $historiqueTable->save($existingHistory);
             } else {
-                // CAS B : C'est la première fois -> On crée une nouvelle entrée
                 $newHistory = $historiqueTable->newEmptyEntity();
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
-                // Définir la date (si ce n'est pas automatique via 'created')
                 $newHistory->date_visite = new \Cake\I18n\FrozenTime();
 
                 $historiqueTable->save($newHistory);
             }
         }
-        // ============================================================
-        // FIN AJOUT
-        // ============================================================
 
         $this->set(compact('roadtrip'));
 
@@ -539,7 +508,7 @@ class RoadtripsController extends AppController
                         $heureFormattee = $step->duration->format('H:i');
                     }
                     elseif (is_string($step->duration)) {
-                        $heureFormattee = substr($step->duration, 0, 5); // "02:30:00" -> "02:30"
+                        $heureFormattee = substr($step->duration, 0, 5);
                     }
                 }
 
@@ -569,6 +538,7 @@ class RoadtripsController extends AppController
         }
         return $data;
     }
+
     protected function _getCoordinates($nomVille, $table)
     {
         if (empty($nomVille)) return null;
@@ -580,7 +550,7 @@ class RoadtripsController extends AppController
             ->first();
 
         if ($place) {
-             \Cake\Log\Log::debug("Found in cache: " . $cleanName);
+            \Cake\Log\Log::debug("Found in cache: " . $cleanName);
 
             return [
                 'lat' => $place->latitude,
@@ -649,7 +619,7 @@ class RoadtripsController extends AppController
                         'order_number' => $j + 1,
                         'city' => $se['nom'] ?? '',
                         'description' => $se['remarque'] ?? '',
-                        'transport_type' => $trajetJs['mode'] ?? 'Voiture', // On reprend le mode du trajet parent ?
+                        'transport_type' => $trajetJs['mode'] ?? 'Voiture',
                         'heure' => $se['heure'] ?? null
                     ];
                 }
@@ -661,10 +631,9 @@ class RoadtripsController extends AppController
         return $cakeTrips;
     }
 
-
     public function historique()
     {
-        $historiqueTable = $this->fetchTable('Historique');
+        $historiqueTable = $this->Roadtrips->Histories;
 
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
@@ -690,7 +659,7 @@ class RoadtripsController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
 
-        $historiqueTable = $this->fetchTable('Historique');
+        $historiqueTable = $this->Roadtrips->Histories;
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
         $historiqueTable->deleteAll(['user_id' => $userId]);
@@ -703,7 +672,7 @@ class RoadtripsController extends AppController
     public function genererRoadtripGratuit()
     {
         $this->request->allowMethod(['post', 'ajax']);
-        
+
         $depart = $this->request->getData('depart') ?? 'Paris';
         $destination = $this->request->getData('destination') ?? 'Marseille';
         $duree = $this->request->getData('duree') ?? '5 jours';
