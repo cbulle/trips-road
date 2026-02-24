@@ -43,23 +43,23 @@ class CommentsController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
+    // src/Controller/CommentsController.php
+
     public function add()
     {
         $comment = $this->Comments->newEmptyEntity();
         if ($this->request->is('post')) {
             $comment = $this->Comments->patchEntity($comment, $this->request->getData());
+            // On force l'ID de l'utilisateur connecté
+            $comment->user_id = $this->request->getAttribute('identity')->getIdentifier();
 
             if ($this->Comments->save($comment)) {
-                $this->Flash->success(__('The comment has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                $this->Flash->success(__('Votre avis a été publié.'));
+                return $this->redirect($this->referer());
             }
-            $this->Flash->error(__('The comment could not be saved. Please, try again.'));
+            $this->Flash->error(__('Erreur lors de la sauvegarde.'));
         }
-        $users = $this->Comments->Users->find('list', limit: 200)->all();
-        $roadtrips = $this->Comments->Roadtrips->find('list', limit: 200)->all();
-        $pointsOfInterests = $this->Comments->PointsOfInterests->find('list', limit: 200)->all();
-        $this->set(compact('comment', 'users', 'roadtrips', 'pointsOfInterests'));
+        return $this->redirect($this->referer());
     }
 
     /**
