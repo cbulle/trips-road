@@ -5,6 +5,7 @@
  * @var array $favorisIds
  * @var string|null $userId
  * @var \App\Model\Entity\User $user
+ * @var \App\Model\Entity\Comment $newComment
  */
 
 $this->assign('mainClass', 'dashboard-page');
@@ -39,90 +40,128 @@ $this->assign('mainClass', 'dashboard-page');
         <nav class="profil-nav">
             <ul>
                 <?php if (isset($userId)): ?>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes
-                            Road-Trips</a></li>
+                    <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Road-Trips</a></li>
                 <?php endif; ?>
 
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>"
-                       class="active">Road-Trips Publics</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>" class="active">Road-Trips Publics</a></li>
 
                 <?php if (isset($userId)): ?>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Paramètres
-                            du compte</a></li>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'accessibility']) ?>">Accessibilité</a>
-                    </li>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>"
-                           class="logout">Déconnexion</a></li>
+                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Paramètres</a></li>
+                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>" class="logout">Déconnexion</a></li>
                 <?php else: ?>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se
-                            connecter</a></li>
+                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se connecter</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
     </aside>
 
-    <?= $this->Flash->render() ?>
+    <div class="main-content">
+        <?= $this->Flash->render() ?>
 
-    <?php if ($roadtrips->isEmpty()) : ?>
-        <p style="text-align: center; margin-top: 50px; font-size: 1.2rem; color: #666;">Aucun road trip public pour le
-            moment.</p>
-    <?php else : ?>
-        <div class="roadtrip-grid">
-            <?php foreach ($roadtrips as $rt): ?>
-                <div class="roadtrip-card">
+        <?php if ($roadtrips->isEmpty()) : ?>
+            <p style="text-align: center; margin-top: 50px; font-size: 1.2rem; color: #666;">Aucun road trip public pour le moment.</p>
+        <?php else : ?>
+            <div class="roadtrip-grid">
+                <?php foreach ($roadtrips as $rt): ?>
+                    <div class="roadtrip-card">
+                        <div class="card-badges">
+                            <?php
+                            $isTermine = ($rt->status === 'completed' || $rt->status === 'termine');
+                            $classeStatus = $isTermine ? 'statut-termine' : 'statut-brouillon';
+                            $labelStatus = $isTermine ? 'Terminé' : 'En cours';
+                            ?>
+                            <span class="badge-statut <?= $classeStatus ?>"><?= $labelStatus ?></span>
+                        </div>
 
-                    <div class="card-badges">
                         <?php
-                        $isTermine = ($rt->status === 'completed');
-                        $classeStatus = $isTermine ? 'statut-termine' : 'statut-brouillon';
-                        $labelStatus = $isTermine ? 'Terminé' : 'En cours';
-                        ?>
-                        <span class="badge-statut <?= $classeStatus ?>">
-                                <?= $labelStatus ?>
-                            </span>
-                    </div>
-
-                    <?php
-                    $urlImage = '/img/imgBase.png';
-                    if (!empty($rt->photo_url)) {
-                        $cheminPhysique = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $rt->photo_url;
-                        if (file_exists($cheminPhysique)) {
-                            $urlImage = '/uploads/roadtrips/' . $rt->photo_url;
+                        $urlImage = '/img/imgBase.png';
+                        if (!empty($rt->photo_url)) {
+                            $cheminPhysique = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $rt->photo_url;
+                            if (file_exists($cheminPhysique)) {
+                                $urlImage = '/uploads/roadtrips/' . $rt->photo_url;
+                            }
                         }
-                    }
-                    ?>
+                        ?>
+                        <?= $this->Html->image($urlImage, ['alt' => 'Photo', 'class' => 'roadtrip-photo']) ?>
 
-                    <?= $this->Html->image($urlImage, ['alt' => 'Photo du road trip', 'class' => 'roadtrip-photo']) ?>
+                        <div class="card-body">
+                            <h3><?= h($rt->title) ?></h3>
+                            <p><?= h($this->Text->truncate($rt->description, 80)) ?></p>
+                            <div class="creator-info">
+                                Proposé par : <strong><?= h($rt->user->username ?? 'Anonyme') ?></strong>
+                            </div>
+                        </div>
 
-                    <div class="card-body">
-                        <h3><?= h($rt->title) ?></h3>
-                        <p><?= h($this->Text->truncate($rt->description, 80)) ?></p>
+                        <div class="roadtrip-actions">
+                            <a class="action-btn view" href="<?= $this->Url->build(['action' => 'view', $rt->id]) ?>">
+                                <i class="material-icons">visibility</i>
+                            </a>
 
-                        <div class="creator-info">
-                            Proposé par : <strong><?= h($rt->user->username ?? 'Utilisateur inconnu') ?></strong>
+                            <button type="button" class="action-btn btn-open-avis" data-id="<?= $rt->id ?>">
+                                <i class="material-icons">rate_review</i>
+                            </button>
+
+                            <?php if ($this->request->getAttribute('identity')): ?>
+                                <button type="button" class="action-btn btn-open-comment" data-id="<?= $rt->id ?>">
+                                    <i class="material-icons">add_comment</i>
+                                </button>
+                            <?php endif; ?>
+                        </div>
+
+                        <div id="modalAvis-<?= $rt->id ?>" class="custom-modal" style="display:none;">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal('modalAvis-<?= $rt->id ?>')">&times;</span>
+                                <h3>Avis sur <?= h($rt->title) ?></h3>
+                                <div class="comments-list">
+                                    <?php if (empty($rt->comments)): ?>
+                                        <p>Aucun avis pour le moment.</p>
+                                    <?php else: ?>
+                                        <?php foreach ($rt->comments as $comment): ?>
+                                            <div class="comment-item">
+                                                <strong><?= h($comment->user->username) ?></strong> : <?= h($comment->body) ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="roadtrip-actions">
-                        <a class="action-btn view" title="Consulter"
-                           href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'view', $rt->id]) ?>">
-                            <i class="material-icons">visibility</i>
-                        </a>
-
-                        <?php if ($userId): ?>
-                            <?php
-                            $isFavori = in_array($rt->id, $favorisIds);
-                            $styleFav = $isFavori ? 'color: var(--rouge);' : '';
-                            ?>
-                            <a class="action-btn" style="<?= $styleFav ?>" title="Mettre en favori"
-                               href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'toggle', $rt->id]) ?>">
-                                <i class="material-icons"><?= $isFavori ? 'favorite' : 'favorite_border' ?></i>
-                            </a>
-                        <?php endif; ?>
+                    <div id="modalAvis-<?= $rt->id ?>" class="custom-modal" style="display:none;">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeModal('modalAvis-<?= $rt->id ?>')">&times;</span>
+                            <h3>Avis sur <?= h($rt->title) ?></h3>
+                            <div class="comments-list">
+                                <?php if (empty($rt->comments)): ?>
+                                    <p>Aucun avis pour le moment.</p>
+                                <?php else: ?>
+                                    <?php foreach ($rt->comments as $comment): ?>
+                                        <div class="comment-item">
+                                            <strong><?= h($comment->user->username) ?></strong> : <?= h($comment->body) ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
 
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+                    <?php if ($this->request->getAttribute('identity')): ?>
+                        <div id="modalComment-<?= $rt->id ?>" class="custom-modal" style="display:none;">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal('modalComment-<?= $rt->id ?>')">&times;</span>
+                                <h3>Laisser un avis</h3>
+                                <?= $this->Form->create($newComment, ['url' => ['controller' => 'Comments', 'action' => 'add']]) ?>
+                                <?= $this->Form->hidden('roadtrip_id', ['value' => $rt->id]) ?>
+                                <?= $this->Form->control('rating', ['type' => 'select', 'options' => [5=>'5 ⭐', 4=>'4 ⭐', 3=>'3 ⭐', 2=>'2 ⭐', 1=>'1 ⭐']]) ?>
+                                <?= $this->Form->control('body', ['label' => 'Commentaire', 'type' => 'textarea', 'rows' => 3]) ?>
+                                <button type="submit" class="btn-submit">Envoyer</button>
+                                <?= $this->Form->end() ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>

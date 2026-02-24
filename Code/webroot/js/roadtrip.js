@@ -1,17 +1,68 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // On lance la carte globale
-    initGlobalMap();
-    // On lance le calcul des distances/temps pour l'affichage texte
-    calculerTousLesSegments();
-});
+(function() {
+    // Fonctions de gestion interne
+    const toggleModal = (id, display) => {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = display;
+            document.body.style.overflow = (display === 'block') ? 'hidden' : 'auto';
+        }
+    };
 
+    // On attend que la page soit prête
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // 1. Gérer l'ouverture des avis
+        document.querySelectorAll('.btn-open-avis').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                toggleModal('modalAvis-' + id, 'block');
+            });
+        });
+
+        // 2. Gérer l'ouverture des formulaires de commentaire
+        document.querySelectorAll('.btn-open-comment').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                toggleModal('modalComment-' + id, 'block');
+            });
+        });
+
+        // 3. Gérer la fermeture (bouton X)
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', (e) => {
+                const modal = e.target.closest('.custom-modal');
+                if (modal) toggleModal(modal.id, 'none');
+            });
+        });
+
+        // 4. Fermer en cliquant sur le fond noir
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('custom-modal')) {
+                toggleModal(e.target.id, 'none');
+            }
+        });
+
+        // 5. Initialisation sécurisée de la carte (ne bloque pas le reste si ça rate)
+        try {
+            const mapEl = document.getElementById('map-global');
+            if (mapEl && typeof roadTripData !== 'undefined') {
+                initGlobalMap();
+                calculerTousLesSegments();
+            }
+        } catch (err) {
+            console.warn("Carte non chargée sur cette page.");
+        }
+    });
+})();
+
+/**
+ * 3. CONSTANTES ET VARIABLES
+ */
 const mapInstances = {};
 const colorsPalette = [
-    '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', 
-    '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', 
-    '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000'
+    '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
+    '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4'
 ];
-
 /**
  * Récupère les données proprement (Array ou Object)
  */
@@ -32,7 +83,7 @@ async function initGlobalMap() {
     if (typeof roadTripData === 'undefined' || !roadTripData) return;
 
     const map = L.map('map-global');
-    
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
@@ -56,13 +107,13 @@ async function initGlobalMap() {
         }
 
         data.color = colorsPalette[colorIndex % colorsPalette.length];
-        
+
         try {
             await drawRoute(map, data, data.color, false, true, markersCluster);
 
             bounds.push([parseFloat(data.depart.lat), parseFloat(data.depart.lon)]);
             bounds.push([parseFloat(data.arrivee.lat), parseFloat(data.arrivee.lon)]);
-            
+
             if (data.sousEtapes && data.sousEtapes.length > 0) {
                 data.sousEtapes.forEach(se => {
                     bounds.push([parseFloat(se.lat), parseFloat(se.lon)]);
@@ -88,7 +139,7 @@ async function initStepMap(id) {
     const data = getTrajetData(id);
     const divId = 'map-trajet-' + id;
     const divElement = document.getElementById(divId);
-    
+
     if (!divElement) return;
 
     if (!data || !data.hasCoords) {
@@ -161,7 +212,7 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
         'marche': 'https://routing.openstreetmap.de/routed-foot',
         'à pied': 'https://routing.openstreetmap.de/routed-foot'
     };
-    
+
     const baseUrl = servers[data.mode] || servers['voiture'];
     let coordinates = `${lonDep},${latDep}`;
     if (data.sousEtapes) {
@@ -176,14 +227,14 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
     try {
         const response = await fetch(url);
         const json = await response.json();
-        
+
         if (json.code === 'Ok') {
             const routeLayer = L.geoJSON(json.routes[0].geometry, {
-                style: { 
-                    color: color, 
-                    weight: 5, 
+                style: {
+                    color: color,
+                    weight: 5,
                     opacity: 0.8,
-                    dashArray: (data.mode !== 'voiture') ? '10, 10' : null 
+                    dashArray: (data.mode !== 'voiture') ? '10, 10' : null
                 }
             }).addTo(map);
 
@@ -204,7 +255,7 @@ function createNumberedMarker(map, lat, lon, number, color, popupText, offsetDir
     if (offsetDirection === 'right') offsetClass = 'marker-offset-right';
 
     const icon = L.divIcon({
-        className: `custom-marker-number ${offsetClass}`, 
+        className: `custom-marker-number ${offsetClass}`,
         html: `<div class="marker-pin" style="background-color: ${color};">${number}</div>`,
         iconSize: [30, 30],
         iconAnchor: [15, 15],
@@ -224,7 +275,7 @@ window.toggleTrajet = function(id) {
     const container = document.getElementById('sous-etapes-' + id);
     const card = document.getElementById('card-' + id);
     const mapGlobal = document.getElementById('map-global');
-    
+
     if (!container || !card) return;
 
     const isActive = container.classList.contains('active');
@@ -258,14 +309,14 @@ function calculerTousLesSegments() {
 async function calculerHorairesTrajet(card) {
     const trajetId = card.id.replace('card-', '');
     const dataTrajet = getTrajetData(trajetId);
-    
+
     if (!dataTrajet || !dataTrajet.hasCoords) {
         // console.warn(`Trajet ${trajetId} : coordonnées manquantes`);
         return;
     }
 
     const etapeCards = card.querySelectorAll('.sous-etape-card');
-    
+
     // Construction des coordonnées
     let coordsPath = `${dataTrajet.depart.lon},${dataTrajet.depart.lat}`;
     if (dataTrajet.sousEtapes && dataTrajet.sousEtapes.length > 0) {
@@ -299,26 +350,26 @@ async function calculerHorairesTrajet(card) {
         if (data.code === 'Ok' && data.routes && data.routes[0]) {
             const route = data.routes[0];
             let currentClock = dataTrajet.heure_depart || '08:00';
-            
+
             route.legs.forEach((leg, legIndex) => {
                 const durationSeconds = leg.duration;
                 const distanceKm = (leg.distance / 1000).toFixed(1);
-                
+
                 currentClock = addTime(currentClock, durationSeconds);
-                
+
                 const targetCard = etapeCards[legIndex + 1];
-                
+
                 if (targetCard) {
                     const horaireSpan = targetCard.querySelector('.horaire-calcule');
                     const isArrival = targetCard.dataset.isArrival === '1';
                     // Correction potentielle si 'isDeparture' n'est pas défini dans ton HTML, on vérifie juste arrival
-                    
+
                     if (horaireSpan) {
                         if (isArrival) {
                             horaireSpan.innerHTML = `🏁 Arrivée : <strong>${currentClock}</strong>`;
                         } else {
                             horaireSpan.innerHTML = `⏰ Arrivée : <strong>${currentClock}</strong>`;
-                            
+
                             const pauseDuration = targetCard.dataset.pause || '00:00';
                             if (pauseDuration !== '00:00') {
                                 const departTime = addTime(currentClock, durationToSeconds(pauseDuration));
@@ -328,18 +379,18 @@ async function calculerHorairesTrajet(card) {
                         }
                     }
                 }
-                
+
                 const segments = card.querySelectorAll('.segment-info');
                 if (segments[legIndex]) {
                     const segmentInfo = segments[legIndex];
                     segmentInfo.querySelector('.segment-distance').textContent = distanceKm + " km";
-                    
+
                     const hours = Math.floor(durationSeconds / 3600);
                     const minutes = Math.floor((durationSeconds % 3600) / 60);
                     let timeText = '';
                     if (hours > 0) timeText += hours + 'h ';
                     timeText += minutes + 'min';
-                    
+
                     segmentInfo.querySelector('.segment-time').textContent = timeText;
                     // Ajout d'une classe pour indiquer que le calcul est fait (optionnel)
                     segmentInfo.classList.add('segment-calculated');
@@ -357,7 +408,7 @@ function addTime(startTime, secondsToAdd) {
     const date = new Date();
     date.setHours(h, m, 0, 0);
     date.setSeconds(date.getSeconds() + Math.round(secondsToAdd));
-    return date.getHours().toString().padStart(2, '0') + ":" + 
+    return date.getHours().toString().padStart(2, '0') + ":" +
            date.getMinutes().toString().padStart(2, '0');
 }
 
@@ -367,3 +418,5 @@ function durationToSeconds(timeStr) {
     if(parts.length === 3) return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
     return (parts[0] * 3600) + (parts[1] * 60);
 }
+
+

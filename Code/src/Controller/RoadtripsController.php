@@ -73,7 +73,7 @@ class RoadtripsController extends AppController
                 $favorisIds = [];
             }
         }
-// légère modifs a faire 
+// légère modifs a faire
         $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
@@ -366,11 +366,15 @@ class RoadtripsController extends AppController
         ];
 
         $query = $this->Roadtrips->find()
-            ->contain(['Users'])
+            ->contain(['Users', 'Comments.Users'])
             ->where(['visibility' => 'public'])
             ->order(['Roadtrips.id' => 'DESC']);
 
         $roadtrips = $this->paginate($query);
+
+        $newComment = $this->fetchTable('Comments')->newEmptyEntity();
+
+        $this->set(compact('roadtrips', 'newComment'));
 
         $favorisIds = [];
         if ($userId) {
@@ -433,13 +437,13 @@ class RoadtripsController extends AppController
         // ============================================================
         // AJOUT : GESTION DE L'HISTORIQUE
         // ============================================================
-        
+
         // Vérifier si l'utilisateur est connecté
         $identity = $this->request->getAttribute('identity');
-        
+
         if ($identity) {
             $userId = $identity->getIdentifier();
-            
+
             // On charge le modèle Historique (qui pointe vers la table histories)
             $historiqueTable = $this->fetchTable('Historique');
 
@@ -455,9 +459,9 @@ class RoadtripsController extends AppController
                 // CAS A : Il l'a déjà vu -> On met à jour la date pour qu'il remonte en premier
                 // Si tu utilises la colonne 'created', on ne peut pas la changer facilement.
                 // Si tu as 'date_visite', on la met à jour.
-                
+
                 // Option 1 : Si tu as une colonne 'modified' ou 'date_visite'
-                $existingHistory->date_visite = new \Cake\I18n\FrozenTime(); 
+                $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
                 $historiqueTable->save($existingHistory);
             } else {
                 // CAS B : C'est la première fois -> On crée une nouvelle entrée
@@ -465,8 +469,8 @@ class RoadtripsController extends AppController
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
                 // Définir la date (si ce n'est pas automatique via 'created')
-                $newHistory->date_visite = new \Cake\I18n\FrozenTime(); 
-                
+                $newHistory->date_visite = new \Cake\I18n\FrozenTime();
+
                 $historiqueTable->save($newHistory);
             }
         }
@@ -689,7 +693,7 @@ class RoadtripsController extends AppController
     public function deleteHistorique()
     {
         $this->request->allowMethod(['post', 'delete']);
-        
+
         $historiqueTable = $this->fetchTable('Historique');
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
@@ -703,14 +707,14 @@ class RoadtripsController extends AppController
     public function genererRoadtripGratuit()
     {
         $this->request->allowMethod(['post', 'ajax']);
-        
+
         // 1. Les données envoyées par ton formulaire Javascript
         $depart = $this->request->getData('depart') ?? 'Paris';
         $destination = $this->request->getData('destination') ?? 'Marseille';
         $duree = $this->request->getData('duree') ?? '5 jours';
 
         // 2. Le Prompt hyper strict pour l'IA
-        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree. 
+        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree.
         Tu dois répondre UNIQUEMENT par un objet JSON valide. Ne dis pas 'bonjour', n'ajoute pas de texte avant ou après.
         Format attendu :
         {
@@ -724,7 +728,7 @@ class RoadtripsController extends AppController
         // 3. Appel à l'API gratuite de Gemini
         $client = new Client();
         $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0'; // Colle ta clé ici
-        
+
         // On utilise le modèle "flash" qui est le plus rapide et inclus dans le plan gratuit
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
@@ -744,13 +748,13 @@ class RoadtripsController extends AppController
         // 4. Traitement de la réponse
         if ($response->isOk()) {
             $apiData = $response->getJson();
-            
+
             // L'API Google range le texte généré à cet endroit précis :
             $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-            
+
             // ASTUCE DE PRO : Souvent les IA rajoutent "```json" au début. On nettoie la chaîne pour être sûr !
             $aiTextClean = str_replace(['```json', '```'], '', $aiText);
-            
+
             // On transforme le texte en vrai tableau PHP
             $roadtripGenere = json_decode(trim($aiTextClean), true);
 

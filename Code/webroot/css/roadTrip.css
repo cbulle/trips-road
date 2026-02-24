@@ -283,9 +283,9 @@
 
 /* 1. Le conteneur principal : Active le mode colonnes Flexbox */
 .dashboard-container {
-    display: flex;             
-    align-items: flex-start;   
-    gap: 40px;                 
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
     max-width: 1400px;
     margin: 40px auto;
     padding: 0 20px;
@@ -294,8 +294,8 @@
 
 /* 2. La Sidebar : On fixe sa largeur et sa position */
 .profil-sidebar {
-    width: 280px !important;   
-    flex-shrink: 0;            
+    width: 280px !important;
+    flex-shrink: 0;
     background: var(--beige_fonce, #E0C58B);
     padding: 20px;
     border-radius: 13px;
@@ -362,9 +362,9 @@
 }
 
 /* 3. La zone de droite (Grille de contenu) */
-.dashboard-content, 
+.dashboard-content,
 .roadtrip-grid {
-    flex: 1;                   
+    flex: 1;
     width: 0; /* Évite les débordements */
 }
 
@@ -449,7 +449,7 @@
         top: 0;
         margin-bottom: 30px;
     }
-    
+
     /* Map Homepage */
     .full-map-container {
         height: 60vh;
@@ -462,3 +462,24 @@
         transform: translateX(0);
     }
 }
+
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    overflow-y: auto;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 15px;
+    max-width: 500px;
+    position: relative;
+}
+
