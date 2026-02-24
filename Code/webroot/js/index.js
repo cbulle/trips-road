@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let map, searchLayer, poiLayer;
     let currentCoords = defaultCoords;
     let currentCircle = null;
-    let searchRadius = 2000; 
+    let searchRadius = 2000;
 
     // Éléments DOM
     const searchInput = document.getElementById('poiSearchIndex');
@@ -71,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         L.marker([lat, lng], { icon: userIcon }).addTo(searchLayer)
-            .bindPopup("<b>Centre de recherche</b>").openPopup();
 
         currentCircle = L.circle([lat, lng], {
             color: '#3498db',
@@ -81,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }).addTo(searchLayer);
 
         if (zoom) map.setView([lat, lng], zoom);
-        
+
         if (categorySelect.value) loadPOI(categorySelect.value);
     }
 
@@ -96,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .replace(/{lat}/g, currentCoords[0])
             .replace(/{lon}/g, currentCoords[1])
             .replace(/{radius}/g, searchRadius);
-            
+
         const overpassUrl = 'https://overpass-api.de/api/interpreter';
         const overpassQuery = `[out:json][timeout:25];(${query});out body;`;
 

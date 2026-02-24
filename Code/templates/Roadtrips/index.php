@@ -15,8 +15,8 @@
         <?php if (isset($randomRoadtrips) && !$randomRoadtrips->isEmpty()): ?>
             <?php foreach ($randomRoadtrips as $rt): ?>
                 <?php
-                $urlImage = '/img/imgBase.png'; 
-                if (!empty($rt->photo_url)) { 
+                $urlImage = '/img/imgBase.png';
+                if (!empty($rt->photo_url)) {
                     $cheminPhysique = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $rt->photo_url;
                     if (file_exists($cheminPhysique)) {
                         $urlImage = '/uploads/roadtrips/' . $rt->photo_url;
@@ -53,10 +53,9 @@
     </div>
 
     <div class="map-sidebar open" id="mapSidebar">
-        
+
         <div class="sidebar-content">
             <div class="category-header">
-                <span class="category-icon">🗺️</span>
                 <h4>Filtres</h4>
             </div>
 
@@ -89,37 +88,37 @@
                 </select>
             </div>
 
+            <button id="clearFilterBtn" class="clear-filter-btn" style="display: none;">
+                ❌ Effacer
+            </button>
+
             <div class="category-info">
                 <p class="info-text">💡 <strong>Astuce :</strong> Cliquez sur la carte pour recentrer la recherche.</p>
             </div>
-            <div class="category-info">
-                <p class="info-text">💡 <strong>Astuce :</strong> Déplacez le curseur pour élargir la zone.</p>
+
+
+            <div class="category-header">
+                <h4>Rayon du filtrage</h4>
             </div>
-                
+
                 <div class="range-container" style="margin-top:10px;">
                     <label for="radiusSlider" style="display:flex; justify-content:space-between; font-weight:bold; color:var(--bleu_fonce);">
                         Rayon : <span id="radiusValue">2</span> km
                     </label>
-                    
+
                     <?= $this->Form->control('radius', [
                         'type' => 'range',
                         'min' => 1,
                         'max' => 20,
                         'step' => 1,
-                        'value' => 2, 
-                        'label' => false, 
+                        'value' => 2,
+                        'label' => false,
                         'id' => 'radiusSlider',
                         'class' => 'form-range',
                         'style' => 'width:100%; cursor:pointer;'
                     ]) ?>
                 </div>
-            </div>
-            
-            <button id="clearFilterBtn" class="clear-filter-btn" style="display: none;">
-                ❌ Effacer
-            </button>
         </div>
-
         <button class="sidebar-toggle" onclick="toggleSidebar()">
             <span id="toggleIcon">◀</span>
         </button>
@@ -130,8 +129,8 @@
 
 <script>
     const appConfig = {
-        userId: <?= json_encode($userId ?? null) ?>, 
-        defaultLat: 46.603354, 
+        userId: <?= json_encode($userId ?? null) ?>,
+        defaultLat: 46.603354,
         defaultLon: 1.888334
     };
 
