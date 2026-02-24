@@ -995,7 +995,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const jsonString = JSON.stringify(cleanTrajets);
             const blob = new Blob([jsonString], { type: 'application/json' });
             formData.append('trajets_file', blob, 'trajets.json');
-            
+
             const saveUrl = typeof SAVE_URL !== 'undefined' ? SAVE_URL : '/roadtrips/add';
             const csrfToken = typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '';
 
