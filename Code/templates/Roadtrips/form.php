@@ -28,7 +28,6 @@ $this->assign('mainClass', '');
 
     const EXISTING_TRAJETS = <?= json_encode($existingTrajets) ?>;
 
-    // Construction de l'URL de sauvegarde correcte
     const SAVE_URL = "<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $modeEdition ? $roadtrip->id : null]) ?>";
     const CSRF_TOKEN = "<?= $this->request->getAttribute('csrfToken') ?>";
 </script>
@@ -37,7 +36,14 @@ $this->assign('mainClass', '');
 
 <div class="main-container">
     <div class="sidebar">
-
+        <div class="region-selector-container" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+            <label for="regionSelect" style="font-weight:bold; display: block; margin-bottom: 5px;">🌍 Zone de recherche :</label>
+            <select id="regionSelect" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="europe">🇪🇺 Europe</option>
+                <option value="north_america">🌎 Amérique du Nord (USA, Canada, Mexique)</option>
+            </select>
+            <small style="color: #666; font-size: 0.8em; margin-top: 5px; display: block;">Centre la carte et filtre les villes suggérées.</small>
+        </div>
         <div id="legend" style="display: block;">
             <h3>Itinéraire :</h3>
             <ul id="legendList" style="list-style:none; padding:0;"></ul>

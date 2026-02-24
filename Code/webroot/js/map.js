@@ -4,9 +4,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let userFavorites = [];
-    let subStepEditors = {}; // Stockage des instances Toast UI
+    let subStepEditors = {};
 
-    // Chargement Favoris
     try {
         const urlFav = typeof URL_GET_FAVORIS !== 'undefined' ? URL_GET_FAVORIS : '/roadtrips/get-lieux-favoris';
         const respFav = await fetch(urlFav, {
@@ -85,7 +84,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. INITIALISATION DE LA CARTE & VARIABLES
     // ============================================================
 
-    let map = L.map('map').setView([46.5, 2.5], 6);
+    const regionsConfig = {
+        'europe': {
+            center: [46.5, 2.5],
+            zoom: 5,
+            codes: ["fr", "be", "ch", "lu", "de", "at", "li", "it", "sm", "va", "es", "pt", "ad", "gb", "ie", "nl", "dk", "no", "se", "fi", "is", "pl", "cz", "sk", "hu", "ee", "lv", "lt", "ro", "bg", "gr", "cy", "mt", "si", "hr", "ba", "rs", "me", "al", "mk", "xk", "ua", "md", "by", "ge", "am", "az"]
+        },
+        'north_america': {
+            center: [39.8283, -98.5795],
+            zoom: 4,
+            codes: ["us", "ca", "mx"]
+        }
+    };
+
+    let currentRegion = 'europe';
+
+    let map = L.map('map').setView(regionsConfig[currentRegion].center, regionsConfig[currentRegion].zoom);
+
+    const regionSelect = document.getElementById('regionSelect');
+    if (regionSelect) {
+        regionSelect.addEventListener('change', (e) => {
+            currentRegion = e.target.value;
+            const config = regionsConfig[currentRegion];
+            map.flyTo(config.center, config.zoom, { duration: 1.5 });
+        });
+    }
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -219,14 +242,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================================
 
     async function getCoordonnees(ville) {
-        const europeCodes = [
-            "fr", "be", "ch", "lu", "de", "at", "li", "it", "sm", "va",
-            "es", "pt", "ad", "gb", "ie", "nl", "dk", "no", "se", "fi", "is",
-            "pl", "cz", "sk", "hu", "ee", "lv", "lt", "ro", "bg", "gr", "cy", "mt",
-            "si", "hr", "ba", "rs", "me", "al", "mk", "xk", "ua", "md", "by", "ge", "am", "az"
-        ].join(',');
+        const countryCodes = regionsConfig[currentRegion].codes.join(',');
 
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr&countrycodes=${europeCodes}`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr&countrycodes=${countryCodes}`;
 
         try {
             const resp = await fetch(url);
@@ -270,18 +288,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     success: function (data) {
                         let suggestions = [];
                         let seen = new Set();
-                        const europeanCountryCodes = [
-                            "FR", "BE", "CH", "LU", "DE", "AT", "LI", "IT", "SM", "VA", "ES", "PT", "AD",
-                            "GB", "IE", "NL", "DK", "NO", "SE", "FI", "IS", "PL", "CZ", "SK", "HU", "EE",
-                            "LV", "LT", "RO", "BG", "GR", "CY", "MT", "SI", "HR", "BA", "RS", "ME", "AL",
-                            "MK", "XK", "UA", "MD", "BY", "GE", "AM", "AZ"
-                        ];
+
+                        const allowedCountryCodes = regionsConfig[currentRegion].codes.map(c => c.toUpperCase());
 
                         data.features.forEach(item => {
                             const p = item.properties;
-                            const countryCode = p.countrycode;
+                            const countryCode = p.countrycode ? p.countrycode.toUpperCase() : "";
 
-                            if (!europeanCountryCodes.includes(countryCode)) {
+                            if (!allowedCountryCodes.includes(countryCode)) {
                                 return;
                             }
 
@@ -407,10 +421,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy, existingData = null) {
         const modeTransport = existingData ? existingData.mode : 'Voiture';
 
-        // CORRECTION OSRM : Utiliser le bon profil serveur si possible, sinon fallback
-        // Ici on garde 'driving' générique si 'strategy' ne contient pas de profile spécifique
         const currentProfile = strategies[modeTransport] ? 'driving' : 'driving';
-        // Note: L'URL est construite plus bas avec le serveur spécifique
 
         let coordsList = [startCoords];
         if (existingData && existingData.sousEtapes) {
@@ -442,8 +453,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 modeTransport: modeTransport,
                 options: {},
                 date: existingData ? existingData.date_trajet : '',
-                distance: route.distance, // Mètres
-                duration: route.duration, // Secondes
+                distance: route.distance,
+                duration: route.duration,
                 legs: route.legs
             };
             segments.push(segData);
@@ -753,7 +764,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const subEtapesContainer = document.getElementById('subEtapesContainer');
         subEtapesContainer.innerHTML = '';
-        subStepEditors = {}; // Reset de la liste des éditeurs
+        subStepEditors = {};
 
         if (seg.sousEtapes && seg.sousEtapes.length > 0) {
             seg.sousEtapes.forEach(se => {
@@ -782,7 +793,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputNom.value = data.nom || '';
         div.querySelector('.subEtapeHeure').value = data.heure || '';
 
-        // --- MODIF ICI : On cible la DIV et non plus le textarea ---
         const editorContainer = div.querySelector('.subEtapeEditorContainer');
         const uniqueId = 'editor-' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
@@ -796,7 +806,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         initAutocomplete(inputNom);
 
-        // Init Toast UI
         setTimeout(() => {
             if(!document.getElementById(uniqueId)) return;
 
@@ -878,7 +887,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const nom = inputNom.value.trim();
             const heure = div.querySelector('.subEtapeHeure').value;
 
-            // --- MODIF ICI : On récupère le contenu depuis l'instance Toast UI ---
             const containerEl = div.querySelector('.subEtapeEditorContainer');
             let remarque = "";
 
@@ -988,7 +996,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const blob = new Blob([jsonString], { type: 'application/json' });
             formData.append('trajets_file', blob, 'trajets.json');
 
-            // Utilisation des variables globales définies dans add.php
             const saveUrl = typeof SAVE_URL !== 'undefined' ? SAVE_URL : '/roadtrips/add';
             const csrfToken = typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '';
 
