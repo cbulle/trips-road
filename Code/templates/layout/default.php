@@ -228,9 +228,11 @@ if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
     'index',
     'map',
     'messagerie',
+    'modal',
     'profil',
     'recherche',
     'viewRoadtrip',
+
 ]) ?>
 
 <?= $this->fetch('script') ?>

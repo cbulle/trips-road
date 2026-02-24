@@ -1,68 +1,29 @@
-(function() {
-    // Fonctions de gestion interne
-    const toggleModal = (id, display) => {
-        const modal = document.getElementById(id);
-        if (modal) {
-            modal.style.display = display;
-            document.body.style.overflow = (display === 'block') ? 'hidden' : 'auto';
+/**
+ * roadtrip.js — Cartes Leaflet & calcul des horaires.
+ * La gestion des modales est déléguée à modals.js (chargé séparément).
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    try {
+        var mapEl = document.getElementById('map-global');
+        if (mapEl && typeof roadTripData !== 'undefined') {
+            initGlobalMap();
+            calculerTousLesSegments();
         }
-    };
+    } catch (err) {
+        console.warn('Carte non chargée sur cette page.');
+    }
+});
 
-    // On attend que la page soit prête
-    document.addEventListener('DOMContentLoaded', () => {
-
-        // 1. Gérer l'ouverture des avis
-        document.querySelectorAll('.btn-open-avis').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = btn.getAttribute('data-id');
-                toggleModal('modalAvis-' + id, 'block');
-            });
-        });
-
-        // 2. Gérer l'ouverture des formulaires de commentaire
-        document.querySelectorAll('.btn-open-comment').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = btn.getAttribute('data-id');
-                toggleModal('modalComment-' + id, 'block');
-            });
-        });
-
-        // 3. Gérer la fermeture (bouton X)
-        document.querySelectorAll('.close').forEach(closeBtn => {
-            closeBtn.addEventListener('click', (e) => {
-                const modal = e.target.closest('.custom-modal');
-                if (modal) toggleModal(modal.id, 'none');
-            });
-        });
-
-        // 4. Fermer en cliquant sur le fond noir
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('custom-modal')) {
-                toggleModal(e.target.id, 'none');
-            }
-        });
-
-        // 5. Initialisation sécurisée de la carte (ne bloque pas le reste si ça rate)
-        try {
-            const mapEl = document.getElementById('map-global');
-            if (mapEl && typeof roadTripData !== 'undefined') {
-                initGlobalMap();
-                calculerTousLesSegments();
-            }
-        } catch (err) {
-            console.warn("Carte non chargée sur cette page.");
-        }
-    });
-})();
 
 /**
- * 3. CONSTANTES ET VARIABLES
+ * CONSTANTES ET VARIABLES
  */
 const mapInstances = {};
 const colorsPalette = [
     '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
     '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4'
 ];
+
 /**
  * Récupère les données proprement (Array ou Object)
  */
@@ -158,8 +119,8 @@ async function initStepMap(id) {
     if (mapInstances[id]) {
         setTimeout(() => {
             mapInstances[id].invalidateSize();
-            if(data.layerGroup) {
-                 mapInstances[id].fitBounds(data.layerGroup.getBounds(), { padding: [30, 30] });
+            if (data.layerGroup) {
+                mapInstances[id].fitBounds(data.layerGroup.getBounds(), { padding: [30, 30] });
             }
         }, 100);
         return;
@@ -195,7 +156,8 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
 
     if (data.sousEtapes && data.sousEtapes.length > 0) {
         data.sousEtapes.forEach((se) => {
-            const sLat = parseFloat(se.lat); const sLon = parseFloat(se.lon);
+            const sLat = parseFloat(se.lat);
+            const sLon = parseFloat(se.lon);
             if (!isNaN(sLat) && !isNaN(sLon)) {
                 let popupContent = `<b>📍 ${se.nom}</b>`;
                 if (se.heure) popupContent += `<br>⏳ Pause : ${se.heure}`;
@@ -217,7 +179,7 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
     let coordinates = `${lonDep},${latDep}`;
     if (data.sousEtapes) {
         data.sousEtapes.forEach(se => {
-            if(!isNaN(parseFloat(se.lat))) coordinates += `;${se.lon},${se.lat}`;
+            if (!isNaN(parseFloat(se.lat))) coordinates += `;${se.lon},${se.lat}`;
         });
     }
     coordinates += `;${lonArr},${latArr}`;
@@ -243,7 +205,7 @@ async function drawRoute(map, data, color, fitBounds, useOffset, clusterGroup) {
         }
     } catch (e) {
         console.error("Erreur trace route:", e);
-        L.polyline([[latDep, lonDep], [latArr, lonArr]], {color: color, weight: 2, dashArray: '5,5'}).addTo(map);
+        L.polyline([[latDep, lonDep], [latArr, lonArr]], { color: color, weight: 2, dashArray: '5,5' }).addTo(map);
     }
 }
 
@@ -310,14 +272,10 @@ async function calculerHorairesTrajet(card) {
     const trajetId = card.id.replace('card-', '');
     const dataTrajet = getTrajetData(trajetId);
 
-    if (!dataTrajet || !dataTrajet.hasCoords) {
-        // console.warn(`Trajet ${trajetId} : coordonnées manquantes`);
-        return;
-    }
+    if (!dataTrajet || !dataTrajet.hasCoords) return;
 
     const etapeCards = card.querySelectorAll('.sous-etape-card');
 
-    // Construction des coordonnées
     let coordsPath = `${dataTrajet.depart.lon},${dataTrajet.depart.lat}`;
     if (dataTrajet.sousEtapes && dataTrajet.sousEtapes.length > 0) {
         dataTrajet.sousEtapes.forEach(se => {
@@ -326,7 +284,6 @@ async function calculerHorairesTrajet(card) {
     }
     coordsPath += `;${dataTrajet.arrivee.lon},${dataTrajet.arrivee.lat}`;
 
-    // --- CORRECTION ICI : Utilisation des bons serveurs ---
     const servers = {
         'voiture': 'https://routing.openstreetmap.de/routed-car',
         'velo': 'https://routing.openstreetmap.de/routed-bike',
@@ -335,13 +292,8 @@ async function calculerHorairesTrajet(card) {
         'à pied': 'https://routing.openstreetmap.de/routed-foot'
     };
 
-    // On récupère le bon serveur, sinon voiture par défaut
     const baseUrl = servers[dataTrajet.mode] || servers['voiture'];
-
-    // Note : Sur ces serveurs spécifiques (FOSSGIS), on laisse souvent "/driving/" dans l'URL
-    // car c'est le sous-domaine (routed-foot) qui détermine la vitesse.
     const url = `${baseUrl}/route/v1/driving/${coordsPath}?overview=false&steps=false`;
-    // -------------------------------------------------------
 
     try {
         const response = await fetch(url);
@@ -362,7 +314,6 @@ async function calculerHorairesTrajet(card) {
                 if (targetCard) {
                     const horaireSpan = targetCard.querySelector('.horaire-calcule');
                     const isArrival = targetCard.dataset.isArrival === '1';
-                    // Correction potentielle si 'isDeparture' n'est pas défini dans ton HTML, on vérifie juste arrival
 
                     if (horaireSpan) {
                         if (isArrival) {
@@ -392,7 +343,6 @@ async function calculerHorairesTrajet(card) {
                     timeText += minutes + 'min';
 
                     segmentInfo.querySelector('.segment-time').textContent = timeText;
-                    // Ajout d'une classe pour indiquer que le calcul est fait (optionnel)
                     segmentInfo.classList.add('segment-calculated');
                 }
             });
@@ -403,20 +353,18 @@ async function calculerHorairesTrajet(card) {
 }
 
 function addTime(startTime, secondsToAdd) {
-    if(!startTime) return "--:--";
+    if (!startTime) return "--:--";
     const [h, m] = startTime.split(':').map(Number);
     const date = new Date();
     date.setHours(h, m, 0, 0);
     date.setSeconds(date.getSeconds() + Math.round(secondsToAdd));
     return date.getHours().toString().padStart(2, '0') + ":" +
-           date.getMinutes().toString().padStart(2, '0');
+        date.getMinutes().toString().padStart(2, '0');
 }
 
 function durationToSeconds(timeStr) {
-    if(!timeStr) return 0;
+    if (!timeStr) return 0;
     const parts = timeStr.split(':').map(Number);
-    if(parts.length === 3) return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
+    if (parts.length === 3) return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
     return (parts[0] * 3600) + (parts[1] * 60);
 }
-
-
