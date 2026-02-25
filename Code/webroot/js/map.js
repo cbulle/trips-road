@@ -809,7 +809,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
             if(!document.getElementById(uniqueId)) return;
 
-            const editor = new toastui.Editor({
+            subStepEditors[uniqueId] = new toastui.Editor({
                 el: document.querySelector('#' + uniqueId),
                 height: '350px',
                 initialEditType: 'wysiwyg',
@@ -823,7 +823,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ['heading', 'bold', 'italic', 'strike'],
                     ['hr', 'quote'],
                     ['ul', 'ol', 'task'],
-                    ['image', 'link']
+                    ['table', 'image', 'link']
                 ],
                 hooks: {
                     addImageBlobHook: async (blob, callback) => {
@@ -859,8 +859,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
             });
-
-            subStepEditors[uniqueId] = editor;
         }, 100);
 
         div.querySelector('.removeSubEtapeBtn').addEventListener('click', () => {

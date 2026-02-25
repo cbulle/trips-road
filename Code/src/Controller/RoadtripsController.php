@@ -70,7 +70,6 @@ class RoadtripsController extends AppController
                 $favorisIds = [];
             }
         }
-
         $this->set(compact('roadtrips', 'randomRoadtrips', 'favorisIds', 'userId', 'user'));
     }
 
@@ -152,6 +151,7 @@ class RoadtripsController extends AppController
 
             try {
                 if ($this->Roadtrips->save($roadtrip)) {
+
                     if ($this->request->is(['ajax', 'json'])) {
                         return $this->response
                             ->withType('application/json')
@@ -161,6 +161,7 @@ class RoadtripsController extends AppController
                                 'message' => 'Roadtrip créé avec succès !'
                             ]));
                     }
+
                     $this->Flash->success(__('Roadtrip sauvegardé !'));
                     return $this->redirect(['action' => 'myRoadtrips']);
                 }
@@ -175,6 +176,7 @@ class RoadtripsController extends AppController
                             'details' => $roadtrip->getErrors()
                         ]));
                 }
+
             } catch (\Exception $e) {
                 \Cake\Log\Log::error("Crash Save Roadtrip : " . $e->getMessage());
 
@@ -232,7 +234,9 @@ class RoadtripsController extends AppController
 
             if ($trajetsFile instanceof \Laminas\Diactoros\UploadedFile && $trajetsFile->getError() === UPLOAD_ERR_OK) {
                 $jsonTrajets = file_get_contents($trajetsFile->getStream()->getMetadata('uri'));
+
                 $this->Roadtrips->Trips->deleteAll(['roadtrip_id' => $roadtrip->id]);
+
                 $data['trips'] = $this->_mapJsonToCakeEntities($jsonTrajets);
             }
 
@@ -242,6 +246,7 @@ class RoadtripsController extends AppController
 
             try {
                 if ($this->Roadtrips->save($roadtrip)) {
+
                     if ($this->request->is(['ajax', 'json'])) {
                         return $this->response
                             ->withType('application/json')
@@ -251,6 +256,7 @@ class RoadtripsController extends AppController
                                 'message' => 'Roadtrip modifié avec succès !'
                             ]));
                     }
+
                     $this->Flash->success(__('Roadtrip sauvegardé !'));
                     return $this->redirect(['action' => 'myRoadtrips']);
                 }
@@ -265,6 +271,7 @@ class RoadtripsController extends AppController
                             'details' => $roadtrip->getErrors()
                         ]));
                 }
+
             } catch (\Exception $e) {
                 \Cake\Log\Log::error("Crash Save Roadtrip : " . $e->getMessage());
 
@@ -315,6 +322,7 @@ class RoadtripsController extends AppController
     public function myRoadtrips()
     {
         $userId = $this->request->getAttribute('identity')->getIdentifier();
+
         $user = $this->Roadtrips->Users->get($userId);
 
         $show_share = $this->request->getQuery('show_share');
@@ -330,6 +338,7 @@ class RoadtripsController extends AppController
         $roadtrips = $this->paginate($query);
 
         $this->set(compact('roadtrips', 'show_share', 'share_url', 'user'));
+
         $this->render('my_roadtrips');
     }
 
@@ -360,7 +369,6 @@ class RoadtripsController extends AppController
 
         $roadtrips = $this->paginate($query);
 
-        // Utilisation de l'association directe — pas de fetchTable
         $newComment = $this->Roadtrips->Comments->newEmptyEntity();
 
         $favorisIds = [];
@@ -383,8 +391,11 @@ class RoadtripsController extends AppController
     public function share($id = null)
     {
         $token = md5((string)$id . uniqid());
+
         $link = \Cake\Routing\Router::url(['controller' => 'Roadtrips', 'action' => 'view', 'token' => $token], true);
+
         $this->request->getSession()->write('share_url', $link);
+
         return $this->redirect(['action' => 'myRoadtrips', '?' => ['show_share' => 1]]);
     }
 
@@ -417,6 +428,7 @@ class RoadtripsController extends AppController
         }
 
         $identity = $this->request->getAttribute('identity');
+
         if ($identity) {
             $userId = $identity->getIdentifier();
             $historiqueTable = $this->Roadtrips->Histories;
@@ -429,10 +441,9 @@ class RoadtripsController extends AppController
                 ->first();
 
             if ($existingHistory) {
-                $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
+                $existingHistory->created = new \Cake\I18n\FrozenTime();
                 $historiqueTable->save($existingHistory);
             } else {
-                // CAS B : C'est la première fois -> On crée une nouvelle entrée
                 $newHistory = $historiqueTable->newEmptyEntity();
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
@@ -447,6 +458,7 @@ class RoadtripsController extends AppController
         $jsMapData = [];
 
         foreach ($roadtrip->trips as $trip) {
+
             $coordsDep = $this->_getCoordinates($trip->departure, $geocodedPlacesTable);
             $coordsArr = $this->_getCoordinates($trip->arrival, $geocodedPlacesTable);
 
@@ -488,6 +500,7 @@ class RoadtripsController extends AppController
         }
 
         $jsMapDataJson = json_encode($jsMapData);
+
         $this->set(compact('roadtrip', 'jsMapDataJson', 'isOwner'));
     }
 
@@ -497,6 +510,7 @@ class RoadtripsController extends AppController
         foreach ($trips as $trip) {
             $sousEtapes = [];
             foreach ($trip->sub_steps as $step) {
+
                 $heureFormattee = '';
                 if (!empty($step->duration)) {
                     if ($step->duration instanceof \DateTimeInterface) {
@@ -511,6 +525,7 @@ class RoadtripsController extends AppController
                     'nom' => $step->city,
                     'heure' => $heureFormattee,
                     'remarque' => $step->description,
+
                     'coords' => [
                         (float)($step->latitude ?? 0),
                         (float)($step->longitude ?? 0)
@@ -523,8 +538,10 @@ class RoadtripsController extends AppController
                 'depart' => $trip->departure,
                 'arrivee' => $trip->arrival,
                 'mode' => $trip->transport_mode,
+
                 'date_trajet' => $trip->departure_time ? $trip->departure_time->format('Y-m-d') : null,
                 'heure_depart' => $trip->departure_time ? $trip->departure_time->format('H:i') : '08:00',
+
                 'sousEtapes' => $sousEtapes
             ];
         }
@@ -571,7 +588,9 @@ class RoadtripsController extends AppController
                     $newPlace->name = $cleanName;
                     $newPlace->latitude = $lat;
                     $newPlace->longitude = $lon;
+
                     $newPlace->last_used = \Cake\I18n\FrozenTime::now();
+
                     $table->save($newPlace);
 
                     return ['lat' => $lat, 'lon' => $lon];
@@ -591,6 +610,7 @@ class RoadtripsController extends AppController
         if (!$decoded) return [];
 
         $cakeTrips = [];
+
         foreach ($decoded as $index => $trajetJs) {
             $newTrajet = [
                 'order_number' => $index + 1,
@@ -632,8 +652,8 @@ class RoadtripsController extends AppController
                     'Users'
                 ]
             ])
-            ->where(['Historique.user_id' => $userId])
-            ->order(['Historique.date_visite' => 'DESC']);
+            ->where(['Histories.user_id' => $userId])
+            ->order(['Histories.created' => 'DESC']);
 
         try {
             $historique = $this->paginate($query, ['limit' => 12]);
@@ -652,7 +672,9 @@ class RoadtripsController extends AppController
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
         $historiqueTable->deleteAll(['user_id' => $userId]);
+
         $this->Flash->success('Votre historique a été vidé.');
+
         return $this->redirect(['action' => 'historique']);
     }
 
@@ -676,7 +698,12 @@ class RoadtripsController extends AppController
         }";
 
         $client = new Client();
-        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0';
+        $apiKey = \Cake\Core\Configure::read('Gemini.apiKey');
+
+        if (!$apiKey) {
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => 'Clé API manquante.']));
+        }
 
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
@@ -694,8 +721,11 @@ class RoadtripsController extends AppController
 
         if ($response->isOk()) {
             $apiData = $response->getJson();
+
             $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
             $aiTextClean = str_replace(['```json', '```'], '', $aiText);
+
             $roadtripGenere = json_decode(trim($aiTextClean), true);
 
             if (json_last_error() === JSON_ERROR_NONE) {
@@ -706,5 +736,60 @@ class RoadtripsController extends AppController
 
         return $this->response->withType('application/json')
             ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
+    }
+
+    public function uploadStepImage()
+    {
+        $this->request->allowMethod(['post', 'ajax']);
+        $this->viewBuilder()->disableAutoLayout();
+
+        $response = ['success' => false, 'message' => 'Une erreur inconnue est survenue.'];
+
+        $image = $this->request->getData('image');
+
+        if ($image instanceof \Laminas\Diactoros\UploadedFile && $image->getError() === UPLOAD_ERR_OK) {
+
+            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $mimeType = $image->getClientMediaType();
+
+            if (!in_array($mimeType, $allowedMimeTypes)) {
+                $response['message'] = 'Format de fichier non autorisé. Uniquement JPG, PNG, GIF ou WEBP.';
+            } else {
+                $ext = pathinfo($image->getClientFilename(), PATHINFO_EXTENSION);
+                if (empty($ext)) {
+                    $ext = str_replace('image/', '', $mimeType);
+                }
+
+                $newName = 'step_' . uniqid() . '.' . $ext;
+
+                $dirPath = WWW_ROOT . 'uploads' . DS . 'sousetapes';
+
+                if (!is_dir($dirPath)) {
+                    mkdir($dirPath, 0777, true);
+                }
+
+                $destination = $dirPath . DS . $newName;
+
+                try {
+                    $image->moveTo($destination);
+
+                    $publicUrl = \Cake\Routing\Router::url('/uploads/sousetapes/' . $newName, true);
+
+                    $response = [
+                        'success' => true,
+                        'url' => $publicUrl
+                    ];
+                } catch (\Exception $e) {
+                    \Cake\Log\Log::error("Erreur upload image étape : " . $e->getMessage());
+                    $response['message'] = 'Erreur lors de la sauvegarde du fichier sur le serveur.';
+                }
+            }
+        } else {
+            $response['message'] = 'Aucun fichier valide reçu ou erreur lors du transfert.';
+        }
+
+        return $this->response
+            ->withType('application/json')
+            ->withStringBody(json_encode($response));
     }
 }
