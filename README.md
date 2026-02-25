@@ -1,5 +1,3 @@
----
-
 ##  Trips & Roads - SAE Project
 
 Plateforme collaborative de planification de voyages et de partage d'itinéraires.
