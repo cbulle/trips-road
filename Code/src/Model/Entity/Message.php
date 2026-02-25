@@ -26,6 +26,7 @@ use Cake\Core\Configure;
  */
 class Message extends Entity
 {
+    protected array $_virtual = ['content'];
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -54,31 +55,23 @@ class Message extends Entity
         }
 
         $key = Configure::read('Security.messageKey');
-        
-        // On chiffre. Le résultat binaire est parfait pour un LONGBLOB.
+
         return Security::encrypt($value, $key);
     }
 
     /**
      * DÉCHIFFREMENT : Gère la ressource BLOB et déchiffre pour l'affichage
      */
-    protected function _getBody($value)
+    protected function _getContent()
     {
-        if ($value === null || $value === '') {
-            return $value;
-        }
-
-        // CORRECTIF : Si c'est une ressource (BLOB), on extrait le contenu
-        if (is_resource($value)) {
-            $value = stream_get_contents($value);
+        if (is_resource($this->body)) {
+            $value = stream_get_contents($this->body);
         }
 
         $key = Configure::read('Security.messageKey');
 
-        // On déchiffre la chaîne binaire obtenue
         $decrypted = Security::decrypt($value, $key);
 
-        // Retourne le texte déchiffré, ou la valeur brute si c'est un ancien message
         return $decrypted ?: $value;
     }
 }
