@@ -76,7 +76,6 @@ class RoadtripsController extends AppController
     public function getLieuxFavoris()
     {
         $this->request->allowMethod(['get', 'ajax']);
-
         $this->viewBuilder()->disableAutoLayout();
 
         $userId = $this->request->getAttribute('identity')?->getIdentifier();
@@ -85,7 +84,6 @@ class RoadtripsController extends AppController
         if ($userId) {
             try {
                 $favoritesTable = $this->fetchTable('FavoritePlaces');
-
                 $favorites = $favoritesTable->find()
                     ->where(['user_id' => $userId])
                     ->all();
@@ -231,7 +229,7 @@ class RoadtripsController extends AppController
                 $photo->moveTo($destination);
                 $data['photo_url'] = $newName;
             }
-            $trajetsFile = [];
+
             $trajetsFile = $this->request->getData('trajets_file');
 
             if ($trajetsFile instanceof \Laminas\Diactoros\UploadedFile && $trajetsFile->getError() === UPLOAD_ERR_OK) {
@@ -255,7 +253,7 @@ class RoadtripsController extends AppController
                             ->withStringBody(json_encode([
                                 'success' => true,
                                 'id' => $roadtrip->id,
-                                'message' => 'Roadtrip créé avec succès !'
+                                'message' => 'Roadtrip modifié avec succès !'
                             ]));
                     }
 
@@ -355,15 +353,23 @@ class RoadtripsController extends AppController
         }
 
         $this->paginate = [
-            'order' => ['id' => 'DESC']
+            'order' => ['Roadtrips.id' => 'DESC']
         ];
 
         $query = $this->Roadtrips->find()
-            ->contain(['Users'])
+            ->contain([
+                'Users',
+                'Comments' => [
+                    'Users',
+                    'sort' => ['Comments.created' => 'DESC']
+                ]
+            ])
             ->where(['visibility' => 'public'])
             ->order(['Roadtrips.id' => 'DESC']);
 
         $roadtrips = $this->paginate($query);
+
+        $newComment = $this->Roadtrips->Comments->newEmptyEntity();
 
         $favorisIds = [];
         if ($userId) {
@@ -379,7 +385,7 @@ class RoadtripsController extends AppController
             }
         }
 
-        $this->set(compact('roadtrips', 'favorisIds', 'userId', 'user'));
+        $this->set(compact('roadtrips', 'newComment', 'favorisIds', 'userId', 'user'));
     }
 
     public function share($id = null)
@@ -441,7 +447,7 @@ class RoadtripsController extends AppController
                 $newHistory = $historiqueTable->newEmptyEntity();
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
-
+                $newHistory->date_visite = new \Cake\I18n\FrozenTime();
                 $historiqueTable->save($newHistory);
             }
         }
