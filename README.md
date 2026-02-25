@@ -1,10 +1,7 @@
 ---
-
-#  Trips & Roads - SAE Project
-
- **Plateforme collaborative de planification de voyages et de partage d'itinéraires.**
- Développé avec **CakePHP 5**, ce projet démontre une architecture robuste et l'intégration de services tiers .
-
+##  Trips & Roads - SAE Project
+**Plateforme collaborative de planification de voyages et de partage d'itinéraires.**
+Développé avec **CakePHP 5**, ce projet démontre une architecture robuste et l'intégration de services tiers .
 
 ---
 
