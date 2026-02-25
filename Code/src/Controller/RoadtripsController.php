@@ -435,13 +435,12 @@ class RoadtripsController extends AppController
                 ->first();
 
             if ($existingHistory) {
-                $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
+                $existingHistory->created = new \Cake\I18n\FrozenTime();
                 $historiqueTable->save($existingHistory);
             } else {
                 $newHistory = $historiqueTable->newEmptyEntity();
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
-                $newHistory->date_visite = new \Cake\I18n\FrozenTime();
 
                 $historiqueTable->save($newHistory);
             }
@@ -647,8 +646,8 @@ class RoadtripsController extends AppController
                     'Users'
                 ]
             ])
-            ->where(['Historique.user_id' => $userId])
-            ->order(['Historique.date_visite' => 'DESC']);
+            ->where(['Histories.user_id' => $userId])
+            ->order(['Histories.created' => 'DESC']);
 
         try {
             $historique = $this->paginate($query, ['limit' => 12]);
@@ -693,7 +692,12 @@ class RoadtripsController extends AppController
         }";
 
         $client = new Client();
-        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0';
+        $apiKey = \Cake\Core\Configure::read('Gemini.apiKey');
+
+        if (!$apiKey) {
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => 'Clé API manquante.']));
+        }
 
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
@@ -726,5 +730,60 @@ class RoadtripsController extends AppController
 
         return $this->response->withType('application/json')
             ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
+    }
+
+    public function uploadStepImage()
+    {
+        $this->request->allowMethod(['post', 'ajax']);
+        $this->viewBuilder()->disableAutoLayout();
+
+        $response = ['success' => false, 'message' => 'Une erreur inconnue est survenue.'];
+
+        $image = $this->request->getData('image');
+
+        if ($image instanceof \Laminas\Diactoros\UploadedFile && $image->getError() === UPLOAD_ERR_OK) {
+
+            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $mimeType = $image->getClientMediaType();
+
+            if (!in_array($mimeType, $allowedMimeTypes)) {
+                $response['message'] = 'Format de fichier non autorisé. Uniquement JPG, PNG, GIF ou WEBP.';
+            } else {
+                $ext = pathinfo($image->getClientFilename(), PATHINFO_EXTENSION);
+                if (empty($ext)) {
+                    $ext = str_replace('image/', '', $mimeType);
+                }
+
+                $newName = 'step_' . uniqid() . '.' . $ext;
+
+                $dirPath = WWW_ROOT . 'uploads' . DS . 'sousetapes';
+
+                if (!is_dir($dirPath)) {
+                    mkdir($dirPath, 0777, true);
+                }
+
+                $destination = $dirPath . DS . $newName;
+
+                try {
+                    $image->moveTo($destination);
+
+                    $publicUrl = \Cake\Routing\Router::url('/uploads/sousetapes/' . $newName, true);
+
+                    $response = [
+                        'success' => true,
+                        'url' => $publicUrl
+                    ];
+                } catch (\Exception $e) {
+                    \Cake\Log\Log::error("Erreur upload image étape : " . $e->getMessage());
+                    $response['message'] = 'Erreur lors de la sauvegarde du fichier sur le serveur.';
+                }
+            }
+        } else {
+            $response['message'] = 'Aucun fichier valide reçu ou erreur lors du transfert.';
+        }
+
+        return $this->response
+            ->withType('application/json')
+            ->withStringBody(json_encode($response));
     }
 }

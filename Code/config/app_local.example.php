@@ -94,4 +94,8 @@ return [
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
     ],
+
+    'Gemini' => [
+        'apiKey' => 'VOTRE_CLE_API_ICI',
+    ],
 ];

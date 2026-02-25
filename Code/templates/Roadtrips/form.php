@@ -37,8 +37,8 @@ $this->assign('mainClass', '');
 <div class="main-container">
     <div class="sidebar">
         <div class="region-selector-container" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-            <label for="regionSelect" style="font-weight:bold; display: block; margin-bottom: 5px;">🌍 Zone de recherche :</label>
-            <select id="regionSelect" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <label for="regionSelect">🌍 Zone de recherche :</label>
+            <select id="regionSelect">
                 <option value="europe">🇪🇺 Europe</option>
                 <option value="north_america">🌎 Amérique du Nord (USA, Canada, Mexique)</option>
             </select>

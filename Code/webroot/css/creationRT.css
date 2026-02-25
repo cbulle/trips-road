@@ -1,0 +1,611 @@
+.TitreRT {
+    color: var(--beige);
+    background-color: var(--bleu_clair);
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.main-container {
+    display: flex;
+    gap: 25px;
+    padding: 0 20px 20px 20px;
+}
+
+.sidebar {
+    width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.region-selector-container,
+.sidebar #legend,
+#newBlockForm {
+    background: var(--beige_fonce) !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    border: none !important;
+}
+
+.region-selector-container label {
+    font-size: 0.95rem;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.region-selector-container select {
+    background-color: var(--white) !important;
+    border: 1px solid var(--bleu_clair) !important;
+    border-radius: 10px !important;
+    padding: 12px 15px !important;
+    font-size: 1rem !important;
+    color: var(--bleu_fonce_ecriture);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar #saveContainer {
+    background: linear-gradient(135deg, var(--bleu_fonce), var(--bleu_clair));
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(11, 102, 125, 0.2);
+    margin-top: 10px;
+}
+
+.sidebar #saveContainer h3 {
+    color: var(--beige);
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 10px;
+}
+
+.sidebar #saveContainer label {
+    color: var(--beige);
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.sidebar #saveContainer small {
+    color: var(--beige_fonce) !important;
+}
+
+.sidebar #roadtripDescription,
+.sidebar #roadtripTitle,
+.sidebar #roadtripVisibilite,
+.status-selector-container select {
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid var(--bleu_clair);
+    background-color: var(--white);
+    color: var(--bleu_fonce_ecriture);
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-bottom: 15px !important;
+    box-sizing: border-box;
+}
+
+.sidebar #roadtripDescription {
+    resize: none;
+    height: 100px;
+    font-family: inherit;
+}
+
+.sidebar #roadtripDescription:focus,
+.sidebar #roadtripTitle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--bleu_clair);
+}
+
+#roadtripPhoto {
+    background-color: var(--white);
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--bleu_clair);
+    width: 100%;
+    margin-bottom: 15px;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+#roadtripPhoto::file-selector-button {
+    background-color: var(--bleu_clair);
+    color: var(--white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    margin-right: 15px;
+}
+
+#roadtripPhoto::file-selector-button:hover {
+    background-color: var(--vert);
+}
+
+.status-selector-container {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.status-selector-container label {
+    color: var(--beige);
+}
+
+.sidebar #btnAddSegment,
+.sidebar #saveRoadtrip,
+#addSubEtape,
+#saveSegment,
+.btn-block-action {
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sidebar #btnAddSegment {
+    background-color: var(--bleu_clair);
+    color: white;
+    border: 2px var(--bleu_clair);
+    box-shadow: none;
+    margin: 10px 0;
+}
+
+.sidebar #btnAddSegment:hover {
+    background-color: var(--bleu_clair);
+    color: var(--beige);
+    transform: translateY(-2px);
+}
+
+.sidebar #saveRoadtrip {
+    background-color: var(--orange);
+    color: var(--white);
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(255, 127, 80, 0.4);
+    margin-top: 10px;
+}
+
+.sidebar #saveRoadtrip:hover {
+    background-color: var(--vert);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 139, 87, 0.6);
+}
+
+.new-block-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 0.95rem;
+}
+
+.new-block-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--bleu_clair);
+    background-color: var(--white);
+    color: var(--bleu_fonce_ecriture);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.new-block-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(57, 178, 165, 0.2);
+}
+
+.new-block-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-block-validate { background-color: var(--bleu_clair); color: var(--white); }
+.btn-block-validate:hover { background-color: var(--vert); transform: translateY(-2px); }
+.btn-block-cancel { background-color: var(--gris_clair); color: var(--white); }
+.btn-block-cancel:hover { background-color: var(--gris_fonce); }
+
+.sidebar #legend h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.sidebar #legendList li {
+    background-color: var(--beige);
+    margin-bottom: 12px;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--bleu_clair);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar #legendList li:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.legend-segment-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.legend-color-indicator {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+.legend-toggle-btn {
+    margin-left: auto;
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--bleu_clair);
+    padding: 5px;
+}
+
+.legend-date-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    background: transparent;
+    padding: 0;
+}
+
+.legend-date-container label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.legend-date-input,
+.legend-time-input {
+    border: 1px solid var(--bleu_clair);
+    border-radius: 8px;
+    padding: 6px 10px;
+    background: var(--white);
+    color: var(--bleu_fonce_ecriture);
+    transition: all 0.3s ease;
+}
+
+.legend-date-input:focus,
+.legend-time-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bleu_clair);
+}
+
+.transport-options {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: 10px;
+    margin-right: auto;
+    background: white;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.transport-btn {
+    background-color: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px 8px;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.transport-btn:hover {
+    background-color: var(--beige);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.transport-btn.active {
+    background-color: var(--bleu_clair);
+    color: var(--beige);
+    opacity: 1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--bleu_fonce_ecriture);
+    margin-right: 5px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.settings-btn:hover { transform: rotate(45deg); color: var(--orange); }
+
+#legendList .modifierSousEtapes {
+    width: 100%;
+    border-radius: 8px;
+    padding: 8px;
+    background-color: var(--bleu_clair);
+    color: var(--beige);
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+#legendList .modifierSousEtapes:hover {
+    background-color: var(--vert);
+    cursor: pointer;
+}
+
+.sousEtapesList {
+    list-style: none;
+    padding-left: 15px;
+    margin-top: 10px;
+    border-left: 2px dashed var(--bleu_clair);
+}
+
+#segmentFormContainer {
+    display: none;
+    background: var(--beige_fonce);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    margin-top: 0;
+    width: 90%;
+    max-width: 650px;
+    position: relative;
+    border: 1px solid var(--bleu_clair);
+    box-sizing: border-box;
+}
+
+#segmentFormContainer h3 {
+    color: var(--orange);
+    margin-bottom: 25px;
+    font-weight: 700;
+    font-size: 1.4rem;
+    padding-right: 40px;
+}
+
+.close-segment-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 18px;
+    background: var(--white);
+    color: var(--bleu_fonce_ecriture);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    border: 1px solid var(--bleu_clair);
+    z-index: 9999;
+}
+
+.close-segment-btn:hover {
+    background: var(--orange);
+    color: var(--white);
+    border-color: var(--orange);
+    transform: rotate(90deg);
+}
+
+.subEtape-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+#addSubEtape { background-color: var(--beige); color: var(--bleu_fonce_ecriture); border: 1px dashed var(--bleu_clair); }
+#addSubEtape:hover { background-color: var(--bleu_clair); color: var(--white); }
+
+#saveSegment { background-color: var(--bleu_clair); color: var(--white); }
+#saveSegment:hover { background-color: var(--vert); transform: translateY(-2px); }
+
+.subEtape {
+    background: var(--beige);
+    padding: 20px 20px 25px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--bleu_clair);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.subEtape input[type="text"],
+.subEtape input[type="time"] {
+    width: 100%;
+    border: 1px solid var(--bleu_clair);
+    background-color: var(--white);
+    padding: 10px 12px;
+    margin-top: 8px;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    color: var(--bleu_fonce_ecriture);
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.subEtape input[type="text"]:focus,
+.subEtape input[type="time"]:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 2px rgba(255, 127, 80, 0.2);
+}
+
+.sub-etape-remove-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: var(--white);
+    border: 1px solid var(--rouge);
+    color: var(--rouge);
+    cursor: pointer;
+    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sub-etape-remove-btn:hover {
+    background: var(--rouge);
+    color: var(--white);
+    transform: scale(1.1);
+}
+
+.ui-autocomplete {
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 0;
+    margin: 5px 0 0 0;
+    list-style: none;
+    background: var(--white) !important;
+    border: 1px solid var(--bleu_clair) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    z-index: 1000;
+    width: 100% !important;
+    max-width: 460px;
+}
+
+.ui-menu-item-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--beige);
+    transition: background 0.2s ease;
+}
+
+.ui-menu-item-name {
+    font-weight: 600;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.05rem;
+}
+
+.ui-menu-item-details {
+    font-size: 0.85rem;
+    color: var(--gris_fonce);
+    margin-top: 5px;
+}
+
+.ui-state-active, .ui-menu-item:hover .ui-menu-item-wrapper {
+    background: rgba(57, 178, 165, 0.1) !important;
+}
+
+.ui-menu-item:hover .ui-menu-item-name,
+.ui-state-active .ui-menu-item-name {
+    color: var(--bleu_fonce) !important;
+}
+
+.map-container, #map {
+    flex: 1;
+    width: 100%;
+    height: 875px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 1px solid var(--bleu_clair);
+}
+
+.map-container {
+    position: sticky;
+    top: 20px;
+}
+
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    cursor: zoom-out;
+}
+
+.image-modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+@media (max-width: 1024px) {
+    .main-container {
+        flex-direction: column;
+        padding: 15px;
+        gap: 20px;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-width: 100%;
+        order: 1;
+    }
+
+    .segment-form-container,
+    #segmentFormContainer {
+        width: 100%;
+        max-width: 100%;
+        order: 2;
+        padding: 20px;
+    }
+
+    .map-container, #map {
+        height: 500px;
+        position: relative;
+        top: 0;
+    }
+
+    .sidebar select,
+    .sidebar input,
+    .sidebar textarea,
+    .sidebar button,
+    .sidebar label {
+        font-size: 1rem;
+    }
+
+    .sidebar #legend h3,
+    .TitreRT {
+        font-size: 1.5rem;
+    }
+}
