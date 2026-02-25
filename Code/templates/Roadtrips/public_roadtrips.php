@@ -120,7 +120,7 @@ $this->assign('mainClass', 'dashboard-page');
                                         onclick="openRoadtripModal('modalComment-<?= $rt->id ?>')"
                                         title="Laisser un avis">
                                     <i class="material-icons">add_comment</i>
-                                    <span class="btn-label">À commenter</span>
+                                    
                                 </button>
                             <?php endif; ?>
 
