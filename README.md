@@ -1,11 +1,9 @@
-
-
 ---
 
 #  Trips & Roads - SAE Project
 
-> **Plateforme collaborative de planification de voyages et de partage d'itinéraires.**
-> Développé avec **CakePHP 5**, ce projet démontre une architecture robuste et l'intégration de services tiers avancés.
+ **Plateforme collaborative de planification de voyages et de partage d'itinéraires.**
+ Développé avec **CakePHP 5**, ce projet démontre une architecture robuste et l'intégration de services tiers .
 
 
 ---
@@ -131,7 +129,7 @@ npm install
 
 3. **Configuration**
 * Renommer `config/app_local.example.php` en `config/app_local.php`.
-* Configurer la base de données et ajouter votre **API KEY Gemini**.
+
 
 
 4. **Migrations**
