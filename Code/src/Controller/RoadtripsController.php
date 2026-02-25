@@ -33,7 +33,7 @@ class RoadtripsController extends AppController
 
         $user = null;
         if ($userId) {
-            $user = $this->fetchTable('Users')->get($userId);
+            $user = $this->Roadtrips->Users->get($userId);
         }
 
         $this->paginate = [
@@ -52,7 +52,6 @@ class RoadtripsController extends AppController
             ->contain(['Users'])
             ->where([
                 'visibility' => 'public',
-                'status' => 'completed'
             ])
             ->order('RAND()')
             ->limit(3)
@@ -61,8 +60,7 @@ class RoadtripsController extends AppController
         $favorisIds = [];
         if ($userId) {
             try {
-                $favoritesTable = $this->fetchTable('Favorites');
-                $favorisIds = $favoritesTable->find()
+                $favorisIds = $this->Roadtrips->Favorites->find()
                     ->select(['roadtrip_id'])
                     ->where(['user_id' => $userId])
                     ->all()
@@ -317,7 +315,7 @@ class RoadtripsController extends AppController
     public function myRoadtrips()
     {
         $userId = $this->request->getAttribute('identity')->getIdentifier();
-        $user = $this->fetchTable('Users')->get($userId);
+        $user = $this->Roadtrips->Users->get($userId);
 
         $show_share = $this->request->getQuery('show_share');
         $share_url = $this->request->getSession()->read('share_url');
@@ -342,7 +340,7 @@ class RoadtripsController extends AppController
 
         $user = null;
         if ($userId) {
-            $user = $this->fetchTable('Users')->get($userId);
+            $user = $this->Roadtrips->Users->get($userId);
         }
 
         $this->paginate = [
@@ -368,8 +366,7 @@ class RoadtripsController extends AppController
         $favorisIds = [];
         if ($userId) {
             try {
-                $favoritesTable = $this->fetchTable('Favorites');
-                $favorisIds = $favoritesTable->find()
+                $favorisIds = $this->Roadtrips->Favorites->find()
                     ->select(['roadtrip_id'])
                     ->where(['user_id' => $userId])
                     ->all()
@@ -380,7 +377,6 @@ class RoadtripsController extends AppController
             }
         }
 
-        // Un seul set() pour éviter les écrasements silencieux
         $this->set(compact('roadtrips', 'newComment', 'favorisIds', 'userId', 'user'));
     }
 
@@ -423,16 +419,20 @@ class RoadtripsController extends AppController
         $identity = $this->request->getAttribute('identity');
         if ($identity) {
             $userId = $identity->getIdentifier();
-            $historiqueTable = $this->fetchTable('Historique');
+            $historiqueTable = $this->Roadtrips->Histories;
 
             $existingHistory = $historiqueTable->find()
-                ->where(['user_id' => $userId, 'roadtrip_id' => $id])
+                ->where([
+                    'user_id' => $userId,
+                    'roadtrip_id' => $id
+                ])
                 ->first();
 
             if ($existingHistory) {
                 $existingHistory->date_visite = new \Cake\I18n\FrozenTime();
                 $historiqueTable->save($existingHistory);
             } else {
+                // CAS B : C'est la première fois -> On crée une nouvelle entrée
                 $newHistory = $historiqueTable->newEmptyEntity();
                 $newHistory->user_id = $userId;
                 $newHistory->roadtrip_id = $id;
@@ -440,6 +440,8 @@ class RoadtripsController extends AppController
                 $historiqueTable->save($newHistory);
             }
         }
+
+        $this->set(compact('roadtrip'));
 
         $geocodedPlacesTable = $this->fetchTable('GeocodedPlaces');
         $jsMapData = [];
@@ -499,7 +501,8 @@ class RoadtripsController extends AppController
                 if (!empty($step->duration)) {
                     if ($step->duration instanceof \DateTimeInterface) {
                         $heureFormattee = $step->duration->format('H:i');
-                    } elseif (is_string($step->duration)) {
+                    }
+                    elseif (is_string($step->duration)) {
                         $heureFormattee = substr($step->duration, 0, 5);
                     }
                 }
@@ -540,7 +543,11 @@ class RoadtripsController extends AppController
 
         if ($place) {
             \Cake\Log\Log::debug("Found in cache: " . $cleanName);
-            return ['lat' => $place->latitude, 'lon' => $place->longitude];
+
+            return [
+                'lat' => $place->latitude,
+                'lon' => $place->longitude
+            ];
         }
 
         try {
@@ -615,11 +622,16 @@ class RoadtripsController extends AppController
 
     public function historique()
     {
-        $historiqueTable = $this->fetchTable('Historique');
+        $historiqueTable = $this->Roadtrips->Histories;
+
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
         $query = $historiqueTable->find()
-            ->contain(['Roadtrips' => ['Users']])
+            ->contain([
+                'Roadtrips' => [
+                    'Users'
+                ]
+            ])
             ->where(['Historique.user_id' => $userId])
             ->order(['Historique.date_visite' => 'DESC']);
 
@@ -636,7 +648,7 @@ class RoadtripsController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
 
-        $historiqueTable = $this->fetchTable('Historique');
+        $historiqueTable = $this->Roadtrips->Histories;
         $userId = $this->request->getAttribute('identity')->getIdentifier();
 
         $historiqueTable->deleteAll(['user_id' => $userId]);
@@ -665,12 +677,17 @@ class RoadtripsController extends AppController
 
         $client = new Client();
         $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0';
+
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
         $payload = [
-            'contents' => [[
-                'parts' => [['text' => $prompt]]
-            ]]
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ]
         ];
 
         $response = $client->post($url, $payload, ['type' => 'json']);
