@@ -7,6 +7,7 @@ use Cake\Event\EventInterface;
 use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
 use Cake\Http\Client;
+use Cake\Core\Configure;
 
 /**
  * Roadtrips Controller
@@ -23,7 +24,11 @@ class RoadtripsController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Authentication->addUnauthenticatedActions(['index', 'publicRoadtrips', 'view']);
+        $this->Authentication->addUnauthenticatedActions(['index', 'publicRoadtrips', 'view', 'genererRoadtripGratuit']);
+
+        if ($this->components()->has('FormProtection')) {
+            $this->FormProtection->setConfig('unlockedActions', ['genererRoadtripGratuit', 'uploadStepImage']);
+        }
     }
 
     public function index()
@@ -678,64 +683,64 @@ class RoadtripsController extends AppController
         return $this->redirect(['action' => 'historique']);
     }
 
+    // Modifier dans RoadtripsController.php
+    // src/Controller/RoadtripsController.php
+
     public function genererRoadtripGratuit()
     {
-        $this->request->allowMethod(['post', 'ajax']);
+        $this->viewBuilder()->setClassName('Json');
+        $this->autoRender = false;
 
-        $depart = $this->request->getData('depart') ?? 'Paris';
-        $destination = $this->request->getData('destination') ?? 'Marseille';
-        $duree = $this->request->getData('duree') ?? '5 jours';
+        try {
+            $userData = $this->request->getData();
+            $apiKey = Configure::read('Gemini.apiKey');
 
-        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree.
-        Tu dois répondre UNIQUEMENT par un objet JSON valide. Ne dis pas 'bonjour', n'ajoute pas de texte avant ou après.
-        Format attendu :
-        {
-            \"titre\": \"Titre du roadtrip\",
-            \"description\": \"Description courte\",
-            \"etapes\": [
-                { \"ville\": \"Nom de la ville\", \"lieux\": \"2 choses à voir\" }
-            ]
-        }";
+            $http = new Client([
+                'ssl_verify_peer' => false,
+                'ssl_verify_host' => false,
+                'timeout' => 30
+            ]);
 
-        $client = new Client();
-        $apiKey = \Cake\Core\Configure::read('Gemini.apiKey');
+            // URL EXACTE pour Gemini 1.5 Flash en version Beta (la plus flexible)
+            $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
 
-        if (!$apiKey) {
-            return $this->response->withType('application/json')
-                ->withStringBody(json_encode(['success' => false, 'message' => 'Clé API manquante.']));
-        }
+            // On s'assure que le prompt demande un format très strict
+            $prompt = "Génère un itinéraire de " . ($userData['depart'] ?? 'Paris') . " à " . ($userData['destination'] ?? 'Lyon') . ". ";
+            $prompt .= "Réponds UNIQUEMENT par un tableau JSON d'objets, sans texte avant ou après, sans balises Markdown : [{\"ville\":\"Nom\",\"lieu\":\"Description\"}]";
 
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
-
-        $payload = [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $prompt]
-                    ]
+            $response = $http->post($url, json_encode([
+                'contents' => [
+                    ['parts' => [['text' => $prompt]]]
                 ]
-            ]
-        ];
+            ]), ['type' => 'json']);
 
-        $response = $client->post($url, $payload, ['type' => 'json']);
-
-        if ($response->isOk()) {
-            $apiData = $response->getJson();
-
-            $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-
-            $aiTextClean = str_replace(['```json', '```'], '', $aiText);
-
-            $roadtripGenere = json_decode(trim($aiTextClean), true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return $this->response->withType('application/json')
-                    ->withStringBody(json_encode(['success' => true, 'data' => $roadtripGenere]));
+            if (!$response->isOk()) {
+                // Si 404 persiste, on tente l'URL alternative (v1 stable)
+                $url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+                $response = $http->post($url, json_encode(['contents' => [['parts' => [['text' => $prompt]]]]]), ['type' => 'json']);
             }
-        }
 
-        return $this->response->withType('application/json')
-            ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
+            if (!$response->isOk()) {
+                throw new \Exception("Erreur Google API : " . $response->getStringBody());
+            }
+
+            $result = $response->getJson();
+            $aiRaw = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
+            // Nettoyage pour extraire le JSON proprement
+            $start = strpos($aiRaw, '[');
+            $end = strrpos($aiRaw, ']') + 1;
+            $jsonOnly = substr($aiRaw, $start, $end - $start);
+            $steps = json_decode($jsonOnly, true);
+
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode(['success' => true, 'rawSteps' => $steps]));
+
+        } catch (\Exception $e) {
+            return $this->response->withStatus(500)
+                ->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => $e->getMessage()]));
+        }
     }
 
     public function uploadStepImage()
@@ -792,4 +797,45 @@ class RoadtripsController extends AppController
             ->withType('application/json')
             ->withStringBody(json_encode($response));
     }
+
+    public function downloadGpx($id) {
+        $roadtrip = $this->Roadtrips->get($id, ['contain' => ['Trips.SubSteps']]);
+
+        // Header du fichier GPX
+        $gpx = '<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="SaeRoadTrip">';
+        $gpx .= '<trk><name>' . htmlspecialchars($roadtrip->title) . '</name><trkseg>';
+
+        foreach ($roadtrip->trips as $trip) {
+            // Utilisation de votre cache de coordonnées existant
+            $coords = $this->_getCoordinates($trip->departure, $this->fetchTable('GeocodedPlaces'));
+            if ($coords) {
+                $gpx .= '<trkpt lat="' . $coords['lat'] . '" lon="' . $coords['lon'] . '">';
+                $gpx .= '<name>' . htmlspecialchars($trip->departure) . '</name></trkpt>';
+            }
+        }
+
+        $gpx .= '</trkseg></trk></gpx>';
+
+        return $this->response->withType('application/gpx+xml')
+            ->withDownload($roadtrip->title . '.gpx')
+            ->withStringBody($gpx);
+    }
+
+    private function _mapJsonToCakeEntitiesFromAI($etapes, $mode) {
+        $formatted = [];
+        foreach ($etapes as $i => $etape) {
+            $formatted[] = [
+                'depart' => $etape['ville'],
+                'arrivee' => $etapes[$i+1]['ville'] ?? $etape['ville'], // Gère la destination finale
+                'mode' => $mode,
+                'heure_depart' => '08:00',
+                'sousEtapes' => [
+                    ['nom' => $etape['ville'], 'remarque' => $etape['lieux'], 'heure' => '10:00']
+                ]
+            ];
+        }
+        return $this->_mapJsonToCakeEntities(json_encode($formatted));
+    }
+
+    public function iaGenerate(){}
 }

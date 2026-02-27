@@ -19,6 +19,13 @@ $getIcon = fn($m) => $transportIcons[strtolower($m ?? '')] ?? '🚗';
 <div class="roadtrip-view-container">
 
     <div class="roadtrip-hero">
+
+        <?= $this->Html->link(
+            '📥 Télécharger l\'itinéraire (GPX)',
+            ['action' => 'downloadGpx', $roadtrip->id],
+            ['class' => 'btn btn-outline-dark btn-sm', 'escape' => false]
+        ) ?>
+
         <?php if (isset($isOwner) && $isOwner): ?>
             <?php
             $isPublished = ($roadtrip->status === 'completed' || $roadtrip->status === 'termine');

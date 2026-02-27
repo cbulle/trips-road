@@ -35,6 +35,23 @@ $this->assign('mainClass', '');
 <h1 class="TitreRT"><?= $modeEdition ? "Modifier mon RoadTrip" : "Créer un RoadTrip" ?></h1>
 
 <div class="main-container">
+    <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#iaModal">
+        ✨ Remplir avec l'IA
+    </button>
+
+    <div class="modal fade" id="iaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assistant IA Roadtrip</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?= $this->element('../Roadtrips/ia_form_content') ?>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="sidebar">
         <div class="region-selector-container" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
             <label for="regionSelect">🌍 Zone de recherche :</label>

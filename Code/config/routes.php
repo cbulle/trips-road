@@ -62,6 +62,7 @@ return function (RouteBuilder $routes): void {
          * ...and connect the rest of 'Pages' controller's URLs.
          */
         $builder->connect('/pages/*', 'Pages::display');
+        $builder->setExtensions(['json']);
 
         $builder->fallbacks();
     });
@@ -75,7 +76,7 @@ return function (RouteBuilder $routes): void {
      *     // No $builder->applyMiddleware() here.
      *
      *     // Parse specified extensions from URLs
-     *     // $builder->setExtensions(['json', 'xml']);
+     *
      *
      *     // Connect API actions here.
      * });
