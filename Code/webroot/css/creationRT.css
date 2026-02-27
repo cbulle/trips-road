@@ -1,3 +1,29 @@
+/* ==============================
+   ANIMATIONS (Keyframes)
+============================== */
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOutDown {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(10px) scale(0.95); }
+}
+
+/* ==============================
+  TITRE ET CONTENEUR PRINCIPAL
+============================== */
 .TitreRT {
     color: var(--beige);
     background-color: var(--bleu_clair);
@@ -124,12 +150,13 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
     margin-right: 15px;
 }
 
 #roadtripPhoto::file-selector-button:hover {
     background-color: var(--vert);
+    transform: translateY(-1px);
 }
 
 .status-selector-container {
@@ -161,16 +188,20 @@
 
 .sidebar #btnAddSegment {
     background-color: var(--bleu_clair);
-    color: white;
+    color: var(--beige);
     border: 2px var(--bleu_clair);
     box-shadow: none;
     margin: 10px 0;
 }
 
 .sidebar #btnAddSegment:hover {
-    background-color: var(--bleu_clair);
+    background-color: var(--vert_btn);
     color: var(--beige);
     transform: translateY(-2px);
+}
+
+.sidebar #btnAddSegment:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .sidebar #saveRoadtrip {
@@ -229,6 +260,7 @@
     color: var(--bleu_fonce_ecriture);
 }
 
+/* Animation d'apparition d'un nouveau trajet */
 .sidebar #legendList li {
     background-color: var(--beige);
     margin-bottom: 12px;
@@ -236,6 +268,7 @@
     border-radius: 12px;
     border: 1px solid var(--bleu_clair);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: slideInLeft 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
 .sidebar #legendList li:hover {
@@ -302,7 +335,7 @@
     gap: 6px;
     margin-left: 10px;
     margin-right: auto;
-    background: white;
+    background: var(--beige_fonce);
     padding: 4px;
     border-radius: 10px;
 }
@@ -368,8 +401,9 @@
     border-left: 2px dashed var(--bleu_clair);
 }
 
+/* Animation d'ouverture du conteneur des sous-étapes */
 #segmentFormContainer {
-    display: none;
+    display: none; /* Reste géré par JS */
     background: var(--beige_fonce);
     padding: 30px;
     border-radius: 16px;
@@ -380,6 +414,7 @@
     position: relative;
     border: 1px solid var(--bleu_clair);
     box-sizing: border-box;
+    animation: scaleIn 0.3s ease-out forwards;
 }
 
 #segmentFormContainer h3 {
@@ -404,7 +439,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     border: 1px solid var(--bleu_clair);
     z-index: 9999;
 }
@@ -416,6 +451,11 @@
     transform: rotate(90deg);
 }
 
+/* Effet au clic (pression) */
+.close-segment-btn:active {
+    transform: rotate(90deg) scale(0.85);
+}
+
 .subEtape-buttons {
     display: flex;
     gap: 15px;
@@ -423,11 +463,14 @@
 }
 
 #addSubEtape { background-color: var(--beige); color: var(--bleu_fonce_ecriture); border: 1px dashed var(--bleu_clair); }
-#addSubEtape:hover { background-color: var(--bleu_clair); color: var(--white); }
+#addSubEtape:hover { background-color: var(--bleu_clair); color: var(--white); transform: translateY(-2px); }
+#addSubEtape:active { transform: scale(0.98); }
 
 #saveSegment { background-color: var(--bleu_clair); color: var(--white); }
 #saveSegment:hover { background-color: var(--vert); transform: translateY(-2px); }
+#saveSegment:active { transform: scale(0.98); }
 
+/* Animation d'apparition d'une nouvelle sous-étape */
 .subEtape {
     background: var(--beige);
     padding: 20px 20px 25px 20px;
@@ -437,6 +480,7 @@
     flex-direction: column;
     margin-bottom: 20px;
     position: relative;
+    animation: fadeInUp 0.4s ease-out forwards;
 }
 
 .subEtape input[type="text"],
@@ -446,12 +490,12 @@
     background-color: var(--white);
     padding: 10px 12px;
     margin-top: 8px;
+    margin-bottom: 8px;
     font-size: 1rem;
     border-radius: 8px;
     transition: border-color 0.3s ease;
     color: var(--bleu_fonce_ecriture);
     box-sizing: border-box;
-    margin-bottom: 10px;
 }
 
 .subEtape input[type="text"]:focus,
@@ -476,7 +520,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     z-index: 5;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
@@ -485,6 +529,11 @@
     background: var(--rouge);
     color: var(--white);
     transform: scale(1.1);
+}
+
+/* Effet au clic (pression) */
+.sub-etape-remove-btn:active {
+    transform: scale(0.9);
 }
 
 .ui-autocomplete {
@@ -567,6 +616,11 @@
     max-height: 90%;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Classes utilitaires pour gérer la fermeture en JS */
+.fade-out-item {
+    animation: fadeOutDown 0.3s ease-in forwards !important;
 }
 
 @media (max-width: 1024px) {

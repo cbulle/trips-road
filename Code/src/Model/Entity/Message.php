@@ -64,14 +64,28 @@ class Message extends Entity
      */
     protected function _getContent()
     {
-        if (is_resource($this->body)) {
-            $value = stream_get_contents($this->body);
+        $value = $this->body;
+
+        if (empty($value)) {
+            return '';
+        }
+
+        if (is_resource($value)) {
+            $value = stream_get_contents($value);
         }
 
         $key = Configure::read('Security.messageKey');
-
+        
         $decrypted = Security::decrypt($value, $key);
 
-        return $decrypted ?: $value;
+        if ($decrypted !== false && $decrypted !== null) {
+            return $decrypted;
+        }
+
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        return '🔒 [Erreur de déchiffrement]';
     }
 }
