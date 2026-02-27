@@ -44,7 +44,7 @@
 
         <section>
             <h2>6. Données Personnelles (RGPD)</h2>
-            <p>Conformément au Règlement Général sur la Protection des Données, nous collectons certaines informations nécessaires au fonctionnement du service (Nom, Email, Trajets). Pour en savoir plus sur la gestion de vos données et vos droits, veuillez consulter notre <a href="politique.php" style="color:#BF092F;">Politique de Confidentialité</a>.</p>
+            <p>Conformément au Règlement Général sur la Protection des Données, nous collectons certaines informations nécessaires au fonctionnement du service (Nom, Email, Trajets). Pour en savoir plus sur la gestion de vos données et vos droits, veuillez consulter notre <a href="politique" style="color:#BF092F;">Politique de Confidentialité</a>.</p>
         </section>
 
         <section>

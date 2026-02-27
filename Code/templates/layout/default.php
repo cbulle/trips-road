@@ -233,6 +233,7 @@ if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
     'profil',
     'recherche',
     'viewRoadtrip',
+    'accessibility',
 
 ]) ?>
 
