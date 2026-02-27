@@ -53,12 +53,7 @@
         </section>
 
         <section>
-            <h2>8. Liens Hypertextes</h2>
-            <p>Le site peut contenir des liens vers des sites tiers. Nous n'exerçons aucun contrôle sur ces sites et déclinons toute responsabilité quant à leur contenu ou leurs pratiques.</p>
-        </section>
-
-        <section>
-            <h2>9. Droit Applicable</h2>
+            <h2>8. Droit Applicable</h2>
             <p>Les présentes CGU sont soumises au droit français. En cas de litige, et à défaut d'accord amiable, la compétence est attribuée aux tribunaux compétents du ressort de la Cour d'Appel de Lyon.</p>
         </section>
     </div>
