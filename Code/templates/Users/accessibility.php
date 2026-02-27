@@ -33,11 +33,26 @@
         </label>
     </div>
 
+    <label for="checkboxMalvoyant">Mode malvoyant :</label>
+    <div class="btnMalvoyant">
+        <label class="switch">
+            <input type="checkbox" name="mode_Malvoyant" id="checkboxMalvoyant" value="1"
+                <?= $this->request->getCookie('modeMalvoyant') ? 'checked' : '' ?> />
+            <div class="slider round"></div>
+        </label>
+    </div>
+
     <label>Mode daltonien :</label>
     <div class="daltonism-options">
         <?php
         $cookieDaltonien = $this->request->getCookie('typeDaltonien');
         ?>
+        <label>
+            <input type="radio" name="daltonism-type" value="aucun" <?= empty($cookieDaltonien) || $cookieDaltonien == 'aucun' ? 'checked' : '' ?>>
+            Aucun / Désactivé
+        </label>
+        <br>
+
         <label>
             <input type="radio" name="daltonism-type" value="protanopia" <?= $cookieDaltonien == 'protanopia' ? 'checked' : '' ?>>
             Protanopie (Rouge/Vert)
@@ -52,6 +67,6 @@
         </label>
     </div>
 
-    <button type="submit" style="margin-top:20px;">Enregistrer les préférences</button>
+    <button type="submit" id="confirmed" style="margin-top:20px;">Enregistrer les préférences</button>
     <?= $this->Form->end() ?>
 </section>

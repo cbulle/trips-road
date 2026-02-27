@@ -130,8 +130,8 @@
 <script>
     const appConfig = {
         userId: <?= json_encode($userId ?? null) ?>,
-        defaultLat: 46.603354,
-        defaultLon: 1.888334
+        defaultLat: 45.767518,
+        defaultLon: 4.833534
     };
 
     function toggleSidebar() {
@@ -141,6 +141,3 @@
         icon.innerHTML = sidebar.classList.contains('closed') ? "▶" : "◀";
     }
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
-<script src="/js/index.js"></script>

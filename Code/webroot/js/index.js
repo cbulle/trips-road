@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const appConfig = window.appConfig || {};
-    const defaultCoords = [appConfig.defaultLat || 46.603354, appConfig.defaultLon || 1.888334];
+    const defaultCoords = [appConfig.defaultLat || 45.767518, appConfig.defaultLon || 4.833534];
 
     let map, searchLayer, poiLayer;
     let currentCoords = defaultCoords;
