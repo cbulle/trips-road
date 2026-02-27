@@ -224,6 +224,11 @@ if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 <?php endif; ?>
+
+<?php if ($controller === 'Roadtrips' && $action === 'index'): ?>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<?php endif; ?>
+
 <?= $this->Html->script([
     'encryption',
     'index',
