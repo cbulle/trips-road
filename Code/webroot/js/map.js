@@ -241,18 +241,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 3. FONCTIONS UTILITAIRES
     // ============================================================
 
+    let lastNominatimRequestTime = 0;
+
     async function getCoordonnees(ville) {
-        const countryCodes = regionsConfig[currentRegion].codes.join(',');
-
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ville)}&limit=1&accept-language=fr&countrycodes=${countryCodes}`;
-
+        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(ville)}&limit=1`;
         try {
             const resp = await fetch(url);
+            if (!resp.ok) return null;
             const data = await resp.json();
-            if (data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            if (data.features && data.features.length > 0) {
+                const coords = data.features[0].geometry.coordinates;
+                return [parseFloat(coords[1]), parseFloat(coords[0])];
+            }
             return null;
         } catch (e) {
-            console.error("Erreur de géocodage:", e);
+            console.error(e);
             return null;
         }
     }
@@ -382,46 +385,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function loadExistingRoadTrip() {
         for (let i = 0; i < EXISTING_TRAJETS.length; i++) {
             const t = EXISTING_TRAJETS[i];
-            const startCoords = await getCoordonnees(t.depart);
-            const endCoords = await getCoordonnees(t.arrivee);
+
+            const startCoords = (t.departLat && t.departLon)
+                ? [parseFloat(t.departLat), parseFloat(t.departLon)]
+                : await getCoordonnees(t.depart);
+
+            const endCoords = (t.arriveeLat && t.arriveeLon)
+                ? [parseFloat(t.arriveeLat), parseFloat(t.arriveeLon)]
+                : await getCoordonnees(t.arrivee);
+
             let sousEtapesWithCoords = [];
             if (t.sousEtapes && t.sousEtapes.length > 0) {
                 for (const se of t.sousEtapes) {
-                    const c = await getCoordonnees(se.nom);
+                    const c = (se.lat && se.lon)
+                        ? [parseFloat(se.lat), parseFloat(se.lon)]
+                        : await getCoordonnees(se.nom);
+
                     if (c) {
                         sousEtapesWithCoords.push({...se, coords: c});
                         addMarker(se.nom, c, "sous_etape", `<b>${se.nom}</b><br>${se.heure}`);
                     }
                 }
             }
+
             if (startCoords && endCoords) {
                 addMarker(t.depart, startCoords, "ville", t.depart);
                 addMarker(t.arrivee, endCoords, "ville", t.arrivee);
+
                 const dataForJs = {
                     mode: t.mode,
                     date_trajet: t.date_trajet || t.date,
                     heure_depart: t.heure_depart,
                     sousEtapes: sousEtapesWithCoords
                 };
+
                 await _ajouterSegmentEntre(t.depart, startCoords, t.arrivee, endCoords, segments.length, strategies[t.mode], dataForJs);
+
                 currentStartCity = t.arrivee;
                 currentStartCoords = endCoords;
             }
         }
+
         if (segments.length > 0) {
             const group = new L.featureGroup(segments.map(s => s.line));
-            map.fitBounds(group.getBounds());
+            map.fitBounds(group.getBounds(), { padding: [50, 50] });
         }
     }
 
-    // ============================================================
-    // 5. AJOUT DE SEGMENTS
-    // ============================================================
-
     async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy, existingData = null) {
         const modeTransport = existingData ? existingData.mode : 'Voiture';
-
-        const currentProfile = strategies[modeTransport] ? 'driving' : 'driving';
+        const currentProfile = strategies[modeTransport] ? 'driving' : 'driving'; // OSRM ne gère que driving, on feinte le tracé
 
         let coordsList = [startCoords];
         if (existingData && existingData.sousEtapes) {
@@ -440,7 +453,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             const route = data.routes[0];
 
             const color = segmentColors[index % segmentColors.length];
-            const line = L.geoJSON(route.geometry, {color: color, weight: 5}).addTo(map);
+
+            const lineStyle = {
+                color: color,
+                weight: 6,
+                opacity: 0.8,
+                dashArray: modeTransport !== 'Voiture' ? '10, 10' : null
+            };
+
+            const line = L.geoJSON(route.geometry, lineStyle).addTo(map);
+            map.fitBounds(line.getBounds(), { padding: [50, 50] });
 
             const segData = {
                 line,
@@ -681,6 +703,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 };
 
                 seg.line = L.geoJSON(route.geometry, lineStyle).addTo(map);
+                map.fitBounds(seg.line.getBounds(), { padding: [50, 50] });
 
                 updateLegendHtml(index);
                 console.log(`Succès ! Mode: ${mode}, Route mise à jour.`);
@@ -717,9 +740,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         function durationToSeconds(timeStr) {
+            if(!timeStr) return 0;
             const [h, m] = timeStr.split(':').map(Number);
             return (h * 3600) + (m * 60);
         }
+
+        // En-tête du résumé
+        html += `<div class="summary-container">`;
+        html += `<div class="summary-step start">📍 Départ à <strong>${currentClock}</strong></div>`;
 
         if (seg.legs) {
             seg.legs.forEach((leg, i) => {
@@ -727,25 +755,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 if (i < seg.sousEtapes.length) {
                     const se = seg.sousEtapes[i];
-                    html += `<li style="margin-top:5px; border-left:2px solid ${seg.couleurSegment}; padding-left:5px;">
-                                <b>Arrivée à ${getNomSimple(se.nom)} : ${currentClock}</b><br>
-                                <small>Pause de ${se.heure}h</small></li>`;
-
+                    html += `<div class="summary-step sub">
+                                <div class="sub-arrival">Arrivée à ${getNomSimple(se.nom)} : <strong>${currentClock}</strong></div>
+                                <span class="sub-pause">☕ Pause : ${se.heure}</span>
+                             </div>`;
                     currentClock = addTime(currentClock, durationToSeconds(se.heure));
-                    html += `<li style="list-style:none; font-size:0.8em; color:gray;">(Départ prévu à ${currentClock})</li>`;
                 }
             });
         }
 
+        html += `<div class="summary-step end">🏁 Arrivée estimée : <strong>${currentClock}</strong></div>`;
+
         const distKm = (seg.distance / 1000).toFixed(1);
         const totalTimeStr = formatDuration(seg.duration);
-        let statsHtml = `<div style="font-size:0.85em; color:#666; margin-bottom:5px;">📏 ${distKm} km | ⏱️ ${totalTimeStr} de route</div>`;
+        const iconMode = seg.modeTransport === 'Voiture' ? '🚗' : (seg.modeTransport === 'Velo' ? '🚲' : '🚶');
 
-        html += `<li style="margin-top:5px; font-weight:bold; color:#2c3e50;">🏁 Arrivée finale : ${currentClock}</li>`;
+        html += `<div class="summary-stats">${iconMode} <strong>${distKm} km</strong> parcourus en <strong>${totalTimeStr}</strong></div>`;
+        html += `</div>`;
 
-        ul.innerHTML = statsHtml + html;
+        ul.innerHTML = html;
     }
-
     document.getElementById('legendList').addEventListener('click', (e) => {
         if (e.target.classList.contains('modifierSousEtapes')) {
             openSegmentEditor(e.target.closest('li').dataset.index);
@@ -1043,4 +1072,84 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.disabled = false;
         }
     };
+
+    function showToast(message) {
+        let existingToast = document.querySelector('.toast-notification');
+        if (existingToast) existingToast.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = '⚠️ ' + message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 500);
+        }, 3500);
+    }
+
+    function removeSegmentFromMap(index) {
+        const seg = segments[index];
+        if (!seg) return;
+
+        if (seg.line) map.removeLayer(seg.line);
+
+        if (markers[seg.endName]) {
+            markers[seg.endName].forEach(m => map.removeLayer(m.marker));
+            delete markers[seg.endName];
+        }
+
+        if (seg.sousEtapes) {
+            seg.sousEtapes.forEach(se => {
+                if (markers[se.nom]) {
+                    markers[se.nom].forEach(m => map.removeLayer(m.marker));
+                    delete markers[se.nom];
+                }
+            });
+        }
+
+        if (index === 0) {
+            if (markers[seg.startName]) {
+                markers[seg.startName].forEach(m => map.removeLayer(m.marker));
+                delete markers[seg.startName];
+            }
+            currentStartCity = (typeof USER_DEFAULT_CITY !== 'undefined') ? USER_DEFAULT_CITY : "";
+            currentStartCoords = null;
+        } else {
+            currentStartCity = segments[index - 1].endName;
+            currentStartCoords = segments[index - 1].endCoord;
+        }
+
+        segments.splice(index, 1);
+
+        if (segments.length > 0) {
+            const group = new L.featureGroup(segments.map(s => s.line));
+            map.fitBounds(group.getBounds(), { padding: [50, 50] });
+        }
+    }
+
+    document.getElementById('legendList').addEventListener('click', function(e) {
+        const removeBtn = e.target.closest('.remove-segment-btn');
+
+        if (removeBtn) {
+            const segmentLi = removeBtn.closest('li');
+            const currentIndex = parseInt(segmentLi.dataset.index);
+
+            const allSegments = Array.from(document.querySelectorAll('#legendList > li:not(.fade-out-item)'));
+            const currentDomIndex = allSegments.indexOf(segmentLi);
+
+            if (currentDomIndex < allSegments.length - 1) {
+                showToast("Veuillez d'abord supprimer les trajets suivants pour ne pas briser l'itinéraire.");
+                return;
+            }
+
+            segmentLi.classList.add('fade-out-item');
+
+            removeSegmentFromMap(currentIndex);
+
+            setTimeout(() => {
+                segmentLi.remove();
+            }, 300);
+        }
+    });
 });

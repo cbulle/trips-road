@@ -210,6 +210,7 @@ $mainClass = $this->fetch('mainClass', 'main-index');
 
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
 <?= $this->Html->script('https://code.jquery.com/jquery-3.6.0.min.js') ?>
 <?= $this->Html->script('https://code.jquery.com/ui/1.13.3/jquery-ui.min.js') ?>
 

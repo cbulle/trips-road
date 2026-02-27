@@ -75,7 +75,7 @@ class Message extends Entity
         }
 
         $key = Configure::read('Security.messageKey');
-        
+
         $decrypted = Security::decrypt($value, $key);
 
         if ($decrypted !== false && $decrypted !== null) {

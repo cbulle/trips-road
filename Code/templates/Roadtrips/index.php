@@ -141,6 +141,3 @@
         icon.innerHTML = sidebar.classList.contains('closed') ? "▶" : "◀";
     }
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
-<script src="/js/index.js"></script>
