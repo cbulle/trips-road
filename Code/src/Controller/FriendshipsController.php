@@ -27,8 +27,7 @@ class FriendshipsController extends AppController
         $friends = [];
 
         if (!empty($search)) {
-            $users = $this->fetchTable('Users')
-                ->find()
+            $users = $this->Friendships->Users->find()
                 ->where([
                     'OR' => [
                         'Users.first_name LIKE' => "%$search%",
@@ -39,36 +38,32 @@ class FriendshipsController extends AppController
                 ->limit(20)
                 ->all();
         }
-            $friendships = $this->Friendships->find()
-                ->where([
-                    'status' => 'accepted',
-                    'OR' => [
-                        ['user_id' => $userId],
-                        ['friend_id' => $userId],
-                    ]
-                ])
-                ->contain(['Users', 'FriendsUsers'])
-                ->all();
 
+        $friendships = $this->Friendships->find()
+            ->where([
+                'status' => 'accepted',
+                'OR' => [
+                    ['user_id' => $userId],
+                    ['friend_id' => $userId],
+                ]
+            ])
+            ->contain(['Users', 'FriendsUsers'])
+            ->all();
 
-            foreach ($friendships as $f) {
-                if ($f->user_id == $userId && !empty($f->friends_user)) {
-                    $friends[] = [
-                        'friend' => $f->friends_user,
-                        'friendship_id' => $f->id
-                    ];
-                }
-
-                // Si je suis le friend_id → l’ami est user
-                if ($f->friend_id == $userId && !empty($f->user)) {
-                    $friends[] = [
-                        'friend' => $f->user,
-                        'friendship_id' => $f->id
-                    ];
-                }
-
+        foreach ($friendships as $f) {
+            if ($f->user_id == $userId && !empty($f->friends_user)) {
+                $friends[] = [
+                    'friend' => $f->friends_user,
+                    'friendship_id' => $f->id
+                ];
             }
-
+            if ($f->friend_id == $userId && !empty($f->user)) {
+                $friends[] = [
+                    'friend' => $f->user,
+                    'friendship_id' => $f->id
+                ];
+            }
+        }
 
         $requests = $this->Friendships->find()
             ->where([
@@ -78,13 +73,7 @@ class FriendshipsController extends AppController
             ->contain(['Users'])
             ->all();
 
-        $this->set(compact(
-            'users',
-            'friends',
-            'requests',
-            'search',
-            'userId'
-        ));
+        $this->set(compact('users', 'friends', 'requests', 'search', 'userId'));
     }
 
 
@@ -109,7 +98,6 @@ class FriendshipsController extends AppController
     public function add($friendId = null)
     {
         $this->request->allowMethod(['post']);
-
         $userId = $this->Authentication->getIdentity()->getIdentifier();
         $friendId = (int)$friendId;
 
@@ -132,38 +120,27 @@ class FriendshipsController extends AppController
             ])
             ->first();
 
-        // ✅ Relation déjà existante
         if ($friendship) {
-
-            // ❌ Déjà amis
             if ($friendship->status === 'accepted') {
                 $this->Flash->warning('Vous êtes déjà amis.');
                 return $this->redirect(['action' => 'index']);
             }
-
-            // ⏳ Demande déjà en attente
             if ($friendship->status === 'pending') {
                 $this->Flash->warning('Une demande est déjà en attente.');
                 return $this->redirect(['action' => 'index']);
             }
-
-            // 🔄 Cas "deleted" → on réactive
             if ($friendship->status === 'deleted') {
-                $friendship->user_id = $userId;
-                $friendship->friend_id = $friendId;
-                $friendship->status = 'pending';
-
-                if ($this->Friendships->save($friendship)) {
-                    $this->Flash->success('Nouvelle demande d’ami envoyée.');
-                } else {
-                    $this->Flash->error('Erreur lors de la réactivation.');
-                }
-
+                $friendship = $this->Friendships->patchEntity($friendship, [
+                    'user_id' => $userId,
+                    'friend_id' => $friendId,
+                    'status' => 'pending'
+                ]);
+                $this->Friendships->save($friendship);
+                $this->Flash->success('Nouvelle demande d’ami envoyée.');
                 return $this->redirect(['action' => 'index']);
             }
         }
 
-        // ➕ Nouvelle relation
         $friendship = $this->Friendships->newEntity([
             'user_id' => $userId,
             'friend_id' => $friendId,

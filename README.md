@@ -1,15 +1,7 @@
-# Road-Trip
+##  Trips & Roads - SAE Project
 
-# Trips & Roads
-Imagine une plateforme où chaque voyage devient une aventure partagée.
-
-Trips & Roads est un site web collaboratif qui permet de créer, planifier et partager des road-trips à partir des cartes OpenStreetMap.
-
-Que vous soyez un étudiant curieux, une famille organisée ou un aventurier en van, notre outil vous aide à découvrir des points d’intérêt, à créer votre propre itinéraire et à échanger avec vos amis grâce à une messagerie intégrée.
-
-L’objectif : simplifier la planification de voyage tout en apportant une dimension sociale et accessible avec des filtres personnalisés, un mode d’accessibilité pour tous, et une interface intuitive.
-
-En quelques clics, Trips & Roads transforme la préparation d’un voyage en une expérience conviviale, collaborative et inspirante.
+Plateforme collaborative de planification de voyages et de partage d'itinéraires.
+Développé avec **CakePHP 5**, ce projet démontre une architecture robuste et l'intégration de services tiers .
 
 ---
 
@@ -23,6 +15,26 @@ Trips & Roads est un site web permettant aux utilisateurs de :
 - Découvrir les parcours de la communauté grâce à un flux public.  
 
 L’application repose sur **OpenStreetMap** pour la cartographie et une architecture web moderne pour une expérience fluide et interactive.  
+
+---
+
+
+## Aperçu du Projet
+
+Ce projet de SAE (Situation d'Apprentissage et d'Évaluation) consiste en une application web complète permettant aux utilisateurs de concevoir, personnaliser et partager des roadtrips. Au-delà du simple CRUD, l'application intègre un système de réseau social.
+
+### Fonctionnalités Clés (High-Tech)
+
+
+* **Moteur de Cartographie Interactif** : Intégration avancée de cartes pour la visualisation des étapes et des calculs de segments (distance/temps).
+* **Social & Networking** :
+* Système de gestion d'amitiés (demandes, acceptations, refus).
+* Messagerie instantanée sécurisée entre utilisateurs.
+* Gestion des favoris et partage public/privé des roadtrips.
+
+
+* **Accessibilité & UX** : Gestion native du mode sombre et des types de daltonisme via un système de cookies et de préférences utilisateurs.
+* **Sécurité des données** : Chiffrement des communications et système d'authentification robuste via le middleware CakePHP.
 
 ---
 
@@ -51,6 +63,40 @@ L’application repose sur **OpenStreetMap** pour la cartographie et une archite
 
 ---
 
+
+## Stack Technique
+
+| Technologie | Utilisation |
+| --- | --- |
+| **HTML 5 / CSS 3** | Affichage graphique. |
+| **PHP 8.2 / CakePHP 5** | Architecture MVC, ORM puissant et Sécurité. |
+| **MySQL / MariaDB** | Stockage données. |
+| **Leaflet / Google Maps** | Affichage cartographique et géolocalisation. |
+| **JavaScript (ES6+)** | Manipulation du DOM, gestion asynchrone des modales et API Fetch. |
+| **UML / GitLab** | Gestion de projet. |
+---
+
+## Architecture Logicielle (MVC)
+
+Le projet suit les standards de l'industrie avec une séparation stricte des responsabilités. Voici un aperçu de la logique implémentée dans nos contrôleurs :
+
+* **`RoadtripsController`** : Le cœur de l'application. Gère la logique complexe de création, le filtrage par visibilité et l'interfaçage avec l'API Gemini pour la génération automatique.
+* **`MessagesController`** : Implémente une logique de conversation bidirectionnelle avec gestion des états de lecture.
+* **`FriendshipsController`** : Gère les relations sociales avec des requêtes SQL optimisées pour éviter les doublons de demandes d'amis.
+* **`UsersController`** : Gestion complète du cycle de vie utilisateur : inscription, authentification, édition de profil et préférences d'accessibilité.
+
+---
+
+## Focus sur la Sécurité & Qualité
+
+Pour ce projet, nous avons mis un point d'honneur sur :
+
+1. **Validation des données** : Utilisation massive des `Validator` de CakePHP pour empêcher les injections et les données erronées.
+2. **Protection CSRF & Formulaires** : Composants natifs activés pour prévenir les attaques Cross-Site Request Forgery.
+3. **Gestion des droits** : Utilisation du `beforeFilter` et du composant `Authentication` pour restreindre l'accès aux données privées (roadtrips non publiés, messages personnels).
+
+---
+
 ## Diagrammes UML inclus dans le projet  
 
 - **Diagrammes de séquence** (connexion, inscription, messagerie, création de Road Trip, profil).  
@@ -59,21 +105,46 @@ L’application repose sur **OpenStreetMap** pour la cartographie et une archite
 
 ---
 
-## Technologies utilisées  
 
-- **Frontend** : HTML5, CSS3, JavaScript
-- **Backend** : PHP 8.4
-- **Base de données** : MariaDB
-- **Cartographie** : OpenStreetMap  
-- **Gestion de projet** : UML, GitLab
+## Installation (Développement)
+
+1. **Cloner le dépôt**
+```bash
+git clone https://iutbg-gitlab.iutbourg.univ-lyon1.fr/sae-but2/2025-26/openstreetmap-bde/road-trip.git
+cd Code
+
+```
+
+
+2. **Installer les dépendances**
+```bash
+composer install
+npm install
+
+```
+
+
+3. **Configuration**
+* Renommer `config/app_local.example.php` en `config/app_local.php`.
+
+
+
+4. **Migrations**
+```bash
+bin/cake migrations migrate
+
+```
+
+4. **Mise en route**
+```bash
+.bin/cake server
+
+```
+
 
 ---
 
-## Organisation du projet  
+## L'Équipe (SAE)
 
-
-
-
-# Lien vers trello 
-https://trello.com/invite/b/68d3c42f36e4bf6468592dfd/ATTI5695cf1b3d99654db01801ecca62bdc54E30B98E/tripsroads
+Développeur : Bulle Céleste / Lambert Sasha / Bayssat Adrien / Poncet Lenny  
 

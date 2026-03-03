@@ -14,17 +14,9 @@ $this->assign('mainClass', '');
 <script>
     const USER_DEFAULT_CITY = "<?= h($userDefaultCity) ?>";
     const MODE_EDITION = <?= json_encode($modeEdition) ?>;
-    
-    // URLs générées par le router CakePHP
     const URL_GET_FAVORIS = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'getLieuxFavoris']) ?>";
     const UPLOAD_IMAGE_URL = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'uploadStepImage']) ?>";
-    const AI_GENERATE_URL = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'genererRoadtripGratuit']) ?>";
-    const SAVE_URL = "<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $modeEdition ? $roadtrip->id : null]) ?>";
-    
-    // Token de sécurité CSRF
-    const CSRF_TOKEN = "<?= $this->request->getAttribute('csrfToken') ?>";
 
-    // Données existantes
     const EXISTING_ROADTRIP = <?= json_encode([
         'id' => $roadtrip->id,
         'titre' => $roadtrip->title,
@@ -35,8 +27,10 @@ $this->assign('mainClass', '');
     ]) ?>;
 
     const EXISTING_TRAJETS = <?= json_encode($existingTrajets) ?>;
-</script>
 
+    const SAVE_URL = "<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $modeEdition ? $roadtrip->id : null]) ?>";
+    const CSRF_TOKEN = "<?= $this->request->getAttribute('csrfToken') ?>";
+</script>
 
 <h1 class="TitreRT"><?= $modeEdition ? "Modifier mon RoadTrip" : "Créer un RoadTrip" ?></h1>
 
@@ -46,31 +40,39 @@ $this->assign('mainClass', '');
         <div id="aiAssistantContainer" class="ai-container">
             <h3 class="ai-header">✨ Assistant IA</h3>
             <p class="ai-desc">Laissez l'IA pré-remplir votre voyage !</p>
-            
+
             <input type="text" id="aiDepart" class="ai-input" placeholder="Départ (ex: Paris)">
             <input type="text" id="aiDestination" class="ai-input" placeholder="Destination (ex: Rome)">
-            
+
             <div class="ai-row">
                 <input type="text" id="aiDuree" class="ai-input" style="width: 50%;" placeholder="Durée (ex: 7j)">
                 <input type="text" id="aiTheme" class="ai-input" style="width: 50%;" placeholder="Thème (ex: Nature)">
             </div>
-            
+
             <button type="button" id="btnGenerateAI" class="ai-btn">
                 🚀 Générer des idées
             </button>
-            
+
             <div id="aiLoading">⏳ L'IA réfléchit...</div>
         </div>
 
         <div id="aiResultBox" class="ai-result-box">
             <h4 style="margin-top:0; color: var(--bleu_fonce); font-size:1em;">📍 Suggestions d'étapes :</h4>
             <div id="aiResultContent" class="ai-result-content"></div>
-            
+
             <div style="background: var(--white); color: var(--bleu_fonce_ecriture); padding: 8px; border-radius: 4px; font-size: 0.8em; margin-bottom: 10px; border: 1px solid var(--bleu_clair);">
                 💡 <strong>Conseil :</strong> Utilisez le bouton <em>"+ Ajouter un trajet"</em> ci-dessous pour créer ces étapes sur la carte.
             </div>
 
             <button type="button" class="ai-close-btn" onclick="document.getElementById('aiResultBox').style.display='none'">Fermer</button>
+        </div>
+        <div class="region-selector-container" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+            <label for="regionSelect">🌍 Zone de recherche :</label>
+            <select id="regionSelect">
+                <option value="europe">Europe</option>
+                <option value="north_america">Amérique du Nord (USA, Canada, Mexique)</option>
+            </select>
+            <small style="color: #666; font-size: 0.8em; margin-top: 5px; display: block;">Centre la carte et filtre les villes suggérées.</small>
         </div>
         <div id="legend" style="display: block;">
             <h3>Itinéraire :</h3>
@@ -97,10 +99,12 @@ $this->assign('mainClass', '');
             <div class="status-selector-container">
                 <label for="roadtripStatut" style="font-weight:bold;">Avancement du projet :</label>
                 <select id="roadtripStatut" style="width:100%; margin-bottom:10px;">
-                    <option value="draft" <?= (isset($roadtrip->status) && $roadtrip->status == 'brouillon') ? 'selected' : '' ?>>
+                    <option
+                        value="draft" <?= (isset($roadtrip->status) && $roadtrip->status == 'brouillon') ? 'selected' : '' ?>>
                         📝 En cours de création (Brouillon)
                     </option>
-                    <option value="completed" <?= (isset($roadtrip->status) && $roadtrip->status == 'termine') ? 'selected' : '' ?>>
+                    <option
+                        value="completed" <?= (isset($roadtrip->status) && $roadtrip->status == 'termine') ? 'selected' : '' ?>>
                         ✅ Projet terminé
                     </option>
                 </select>
@@ -108,9 +112,12 @@ $this->assign('mainClass', '');
 
             <label for="roadtripVisibilite" style="font-weight:bold;">Qui peut voir ce RoadTrip ?</label>
             <select id="roadtripVisibilite" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
-                <option value="private" <?= ($roadtrip->visibility == 'prive') ? 'selected' : '' ?>>🔒 Privé (Moi seul)</option>
+                <option value="private" <?= ($roadtrip->visibility == 'prive') ? 'selected' : '' ?>>🔒 Privé (Moi seul)
+                </option>
                 <option value="friends" <?= ($roadtrip->visibility == 'amis') ? 'selected' : '' ?>>👥 Amis</option>
-                <option value="public" <?= ($roadtrip->visibility == 'public') ? 'selected' : '' ?>>🌍 Public (Tout le monde)</option>
+                <option value="public" <?= ($roadtrip->visibility == 'public') ? 'selected' : '' ?>>🌍 Public (Tout le
+                    monde)
+                </option>
             </select>
             <small style="display:block; margin-bottom:10px; color:#666;">
                 * Vous pouvez partager un brouillon en mode "Amis" ou "Public".
@@ -160,7 +167,9 @@ $this->assign('mainClass', '');
                 <button type="button" class="transport-btn" data-mode="Marche" title="À Pied">🚶</button>
             </div>
             <button type="button" class="settings-btn" title="Options de trajet">⚙️</button>
-            <button class="toggleSousEtapes legend-toggle-btn"></button>
+            <button class="toggleSousEtapes legend-toggle-btn">▼</button>
+
+            <button type="button" class="remove-segment-btn" title="Supprimer ce trajet">✖</button>
         </div>
 
         <div class="legend-date-container">
@@ -189,9 +198,12 @@ $this->assign('mainClass', '');
 <template id="template-sub-etape">
     <div class="subEtape sub-etape-form">
         <input type="text" placeholder="Nom du lieu ou ville" class="subEtapeNom">
+
         <div class="subEtapeEditorContainer"></div>
+
         <label style="font-size:0.8em; font-weight:bold;">Temps passé sur place (estimation)</label>
         <input type="time" class="subEtapeHeure" required>
+
         <button class="removeSubEtapeBtn sub-etape-remove-btn">✖</button>
     </div>
 </template>

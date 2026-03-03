@@ -39,6 +39,7 @@
 
     <?= $this->Html->css([
         'accessibilite',
+        'creationRT',
         'favoris',
         'footer',
         'form',
@@ -209,6 +210,7 @@ $mainClass = $this->fetch('mainClass', 'main-index');
 
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
 <?= $this->Html->script('https://code.jquery.com/jquery-3.6.0.min.js') ?>
 <?= $this->Html->script('https://code.jquery.com/ui/1.13.3/jquery-ui.min.js') ?>
 
@@ -223,14 +225,22 @@ if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 <?php endif; ?>
+
+<?php if ($controller === 'Roadtrips' && $action === 'index'): ?>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<?php endif; ?>
+
 <?= $this->Html->script([
     'encryption',
     'index',
     'map',
     'messagerie',
+    'modal',
     'profil',
     'recherche',
     'viewRoadtrip',
+    'accessibility',
+
 ]) ?>
 
 <?= $this->fetch('script') ?>

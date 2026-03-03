@@ -6,6 +6,9 @@ namespace App\Model\Table;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\EventInterface;
+use Cake\Datasource\EntityInterface;
+use ArrayObject;
 
 /**
  * Messages Model - Simplifié
@@ -80,5 +83,16 @@ class MessagesTable extends Table
         $rules->add($rules->existsIn(['recipient_id'], 'Recipients'));
 
         return $rules;
+    }
+
+    /**
+     * Méthode exécutée avant chaque sauvegarde d'une entité Message
+     */
+    /**
+     * Méthode exécutée avant chaque sauvegarde d'une entité Message
+     */
+    public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void
+    {
+        //dd($event);
     }
 }

@@ -71,7 +71,7 @@
                             <?php endif; ?>
 
                             <div class="message-content">
-                                <p><?= nl2br(h($msg->body)) ?></p>
+                                <p><?= nl2br(h($msg->content)) ?></p>
                                 <span class="message-time">
                                     <?= $msg->created->format('H:i') ?>
                                 </span>
