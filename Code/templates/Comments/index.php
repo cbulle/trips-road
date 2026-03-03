@@ -13,7 +13,7 @@
     ['class' => 'button']
 ) ?>
 
-<br><br>
+
 
 <?php foreach ($comments as $comment): ?>
     <div class="comment-card">

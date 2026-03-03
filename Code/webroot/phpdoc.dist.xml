@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.phpdoc.org/schema/config">
+    <title>Documentation de mon Projet CakePHP</title>
+    <paths>
+        <output>docs/api</output>
+        <cache>build/cache</cache>
+    </paths>
+    <version number="1.0.0">
+        <api is="default">
+            <source dsn=".">
+                <path>src</path>
+                <path>vendor/*</path>
+            </source>
+            <ignore>
+                <path>tests/*</path>
+                
+            </ignore>
+        </api>
+    </version>
+</phpdocumentor>
