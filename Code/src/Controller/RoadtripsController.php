@@ -700,69 +700,93 @@ class RoadtripsController extends AppController
         return $this->redirect(['action' => 'historique']);
     }
 
+    // N'oublie pas d'ajouter cette ligne tout en haut du fichier, sous namespace App\Controller;
+    // use Cake\Log\Log; 
+    // use Cake\Http\Client;
+
     public function genererRoadtripGratuit()
     {
         $this->request->allowMethod(['post', 'ajax']);
         
-        // 1. Les données envoyées par ton formulaire Javascript
-        $depart = $this->request->getData('depart') ?? 'Paris';
-        $destination = $this->request->getData('destination') ?? 'Marseille';
-        $duree = $this->request->getData('duree') ?? '5 jours';
+        // 1. Récupération des données
+        $depart = $this->request->getData('depart');
+        $destination = $this->request->getData('destination');
+        $duree = $this->request->getData('duree');
+        $theme = $this->request->getData('theme');
 
-        // 2. Le Prompt hyper strict pour l'IA
-        $prompt = "Agis comme un guide de voyage expert. Crée un roadtrip de $depart vers $destination sur $duree. 
-        Tu dois répondre UNIQUEMENT par un objet JSON valide. Ne dis pas 'bonjour', n'ajoute pas de texte avant ou après.
-        Format attendu :
+        // Log pour vérifier que les données arrivent bien
+        Log::info("IA Request - Dep: $depart, Dest: $destination, Duree: $duree");
+
+        // 2. Le Prompt
+        $prompt = "Tu es un expert voyage. Crée un roadtrip de $depart à $destination sur $duree (Thème: $theme). 
+        Réponds UNIQUEMENT avec un JSON valide respectant cette structure, sans texte avant ou après :
         {
-            \"titre\": \"Titre du roadtrip\",
-            \"description\": \"Description courte\",
+            \"titre\": \"Titre court et fun\",
+            \"description\": \"Description globale en 2 phrases\",
             \"etapes\": [
-                { \"ville\": \"Nom de la ville\", \"lieux\": \"2 choses à voir\" }
+                { \"ville\": \"Nom ville\", \"lieux\": \"Lieu 1, Lieu 2\" }
             ]
         }";
 
-        // 3. Appel à l'API gratuite de Gemini
-        $client = new Client();
-        $apiKey = 'AIzaSyAk51K9PFYB5CoYLXDJX1W14_Id4D0b6H0'; // Colle ta clé ici
+        // 3. Appel API
+        $apiKey = 'TA_CLE_API_ICI'; // <--- VÉRIFIE QUE TA CLÉ EST BIEN LÀ ET CORRECTE
         
-        // On utilise le modèle "flash" qui est le plus rapide et inclus dans le plan gratuit
-        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
-
-        // Structure requise par Google
-        $payload = [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $prompt]
-                    ]
-                ]
-            ]
-        ];
-
-        $response = $client->post($url, $payload, ['type' => 'json']);
-
-        // 4. Traitement de la réponse
-        if ($response->isOk()) {
-            $apiData = $response->getJson();
-            
-            // L'API Google range le texte généré à cet endroit précis :
-            $aiText = $apiData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-            
-            // ASTUCE DE PRO : Souvent les IA rajoutent "```json" au début. On nettoie la chaîne pour être sûr !
-            $aiTextClean = str_replace(['```json', '```'], '', $aiText);
-            
-            // On transforme le texte en vrai tableau PHP
-            $roadtripGenere = json_decode(trim($aiTextClean), true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                // Succès ! On renvoie ça à l'utilisateur
-                return $this->response->withType('application/json')
-                    ->withStringBody(json_encode(['success' => true, 'data' => $roadtripGenere]));
-            }
+        // Si la clé est vide, on arrête tout de suite
+        if (empty($apiKey) || $apiKey === 'TA_CLE_API_GEMINI_ICI') {
+            Log::error("IA Error: Clé API manquante ou non remplacée.");
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => 'Clé API non configurée.']));
         }
 
-        // Si on arrive ici, c'est qu'il y a eu un bug
-        return $this->response->withType('application/json')
-            ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur de génération IA.']));
+        $client = new Client([
+            'ssl_verify_peer' => false, // IMPORTANT pour éviter les erreurs SSL en local (WAMP/XAMPP)
+            'ssl_verify_host' => false
+        ]);
+
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+
+        try {
+            $response = $client->post($url, json_encode([
+                'contents' => [['parts' => [['text' => $prompt]]]]
+            ]), ['type' => 'json']);
+
+            // 4. Analyse de la réponse brute
+            if (!$response->isOk()) {
+                // On log l'erreur exacte renvoyée par Google
+                Log::error("IA Error API Google: " . $response->getStringBody());
+                return $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur API Google (voir logs).']));
+            }
+
+            $jsonResponse = $response->getJson();
+            
+            // Vérification si Google a bloqué pour contenu "dangereux" ou autre
+            if (empty($jsonResponse['candidates'])) {
+                Log::error("IA Error: Pas de candidat dans la réponse. " . json_encode($jsonResponse));
+                return $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['success' => false, 'message' => 'L\'IA n\'a rien renvoyé.']));
+            }
+
+            $rawText = $jsonResponse['candidates'][0]['content']['parts'][0]['text'];
+
+            // Nettoyage du Markdown (```json ... ```)
+            $cleanJson = preg_replace('/^```json\s*|\s*```$/', '', trim($rawText));
+            
+            $data = json_decode($cleanJson, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error("IA Error JSON Decode: " . json_last_error_msg() . " | Raw: " . $rawText);
+                return $this->response->withType('application/json')
+                    ->withStringBody(json_encode(['success' => false, 'message' => 'Format de réponse invalide.']));
+            }
+
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode(['success' => true, 'data' => $data]));
+
+        } catch (\Exception $e) {
+            Log::error("IA Exception: " . $e->getMessage());
+            return $this->response->withType('application/json')
+                ->withStringBody(json_encode(['success' => false, 'message' => 'Erreur serveur: ' . $e->getMessage()]));
+        }
     }
 }

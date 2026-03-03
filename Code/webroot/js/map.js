@@ -1038,4 +1038,110 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.disabled = false;
         }
     };
+
+    // ============================================================
+    // 9. GESTION DE L'ASSISTANT IA
+    // ============================================================
+
+    const btnGenerateAI = document.getElementById('btnGenerateAI');
+
+    if (btnGenerateAI) {
+        btnGenerateAI.addEventListener('click', async function() {
+            // Récupération des champs
+            const depart = document.getElementById('aiDepart').value.trim();
+            const destination = document.getElementById('aiDestination').value.trim();
+            const duree = document.getElementById('aiDuree').value.trim();
+            const theme = document.getElementById('aiTheme').value.trim();
+
+            if (!depart || !destination) {
+                alert("Veuillez indiquer au moins une ville de départ et une destination.");
+                return;
+            }
+
+            // UI Chargement
+            const loader = document.getElementById('aiLoading');
+            const resultBox = document.getElementById('aiResultBox');
+            
+            loader.style.display = 'block';
+            resultBox.style.display = 'none';
+            btnGenerateAI.disabled = true;
+            btnGenerateAI.textContent = "⏳ Génération en cours...";
+
+            // Préparation Données
+            const formData = new FormData();
+            formData.append('depart', depart);
+            formData.append('destination', destination);
+            formData.append('duree', duree);
+            formData.append('theme', theme);
+
+            // Vérification que les constantes PHP sont bien définies
+            const urlAI = typeof AI_GENERATE_URL !== 'undefined' ? AI_GENERATE_URL : '/roadtrips/genererRoadtripGratuit';
+            const token = typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '';
+
+            try {
+                const response = await fetch(urlAI, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+                    
+                    // A. Remplir Titre & Description
+                    const titleInput = document.getElementById('roadtripTitle');
+                    const descInput = document.getElementById('roadtripDescription');
+                    
+                    let shouldFill = true;
+                    if (titleInput.value !== '' || descInput.value !== '') {
+                        shouldFill = confirm("L'IA a généré un titre et une description. Voulez-vous remplacer votre texte actuel ?");
+                    }
+
+                    if (shouldFill) {
+                        if (data.titre) titleInput.value = data.titre;
+                        if (data.description) descInput.value = data.description;
+                        
+                        // Effet visuel
+                        titleInput.style.backgroundColor = "#d5f5e3"; // Vert très clair
+                        setTimeout(() => titleInput.style.backgroundColor = "", 1500);
+                    }
+
+                    // B. Afficher les étapes
+                    let htmlEtapes = '<ul>';
+                    if (data.etapes && Array.isArray(data.etapes)) {
+                        data.etapes.forEach(etape => {
+                            htmlEtapes += `<li>
+                                <strong>${etape.ville}</strong>
+                                <br><small style="color:var(--gris_fonce)">👀 À voir : ${etape.lieux || etape.activites || 'Centre ville'}</small>
+                            </li>`;
+                        });
+                    } else {
+                        htmlEtapes += '<li>Aucune étape spécifique suggérée, trajet direct.</li>';
+                    }
+                    htmlEtapes += '</ul>';
+
+                    document.getElementById('aiResultContent').innerHTML = htmlEtapes;
+                    resultBox.style.display = 'block';
+
+                } else {
+                    alert("L'IA n'a pas pu générer de résultat : " + (result.message || 'Erreur inconnue'));
+                }
+
+            } catch (error) {
+                console.error("Erreur Fetch IA:", error);
+                alert("Une erreur de connexion est survenue avec l'assistant IA.");
+            } finally {
+                loader.style.display = 'none';
+                btnGenerateAI.disabled = false;
+                btnGenerateAI.textContent = "🚀 Générer des idées";
+            }
+        });
+    }
 });
+
+
