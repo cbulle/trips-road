@@ -745,7 +745,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return (h * 3600) + (m * 60);
         }
 
-        // En-tête du résumé
         html += `<div class="summary-container">`;
         html += `<div class="summary-step start">📍 Départ à <strong>${currentClock}</strong></div>`;
 
@@ -1081,7 +1080,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnGenerateAI) {
         btnGenerateAI.addEventListener('click', async function() {
-            // Récupération des champs
             const depart = document.getElementById('aiDepart').value.trim();
             const destination = document.getElementById('aiDestination').value.trim();
             const duree = document.getElementById('aiDuree').value.trim();
@@ -1092,7 +1090,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            // UI Chargement
             const loader = document.getElementById('aiLoading');
             const resultBox = document.getElementById('aiResultBox');
 
@@ -1101,14 +1098,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             btnGenerateAI.disabled = true;
             btnGenerateAI.textContent = "⏳ Génération en cours...";
 
-            // Préparation Données
             const formData = new FormData();
             formData.append('depart', depart);
             formData.append('destination', destination);
             formData.append('duree', duree);
             formData.append('theme', theme);
 
-            // Vérification que les constantes PHP sont bien définies
             const urlAI = typeof AI_GENERATE_URL !== 'undefined' ? AI_GENERATE_URL : '/roadtrips/genererRoadtripGratuit';
             const token = typeof CSRF_TOKEN !== 'undefined' ? CSRF_TOKEN : '';
 
@@ -1127,7 +1122,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (result.success && result.data) {
                     const data = result.data;
 
-                    // A. Remplir Titre & Description
                     const titleInput = document.getElementById('roadtripTitle');
                     const descInput = document.getElementById('roadtripDescription');
 
@@ -1140,12 +1134,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (data.titre) titleInput.value = data.titre;
                         if (data.description) descInput.value = data.description;
 
-                        // Effet visuel
-                        titleInput.style.backgroundColor = "#d5f5e3"; // Vert très clair
+                        titleInput.style.backgroundColor = "#d5f5e3";
                         setTimeout(() => titleInput.style.backgroundColor = "", 1500);
                     }
 
-                    // B. Afficher les étapes
                     let htmlEtapes = '<ul>';
                     if (data.etapes && Array.isArray(data.etapes)) {
                         data.etapes.forEach(etape => {

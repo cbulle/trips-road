@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Auto-agrandir textarea
     if (messageInput) {
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
@@ -47,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Scroller vers le bas
     if (messagesContainer) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }

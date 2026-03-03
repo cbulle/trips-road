@@ -5,7 +5,7 @@
  */
 
 $this->assign('title', '🕓 Mon Historique');
-$this->assign('mainClass', 'historique-page'); // Classe spécifique si besoin
+$this->assign('mainClass', 'historique-page');
 ?>
 
 <div>
@@ -19,7 +19,7 @@ $this->assign('mainClass', 'historique-page'); // Classe spécifique si besoin
                 ['action' => 'deleteHistorique'],
                 [
                     'escape' => false,
-                    'class' => 'btn-clear-history', // Tu pourras styliser ce bouton spécifique
+                    'class' => 'btn-clear-history',
                     'style' => 'background: #e74c3c; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;',
                     'confirm' => 'Voulez-vous vraiment effacer tout votre historique ?'
                 ]
@@ -45,21 +45,16 @@ $this->assign('mainClass', 'historique-page'); // Classe spécifique si besoin
         <div class="roadtrip-grid">
             <?php foreach ($historique as $item): ?>
                 <?php 
-                    // On récupère le roadtrip associé à l'entrée d'historique
                     $rt = $item->roadtrip;
                     
-                    // Si le roadtrip a été supprimé entre temps, on évite le crash
                     if (!$rt) continue; 
                 ?>
 
                 <div class="roadtrip-card">
 
                     <?php
-                    // --- TA LOGIQUE D'IMAGE (Adaptée) ---
-                    $urlImage = '/img/imgBase.png'; // Image par défaut
+                    $urlImage = '/img/imgBase.png';
                     
-                    // On vérifie photo_url (comme dans ton fichier public)
-                    // On garde aussi une compatibilité si tu as 'photo' ou 'photo_cover' dans ta BDD
                     $photoName = $rt->photo_url ?? $rt->photo ?? $rt->photo_cover ?? null;
 
                     if (!empty($photoName)) {
@@ -73,7 +68,7 @@ $this->assign('mainClass', 'historique-page'); // Classe spécifique si besoin
                     <?= $this->Html->image($urlImage, [
                         'alt' => 'Photo du road trip',
                         'class' => 'roadtrip-photo',
-                        'url' => ['action' => 'view', $rt->id] // Rend l'image cliquable
+                        'url' => ['action' => 'view', $rt->id]
                     ]) ?>
 
                     <h3><?= h($rt->title) ?></h3>

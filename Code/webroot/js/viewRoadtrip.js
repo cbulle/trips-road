@@ -207,7 +207,7 @@ window.toggleTrajet = function(id) {
 };
 
 function checkToggleGlobalMap() {
-    const active = document.querySelectorAll('.card-vu.active'); // card-vu est la classe que j'ai remise dans le PHP
+    const active = document.querySelectorAll('.card-vu.active');
     const mapGlobal = document.getElementById('map-global');
 
     if(mapGlobal) {

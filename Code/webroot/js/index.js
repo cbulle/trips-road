@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentCircle = null;
     let searchRadius = 2000;
 
-    // Éléments DOM
     const searchInput = document.getElementById('poiSearchIndex');
     const searchResults = document.getElementById('searchResultsIndex');
     const categorySelect = document.getElementById('categorySelect');
@@ -15,7 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const radiusSlider = document.getElementById('radiusSlider');
     const radiusValueSpan = document.getElementById('radiusValue');
 
-    // Configuration des filtres Overpass
     const poiFilters = {
         restaurant: { query: 'node["amenity"="restaurant"](around:{radius},{lat},{lon});', icon: '🍽️', color: '#e74c3c' },
         fast_food: { query: 'node["amenity"="fast_food"](around:{radius},{lat},{lon});', icon: '🍔', color: '#e67e22' },
@@ -131,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- Écouteurs d'événements ---
 
     if (radiusSlider) {
         radiusSlider.addEventListener('input', function() {

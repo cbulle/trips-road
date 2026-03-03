@@ -12,7 +12,6 @@ window.window.closeRoadtripModal = function (id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.style.display = 'none';
-    /* Ne remet le scroll que si toutes les modales sont fermées */
     var anyOpen = document.querySelectorAll('.custom-modal[style*="display: block"]');
     if (anyOpen.length === 0) {
         document.body.style.overflow = '';
