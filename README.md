@@ -121,6 +121,16 @@ cd Code
 composer install
 npm install
 
+(Pour la documentation)
+Linux : 
+wget https://phpdoc.org/phpDocumentor.phar
+chmod +x phpDocumentor.phar
+php phpDocumentor.phar
+(pour générer)
+php phpDocumentor.phar -d src -t docs/api
+(Pour ouvrir le site)
+firefox docs/api/index.html
+
 ```
 
 
