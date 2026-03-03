@@ -57,7 +57,9 @@ class AppController extends Controller
         parent::beforeRender($event);
 
         $identity = $this->request->getAttribute('identity');
+        $currentUser = $identity ? $identity->getOriginalData() : null;
 
+        $this->set('currentUser', $currentUser);
 
     }
 

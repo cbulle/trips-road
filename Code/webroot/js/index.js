@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentCircle = null;
     let searchRadius = 2000;
 
-    // Éléments DOM
+    // Éléments DOM :
+
     const searchInput = document.getElementById('poiSearchIndex');
     const searchResults = document.getElementById('searchResultsIndex');
     const categorySelect = document.getElementById('categorySelect');
@@ -15,23 +16,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const radiusSlider = document.getElementById('radiusSlider');
     const radiusValueSpan = document.getElementById('radiusValue');
 
-    // Configuration des filtres Overpass
+    // Configuration des filtres :
+
     const poiFilters = {
-        restaurant: { query: 'node["amenity"="restaurant"](around:{radius},{lat},{lon});', icon: '🍽️', color: '#e74c3c' },
-        fast_food: { query: 'node["amenity"="fast_food"](around:{radius},{lat},{lon});', icon: '🍔', color: '#e67e22' },
-        cafe: { query: 'node["amenity"="cafe"](around:{radius},{lat},{lon});', icon: '☕', color: '#d35400' },
-        bar: { query: 'node["amenity"="bar"](around:{radius},{lat},{lon});node["amenity"="pub"](around:{radius},{lat},{lon});', icon: '🍺', color: '#9b59b6' },
-        hotel: { query: 'node["tourism"="hotel"](around:{radius},{lat},{lon});', icon: '🏨', color: '#3498db' },
-        camping: { query: 'node["tourism"="camp_site"](around:{radius},{lat},{lon});', icon: '🏕️', color: '#27ae60' },
-        fuel: { query: 'node["amenity"="fuel"](around:{radius},{lat},{lon});', icon: '⛽', color: '#f39c12' },
-        parking: { query: 'node["amenity"="parking"](around:{radius},{lat},{lon});', icon: '🅿️', color: '#34495e' },
-        atm: { query: 'node["amenity"="atm"](around:{radius},{lat},{lon});', icon: '🏧', color: '#2ecc71' },
-        pharmacy: { query: 'node["amenity"="pharmacy"](around:{radius},{lat},{lon});', icon: '💊', color: '#c0392b' },
-        attraction: { query: 'node["tourism"="attraction"](around:{radius},{lat},{lon});', icon: '🎭', color: '#1abc9c' },
-        museum: { query: 'node["tourism"="museum"](around:{radius},{lat},{lon});', icon: '🏛️', color: '#8e44ad' },
-        park: { query: 'node["leisure"="park"](around:{radius},{lat},{lon});', icon: '🌳', color: '#27ae60' },
-        supermarket: { query: 'node["shop"="supermarket"](around:{radius},{lat},{lon});', icon: '🛒', color: '#e67e22' },
-        hospital: { query: 'node["amenity"="hospital"](around:{radius},{lat},{lon});', icon: '🏥', color: '#c0392b' }
+        restaurant: { query: 'node["amenity"="restaurant"](around:{radius},{lat},{lon});', icon: '🍽️'},
+        fast_food: { query: 'node["amenity"="fast_food"](around:{radius},{lat},{lon});', icon: '🍔'},
+        cafe: { query: 'node["amenity"="cafe"](around:{radius},{lat},{lon});', icon: '☕'},
+        bar: { query: 'node["amenity"="bar"](around:{radius},{lat},{lon});node["amenity"="pub"](around:{radius},{lat},{lon});', icon: '🍺' },
+        hotel: { query: 'node["tourism"="hotel"](around:{radius},{lat},{lon});', icon: '🏨'},
+        camping: { query: 'node["tourism"="camp_site"](around:{radius},{lat},{lon});', icon: '🏕️' },
+        fuel: { query: 'node["amenity"="fuel"](around:{radius},{lat},{lon});', icon: '⛽' },
+        parking: { query: 'node["amenity"="parking"](around:{radius},{lat},{lon});', icon: '🅿️' },
+        atm: { query: 'node["amenity"="atm"](around:{radius},{lat},{lon});', icon: '🏧'},
+        pharmacy: { query: 'node["amenity"="pharmacy"](around:{radius},{lat},{lon});', icon: '💊'},
+        attraction: { query: 'node["tourism"="attraction"](around:{radius},{lat},{lon});', icon: '🎭' },
+        museum: { query: 'node["tourism"="museum"](around:{radius},{lat},{lon});', icon: '🏛️' },
+        park: { query: 'node["leisure"="park"](around:{radius},{lat},{lon});', icon: '🌳'},
+        supermarket: { query: 'node["shop"="supermarket"](around:{radius},{lat},{lon});', icon: '🛒'},
+        hospital: { query: 'node["amenity"="hospital"](around:{radius},{lat},{lon});', icon: '🏥' }
     };
 
     function initMap() {
@@ -84,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (categorySelect.value) loadPOI(categorySelect.value);
     }
 
+    // Chargement des icônes du filtre :
     async function loadPOI(filterType) {
         poiLayer.clearLayers();
         document.body.style.cursor = 'wait';
@@ -131,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- Écouteurs d'événements ---
+    // Event listeners :
 
     if (radiusSlider) {
         radiusSlider.addEventListener('input', function() {

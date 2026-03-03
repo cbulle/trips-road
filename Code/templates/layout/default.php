@@ -105,17 +105,16 @@ $currentUser = $this->request->getAttribute('identity');
                 <li class="nav-item" id="link_PP">
                     <span class="profil-box">
                         <?php
-                        $fileName = $currentUser->profile_picture;
+                        $this->assign('mainClass', 'profil-container');
+                        $fileName = $user->profile_picture;
                         $physicalPath = WWW_ROOT . 'uploads' . DS . 'pp' . DS . $fileName;
+
                         if (!empty($fileName) && file_exists($physicalPath)) {
-                            $ppUrl = $this->Url->build('/uploads/pp/' . $fileName);
+                            $urlImage = '/uploads/pp/' . $fileName;
                         } else {
-                            $ppUrl = $this->Url->build('/img/User.png');
+                            $urlImage = '/img/User.png';
                         }
                         ?>
-                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">
-                            <img src="<?= $ppUrl ?>" class="profil-photo" alt="Profil">
-                        </a>
                         <span class="profil-nom">
                             <?= h($currentUser->username ?? $currentUser->prenom) ?>
                         </span>
