@@ -745,7 +745,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return (h * 3600) + (m * 60);
         }
 
-        // En-tête du résumé
         html += `<div class="summary-container">`;
         html += `<div class="summary-step start">📍 Départ à <strong>${currentClock}</strong></div>`;
 
