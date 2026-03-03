@@ -39,8 +39,8 @@ $this->assign('mainClass', '');
         <div class="region-selector-container" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
             <label for="regionSelect">🌍 Zone de recherche :</label>
             <select id="regionSelect">
-                <option value="europe">🇪🇺 Europe</option>
-                <option value="north_america">🌎 Amérique du Nord (USA, Canada, Mexique)</option>
+                <option value="europe">Europe</option>
+                <option value="north_america">Amérique du Nord (USA, Canada, Mexique)</option>
             </select>
             <small style="color: #666; font-size: 0.8em; margin-top: 5px; display: block;">Centre la carte et filtre les villes suggérées.</small>
         </div>
@@ -137,7 +137,9 @@ $this->assign('mainClass', '');
                 <button type="button" class="transport-btn" data-mode="Marche" title="À Pied">🚶</button>
             </div>
             <button type="button" class="settings-btn" title="Options de trajet">⚙️</button>
-            <button class="toggleSousEtapes legend-toggle-btn"></button>
+            <button class="toggleSousEtapes legend-toggle-btn">▼</button>
+
+            <button type="button" class="remove-segment-btn" title="Supprimer ce trajet">✖</button>
         </div>
 
         <div class="legend-date-container">

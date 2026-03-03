@@ -525,7 +525,8 @@ class RoadtripsController extends AppController
                     'nom' => $step->city,
                     'heure' => $heureFormattee,
                     'remarque' => $step->description,
-
+                    'lat' => $step->latitude ?? null,
+                    'lon' => $step->longitude ?? null,
                     'coords' => [
                         (float)($step->latitude ?? 0),
                         (float)($step->longitude ?? 0)
@@ -536,7 +537,15 @@ class RoadtripsController extends AppController
             $data[] = [
                 'id' => $trip->id,
                 'depart' => $trip->departure,
+
+                'departLat' => $trip->departure_latitude ?? null,
+                'departLon' => $trip->departure_longitude ?? null,
+
                 'arrivee' => $trip->arrival,
+
+                'arriveeLat' => $trip->arrival_latitude ?? null,
+                'arriveeLon' => $trip->arrival_longitude ?? null,
+
                 'mode' => $trip->transport_mode,
 
                 'date_trajet' => $trip->departure_time ? $trip->departure_time->format('Y-m-d') : null,
