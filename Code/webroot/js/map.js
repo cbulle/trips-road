@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, index, strategy, existingData = null) {
         const modeTransport = existingData ? existingData.mode : 'Voiture';
-        const currentProfile = strategies[modeTransport] ? 'driving' : 'driving'; // OSRM ne gère que driving, on feinte le tracé
+        const currentProfile = strategies[modeTransport] ? 'driving' : 'driving';
 
         let coordsList = [startCoords];
         if (existingData && existingData.sousEtapes) {
