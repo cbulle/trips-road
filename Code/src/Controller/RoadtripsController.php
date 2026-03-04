@@ -538,20 +538,17 @@ class RoadtripsController extends AppController
             $data[] = [
                 'id' => $trip->id,
                 'depart' => $trip->departure,
-
                 'departLat' => $trip->departure_latitude ?? null,
                 'departLon' => $trip->departure_longitude ?? null,
-
                 'arrivee' => $trip->arrival,
-
                 'arriveeLat' => $trip->arrival_latitude ?? null,
                 'arriveeLon' => $trip->arrival_longitude ?? null,
-
                 'mode' => $trip->transport_mode,
+                'date_trajet' => !empty($trip->date) ?
+                    ($trip->date instanceof \DateTimeInterface ? $trip->date->format('Y-m-d') : $trip->date)
+                    : null,
 
-                'date_trajet' => $trip->departure_time ? $trip->departure_time->format('Y-m-d') : null,
                 'heure_depart' => $trip->departure_time ? $trip->departure_time->format('H:i') : '08:00',
-
                 'sousEtapes' => $sousEtapes
             ];
         }
@@ -629,6 +626,8 @@ class RoadtripsController extends AppController
                 'arrival' => $trajetJs['arrivee'] ?? '',
                 'transport_mode' => $trajetJs['mode'] ?? 'Voiture',
                 'departure_time' => $trajetJs['heure_depart'] ?? '08:00',
+                'date' => !empty($trajetJs['date_trajet']) ? $trajetJs['date_trajet'] : null,
+
                 'sub_steps' => []
             ];
 
@@ -639,7 +638,7 @@ class RoadtripsController extends AppController
                         'city' => $se['nom'] ?? '',
                         'description' => $se['remarque'] ?? '',
                         'transport_type' => $trajetJs['mode'] ?? 'Voiture',
-                        'heure' => $se['heure'] ?? null
+                        'duration' => $se['heure'] ?? null
                     ];
                 }
             }
