@@ -9,7 +9,6 @@
                 <button class="toggle-btn active" disabled>S'inscrire</button>
             </div>
 
-
             <?= $this->Form->create($user, ['class' => 'form-box', 'type' => 'file']) ?>
             <h2 id="login-title">Inscription</h2>
             <?= $this->Flash->render() ?>
@@ -56,7 +55,14 @@
             <?= $this->Form->button('S\'inscrire', ['class' => 'submit-btn']); ?>
             <?= $this->Form->end() ?>
 
+            <div class="google-auth-container" style="margin-top: 30px; text-align: center; border-top: 1px solid #ddd; padding-top: 20px;">
+                <p style="margin-bottom: 15px; color: #666;">Ou gagnez du temps :</p>
+                <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'loginGoogle']) ?>" class="btn-google">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Logo Google" style="width: 20px; vertical-align: middle; margin-right: 10px;">
+                    S'inscrire avec Google
+                </a>
+            </div>
+
         </div>
     </div>
 </div>
-

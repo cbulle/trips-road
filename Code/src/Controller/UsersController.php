@@ -8,6 +8,7 @@ use Cake\Http\Cookie\Cookie;
 use Cake\I18n\FrozenTime;
 use League\OAuth2\Client\Provider\Google;
 use Cake\Core\Configure;
+use GuzzleHttp\Client;
 
 class UsersController extends AppController
 {
@@ -20,7 +21,7 @@ class UsersController extends AppController
     public function beforeFilter(EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Authentication->addUnauthenticatedActions(['login', 'add', 'accessibility', 'loginGoogle', 'callbackGoogle']);
+        $this->Authentication->addUnauthenticatedActions(['login', 'add', 'accessibility', 'loginGoogle', 'callbackGoogle', 'completeGoogleSignup']);
     }
 
     public function login()
@@ -69,6 +70,8 @@ class UsersController extends AppController
                 'clientId' => Configure::read('Google.clientId'),
                 'clientSecret' => Configure::read('Google.clientSecret'),
                 'redirectUri' => Configure::read('Google.redirectUri'),
+            ], [
+                'httpClient' => new Client(['verify' => false])
             ]);
 
             $accessToken = $provider->getAccessToken('authorization_code', [
@@ -78,7 +81,6 @@ class UsersController extends AppController
             $googleUser = $provider->getResourceOwner($accessToken);
             $email = $googleUser->getEmail();
             $socialId = $googleUser->getId();
-            $name = $googleUser->getName();
 
             $user = $this->Users->find()->where(['email' => $email])->first();
 
@@ -88,31 +90,65 @@ class UsersController extends AppController
                     $user->social_provider = 'google';
                     $this->Users->save($user);
                 }
+
+                $this->Authentication->setIdentity($user);
+                $this->Flash->success('Connexion réussie via Google !');
+                $target = $this->Authentication->getLoginRedirect() ?? '/';
+                return $this->redirect($target);
             } else {
-                $user = $this->Users->newEmptyEntity();
-                $user->email = $email;
-                $user->username = $name;
-                $user->password = 'SOCIAL_' . uniqid();
-                $user->social_id = $socialId;
-                $user->social_provider = 'google';
+                $session->write('PendingGoogleUser', [
+                    'email' => $email,
+                    'first_name' => $googleUser->getFirstName() ?? 'Inconnu',
+                    'last_name' => $googleUser->getLastName() ?? 'Inconnu',
+                    'social_id' => $socialId,
+                    'social_provider' => 'google'
+                ]);
 
-                if (!$this->Users->save($user)) {
-                    $this->Flash->error('Erreur lors de la création du compte Google.');
-                    return $this->redirect(['action' => 'login']);
-                }
+                return $this->redirect(['action' => 'completeGoogleSignup']);
             }
-
-            $this->Authentication->setIdentity($user);
-
-            $this->Flash->success('Connexion réussie via Google !');
-
-            $target = $this->Authentication->getLoginRedirect() ?? '/';
-            return $this->redirect($target);
 
         } catch (\Exception $e) {
             $this->Flash->error('Erreur Google : ' . $e->getMessage());
             return $this->redirect(['action' => 'login']);
         }
+    }
+
+    public function completeGoogleSignup()
+    {
+        $session = $this->request->getSession();
+        $googleData = $session->read('PendingGoogleUser');
+
+        if (!$googleData) {
+            $this->Flash->error('Session expirée ou accès invalide.');
+            return $this->redirect(['action' => 'login']);
+        }
+
+        $user = $this->Users->newEmptyEntity();
+
+        if ($this->request->is('post')) {
+            $username = $this->request->getData('username');
+
+            $existingUser = $this->Users->find()->where(['username' => $username])->first();
+
+            if ($existingUser) {
+                $this->Flash->error('Ce pseudo est déjà pris, veuillez en choisir un autre.');
+            } else {
+                $user = $this->Users->patchEntity($user, $googleData);
+                $user->username = $username;
+                $user->password = 'SOCIAL_' . uniqid();
+
+                if ($this->Users->save($user)) {
+                    $session->delete('PendingGoogleUser');
+                    $this->Authentication->setIdentity($user);
+                    $this->Flash->success('Bienvenue ' . $username . ' ! Compte créé avec succès.');
+                    return $this->redirect($this->Authentication->getLoginRedirect() ?? '/');
+                } else {
+                    $this->Flash->error('Une erreur est survenue lors de la création du compte.');
+                }
+            }
+        }
+
+        $this->set(compact('user'));
     }
 
     public function logout()

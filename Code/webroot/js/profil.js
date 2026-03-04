@@ -3,7 +3,7 @@
 =======================================*/
 
 function openModal() {
-    const modal = document.querySelector('.formulaire'); 
+    const modal = document.querySelector('.formulaire');
     if (modal) {
         modal.style.display = 'block';
     }
@@ -11,10 +11,10 @@ function openModal() {
 
 document.addEventListener('DOMContentLoaded', function() {
     openModal();
-    showRegister();
+
 });
     /*==================================
-    Mes road 
+    Mes road
     ================================*/
 
 function closeShareModal() {
@@ -27,7 +27,7 @@ function copyShareUrl() {
     navigator.clipboard.writeText(input.value).then(() => {
         const success = document.getElementById('copySuccess');
         success.style.display = 'block';
-        
+
         setTimeout(() => {
             success.style.display = 'none';
         }, 3000);

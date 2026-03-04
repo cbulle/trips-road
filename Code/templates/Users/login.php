@@ -33,23 +33,5 @@
                 Continuer avec Google
             </a>
         </div>
-
-        <style>
-            .btn-google {
-                display: inline-block;
-                background: white;
-                color: #444;
-                border: 1px solid #ddd;
-                padding: 10px 20px;
-                border-radius: 5px;
-                text-decoration: none;
-                font-weight: bold;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                transition: background 0.3s;
-            }
-            .btn-google:hover {
-                background: #f1f1f1;
-            }
-        </style>
     </div>
 </div>
