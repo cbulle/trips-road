@@ -8,7 +8,7 @@
  * @var \App\Model\Entity\Comment $newComment
  */
 
-$this->assign('mainClass', 'dashboard-page');
+$this->assign('mainClass', '');
 ?>
 
 <div class="dashboard-container">
@@ -120,7 +120,7 @@ $this->assign('mainClass', 'dashboard-page');
                                         onclick="openRoadtripModal('modalComment-<?= $rt->id ?>')"
                                         title="Laisser un avis">
                                     <i class="material-icons">add_comment</i>
-                                    
+
                                 </button>
                             <?php endif; ?>
 

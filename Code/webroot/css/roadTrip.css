@@ -333,9 +333,11 @@
     list-style: none;
     padding: 0;
 }
+
 .profil-nav li {
     margin-bottom: 5px;
 }
+
 .profil-nav a {
     display: block;
     padding: 10px 15px;
@@ -356,12 +358,15 @@
 }
 
 .dashboard-content,
-.roadtrip-grid {
+.main-content {
     flex: 1;
-    width: 0;
+    min-width: 0;
 }
 
+
 .roadtrip-grid {
+    flex: 1;
+    width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
