@@ -70,3 +70,4 @@
     <button type="submit" id="confirmed" style="margin-top:20px;">Enregistrer les préférences</button>
     <?= $this->Form->end() ?>
 </section>
+<?= $this->Html->script('accessibility', ['block' => true]) ?>

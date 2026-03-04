@@ -1,39 +1,35 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+    const checkboxSombre = document.getElementById("checkboxSombre");
+    const checkboxMalvoyant = document.getElementById("checkboxMalvoyant");
+    const daltonienRadios = document.querySelectorAll('input[name="daltonism-type"]');
+
+    // --- 1. CHARGEMENT INITIAL ---
     function appliquerPreferences() {
         const savedTheme = localStorage.getItem("theme");
         const savedMalvoyant = localStorage.getItem("Police");
         const savedDaltonienType = localStorage.getItem("typeDaltonien");
 
-        const checkboxSombre = document.getElementById("checkboxSombre");
-        const checkboxMalvoyant = document.getElementById("checkboxMalvoyant");
-
         if (savedTheme === "dark") {
-            document.documentElement.classList.add("dark");
-            document.documentElement.classList.add("SombreBtn");
+            document.documentElement.classList.add("dark", "SombreBtn");
             if (checkboxSombre) checkboxSombre.checked = true;
         } else {
-            document.documentElement.classList.remove("dark");
-            document.documentElement.classList.remove("SombreBtn");
+            document.documentElement.classList.remove("dark", "SombreBtn");
             if (checkboxSombre) checkboxSombre.checked = false;
         }
 
         if (savedMalvoyant === "malvoyant") {
-            document.documentElement.classList.add("malvoyant");
-            document.documentElement.classList.add("MalvoyantBtn");
+            document.documentElement.classList.add("malvoyant", "MalvoyantBtn");
             if (checkboxMalvoyant) checkboxMalvoyant.checked = true;
         } else {
-            document.documentElement.classList.remove("malvoyant");
-            document.documentElement.classList.remove("MalvoyantBtn");
+            document.documentElement.classList.remove("malvoyant", "MalvoyantBtn");
             if (checkboxMalvoyant) checkboxMalvoyant.checked = false;
         }
 
         document.documentElement.classList.remove("daltonien", "protanopia", "deuteranopia", "tritanopia");
 
         if (savedDaltonienType && savedDaltonienType !== "aucun") {
-            document.documentElement.classList.add("daltonien");
-            document.documentElement.classList.add(savedDaltonienType);
-
+            document.documentElement.classList.add("daltonien", savedDaltonienType);
             const radioToCheck = document.querySelector(`input[name="daltonism-type"][value="${savedDaltonienType}"]`);
             if (radioToCheck) radioToCheck.checked = true;
         } else {
@@ -44,14 +40,41 @@ document.addEventListener("DOMContentLoaded", function() {
 
     appliquerPreferences();
 
+    // --- 2. APERÇU EN DIRECT (LIVE PREVIEW) ---
+    if (checkboxSombre) {
+        checkboxSombre.addEventListener("change", function() {
+            if (this.checked) {
+                document.documentElement.classList.add("dark", "SombreBtn");
+            } else {
+                document.documentElement.classList.remove("dark", "SombreBtn");
+            }
+        });
+    }
+
+    if (checkboxMalvoyant) {
+        checkboxMalvoyant.addEventListener("change", function() {
+            if (this.checked) {
+                document.documentElement.classList.add("malvoyant", "MalvoyantBtn");
+            } else {
+                document.documentElement.classList.remove("malvoyant", "MalvoyantBtn");
+            }
+        });
+    }
+
+    daltonienRadios.forEach(radio => {
+        radio.addEventListener("change", function() {
+            document.documentElement.classList.remove("daltonien", "protanopia", "deuteranopia", "tritanopia");
+            if (this.value !== "aucun") {
+                document.documentElement.classList.add("daltonien", this.value);
+            }
+        });
+    });
+
+    // --- 3. SAUVEGARDE FINALE ---
     const form = document.getElementById("AccessForm");
 
     if (form) {
-        form.addEventListener("submit", function(event) {
-            const checkboxSombre = document.getElementById("checkboxSombre");
-            const checkboxMalvoyant = document.getElementById("checkboxMalvoyant");
-            const radioDaltonien = document.querySelector('input[name="daltonism-type"]:checked');
-
+        form.addEventListener("submit", function() {
             if (checkboxSombre && checkboxSombre.checked) {
                 localStorage.setItem("theme", "dark");
             } else {
@@ -64,8 +87,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 localStorage.setItem("Police", "voyant");
             }
 
-            if (radioDaltonien && radioDaltonien.value) {
-                localStorage.setItem("typeDaltonien", radioDaltonien.value);
+            const radioDaltonienChecked = document.querySelector('input[name="daltonism-type"]:checked');
+            if (radioDaltonienChecked && radioDaltonienChecked.value !== "aucun") {
+                localStorage.setItem("typeDaltonien", radioDaltonienChecked.value);
             } else {
                 localStorage.removeItem("typeDaltonien");
             }
