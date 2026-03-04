@@ -109,6 +109,10 @@ class TripsTable extends Table
             ->time('departure_time')
             ->notEmptyTime('departure_time');
 
+        $validator
+            ->date('date', ['ymd'], 'Veuillez entrer une date valide.')
+            ->notEmptyDate('date');
+
         return $validator;
     }
 

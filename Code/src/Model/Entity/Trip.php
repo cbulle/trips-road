@@ -47,5 +47,6 @@ class Trip extends Entity
         'departure_time' => true,
         'roadtrip' => true,
         'sub_steps' => true,
+        'date' => true,
     ];
 }
