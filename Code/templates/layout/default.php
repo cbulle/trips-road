@@ -14,23 +14,26 @@
     </title>
     <?= $this->Html->meta('icon') ?>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <?= $this->Html->css([
+        'https://fonts.googleapis.com/icon?family=Material+Icons',
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
+        'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css',
+        'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css',
+        'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css'
+    ]) ?>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <?= $this->Html->css('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [
+        'integrity' => 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=',
+        'crossorigin' => ''
+    ]) ?>
     <?= $this->Html->css('https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css') ?>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
 
     <?php
     $controller = $this->request->getParam('controller');
     $action = $this->request->getParam('action');
     if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
+        echo $this->Html->css('https://uicdn.toast.com/editor/latest/toastui-editor.min.css');
         ?>
-        <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
         <style>
             .toastui-editor-defaultUI { z-index: 1000; }
             .subEtapeEditorContainer { background: white; }
@@ -67,79 +70,88 @@ $currentUser = $this->request->getAttribute('identity');
         <ul>
             <li class="nav-item">
                 <div class="bar_rech">
-                    <input type="search" id="searchInput" class="search-input" placeholder="Recherche..."
-                           autocomplete="off">
+                    <input type="search" id="searchInput" class="search-input" placeholder="Recherche..." autocomplete="off">
                     <div class="btn"><i class="fas fa-search"></i></div>
                 </div>
             </li>
 
             <li class="title" id="link_Titre">
-                <a href="<?= $this->Url->build('/') ?>">Trips & Roads</a>
+                <?= $this->Html->link('Trips & Roads', '/') ?>
             </li>
 
             <?php if ($currentUser): ?>
                 <li class="nav-item" id="link_access">
-                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'accessibility']) ?>">
-                        <i class="material-icons">settings_accessibility</i>
-                        <span>Paramètres</span>
-                    </a>
+                    <?= $this->Html->link(
+                        '<i class="material-icons">settings_accessibility</i><span>Paramètres</span>',
+                        ['controller' => 'Users', 'action' => 'accessibility'],
+                        ['escape' => false]
+                    ) ?>
                 </li>
                 <li class="nav-item" id="link_Chat">
-                    <a href="<?= $this->Url->build(['controller' => 'Messages', 'action' => 'index']) ?>">
-                        <i class="material-icons">chat_bubble</i>
-                        <span>Messagerie</span>
-                    </a>
+                    <?= $this->Html->link(
+                        '<i class="material-icons">chat_bubble</i><span>Messagerie</span>',
+                        ['controller' => 'Messages', 'action' => 'index'],
+                        ['escape' => false]
+                    ) ?>
                 </li>
                 <li class="nav-item" id="link_Amis">
-                    <a href="<?= $this->Url->build(['controller' => 'Friendships', 'action' => 'index']) ?>">
-                        <i class="material-icons">group</i>
-                        <span>Amis</span>
-                    </a>
+                    <?= $this->Html->link(
+                        '<i class="material-icons">group</i><span>Amis</span>',
+                        ['controller' => 'Friendships', 'action' => 'index'],
+                        ['escape' => false]
+                    ) ?>
                 </li>
                 <li class="nav-item" id="link_Crea">
-                    <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'add']) ?>">
-                        <i class="material-icons">add_box</i>
-                        <span>Créer un Road-Trip</span>
-                    </a>
+                    <?= $this->Html->link(
+                        '<i class="material-icons">add_box</i><span>Créer un Road-Trip</span>',
+                        ['controller' => 'Roadtrips', 'action' => 'add'],
+                        ['escape' => false]
+                    ) ?>
                 </li>
                 <li class="nav-item" id="link_PP">
                     <span class="profil-box">
                         <?php
                         $fileName = $currentUser->profile_picture;
                         $physicalPath = WWW_ROOT . 'uploads' . DS . 'pp' . DS . $fileName;
+
                         if (!empty($fileName) && file_exists($physicalPath)) {
-                            $ppUrl = $this->Url->build('/uploads/pp/' . $fileName);
+                            $ppImg = $this->Html->image('/uploads/pp/' . $fileName, ['class' => 'profil-photo', 'alt' => 'Profil']);
                         } else {
-                            $ppUrl = $this->Url->build('/img/User.png');
+                            $ppImg = $this->Html->image('User.png', ['class' => 'profil-photo', 'alt' => 'Profil']);
                         }
+
+                        echo $this->Html->link(
+                            $ppImg,
+                            ['controller' => 'Users', 'action' => 'profile'],
+                            ['escape' => false]
+                        );
                         ?>
-                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">
-                            <img src="<?= $ppUrl ?>" class="profil-photo" alt="Profil">
-                        </a>
                         <span class="profil-nom">
                             <?= h($currentUser->username ?? $currentUser->prenom) ?>
                         </span>
                     </span>
                 </li>
                 <li class="nav-item" id="link_Deco">
-                    <a class="pp_logout"
-                       href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">
-                        <i class="material-icons">logout</i>
-                        <span>Déconnexion</span>
-                    </a>
+                    <?= $this->Html->link(
+                        '<i class="material-icons">logout</i><span>Déconnexion</span>',
+                        ['controller' => 'Users', 'action' => 'logout'],
+                        ['escape' => false, 'class' => 'pp_logout']
+                    ) ?>
                 </li>
             <?php else: ?>
                 <li class="nav-item" id="link_access">
-                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'accessibility']) ?>">
-                        <i class="material-icons">settings_accessibility</i>
-                        <span>Accessibilité</span>
-                    </a>
+                    <?= $this->Html->link(
+                        '<i class="material-icons">settings_accessibility</i><span>Accessibilité</span>',
+                        ['controller' => 'Users', 'action' => 'accessibility'],
+                        ['escape' => false]
+                    ) ?>
                 </li>
                 <li class="nav-item">
-                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">
-                        <i class="material-icons">account_circle</i>
-                        <span>Se connecter</span>
-                    </a>
+                    <?= $this->Html->link(
+                        '<i class="material-icons">account_circle</i><span>Se connecter</span>',
+                        ['controller' => 'Users', 'action' => 'login'],
+                        ['escape' => false]
+                    ) ?>
                 </li>
             <?php endif; ?>
         </ul>
@@ -149,19 +161,19 @@ $currentUser = $this->request->getAttribute('identity');
 
         <ul class="ul_burger">
             <?php if ($currentUser): ?>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Roads-Trips Publics</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Roads-Trips</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Comments', 'action' => 'index']) ?>">Commentaire</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Mon Compte</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'index']) ?>">Favoris</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'historique']) ?>">Historique</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'faq']) ?>">Aide / FAQ</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'contact']) ?>">A propos / Contact</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>">Déconnexion</a></li>
+                <li><?= $this->Html->link('Roads-Trips Publics', ['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?></li>
+                <li><?= $this->Html->link('Mes Roads-Trips', ['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?></li>
+                <li><?= $this->Html->link('Commentaires', ['controller' => 'Comments', 'action' => 'index']) ?></li>
+                <li><?= $this->Html->link('Mon Compte', ['controller' => 'Users', 'action' => 'profile']) ?></li>
+                <li><?= $this->Html->link('Favoris', ['controller' => 'Favorites', 'action' => 'index']) ?></li>
+                <li><?= $this->Html->link('Historique', ['controller' => 'Roadtrips', 'action' => 'historique']) ?></li>
+                <li><?= $this->Html->link('Aide / FAQ', ['controller' => 'PageLink', 'action' => 'faq']) ?></li>
+                <li><?= $this->Html->link('A propos / Contact', ['controller' => 'PageLink', 'action' => 'contact']) ?></li>
+                <li><?= $this->Html->link('Déconnexion', ['controller' => 'Users', 'action' => 'logout']) ?></li>
             <?php else: ?>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>">Voir les RoadTrips</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se connecter</a></li>
-                <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'add']) ?>">S'inscrire</a></li>
+                <li><?= $this->Html->link('Voir les RoadTrips', ['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?></li>
+                <li><?= $this->Html->link('Se connecter', ['controller' => 'Users', 'action' => 'login']) ?></li>
+                <li><?= $this->Html->link('S\'inscrire', ['controller' => 'Users', 'action' => 'add']) ?></li>
             <?php endif; ?>
         </ul>
     </nav>
@@ -185,49 +197,55 @@ $mainClass = $this->fetch('mainClass', 'main-index');
 <footer>
     <div class="footer-container">
         <div class="image-container">
-            <img src="<?= $this->Url->webroot('img/logoProjet.png') ?>" alt="Logo du site web">
+            <?= $this->Html->image('logoProjet.png', ['alt' => 'Logo du site web']) ?>
         </div>
         <div class="social-media">
-            <a href="https://www.instagram.com" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.facebook.com" class="social-icon" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.x.com" class="social-icon" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+            <?= $this->Html->link('<i class="fab fa-instagram"></i>', 'https://www.instagram.com', ['class' => 'social-icon', 'target' => '_blank', 'escape' => false]) ?>
+            <?= $this->Html->link('<i class="fab fa-facebook-f"></i>', 'https://www.facebook.com', ['class' => 'social-icon', 'target' => '_blank', 'escape' => false]) ?>
+            <?= $this->Html->link('<i class="fa-brands fa-x-twitter"></i>', 'https://www.x.com', ['class' => 'social-icon', 'target' => '_blank', 'escape' => false]) ?>
         </div>
         <ul class="footer-links">
-            <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'contact']) ?>" class="un">Contact </a></li>
-            <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'cgu']) ?>" class="deux">CGU</a></li>
-            <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'politique']) ?>" class="trois">Politique de confidentialité</a></li>
-            <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'faq']) ?>" class="quatre">FAQ</a></li>
-            <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'index']) ?>" class="cinq">Road-Trip</a></li>
-            <li><a href="<?= $this->Url->build(['controller' => 'PageLink', 'action' => 'cookie']) ?>" class="six">Gestion des cookies</a></li>
+            <li><?= $this->Html->link('Contact', ['controller' => 'PageLink', 'action' => 'contact'], ['class' => 'un']) ?></li>
+            <li><?= $this->Html->link('CGU', ['controller' => 'PageLink', 'action' => 'cgu'], ['class' => 'deux']) ?></li>
+            <li><?= $this->Html->link('Politique de confidentialité', ['controller' => 'PageLink', 'action' => 'politique'], ['class' => 'trois']) ?></li>
+            <li><?= $this->Html->link('FAQ', ['controller' => 'PageLink', 'action' => 'faq'], ['class' => 'quatre']) ?></li>
+            <li><?= $this->Html->link('Road-Trip', ['controller' => 'Roadtrips', 'action' => 'index'], ['class' => 'cinq']) ?></li>
+            <li><?= $this->Html->link('Gestion des cookies', ['controller' => 'PageLink', 'action' => 'cookie'], ['class' => 'six']) ?></li>
         </ul>
     </div>
 </footer>
 
-<script src="https://kit.fontawesome.com/d76759a8b0.js" crossorigin="anonymous"></script>
+<?= $this->Html->script('https://kit.fontawesome.com/d76759a8b0.js', ['crossorigin' => 'anonymous']) ?>
+<?= $this->Html->script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [
+    'integrity' => 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=',
+    'crossorigin' => ''
+]) ?>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<?= $this->Html->script([
+    'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js',
+    'https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js',
+    'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js' // Note : tu charges Leaflet en double (v1.9.4 en haut et v1.7.1 ici) !
+]) ?>
 
-<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
 <?= $this->Html->script('https://code.jquery.com/jquery-3.6.0.min.js') ?>
 <?= $this->Html->script('https://code.jquery.com/ui/1.13.3/jquery-ui.min.js') ?>
 
-<?php
-if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
-    ?>
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    <script src="https://uicdn.toast.com/editor/latest/i18n/fr-fr.min.js"></script>
+<?php if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])): ?>
+    <?= $this->Html->script([
+        'https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js',
+        'https://uicdn.toast.com/editor/latest/i18n/fr-fr.min.js'
+    ]) ?>
 <?php endif; ?>
 
 <?php if ($controller === 'Roadtrips' && $action === 'view'): ?>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <?= $this->Html->script([
+        'https://cdn.jsdelivr.net/npm/marked/marked.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js'
+    ]) ?>
 <?php endif; ?>
 
 <?php if ($controller === 'Roadtrips' && $action === 'index'): ?>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <?= $this->Html->script('https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js') ?>
 <?php endif; ?>
 
 <?= $this->Html->script([
@@ -240,7 +258,6 @@ if ($controller === 'Roadtrips' && in_array($action, ['add', 'edit'])):
     'recherche',
     'viewRoadtrip',
     'accessibility',
-
 ]) ?>
 
 <?= $this->fetch('script') ?>
