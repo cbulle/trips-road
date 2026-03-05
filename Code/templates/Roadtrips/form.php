@@ -69,8 +69,8 @@ $this->assign('mainClass', '');
         <div class="region-selector-container" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
             <label for="regionSelect">🌍 Zone de recherche :</label>
             <select id="regionSelect">
-                <option value="europe">Europe</option>
-                <option value="north_america">Amérique du Nord (USA, Canada, Mexique)</option>
+                <option value="europe" <?= (isset($roadtrip->place) && $roadtrip->place === 'europe') ? 'selected' : '' ?>>Europe</option>
+                <option value="america" <?= (isset($roadtrip->place) && $roadtrip->place === 'america') ? 'selected' : '' ?>>Amérique du Nord (USA, Canada, Mexique)</option>
             </select>
             <small style="color: #666; font-size: 0.8em; margin-top: 5px; display: block;">Centre la carte et filtre les villes suggérées.</small>
         </div>

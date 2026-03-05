@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let userFavorites = [];
     let subStepEditors = {};
 
-    // Chargement Favoris
     try {
         const urlFav = typeof URL_GET_FAVORIS !== 'undefined' ? URL_GET_FAVORIS : '/roadtrips/get-lieux-favoris';
         const respFav = await fetch(urlFav, {
@@ -91,14 +90,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             zoom: 5,
             codes: ["fr", "be", "ch", "lu", "de", "at", "li", "it", "sm", "va", "es", "pt", "ad", "gb", "ie", "nl", "dk", "no", "se", "fi", "is", "pl", "cz", "sk", "hu", "ee", "lv", "lt", "ro", "bg", "gr", "cy", "mt", "si", "hr", "ba", "rs", "me", "al", "mk", "xk", "ua", "md", "by", "ge", "am", "az"]
         },
-        'north_america': {
+        'america': {
             center: [39.8283, -98.5795],
             zoom: 4,
             codes: ["us", "ca", "mx"]
         }
     };
 
-    let currentRegion = 'europe';
+    let currentRegion = document.getElementById('regionSelect') ? document.getElementById('regionSelect').value : 'europe';
 
     let map = L.map('map').setView(regionsConfig[currentRegion].center, regionsConfig[currentRegion].zoom);
 
@@ -968,7 +967,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('title', document.getElementById('roadtripTitle').value);
             formData.append('description', document.getElementById('roadtripDescription').value);
             formData.append('visibility', document.getElementById('roadtripVisibilite').value);
-            formData.append('status', document.getElementById('roadtripStatut').value);
+            formData.append('status', document.getElementById('roadtripStatut').value)
+            formData.append('place', document.getElementById('regionSelect').value);
 
             const fileInput = document.getElementById('roadtripPhoto');
             if(fileInput.files.length > 0) {

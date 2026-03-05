@@ -119,6 +119,8 @@ class RoadtripsController extends AppController
 
         if ($this->request->is('post')) {
             $data = $this->request->getData();
+
+
             $data['user_id'] = $this->request->getAttribute('identity')->getIdentifier();
 
             $photo = $this->request->getData('photo_cover');
@@ -149,7 +151,6 @@ class RoadtripsController extends AppController
             $roadtrip = $this->Roadtrips->patchEntity($roadtrip, $data, [
                 'associated' => ['Trips.SubSteps']
             ]);
-
             try {
                 if ($this->Roadtrips->save($roadtrip)) {
 
@@ -196,7 +197,6 @@ class RoadtripsController extends AppController
             }
             $this->Flash->error(__('Impossible de sauvegarder le roadtrip.'));
         }
-
         $this->set(compact('roadtrip', 'modeEdition', 'existingTrajets', 'userDefaultCity'));
         return $this->render('form');
     }
