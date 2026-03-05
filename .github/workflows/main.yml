@@ -23,8 +23,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # C'est ICI que la magie opère : on cible ton dossier précis
-          path: 'Code/Docs'
+          path: 'Code/docs'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
