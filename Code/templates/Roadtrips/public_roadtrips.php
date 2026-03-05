@@ -102,6 +102,12 @@ $this->assign('mainClass', 'dashboard-page');
                                 <i class="material-icons">visibility</i>
                             </a>
 
+                            <a class="action-btn view"
+                                href="<?= $this->Url->build(['controller' => 'Favorites', 'action' => 'view', $favorite->id]) ?>"
+                                title="Voir le favori">
+                                <i class="material-icons">favorite</i>
+                            </a>
+
                             <button type="button"
                                     class="action-btn btn-open-avis"
                                     data-id="<?= $rt->id ?>"
