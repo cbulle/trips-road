@@ -30,14 +30,22 @@ class CommentsController extends AppController
      *
      * @param string|null $id Comment id.
      * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found or not owned by user.
      */
     public function view($id = null)
     {
-        $comment = $this->Comments->get($id, contain: ['Users', 'Roadtrips', 'PointsOfInterests']);
+       $userId = $this->Authentication->getIdentity()->getIdentifier();
+
+        $comment = $this->Comments->find()
+            ->where([
+                'id' => $id,
+                'user_id' => $userId // On s'assure que le commentaire appartient bien à l'utilisateur
+            ])
+            ->contain(['Users', 'Roadtrips', 'PointsOfInterests'])
+            ->firstOrFail(); // Lance une RecordNotFoundException si pas de correspondance
+
         $this->set(compact('comment'));
     }
-
     /**
      * Add method
      *
