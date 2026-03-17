@@ -2,7 +2,7 @@ name: Deploy Docs to GitHub Pages
 
 on:
   push:
-    branches: ["qdev_friends"]
+    branches: ["main"]
 
 permissions:
   contents: read
