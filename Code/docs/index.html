@@ -47,6 +47,37 @@
             margin: 0 auto 25px auto;
         }
 
+        /* Search Bar Placeholder */
+        .search-bar {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(211, 60, 68, 0.1);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
         .container { 
             max-width: 1000px; 
             margin: 3rem auto; 
@@ -204,7 +235,10 @@
         <h1><i class="fa-solid fa-map-location-dot"></i> Trips & Roads</h1>
         <p>Developer Documentation Hub for the collaborative trip planning platform.</p>
         
-       
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search documentation, guides, or API references...">
+        </div>
     </header>
 
     <div class="container">
@@ -243,12 +277,11 @@
 
         <h2>🏗️ Architecture & System Design</h2>
         <div class="links-grid">
-            <a href="img/diagramme_classe.png" class="card">
+            <a href="uploads/diagramme_classe.png" class="card">
                 <div class="card-header">
                     <i class="fa-solid fa-project-diagram"></i>
                     <b>UML Diagrams</b>
-                </div>
-                <span>Deep dive into the system's Sequence, Class, and State diagrams.</span>
+                </div>                <span>Deep dive into the system's Sequence, Class, and State diagrams.</span>
             </a>
             <a href="https://iutbg-gitlab.iutbourg.univ-lyon1.fr/sae-but2/2025-26/openstreetmap-bde/road-trip.git" target="_blank" class="card">
                 <div class="card-header">
@@ -264,26 +297,24 @@
             <li><a href="img/LocalSetupGuide.pdf"><i class="fa-solid fa-terminal"></i> Local Setup & Configuration Guide</a></li>
             <li><a href="img/LeafletInteractiveMappingIntegration.pdf"><i class="fa-solid fa-map"></i> Leaflet Interactive Mapping Integration</a></li>
             <li><a href="img/SecurityDataPrivacyPolicy.pdf"><i class="fa-solid fa-shield-halved"></i> Security & Data Privacy Policy</a></li>
-            <li><a href="img/AuthenticationSessionManagement.pdf"><i class="fa-solid fa-key"></i> Authentication Session</a></li>
+            <li><a href="img/AuthenticationSessionManagement.pdf"><i class="fa-solid fa-key"></i> Authentication (JWT & Sessions)</a></li>
             <li><a href="#"><i class="fa-solid fa-code-pull-request"></i> Contribution Guidelines</a></li>
         </ul>
 
         <h2>🛠️ Technology Stack</h2>
         <div class="tech-stack">
-            <span class="badge">CakePHP 5</span>
-            <span class="badge">PHP 8.2</span>
-            <span class="badge">Leaflet.js</span>
-            <span class="badge">OSRM (Routing)</span>
-            <span class="badge">Nominatim (Search)</span>
-            <span class="badge">Gemini AI</span>
-            <span class="badge">MySQL</span>
+            <span class="badge"><i class="fa-brands fa-php"></i> PHP 8.2</span>
+            <span class="badge"><i class="fa-solid fa-layer-group"></i> CakePHP 5</span>
+            <span class="badge"><i class="fa-brands fa-js"></i> JavaScript (ES6+)</span>
+            <span class="badge"><i class="fa-solid fa-database"></i> MySQL / MariaDB</span>
+            <span class="badge"><i class="fa-solid fa-map-location"></i> OpenStreetMap / Leaflet</span>
         </div>
 
     </div>
 
     <footer>
         <p><strong>SAE Team:</strong> Bulle Céleste • Lambert Sasha • Bayssat Adrien • Poncet Lenny</p>
-        <p>© 2025/2026 - IUT Lyon 1 / Bourg-en-Bresse</p>
+        <p>© 2026 - IUT Lyon 1 / Bourg-en-Bresse</p>
     </footer>
 
 </body>
