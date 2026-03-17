@@ -17,11 +17,16 @@ class CommentsController extends AppController
      */
     public function index()
     {
-
+        $identity = $this->request->getAttribute('identity');
         $query = $this->Comments->find()
             ->contain(['Users', 'Roadtrips', 'PointsOfInterests']);
-        $comments = $this->paginate($query);
 
+        // Si l'utilisateur n'est PAS admin, on filtre uniquement ses commentaires
+        if ($identity->get('role') !== 'admin') {
+            $query->where(['Comments.user_id' => $identity->getIdentifier()]);
+        }
+
+        $comments = $this->paginate($query);
         $this->set(compact('comments'));
     }
 
@@ -30,11 +35,20 @@ class CommentsController extends AppController
      *
      * @param string|null $id Comment id.
      * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found or not owned by user.
      */
     public function view($id = null)
     {
-        $comment = $this->Comments->get($id, contain: ['Users', 'Roadtrips', 'PointsOfInterests']);
+        $identity = $this->request->getAttribute('identity');
+        $query = $this->Comments->find()
+            ->contain(['Users', 'Roadtrips', 'PointsOfInterests'])
+            ->where(['Comments.id' => $id]);
+
+        if ($identity->get('role') !== 'admin') {
+            $query->where(['Comments.user_id' => $identity->getIdentifier()]);
+        }
+
+        $comment = $query->firstOrFail();
         $this->set(compact('comment'));
     }
 
@@ -43,14 +57,13 @@ class CommentsController extends AppController
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    // src/Controller/CommentsController.php
+
 
     public function add()
     {
         $comment = $this->Comments->newEmptyEntity();
         if ($this->request->is('post')) {
             $comment = $this->Comments->patchEntity($comment, $this->request->getData());
-            // On force l'ID de l'utilisateur connecté
             $comment->user_id = $this->request->getAttribute('identity')->getIdentifier();
 
             if ($this->Comments->save($comment)) {
@@ -71,16 +84,19 @@ class CommentsController extends AppController
      */
     public function edit($id = null)
     {
-        $comment = $this->Comments->get($id, contain: []);
+        $userId = $this->request->getAttribute('identity')->getIdentifier();
+
+        $comment = $this->Comments->find()
+            ->where(['id' => $id, 'user_id' => $userId])
+            ->firstOrFail();
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $comment = $this->Comments->patchEntity($comment, $this->request->getData());
-
             if ($this->Comments->save($comment)) {
-                $this->Flash->success(__('The comment has been saved.'));
-
+                $this->Flash->success(__('Le commentaire a été modifié.'));
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The comment could not be saved. Please, try again.'));
+            $this->Flash->error(__('Erreur lors de la sauvegarde.'));
         }
         $users = $this->Comments->Users->find('list', limit: 200)->all();
         $roadtrips = $this->Comments->Roadtrips->find('list', limit: 200)->all();
@@ -98,11 +114,16 @@ class CommentsController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $comment = $this->Comments->get($id);
+        $userId = $this->request->getAttribute('identity')->getIdentifier();
+
+        $comment = $this->Comments->find()
+            ->where(['id' => $id, 'user_id' => $userId])
+            ->firstOrFail();
+
         if ($this->Comments->delete($comment)) {
-            $this->Flash->success(__('The comment has been deleted.'));
+            $this->Flash->success(__('Commentaire supprimé.'));
         } else {
-            $this->Flash->error(__('The comment could not be deleted. Please, try again.'));
+            $this->Flash->error(__('Erreur lors de la suppression.'));
         }
 
         return $this->redirect(['action' => 'index']);

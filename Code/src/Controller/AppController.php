@@ -57,7 +57,7 @@ class AppController extends Controller
         parent::beforeRender($event);
 
         $identity = $this->request->getAttribute('identity');
-
+        $this->set('isAdmin', ($identity && $identity->role === 'admin'));
 
     }
 

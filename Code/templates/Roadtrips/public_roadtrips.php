@@ -9,9 +9,11 @@
  */
 
 $this->assign('mainClass', 'dashboard-page');
+$currentUser = $this->request->getAttribute('identity');
+$isAdmin = $currentUser && isset($currentUser->role) && $currentUser->role === 'admin';
 ?>
 
-<div class="dashboard-container">
+<div class="dashboard-container <?= $isAdmin ? 'admin-mode' : '' ?>">
 
     <aside class="profil-sidebar">
         <div class="user-brief">
@@ -26,13 +28,19 @@ $this->assign('mainClass', 'dashboard-page');
             }
             ?>
             <div class="avatar-circle small" style="<?= $bgStyle ?>"></div>
-            <h3><?= $nomUser ?></h3>
+            <h3>
+                <?= $nomUser ?>
+                <?php if ($isAdmin): ?>
+                    <br><span class="admin-badge">Admin</span>
+                <?php endif; ?>
+            </h3>
         </div>
 
         <h1 class="sidebar-title">Road Trips Publics</h1>
 
         <?php if (isset($userId)): ?>
-            <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'add']) ?>" class="sidebar-create-btn">
+            <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'add']) ?>"
+               class="sidebar-create-btn">
                 <i class="material-icons">add_circle</i> Créer un Road Trip
             </a>
         <?php endif; ?>
@@ -40,14 +48,20 @@ $this->assign('mainClass', 'dashboard-page');
         <nav class="profil-nav">
             <ul>
                 <?php if (isset($userId)): ?>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes Road-Trips</a></li>
+                    <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'myRoadtrips']) ?>">Mes
+                            Road-Trips</a></li>
                 <?php endif; ?>
-                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>" class="active">Road-Trips Publics</a></li>
+                <li><a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>"
+                       class="active">Road-Trips Publics</a></li>
                 <?php if (isset($userId)): ?>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Paramètres</a></li>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>" class="logout">Déconnexion</a></li>
+                    <li>
+                        <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'profile']) ?>">Paramètres</a>
+                    </li>
+                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'logout']) ?>"
+                           class="logout">Déconnexion</a></li>
                 <?php else: ?>
-                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se connecter</a></li>
+                    <li><a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'login']) ?>">Se
+                            connecter</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -63,9 +77,9 @@ $this->assign('mainClass', 'dashboard-page');
                 <?php foreach ($roadtrips as $rt): ?>
 
                     <?php
-                    $isTermine    = ($rt->status === 'completed' || $rt->status === 'termine');
+                    $isTermine = ($rt->status === 'completed' || $rt->status === 'termine');
                     $classeStatus = $isTermine ? 'statut-termine' : 'statut-brouillon';
-                    $labelStatus  = $isTermine ? 'Terminé' : 'En cours';
+                    $labelStatus = $isTermine ? 'Terminé' : 'En cours';
 
                     $urlImage = '/img/imgBase.png';
                     if (!empty($rt->photo_url)) {
@@ -76,9 +90,10 @@ $this->assign('mainClass', 'dashboard-page');
                     }
 
                     $nbAvis = !empty($rt->comments) ? count($rt->comments) : 0;
+                    $isOwner = $currentUser && $currentUser->getIdentifier() === $rt->user_id;
                     ?>
 
-                    <div class="roadtrip-card">
+                    <div class="roadtrip-card <?= $isAdmin ? 'admin-card' : '' ?>">
 
                         <div class="card-badges">
                             <span class="badge-statut <?= $classeStatus ?>"><?= $labelStatus ?></span>
@@ -95,35 +110,50 @@ $this->assign('mainClass', 'dashboard-page');
                         </div>
 
                         <div class="roadtrip-actions">
-
-                            <a class="action-btn view"
-                               href="<?= $this->Url->build(['action' => 'view', $rt->id]) ?>"
-                               title="Voir le road trip">
+                            <a class="action-btn view" href="<?= $this->Url->build(['action' => 'view', $rt->id]) ?>"
+                               title="Voir">
                                 <i class="material-icons">visibility</i>
                             </a>
 
-                            <button type="button"
-                                    class="action-btn btn-open-avis"
-                                    data-id="<?= $rt->id ?>"
-                                    onclick="openRoadtripModal('modalAvis-<?= $rt->id ?>')"
-                                    title="Voir les avis (<?= $nbAvis ?>)">
-                                <i class="material-icons">rate_review</i>
-                                <?php if ($nbAvis > 0): ?>
-                                    <span class="avis-count"><?= $nbAvis ?></span>
+                            <?php if ($currentUser): ?>
+                                <?php if (in_array($rt->id, $favorisIds ?? [])): ?>
+                                    <?= $this->Form->postLink('<i class="material-icons">favorite</i>',
+                                        ['controller' => 'Favorites', 'action' => 'delete', $rt->id], // Adaptez l'action si besoin
+                                        ['escape' => false, 'title' => 'Retirer des favoris']) ?>
+                                <?php else: ?>
+                                    <?= $this->Form->postLink('<i class="material-icons">favorite_border</i>',
+                                        ['controller' => 'Favorites', 'action' => 'add', '?' => ['roadtrip_id' => $rt->id]],
+                                        ['escape' => false, 'title' => 'Ajouter aux favoris']) ?>
                                 <?php endif; ?>
+                            <?php endif; ?>
+
+                            <button type="button" class="action-btn"
+                                    onclick="openRoadtripModal('modalAvis-<?= $rt->id ?>')" title="Voir les avis">
+                                <i class="material-icons">rate_review</i>
                             </button>
 
-                            <?php if ($this->request->getAttribute('identity')): ?>
-                                <button type="button"
-                                        class="action-btn btn-open-comment"
-                                        data-id="<?= $rt->id ?>"
+                            <?php if ($currentUser): ?>
+                                <button type="button" class="action-btn"
                                         onclick="openRoadtripModal('modalComment-<?= $rt->id ?>')"
                                         title="Laisser un avis">
                                     <i class="material-icons">add_comment</i>
-                                    
                                 </button>
                             <?php endif; ?>
 
+                            <button type="button" class="action-btn"
+                                    onclick="telechargerPackExport(
+                                        '<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'exportGpx', $rt->id]) ?>',
+                                        '<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'exportPdf', $rt->id]) ?>'
+                                        )"
+                                    title="Exporter en GPX et PDF">
+                                <i class="material-icons">file_download</i>
+                            </button>
+
+                            <?php if ($isOwner || $isAdmin): ?>
+                                <?= $this->Form->postLink('<i class="material-icons">delete</i>',
+                                    ['controller' => 'Roadtrips', 'action' => 'delete', $rt->id],
+                                    ['confirm' => 'Supprimer ?', 'escape' => false, 'class' => 'action-btn btn-delete', 'title' => 'Supprimer']) ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -131,9 +161,7 @@ $this->assign('mainClass', 'dashboard-page');
             </div>
 
             <?php foreach ($roadtrips as $rt): ?>
-
                 <?php $nbAvis = !empty($rt->comments) ? count($rt->comments) : 0; ?>
-
 
                 <div id="modalAvis-<?= $rt->id ?>"
                      class="custom-modal"
@@ -147,7 +175,8 @@ $this->assign('mainClass', 'dashboard-page');
                             </h3>
                             <button class="modal-close"
                                     onclick="closeRoadtripModal('modalAvis-<?= $rt->id ?>')"
-                                    aria-label="Fermer">&times;</button>
+                                    aria-label="Fermer">&times;
+                            </button>
                         </div>
 
                         <div class="modal-body">
@@ -155,7 +184,7 @@ $this->assign('mainClass', 'dashboard-page');
                                 <div class="no-comments">
                                     <i class="material-icons">chat_bubble_outline</i>
                                     <p>Aucun avis pour le moment.</p>
-                                    <?php if ($this->request->getAttribute('identity')): ?>
+                                    <?php if ($currentUser): ?>
                                         <button type="button"
                                                 class="btn-switch-to-comment"
                                                 onclick="closeRoadtripModal('modalAvis-<?= $rt->id ?>'); openRoadtripModal('modalComment-<?= $rt->id ?>')">
@@ -166,6 +195,7 @@ $this->assign('mainClass', 'dashboard-page');
                             <?php else: ?>
                                 <div class="comments-list">
                                     <?php foreach ($rt->comments as $comment): ?>
+                                        <?php $isCommentOwner = $currentUser && $currentUser->getIdentifier() === $comment->user_id; ?>
                                         <div class="comment-item">
                                             <div class="comment-meta">
                                                 <span class="comment-author">
@@ -177,12 +207,25 @@ $this->assign('mainClass', 'dashboard-page');
                                                         <?= str_repeat('⭐', (int)$comment->rating) ?>
                                                     </span>
                                                 <?php endif; ?>
+
+                                                <?php if ($isCommentOwner || $isAdmin): ?>
+                                                    <?= $this->Form->postLink(
+                                                        '<i class="material-icons">delete</i>',
+                                                        ['controller' => 'Comments', 'action' => 'delete', $comment->id],
+                                                        [
+                                                            'confirm' => 'Supprimer cet avis ?',
+                                                            'escape' => false,
+                                                            'class' => 'comment-delete-btn',
+                                                            'title' => 'Supprimer l\'avis'
+                                                        ]
+                                                    ) ?>
+                                                <?php endif; ?>
                                             </div>
                                             <p class="comment-body"><?= h($comment->body) ?></p>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
-                                <?php if ($this->request->getAttribute('identity')): ?>
+                                <?php if ($currentUser): ?>
                                     <div class="modal-footer-action">
                                         <button type="button"
                                                 class="btn-switch-to-comment"
@@ -196,8 +239,7 @@ $this->assign('mainClass', 'dashboard-page');
                     </div>
                 </div>
 
-                <?php /* ---- MODALE COMMENTER (connectés seulement) ---- */ ?>
-                <?php if ($this->request->getAttribute('identity')): ?>
+                <?php if ($currentUser): ?>
                     <div id="modalComment-<?= $rt->id ?>"
                          class="custom-modal"
                          onclick="if(event.target===this) closeRoadtripModal('modalComment-<?= $rt->id ?>')">
@@ -210,7 +252,8 @@ $this->assign('mainClass', 'dashboard-page');
                                 </h3>
                                 <button class="modal-close"
                                         onclick="closeRoadtripModal('modalComment-<?= $rt->id ?>')"
-                                        aria-label="Fermer">&times;</button>
+                                        aria-label="Fermer">&times;
+                                </button>
                             </div>
 
                             <div class="modal-body">
@@ -224,25 +267,23 @@ $this->assign('mainClass', 'dashboard-page');
 
                                 <?= $this->Form->hidden('roadtrip_id', ['value' => $rt->id]) ?>
 
-                                <div class="form-group">
-                                    <label class="form-label">Note</label>
-                                    <?= $this->Form->select('rating', [
-                                        5 => '5 ⭐ — Excellent',
-                                        4 => '4 ⭐ — Très bien',
-                                        3 => '3 ⭐ — Bien',
-                                        2 => '2 ⭐ — Passable',
-                                        1 => '1 ⭐ — Décevant',
-                                    ], [
-                                        'class' => 'form-select',
-                                        'empty' => '-- Choisir une note --',
-                                    ]) ?>
+                                <div class="form-group rating-group">
+                                    <label class="form-label">Votre note</label>
+                                    <div class="modern-star-rating">
+                                        <?php for ($i = 5; $i >= 1; $i--): ?>
+                                            <input type="radio" id="star<?= $i ?>-<?= $rt->id ?>" name="rating"
+                                                   value="<?= $i ?>" required/>
+                                            <label for="star<?= $i ?>-<?= $rt->id ?>"
+                                                   title="<?= $i ?> étoiles">★</label>
+                                        <?php endfor; ?>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Commentaire</label>
                                     <?= $this->Form->textarea('body', [
-                                        'rows'        => 4,
-                                        'class'       => 'form-textarea',
+                                        'rows' => 4,
+                                        'class' => 'form-textarea',
                                         'placeholder' => 'Partagez votre expérience...',
                                     ]) ?>
                                 </div>

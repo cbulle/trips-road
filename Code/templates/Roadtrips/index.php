@@ -9,39 +9,6 @@
     </div>
 </section>
 
-<section class="featured-section">
-    <h2>🌟 À la une</h2>
-    <div class="roadtrips-grid">
-        <?php if (isset($randomRoadtrips) && !$randomRoadtrips->isEmpty()): ?>
-            <?php foreach ($randomRoadtrips as $rt): ?>
-                <?php
-                $urlImage = '/img/imgBase.png';
-                if (!empty($rt->photo_url)) {
-                    $cheminPhysique = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $rt->photo_url;
-                    if (file_exists($cheminPhysique)) {
-                        $urlImage = '/uploads/roadtrips/' . $rt->photo_url;
-                    }
-                }
-                ?>
-                <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'view', $rt->id]) ?>" class="mini-card-link" style="text-decoration:none; color:inherit; display:block;">
-                    <article class="mini-card">
-                        <div class="card-img" style="background-image: url('<?= $this->Url->build($urlImage) ?>');"></div>
-                        <div class="card-info">
-                            <h3><?= h($rt->title) ?></h3>
-                            <span class="badge">Terminé</span>
-                        </div>
-                    </article>
-                </a>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <div style="text-align:center; grid-column: 1 / -1; padding: 20px; background:white; border-radius:10px;">
-                <p style="color:#666; font-size: 1.1rem;">Aucun road trip à la une pour le moment.</p>
-                <p>Soyez le premier à en publier un !</p>
-            </div>
-        <?php endif; ?>
-    </div>
-</section>
-
 <section class="full-map-container">
 
     <div class="floating-search">
@@ -124,20 +91,38 @@
         </button>
     </div>
 
-    <div id="userMap"></div>
+    <div id="userMapIndex"></div>
 </section>
 
-<script>
-    const appConfig = {
-        userId: <?= json_encode($userId ?? null) ?>,
-        defaultLat: 45.767518,
-        defaultLon: 4.833534
-    };
-
-    function toggleSidebar() {
-        const sidebar = document.getElementById('mapSidebar');
-        const icon = document.getElementById('toggleIcon');
-        sidebar.classList.toggle('closed');
-        icon.innerHTML = sidebar.classList.contains('closed') ? "▶" : "◀";
-    }
-</script>
+<section class="featured-section">
+    <h2>🌟 À la une</h2>
+    <div class="roadtrips-grid">
+        <?php if (isset($randomRoadtrips) && !$randomRoadtrips->isEmpty()): ?>
+            <?php foreach ($randomRoadtrips as $rt): ?>
+                <?php
+                $urlImage = '/img/imgBase.png';
+                if (!empty($rt->photo_url)) {
+                    $cheminPhysique = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $rt->photo_url;
+                    if (file_exists($cheminPhysique)) {
+                        $urlImage = '/uploads/roadtrips/' . $rt->photo_url;
+                    }
+                }
+                ?>
+                <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'view', $rt->id]) ?>" class="mini-card-link" style="text-decoration:none; color:inherit; display:block;">
+                    <article class="mini-card">
+                        <div class="card-img" style="background-image: url('<?= $this->Url->build($urlImage) ?>');"></div>
+                        <div class="card-info">
+                            <h3><?= h($rt->title) ?></h3>
+                            <span class="badge">Terminé</span>
+                        </div>
+                    </article>
+                </a>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div style="text-align:center; grid-column: 1 / -1; padding: 20px; background:white; border-radius:10px;">
+                <p style="color:#666; font-size: 1.1rem;">Aucun road trip à la une pour le moment.</p>
+                <p>Soyez le premier à en publier un !</p>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>

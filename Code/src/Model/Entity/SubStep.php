@@ -38,7 +38,7 @@ class SubStep extends Entity
         'description' => true,
         'trip_id' => true,
         'transport_type' => true,
-        'heure' => true,
+        'duration' => true,
         'avoid_highways' => true,
         'avoid_tolls' => true,
         'trip' => true,

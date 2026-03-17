@@ -2,6 +2,7 @@
     box-sizing: border-box;
 }
 
+
 @media (min-width: 768px) {
     .profil-container {
         max-width: 1200px;
@@ -14,6 +15,10 @@
         font-size: 1.2rem;
         color: var(--noir);
     }
+
+    /* ==============================
+       SIDEBAR (Barre latérale)
+    ============================== */
 
     .profil-sidebar {
         background: var(--beige_fonce);
@@ -77,6 +82,10 @@
         background-color: var(--rouge);
         color: var(--white);
     }
+
+    /* ==============================
+       FORMULAIRE
+    ============================== */
 
     .profil-content {
         background-color: var(--beige_fonce);
@@ -234,6 +243,7 @@
     }
 }
 
+
 @media (max-width: 768px) {
     .profil-container {
         display: flex;
@@ -247,6 +257,11 @@
         padding-bottom: 20px;
         margin-bottom: 20px;
         width: 100%;
+        min-height: auto;
+    }
+
+    .profil-content {
+        padding: 20px;
     }
 
     .form-grid {
@@ -255,5 +270,13 @@
 
     .form-group.full-width {
         grid-column: span 1;
+    }
+
+    .form-actions {
+        justify-content: center;
+    }
+
+    .btn-save {
+        width: 100%;
     }
 }

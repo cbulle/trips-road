@@ -1,9 +1,22 @@
+/**
+ * @file Messaging system management
+ * @description Handles real-time interaction for the messaging form, including
+ * AJAX submission, UI auto-resizing, and scrolling.
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
+    /** @type {HTMLFormElement} */
     const messageForm = document.getElementById('messageForm');
+    /** @type {HTMLTextAreaElement} */
     const messageInput = document.getElementById('messageInput');
+    /** @type {HTMLElement} */
     const messagesContainer = document.getElementById('messagesContainer');
 
     if (messageForm) {
+        /**
+         * Event listener for message submission.
+         * Sends data via POST and reloads on success.
+         */
         messageForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -30,16 +43,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     messageInput.value = '';
                     location.reload();
                 } else {
-                    alert('Erreur: ' + data.message);
+                    alert('Error: ' + data.message);
                 }
             } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur lors de l\'envoi');
+                console.error('Fetch error:', error);
+                alert('An error occurred while sending the message');
             }
         });
     }
 
-    // Auto-agrandir textarea
+    /**
+     * Auto-expands the textarea height based on content.
+     */
     if (messageInput) {
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
@@ -47,7 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Scroller vers le bas
+    /**
+     * Automatically scrolls the message container to the bottom on load.
+     */
     if (messagesContainer) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }

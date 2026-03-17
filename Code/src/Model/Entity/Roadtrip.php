@@ -51,5 +51,6 @@ class Roadtrip extends Entity
         'shared_roadtrips' => true,
         'trips' => true,
         'points_of_interests' => true,
+        'place' => true,
     ];
 }

@@ -1,0 +1,609 @@
+.comments-page {
+    padding: 40px 20px;
+    background-color: var(--beige);
+    min-height: calc(100vh - 100px);
+}
+
+.comments-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.page-title {
+    text-align: center;
+    color: var(--bleu_fonce_ecriture);
+    margin-bottom: 40px;
+    font-size: 2.2rem;
+    font-weight: bold;
+}
+
+.empty-state {
+    text-align: center;
+    background: var(--beige_visu);
+    padding: 60px 20px;
+    border-radius: 15px;
+    border: 2px dashed var(--gris_clair);
+    color: var(--bleu_fonce_ecriture);
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: var(--orange);
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+}
+
+.btn-discover {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: var(--bleu_clair);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.btn-discover:hover {
+    background-color: var(--bleu_fonce);
+}
+
+.comments-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.comment-card {
+    background: var(--beige_visu);
+    border: 1px solid var(--gris_clair);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comment-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--gris_clair);
+    padding-bottom: 15px;
+}
+
+.comment-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.1rem;
+}
+
+.comment-author img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 2px solid var(--beige_fonce);
+}
+
+.comment-rating {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.star.filled {
+    color: var(--orange);
+}
+
+.star.empty {
+    color: var(--gris_clair);
+    opacity: 0.5;
+}
+
+.comment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.meta-tag, .meta-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 15px;
+    border-radius: 20px;
+    background: var(--beige_fonce);
+    color: var(--bleu_fonce_ecriture);
+    font-weight: 500;
+}
+
+.meta-tag i, .meta-date i {
+    font-size: 18px;
+    color: var(--bleu_fonce);
+}
+
+.comment-body {
+    color: var(--bleu_fonce_ecriture);
+    line-height: 1.6;
+    margin-bottom: 25px;
+    background: var(--beige);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid var(--bleu_clair);
+    font-size: 1rem;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.3s, transform 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.action-btn.view {
+    background-color: var(--bleu_clair);
+    color: var(--white);
+}
+
+.action-btn.edit {
+    background-color: var(--orange);
+    color: var(--noir);
+}
+
+.action-btn.delete {
+    background-color: var(--rouge);
+    color: var(--white);
+}
+
+.pagination-container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    gap: 8px;
+    padding: 0;
+}
+
+.pagination li a, .pagination li span {
+    display: block;
+    padding: 10px 16px;
+    background: var(--beige_visu);
+    color: var(--bleu_fonce_ecriture);
+    border: 1px solid var(--gris_clair);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s, border-color 0.3s;
+    font-weight: bold;
+}
+
+.pagination li.active a {
+    background: var(--bleu_clair);
+    color: var(--white);
+    border-color: var(--bleu_clair);
+}
+
+.pagination li a:hover:not(.active) {
+    background: var(--beige_fonce);
+}
+
+.comment-view-page {
+    padding: 40px 20px;
+    background-color: var(--beige);
+    min-height: calc(100vh - 100px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.comment-view-container {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+.comment-detail-card {
+    background: var(--beige_visu);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid var(--gris_clair);
+}
+
+.comment-detail-card .card-header {
+    background: var(--beige_fonce);
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--gris_clair);
+}
+
+.comment-detail-card .card-header h2 {
+    margin: 0;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.comment-rating-large {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+}
+
+.comment-detail-card .card-body {
+    padding: 30px;
+}
+
+.meta-infos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--white);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--gris_clair);
+}
+
+.info-box i {
+    font-size: 30px;
+    color: var(--bleu_clair);
+    background: var(--beige);
+    padding: 10px;
+    border-radius: 50%;
+}
+
+.info-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: var(--gris_clair);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    color: var(--bleu_fonce_ecriture);
+    font-weight: 600;
+}
+
+.comment-content-box {
+    position: relative;
+    background: var(--beige);
+    padding: 30px;
+    border-radius: 15px;
+    border-left: 5px solid var(--bleu_clair);
+    margin-top: 10px;
+}
+
+.quote-icon {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: var(--bleu_clair);
+    color: var(--white);
+    padding: 5px;
+    border-radius: 50%;
+    font-size: 24px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.content-text {
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.15rem;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.comment-detail-card .card-actions {
+    padding: 20px 30px;
+    background: var(--beige_fonce);
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 1px solid var(--gris_clair);
+}
+
+.comment-detail-card .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.comment-detail-card .btn-back {
+    background: var(--white);
+    color: var(--bleu_fonce_ecriture);
+    border: 1px solid var(--gris_clair);
+}
+
+.comment-detail-card .btn-back:hover {
+    background: var(--beige);
+    transform: translateY(-2px);
+}
+
+.comment-detail-card .btn-edit {
+    background: var(--orange);
+    color: var(--noir);
+}
+
+.comment-detail-card .btn-edit:hover {
+    background: var(--orange_sombre);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.comment-edit-page {
+    padding: 40px 20px;
+    background-color: var(--beige);
+    min-height: calc(100vh - 100px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.comment-edit-container {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+.comment-edit-card {
+    background: var(--beige_visu);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid var(--gris_clair);
+}
+
+.comment-edit-card .card-header {
+    background: var(--beige_fonce);
+    padding: 25px 30px;
+    border-bottom: 1px solid var(--gris_clair);
+}
+
+.comment-edit-card .card-header h2 {
+    margin: 0;
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-edit-card .card-body {
+    padding: 30px;
+}
+
+.custom-form .form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.custom-form .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+}
+
+.custom-form .form-label {
+    font-size: 0.95rem;
+    color: var(--bleu_fonce_ecriture);
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper::after {
+    content: '▼';
+    font-size: 0.8rem;
+    color: var(--bleu_fonce_ecriture);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.form-select, .form-textarea {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--gris_clair);
+    background: var(--white);
+    color: var(--bleu_fonce_ecriture);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-select {
+    appearance: none;
+    cursor: pointer;
+}
+
+.form-textarea {
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--bleu_clair);
+    box-shadow: 0 0 0 3px rgba(57, 178, 165, 0.2);
+}
+
+.rating-group {
+    align-items: flex-start;
+}
+
+.modern-star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    background: var(--white);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--gris_clair);
+    display: inline-flex;
+}
+
+.modern-star-rating input[type="radio"] {
+    display: none;
+}
+
+.modern-star-rating label {
+    font-size: 2.5rem;
+    color: var(--gris_clair);
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 0 5px;
+}
+
+.modern-star-rating label:hover,
+.modern-star-rating label:hover ~ label,
+.modern-star-rating input[type="radio"]:checked ~ label {
+    color: var(--orange);
+}
+
+.modern-star-rating label:hover {
+    transform: scale(1.1);
+}
+
+.comment-edit-card .card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid var(--gris_clair);
+}
+
+.comment-edit-card .btn-cancel {
+    background: var(--white);
+    color: var(--bleu_fonce_ecriture);
+    border: 1px solid var(--gris_clair);
+}
+
+.comment-edit-card .btn-cancel:hover {
+    background: var(--beige);
+}
+
+.comment-edit-card .btn-save {
+    background: var(--bleu_clair);
+    color: var(--white);
+}
+
+.comment-edit-card .btn-save:hover {
+    background: var(--bleu_fonce);
+}
+
+@media (max-width: 768px) {
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .comment-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .custom-form .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .comment-detail-card .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .comment-detail-card .card-actions {
+        flex-direction: column;
+    }
+
+    .comment-detail-card .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .comment-edit-card .card-actions {
+        flex-direction: column;
+    }
+
+    .comment-edit-card .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

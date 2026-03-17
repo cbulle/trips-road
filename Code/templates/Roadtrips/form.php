@@ -36,18 +36,50 @@ $this->assign('mainClass', '');
 
 <div class="main-container">
     <div class="sidebar">
-        <div class="region-selector-container" style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+
+<!--        <div id="aiAssistantContainer" class="ai-container">-->
+<!--            <h3 class="ai-header">✨ Assistant IA</h3>-->
+<!--            <p class="ai-desc">Laissez l'IA pré-remplir votre voyage !</p>-->
+<!---->
+<!--            <input type="text" id="aiDepart" class="ai-input" placeholder="Départ (ex: Paris)">-->
+<!--            <input type="text" id="aiDestination" class="ai-input" placeholder="Destination (ex: Rome)">-->
+<!---->
+<!--            <div class="ai-row">-->
+<!--                <input type="text" id="aiDuree" class="ai-input" style="width: 50%;" placeholder="Durée (ex: 7j)">-->
+<!--                <input type="text" id="aiTheme" class="ai-input" style="width: 50%;" placeholder="Thème (ex: Nature)">-->
+<!--            </div>-->
+<!---->
+<!--            <button type="button" id="btnGenerateAI" class="ai-btn">-->
+<!--                🚀 Générer des idées-->
+<!--            </button>-->
+<!---->
+<!--            <div id="aiLoading">⏳ L'IA réfléchit...</div>-->
+<!--        </div>-->
+<!---->
+<!--        <div id="aiResultBox" class="ai-result-box">-->
+<!--            <h4 style="margin-top:0; color: var(--bleu_fonce); font-size:1em;">📍 Suggestions d'étapes :</h4>-->
+<!--            <div id="aiResultContent" class="ai-result-content"></div>-->
+<!---->
+<!--            <div style="background: var(--white); color: var(--bleu_fonce_ecriture); padding: 8px; border-radius: 4px; font-size: 0.8em; margin-bottom: 10px; border: 1px solid var(--bleu_clair);">-->
+<!--                💡 <strong>Conseil :</strong> Utilisez le bouton <em>"+ Ajouter un trajet"</em> ci-dessous pour créer ces étapes sur la carte.-->
+<!--            </div>-->
+<!---->
+<!--            <button type="button" class="ai-close-btn" onclick="document.getElementById('aiResultBox').style.display='none'">Fermer</button>-->
+<!--        </div>-->
+        <div class="search-container">
+        <div class="region-selector-container" >
             <label for="regionSelect">🌍 Zone de recherche :</label>
-            <select id="regionSelect">
-                <option value="europe">Europe</option>
-                <option value="north_america">Amérique du Nord (USA, Canada, Mexique)</option>
-            </select>
             <small style="color: #666; font-size: 0.8em; margin-top: 5px; display: block;">Centre la carte et filtre les villes suggérées.</small>
-        </div>
+            <select id="regionSelect">
+                <option value="europe" <?= (isset($roadtrip->place) && $roadtrip->place === 'europe') ? 'selected' : '' ?>>Europe</option>
+                <option value="america" <?= (isset($roadtrip->place) && $roadtrip->place === 'america') ? 'selected' : '' ?>>Amérique du Nord (USA, Canada, Mexique)</option>
+            </select>
+
         <div id="legend" style="display: block;">
             <h3>Itinéraire :</h3>
             <ul id="legendList" style="list-style:none; padding:0;"></ul>
-            <div id="newBlockForm"></div>
+            <div id="newBlockForm" class="hidden"></div>
+        </div>
         </div>
 
         <div id="actionsContainer" style="margin-top:10px;">
@@ -55,7 +87,7 @@ $this->assign('mainClass', '');
         </div>
 
         <hr>
-
+        </div>
         <div id="saveContainer">
             <h3>Sauvegarde & Paramètres</h3>
 

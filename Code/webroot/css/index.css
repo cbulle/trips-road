@@ -1,121 +1,73 @@
 /* ==============================
-        Indexx
+        Index
 ============================== */
-.main-index main {
-    padding: 2rem;
-    background-color: var(--beige);
-    margin-top: 20px;
-}
 
-.index_container {
+.hero-actions {
     text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.main-index h2 {
-    font-size: 2rem;
-    color: var(--bleu_fonce);
-    margin-bottom: 1rem;
-}
-
-.main-index p {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-    color: var(--bleu_fonce_ecriture);
-}
-
- .main-index button {
-    background-color: var(--bleu_clair);
-    color: var(--noir);
-    border: none;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-.main-index button:hover {
-    background-color: var(--bleu_fonce);
-}
-
-#mapContainer {
-    margin: 2rem auto;
-    padding: 1rem;
+    padding: 40px 20px;
     background-color: var(--beige_fonce);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px var(--bleu_fonce_ecriture);
-    max-width: 1000px;
-    text-align: center;
 }
 
-.main-index h3 {
-    font-size: 1.5rem;
+.hero-content h1 {
     color: var(--bleu_fonce);
-    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
 }
 
-#map {
-    height: 400px;
-    width: 100%;
-    border-radius: 8px;
-    z-index: 0;
+.hero-content p {
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
 }
 
-/* ==============================
-  CONTENU PRINCIPAL
-============================== */
-
-.index_container {
-  padding: 30px;
-  background-color: var(--beige_fonce);
-}
-
-.index_container>h1,.index_container> h2 {
-  text-align: center;
-  color: var(--orange);
-}
-
-.search-container {
-    position: relative;
-    margin: 20px auto;
-    max-width: 600px;
+.hero-buttons {
     display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
     gap: 10px;
-}
-
-.search-container input {
-    flex: 1;
-    padding: 12px 20px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.search-container input:focus {
-    outline: none;
-    border-color: var(--bleu_clair);
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
-}
-
-.search-container button {
     padding: 12px 25px;
-    background: var(--bleu_clair);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
+    border-radius: 30px;
+    text-decoration: none;
     font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 1rem;
 }
 
-.search-container button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+.btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-action.primary {
+    background-color: var(--orange);
+    color: white;
+}
+
+.btn-action.secondary {
+    background-color: var(--bleu_clair);
+    color: white;
+}
+
+.featured-section {
+    padding: 20px 40px 40px 40px;
+    margin: 0 auto;
+    background-color: var(--beige_fonce);
+}
+
+.featured-section h2 {
+    text-align: center;
+    color: var(--beige);
+    margin-bottom: 30px;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .searching-results {
@@ -155,33 +107,11 @@
     border-bottom: none;
 }
 
-#mapContainer {
-    margin: 30px auto;
-    max-width: 1400px;
-    padding: 20px;
-}
-
-#mapContainer h3 {
-    color: var(--bleu_fonce_ecriture);
-    font-size: 22px;
-    margin-bottom: 20px;
-}
-
-.map-wrapper {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-}
-
-.category-sidebar {
-    min-width: 320px;
-    max-width: 320px;
-    background: var(--beige_visu);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 20px;
+.full-map-container {
+    position: relative;
+    width: 100%;
+    min-height: 500px;
+    overflow: hidden;
 }
 
 .category-header {
@@ -193,9 +123,6 @@
     border-bottom: 2px solid var(--gris_clair);
 }
 
-.category-icon {
-    font-size: 28px;
-}
 
 .category-header h4 {
     margin: 0;
@@ -203,8 +130,6 @@
     font-size: 20px;
     font-weight: 700;
 }
-
-
 
 .category-select-wrapper label {
     display: block;
@@ -254,7 +179,6 @@
 
 .category-info {
     border: 2px solid var(--gris_clair);
-
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
@@ -267,14 +191,7 @@
     line-height: 1.5;
 }
 
-.info-zone {
-    margin: 0;
-    font-size: 13px;
-    color: var(--bleu_fonce_ecriture);
-}
-
-.info-text strong,
-.info-zone strong {
+.info-text strong {
     color: var(--bleu_fonce_ecriture);
 }
 
@@ -300,9 +217,13 @@
     transform: translateY(0);
 }
 
-#userMap {
+#userMapIndex {
     position: relative;
     cursor: crosshair;
+    height: 700px !important;
+    width: 100%;
+    border-radius: 8px;
+    z-index: 0;
 }
 
 @keyframes slideDown {
@@ -325,7 +246,6 @@
     }
 }
 
-
 input[type=range] {
     accent-color: var(--orange);
     height: 8px;
@@ -345,43 +265,28 @@ input[type=range]::-webkit-slider-thumb {
     border: 2px solid white;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
 /*=========================
 Responsive
 =========================*/
 
 @media (max-width: 1200px) {
-    .map-wrapper {
-        flex-direction: column;
-    }
 
-    .category-sidebar {
-        min-width: 100%;
-        max-width: 100%;
-        position: relative;
-        top: 0;
-    }
-
-    #userMap {
+    #userMapIndex {
         height: 500px !important;
     }
 }
 
 @media (max-width: 768px) {
-    .search-container {
-        flex-direction: column;
-    }
+
 
     .searching-results {
         right: 0;
         z-index: 0;
     }
 
-    #userMap {
+    #userMapIndex {
         height: 400px !important;
-    }
-
-    .category-sidebar {
-        padding: 15px;
     }
 
     .category-header h4 {
@@ -390,28 +295,16 @@ Responsive
 }
 
 @media (max-width: 480px) {
-    #mapContainer {
-        padding: 10px;
-    }
 
-    .category-sidebar {
-        min-width: 100%;
-        padding: 12px;
-    }
 
     .category-info {
         padding: 12px;
     }
 
-    .info-text,
-    .info-zone {
+    .info-text {
         font-size: 12px;
     }
 }
-
-
-
-
 
 .leaflet-popup-content-wrapper {
     border-radius: 10px;
@@ -427,4 +320,3 @@ Responsive
     color: var(--bleu_fonce_ecriture);
     margin-bottom: 5px;
 }
-

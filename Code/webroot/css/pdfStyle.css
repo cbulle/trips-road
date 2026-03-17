@@ -1,0 +1,167 @@
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+    line-height: 1.5;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+}
+
+.footer-pdf {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 11px;
+    color: #888;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.header-rt {
+    background-color: #0B667D;
+    color: #F2E9D6;
+    padding: 25px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.header-rt h1 {
+    margin: 0;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.header-rt p {
+    color: #39B2A5;
+    margin: 5px 0 0;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.desc-box {
+    background-color: #F2E9D6;
+    color: #22292b;
+    padding: 15px;
+    border-left: 4px solid #FF7F50;
+    margin-bottom: 30px;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+}
+
+.trip-card {
+    margin-bottom: 40px;
+    page-break-inside: avoid;
+}
+
+.trip-title {
+    background-color: #39B2A5;
+    color: #FFFFFF;
+    padding: 12px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.trip-badge {
+    float: right;
+    font-size: 12px;
+    background-color: #0B667D;
+    color: #F2E9D6;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-top: -2px;
+}
+
+.timeline {
+    border-left: 3px solid #E0C58B;
+    margin: 0 0 0 15px;
+    padding-left: 25px;
+}
+
+.step {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.step::before {
+    content: '';
+    position: absolute;
+    left: -35px;
+    top: 2px;
+    width: 14px;
+    height: 14px;
+    background-color: #FF7F50;
+    border-radius: 50%;
+    border: 3px solid #FFFFFF;
+}
+
+.step.start::before {
+    background-color: #2E8B57;
+}
+
+.step.end::before {
+    background-color: #BF092F;
+}
+
+.step-time {
+    display: inline-block;
+    background-color: #F2E9D6;
+    color: #0B667D;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.step-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #22292b;
+    margin: 0 0 5px 0;
+}
+
+.step-pause {
+    font-size: 12px;
+    color: #8b8a8a;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.step-desc {
+    font-size: 13px;
+    color: #22292b;
+    background: #fdfdfd;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-left: 3px solid #39B2A5;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.markdown-to-html h1, .markdown-to-html h2, .markdown-to-html h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 8px 0 4px;
+}
+.markdown-to-html ul, .markdown-to-html ol {
+    padding-left: 20px;
+    margin: 6px 0;
+}
+.markdown-to-html p {
+    margin: 4px 0;
+}
+.markdown-to-html a {
+    color: #39B2A5;
+    text-decoration: underline;
+}
+.markdown-to-html code {
+    background: #f4f4f4;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.85em;
+}

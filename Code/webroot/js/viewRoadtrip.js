@@ -1,21 +1,53 @@
+/**
+ * @file Roadtrip Visualization and Trip Data Management
+ * @description
+ * Handles the display of roadtrip routes on Leaflet maps, including:
+ * - Drawing routes with numbered markers
+ * - Mode of transport selection (car, bike, foot)
+ * - ETA and duration calculation via OSRM
+ * - Markdown rendering for descriptions
+ * @requires Leaflet.js
+ * @requires Leaflet.markercluster
+ * @requires OSRM
+ * @requires marked.js
+ * @requires DOMPurify
+ */
 document.addEventListener('DOMContentLoaded', () => {
     initGlobalMap();
-    setTimeout(calculerTousLesSegments, 1000);
+    setTimeout(calculateAllSegments, 1000);
 });
 
+/** * Stores instances of individual step maps indexed by ID
+ * @type {Object.<string, L.Map>}
+ */
 const viewMapInstances = {};
 
+/** * Color palette for distinct trip paths
+ * @type {string[]}
+ */
 const colorsPalette = [
     '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
     '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4',
     '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000'
 ];
 
+/**
+ * Retrieves trip data from the global roadTripData array.
+ * @function getTrajetData
+ * @param {string|number} id - The ID of the trip
+ * @returns {Object|null} The trip data object or null
+ */
+
 function getTrajetData(id) {
     if (typeof roadTripData === 'undefined' || !roadTripData) return null;
     return roadTripData.find(t => t.id == id);
 }
-
+/**
+ * Initializes the main global map showing all trips.
+ * @async
+ * @function initGlobalMap
+ * @returns {Promise<void>}
+ */
 async function initGlobalMap() {
     const mapDiv = document.getElementById('map-global');
     if (!mapDiv) return;
@@ -68,7 +100,13 @@ async function initGlobalMap() {
         map.setView([46.6, 2.2], 6);
     }
 }
-
+/**
+ * Initializes a specific map for a single trip step.
+ * @async
+ * @function initStepMap
+ * @param {string|number} id - Trip ID
+ * @returns {Promise<void>}
+ */
 async function initStepMap(id) {
     const data = getTrajetData(id);
     const divId = 'map-trajet-' + id;
@@ -99,6 +137,18 @@ async function initStepMap(id) {
         await drawRoute(map, data, data.color || '#3388ff', true, null);
     }, 100);
 }
+/**
+ * Draws the route polyline and markers on a map using OSRM routing.
+ * Falls back to straight lines if the API fails.
+ * @async
+ * @function drawRoute
+ * @param {L.Map} map - Target Leaflet map
+ * @param {Object} data - Trip data
+ * @param {string} color - Polyline color
+ * @param {boolean} fitBounds - Whether to zoom into the route
+ * @param {L.MarkerClusterGroup|null} clusterGroup - Optional cluster group for markers
+ * @returns {Promise<void>}
+ */
 async function drawRoute(map, data, color, fitBounds, clusterGroup) {
     let stepCounter = 1;
 
@@ -162,7 +212,17 @@ async function drawRoute(map, data, color, fitBounds, clusterGroup) {
         if(fitBounds) map.fitBounds(L.latLngBounds(points));
     }
 }
-
+/**
+ * Creates a circular numbered marker for route steps.
+ * @function createNumberedMarker
+ * @param {L.Map} map - Leaflet map instance
+ * @param {Object} point - Latitude and Longitude object
+ * @param {number} number - Step number to display
+ * @param {string} color - Background color
+ * @param {string} popupText - HTML content for the popup
+ * @param {string|null} offset - CSS class for position offset
+ * @param {L.MarkerClusterGroup|null} cluster - Cluster group to add to
+ */
 function createNumberedMarker(map, point, number, color, popupText, offset, cluster) {
     if(!point || !point.lat || !point.lon) return;
 
@@ -181,7 +241,12 @@ function createNumberedMarker(map, point, number, color, popupText, offset, clus
     if(cluster) cluster.addLayer(marker);
     else marker.addTo(map);
 }
-
+/**
+ * Toggles the visibility of trip details and local maps.
+ * Hides global map when a specific trip is active.
+ * @function toggleTrajet
+ * @param {string|number} id - Trip ID
+ */
 window.toggleTrajet = function(id) {
     const content = document.getElementById('sous-etapes-' + id);
     const card = document.getElementById('card-' + id);
@@ -205,7 +270,10 @@ window.toggleTrajet = function(id) {
         setTimeout(() => { initStepMap(id); }, 100);
     }
 };
-
+/**
+ * Checks if any trip cards are active and toggles the global map accordingly.
+ * @function checkToggleGlobalMap
+ */
 function checkToggleGlobalMap() {
     const active = document.querySelectorAll('.card-vu.active'); // card-vu est la classe que j'ai remise dans le PHP
     const mapGlobal = document.getElementById('map-global');
@@ -222,14 +290,23 @@ function checkToggleGlobalMap() {
         }
     }
 }
-
-function calculerTousLesSegments() {
+/**
+ * Iterates through all cards to calculate segment distances and times.
+ * @function calculateAllSegments
+ */
+function calculateAllSegments() {
     const cards = document.querySelectorAll('.card-vu');
     cards.forEach((card, i) => {
         setTimeout(() => processCardTimes(card), i * 600);
     });
 }
-
+/**
+ * Processes OSRM routing data for a specific card to update UI with distances and times.
+ * @async
+ * @function processCardTimes
+ * @param {HTMLElement} card - The DOM element of the trip card
+ * @returns {Promise<void>}
+ */
 async function processCardTimes(card) {
     const id = card.id.replace('card-', '');
     const data = getTrajetData(id);
@@ -310,7 +387,13 @@ async function processCardTimes(card) {
         console.error("Erreur calcul temps:", e);
     }
 }
-
+/**
+ * Adds seconds to a time string.
+ * @function addTime
+ * @param {string} startTime - Format "HH:mm"
+ * @param {number} secondsToAdd - Seconds to add
+ * @returns {string} New time string "HH:mm"
+ */
 function addTime(startTime, secondsToAdd) {
     if(!startTime) return "--:--";
     const parts = startTime.split(':').map(Number);
@@ -320,7 +403,12 @@ function addTime(startTime, secondsToAdd) {
     return date.getHours().toString().padStart(2, '0') + ":" +
         date.getMinutes().toString().padStart(2, '0');
 }
-
+/**
+ * Converts a duration string (HH:mm:ss or HH:mm) to seconds.
+ * @function durationToSeconds
+ * @param {string} timeStr - Time string
+ * @returns {number} Duration in seconds
+ */
 function durationToSeconds(timeStr) {
     if(!timeStr) return 0;
     const parts = timeStr.split(':').map(Number);
@@ -329,14 +417,22 @@ function durationToSeconds(timeStr) {
     if(parts.length === 3) seconds += parts[2];
     return seconds;
 }
-
+/**
+ * Converts a duration string (HH:mm:ss or HH:mm) to seconds.
+ * @function durationToSeconds
+ * @param {string} timeStr - Time string
+ * @returns {number} Duration in seconds
+ */
 function formatDuration(seconds) {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     if (h > 0) return `${h}h ${m}min`;
     return `${m} min`;
 }
-
+/**
+ * Markdown to HTML initialization.
+ * Sanitizes and renders markdown content within elements with '.markdown-to-html' class.
+ */
 document.addEventListener("DOMContentLoaded", function() {
     marked.setOptions({
         breaks: true,

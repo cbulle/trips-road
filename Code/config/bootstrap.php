@@ -219,6 +219,18 @@ ServerRequest::addDetector('tablet', function ($request) {
     return $detector->isTablet();
 });
 
+\Cake\Core\Configure::write('CakePdf', [
+    'engine' => 'CakePdf\Pdf\Engine\DomPdfEngine',
+    'margin' => [
+        'bottom' => 15,
+        'left' => 15,
+        'right' => 15,
+        'top' => 15
+    ],
+    'orientation' => 'portrait',
+    'download' => true
+]);
+
 /*
  * You can enable default locale format parsing by adding calls
  * to `useLocaleParser()`. This enables the automatic conversion of

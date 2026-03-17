@@ -22,7 +22,7 @@ class FavoritesFixture extends TestFixture
                 'id' => 1,
                 'user_id' => 1,
                 'roadtrip_id' => 1,
-                'created' => 1770136042,
+                'created' => 1772614694,
             ],
         ];
         parent::init();

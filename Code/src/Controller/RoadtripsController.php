@@ -7,6 +7,8 @@ use Cake\Event\EventInterface;
 use Cake\I18n\FrozenTime;
 use Cake\View\JsonView;
 use Cake\Http\Client;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 /**
  * Roadtrips Controller
@@ -18,6 +20,7 @@ class RoadtripsController extends AppController
     public function initialize(): void
     {
         parent::initialize();
+
     }
 
     public function beforeFilter(\Cake\Event\EventInterface $event)
@@ -90,9 +93,9 @@ class RoadtripsController extends AppController
 
                 foreach ($favorites as $fav) {
                     $response[] = [
-                        'nom_lieu'  => $fav->nom_lieu ?? $fav->name,
-                        'adresse'   => $fav->adresse ?? '',
-                        'latitude'  => $fav->latitude,
+                        'nom_lieu' => $fav->nom_lieu ?? $fav->name,
+                        'adresse' => $fav->adresse ?? '',
+                        'latitude' => $fav->latitude,
                         'longitude' => $fav->longitude,
                         'categorie' => $fav->categorie ?? 'divers'
                     ];
@@ -118,6 +121,8 @@ class RoadtripsController extends AppController
 
         if ($this->request->is('post')) {
             $data = $this->request->getData();
+
+
             $data['user_id'] = $this->request->getAttribute('identity')->getIdentifier();
 
             $photo = $this->request->getData('photo_cover');
@@ -148,7 +153,6 @@ class RoadtripsController extends AppController
             $roadtrip = $this->Roadtrips->patchEntity($roadtrip, $data, [
                 'associated' => ['Trips.SubSteps']
             ]);
-
             try {
                 if ($this->Roadtrips->save($roadtrip)) {
 
@@ -195,7 +199,6 @@ class RoadtripsController extends AppController
             }
             $this->Flash->error(__('Impossible de sauvegarder le roadtrip.'));
         }
-
         $this->set(compact('roadtrip', 'modeEdition', 'existingTrajets', 'userDefaultCity'));
         return $this->render('form');
     }
@@ -304,19 +307,22 @@ class RoadtripsController extends AppController
         $this->request->allowMethod(['post', 'delete']);
         $roadtrip = $this->Roadtrips->get($id);
 
-        $userId = $this->request->getAttribute('identity')->getIdentifier();
-        if ($roadtrip->user_id !== $userId) {
-            $this->Flash->error('Interdit.');
+        $currentUser = $this->request->getAttribute('identity');
+        $userId = $currentUser->getIdentifier();
+        $userRole = $currentUser->role ?? 'user';
+
+        if ($roadtrip->user_id !== $userId && $userRole !== 'admin') {
+            $this->Flash->error(__('Action non autorisée. Vous n\'avez pas les droits.'));
             return $this->redirect(['action' => 'index']);
         }
 
         if ($this->Roadtrips->delete($roadtrip)) {
-            $this->Flash->success(__('Roadtrip supprimé.'));
+            $this->Flash->success(__('Le roadtrip a été supprimé avec succès.'));
         } else {
-            $this->Flash->error(__('Erreur suppression.'));
+            $this->Flash->error(__('Erreur lors de la suppression du roadtrip.'));
         }
 
-        return $this->redirect(['action' => 'myRoadtrips']);
+        return $this->redirect($this->referer(['action' => 'myRoadtrips']));
     }
 
     public function myRoadtrips()
@@ -510,14 +516,13 @@ class RoadtripsController extends AppController
         foreach ($trips as $trip) {
             $sousEtapes = [];
             foreach ($trip->sub_steps as $step) {
-
                 $heureFormattee = '';
+
                 if (!empty($step->duration)) {
-                    if ($step->duration instanceof \DateTimeInterface) {
+                    if (is_object($step->duration) && method_exists($step->duration, 'format')) {
                         $heureFormattee = $step->duration->format('H:i');
-                    }
-                    elseif (is_string($step->duration)) {
-                        $heureFormattee = substr($step->duration, 0, 5);
+                    } else {
+                        $heureFormattee = substr((string)$step->duration, 0, 5);
                     }
                 }
 
@@ -537,20 +542,17 @@ class RoadtripsController extends AppController
             $data[] = [
                 'id' => $trip->id,
                 'depart' => $trip->departure,
-
                 'departLat' => $trip->departure_latitude ?? null,
                 'departLon' => $trip->departure_longitude ?? null,
-
                 'arrivee' => $trip->arrival,
-
                 'arriveeLat' => $trip->arrival_latitude ?? null,
                 'arriveeLon' => $trip->arrival_longitude ?? null,
-
                 'mode' => $trip->transport_mode,
+                'date_trajet' => !empty($trip->date) ?
+                    ($trip->date instanceof \DateTimeInterface ? $trip->date->format('Y-m-d') : $trip->date)
+                    : null,
 
-                'date_trajet' => $trip->departure_time ? $trip->departure_time->format('Y-m-d') : null,
                 'heure_depart' => $trip->departure_time ? $trip->departure_time->format('H:i') : '08:00',
-
                 'sousEtapes' => $sousEtapes
             ];
         }
@@ -628,6 +630,8 @@ class RoadtripsController extends AppController
                 'arrival' => $trajetJs['arrivee'] ?? '',
                 'transport_mode' => $trajetJs['mode'] ?? 'Voiture',
                 'departure_time' => $trajetJs['heure_depart'] ?? '08:00',
+                'date' => !empty($trajetJs['date_trajet']) ? $trajetJs['date_trajet'] : null,
+
                 'sub_steps' => []
             ];
 
@@ -638,7 +642,7 @@ class RoadtripsController extends AppController
                         'city' => $se['nom'] ?? '',
                         'description' => $se['remarque'] ?? '',
                         'transport_type' => $trajetJs['mode'] ?? 'Voiture',
-                        'heure' => $se['heure'] ?? null
+                        'duration' => $se['heure'] ?? null
                     ];
                 }
             }
@@ -801,4 +805,112 @@ class RoadtripsController extends AppController
             ->withType('application/json')
             ->withStringBody(json_encode($response));
     }
+
+    public function exportPdf($id = null)
+    {
+        try {
+            $roadtrip = $this->Roadtrips->get($id, [
+                'contain' => [
+                    'Users',
+                    'Trips' => [
+                        'sort' => ['Trips.order_number' => 'ASC'],
+                        'SubSteps' => [
+                            'sort' => ['SubSteps.order_number' => 'ASC']
+                        ]
+                    ]
+                ]
+            ]);
+        } catch (\Cake\Datasource\Exception\RecordNotFoundException $e) {
+            $this->Flash->error(__('Road trip introuvable.'));
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $currentUserId = $this->request->getAttribute('identity')?->getIdentifier();
+        $isOwner = ($currentUserId === $roadtrip->user_id);
+
+        if (!$isOwner && $roadtrip->visibility !== 'public') {
+            $this->Flash->error(__('Ce road trip est privé et ne peut être exporté.'));
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $this->viewBuilder()
+            ->setTemplatePath('Roadtrips')
+            ->setTemplate('export_pdf')
+            ->setLayout('layoutPdf');
+
+        $this->set(compact('roadtrip'));
+
+        $view = $this->createView();
+        $html = $view->render();
+
+        $options = new Options();
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $pdfOutput = $dompdf->output();
+        $filename = 'Carnet_de_route_' . preg_replace('/[^a-zA-Z0-9]/', '_', $roadtrip->title) . '.pdf';
+        return $this->response
+            ->withType('application/pdf')
+            ->withDownload($filename)
+            ->withStringBody($pdfOutput);
+    }
+
+
+    public function exportGpx($id = null)
+    {
+        $roadtrip = $this->Roadtrips->get($id, [
+            'contain' => [
+                'Trips' => [
+                    'sort' => ['Trips.order_number' => 'ASC'],
+                    'SubSteps' => [
+                        'sort' => ['SubSteps.order_number' => 'ASC']
+                    ]
+                ]
+            ]
+        ]);
+
+        $geocodedPlacesTable = \Cake\ORM\TableRegistry::getTableLocator()->get('GeocodedPlaces');
+
+        $xmlString = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>' .
+            '<gpx version="1.1" creator="TripsAndRoads" xmlns="http://www.topografix.com/GPX/1/1"></gpx>';
+        $xml = new \SimpleXMLElement($xmlString);
+
+        $metadata = $xml->addChild('metadata');
+        $metadata->addChild('name', h($roadtrip->title));
+
+        foreach ($roadtrip->trips as $trip) {
+            foreach ($trip->sub_steps as $step) {
+                if (empty($step->city)) {
+                    continue;
+                }
+                $place = $geocodedPlacesTable->find()
+                    ->where(['name' => $step->city])
+                    ->first();
+
+                if ($place) {
+                    $wpt = $xml->addChild('wpt');
+                    $wpt->addAttribute('lat', (string)$place->latitude);
+                    $wpt->addAttribute('lon', (string)$place->longitude);
+
+                    $wpt->addChild('name', h($step->city));
+
+                    if (!empty($step->description)) {
+                        $wpt->addChild('desc', h($step->description));
+                    }
+
+                    $wpt->addChild('ele', '0');
+                }
+            }
+        }
+
+        $nomFichier = preg_replace('/[^a-zA-Z0-9]/', '_', $roadtrip->title) . '.gpx';
+
+        return $this->response
+            ->withType('application/gpx+xml')
+            ->withDownload($nomFichier)
+            ->withStringBody($xml->asXML());
+    }
+
 }

@@ -21,8 +21,8 @@
 </aside>
 
 <section class="cont_access">
-    <?= $this->Form->create(null, ['class' => 'AccessForm', 'id' => 'AccessForm']) ?>
-    <h2 id="login-title">Accessibilité</h2>
+    <?= $this->Form->create(null, ['class' => 'accessForm', 'id' => 'accessForm']) ?>
+    <h2 id=access-title">Accessibilité</h2>
 
     <label for="checkboxSombre">Mode sombre :</label>
     <div class="btnSombre">

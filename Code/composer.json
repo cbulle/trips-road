@@ -6,13 +6,16 @@
     "homepage": "https://cakephp.org",
     "require": {
         "php": ">=8.2",
+        "ext-openssl": "*",
         "cakephp/authentication": "^3.3",
         "cakephp/cakephp": "^5.3",
         "cakephp/migrations": "^4.0.0",
         "cakephp/plugin-installer": "^2.0",
-        "mobiledetect/mobiledetectlib": "^4.8.03",
+        "dompdf/dompdf": "^3.1",
+        "erusev/parsedown": "^1.8",
+        "friendsofcake/cakepdf": "^5.1",
         "league/oauth2-google": "^4.0",
-        "ext-openssl": "*"
+        "mobiledetect/mobiledetectlib": "^4.8.03"
     },
     "require-dev": {
         "cakephp/bake": "^3.0.0",

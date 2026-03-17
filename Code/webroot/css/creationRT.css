@@ -51,18 +51,28 @@
     padding: 0;
 }
 
-.region-selector-container,
-.sidebar #legend,
-#newBlockForm {
-    background: var(--beige_fonce) !important;
+.search-container{
+    background: var(--beige_fonce);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border: none ;
+}
+
+.dark .search-container{
+    background: linear-gradient(135deg, var(--bleu_fonce), var(--bleu_clair)) !important;
+}
+
+.hidden{
+    display: none;
+}
+
+#newBlockForm{
+    background: var(--beige) !important;
     border-radius: 16px !important;
     padding: 20px !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
     border: none !important;
-}
-
-#newBlockForm {
-    background: var(--beige) !important;
 }
 
 .region-selector-container label {
@@ -81,12 +91,16 @@
     transition: background-color 0.3s ease;
 }
 
-.sidebar #saveContainer {
-    background: linear-gradient(135deg, var(--bleu_fonce), var(--bleu_clair));
+.sidebar #saveContainer{
+    background:var(--beige_fonce);
     border-radius: 16px;
     padding: 25px;
     box-shadow: 0 8px 25px rgba(11, 102, 125, 0.2);
     margin-top: 10px;
+}
+
+.dark .sidebar #saveContainer{
+    background: linear-gradient(135deg, var(--bleu_fonce), var(--bleu_clair)) !important;
 }
 
 .sidebar #saveContainer h3 {
@@ -222,6 +236,145 @@
     box-shadow: 0 6px 20px rgba(46, 139, 87, 0.6);
 }
 
+/* ==============================
+  STYLE DANS DES INPUTS DANS LA SIDE-BAR
+============================== */
+.main-container {
+    display: flex;
+    gap: 20px;
+    padding: 0 20px 20px 20px;
+}
+
+.sidebar #mode{
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.sidebar #mode:hover{
+    background-color: #2E8B57;
+    cursor: pointer;
+}
+
+
+
+/* ==============================
+   STYLE DU FORMULAIRE "AJOUTER UN TRAJET"
+============================== */
+
+.new-block-static {
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: var(--beige);
+    border: 1px solid var(--beige_fonce);
+    border-radius: 15px;
+    color: var(--bleu_fonce_ecriture);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.new-block-static strong {
+    color: var(--bleu_fonce);
+}
+
+/* ==============================
+  STYLE POUR LES SUGGESTIONS DES VILLES
+============================== */
+.ui-autocomplete {
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    background: var(--beige);
+    border: 1px solid var(--bleu_clair);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.ui-menu-item {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--bleu_fonce_ecriture);
+}
+
+.ui-menu-item-wrapper {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ui-state-active, .ui-menu-item:hover .ui-menu-item-wrapper {
+    background: var(--bleu_clair) !important;
+    color: white !important;
+    text-decoration: none;
+}
+
+.sidebar .etape {
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+
+/* ==============================
+  SOUS-ETAPES
+============================== */
+
+.subEtape input {
+    padding: 6px 10px;
+}
+
+.sidebar .etape, .sidebar #roadtripTitle {
+    width: 260px;
+    margin-bottom: 10px;
+    padding : 10px;
+    border-radius: 15px;
+}
+
+/* ==============================
+  ANIMATION FORMULAIRE SOUS-ETAPES
+============================== */
+
+.segment-form-container {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+    overflow-y: auto;
+    padding: 15px;
+    position: relative;
+    background: var(--beige_fonce);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.segment-form-container.hidden {
+    display: none;
+    opacity: 0;
+}
+
+#segmentTitle {
+    position: sticky;
+    top: 0;
+    background: var(--beige_fonce);
+    padding: 10px 0;
+    z-index: 10;
+    margin-bottom: 15px;
+}
+
+/* ==============================
+  New block
+============================== */
+#newBlockForm>#inputStartBlock,
+#newBlockForm>#inputEndBlock{
+    padding: 10px;
+    border-radius: 15px;
+    width: 100%;
+}
+
 .new-block-label {
     display: block;
     font-weight: 600;
@@ -236,7 +389,6 @@
     border-radius: 10px;
     border: 1px solid var(--bleu_clair);
     background-color: var(--white);
-    color: var(--bleu_fonce_ecriture);
     transition: all 0.3s ease;
     box-sizing: border-box;
 }
@@ -566,7 +718,7 @@
 
 .ui-menu-item-name {
     font-weight: 600;
-    color: var(--bleu_fonce_ecriture);
+    color: black;
     font-size: 1.05rem;
 }
 
@@ -585,7 +737,7 @@
     color: var(--bleu_fonce) !important;
 }
 
-.map-container, #map {
+.map-container{
     flex: 1;
     width: 100%;
     height: 875px;
@@ -594,6 +746,12 @@
     border: 1px solid var(--bleu_clair);
 }
 
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+    z-index: 0;
+}
 .map-container {
     position: sticky;
     top: 20px;
