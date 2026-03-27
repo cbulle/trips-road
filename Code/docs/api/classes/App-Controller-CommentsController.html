@@ -133,11 +133,12 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/CommentsController.php"><a href="files/src-controller-commentscontroller.html"><abbr title="src/Controller/CommentsController.php">CommentsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">11</span>
+    <span class="phpdocumentor-element-found-in__line">15</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Comments Controller</p>
+            <p class="phpdocumentor-summary">Comments Controller
+Manages user reviews and comments on roadtrips or points of interest.</p>
 
 
 
@@ -182,9 +183,10 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-CommentsController.html#method_add">add()</a>
     <span>
-                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
-<dd>Add method</dd>
+<dd>Add method
+Creates a new comment and binds it securely to the current user.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-AppController.html#method_beforeRender">beforeRender()</a>
@@ -197,21 +199,24 @@
     <span>
                                 &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
-<dd>Delete method</dd>
+<dd>Delete method
+Deletes a comment owned by the user.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-CommentsController.html#method_edit">edit()</a>
     <span>
                                 &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
-<dd>Edit method</dd>
+<dd>Edit method
+Modifies an existing comment owned by the user.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-CommentsController.html#method_index">index()</a>
     <span>
                                 &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
-<dd>Index method</dd>
+<dd>Index method
+Lists comments. Admins see all, regular users see only theirs.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-AppController.html#method_initialize">initialize()</a>
@@ -225,7 +230,8 @@
     <span>
                                 &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
-<dd>View method</dd>
+<dd>View method
+Displays a specific comment.</dd>
 
     </dl>
 
@@ -299,15 +305,16 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/CommentsController.php"><a href="files/src-controller-commentscontroller.html"><abbr title="src/Controller/CommentsController.php">CommentsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">48</span>
+    <span class="phpdocumentor-element-found-in__line">67</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Add method</p>
+        <p class="phpdocumentor-summary">Add method
+Creates a new comment and binds it securely to the current user.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">add</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
+                    <span class="phpdocumentor-signature__name">add</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -320,9 +327,9 @@
     
             <section>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>Redirects on successful add, renders view otherwise.</p>
+                <section class="phpdocumentor-description"><p>Redirects on successful add.</p>
 </section>
 
             </section>
@@ -386,11 +393,12 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/CommentsController.php"><a href="files/src-controller-commentscontroller.html"><abbr title="src/Controller/CommentsController.php">CommentsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">98</span>
+    <span class="phpdocumentor-element-found-in__line">129</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Delete method</p>
+        <p class="phpdocumentor-summary">Delete method
+Deletes a comment owned by the user.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -458,11 +466,12 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/CommentsController.php"><a href="files/src-controller-commentscontroller.html"><abbr title="src/Controller/CommentsController.php">CommentsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">72</span>
+    <span class="phpdocumentor-element-found-in__line">95</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Edit method</p>
+        <p class="phpdocumentor-summary">Edit method
+Modifies an existing comment owned by the user.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -530,11 +539,12 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/CommentsController.php"><a href="files/src-controller-commentscontroller.html"><abbr title="src/Controller/CommentsController.php">CommentsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">18</span>
+    <span class="phpdocumentor-element-found-in__line">23</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Index method</p>
+        <p class="phpdocumentor-summary">Index method
+Lists comments. Admins see all, regular users see only theirs.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -611,11 +621,12 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/CommentsController.php"><a href="files/src-controller-commentscontroller.html"><abbr title="src/Controller/CommentsController.php">CommentsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">35</span>
+    <span class="phpdocumentor-element-found-in__line">46</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">View method</p>
+        <p class="phpdocumentor-summary">View method
+Displays a specific comment.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -651,7 +662,7 @@
                 <dd class="phpdocumentor-tag-list__definition">
                                                                 <span class="phpdocumentor-tag-link"><abbr title="\Cake\Datasource\Exception\RecordNotFoundException">RecordNotFoundException</abbr></span>
                                                             
-                                                 <section class="phpdocumentor-description"><p>When record not found.</p>
+                                                 <section class="phpdocumentor-description"><p>When record not found or not owned by user.</p>
 </section>
 
                                     </dd>

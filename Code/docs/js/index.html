@@ -63,13 +63,13 @@
     <div class="container-overview">
     
         
-            <div class="description">Ce script gère les préférences d’accessibilité utilisateur :
-- Thème sombre / clair
-- Mode malvoyant (taille/contraste adapté)
-- Filtres pour différents types de daltonisme
+            <div class="description">This script handles user accessibility preferences:
+- Dark / Light theme
+- Visually impaired mode (adapted size/contrast)
+- Filters for different types of color blindness
 
-Les préférences sont sauvegardées dans le localStorage
-et réappliquées automatiquement au chargement de la page.</div>
+Preferences are stored in localStorage and automatically
+reapplied when the page loads.</div>
         
 
         
@@ -162,17 +162,11 @@ et réappliquées automatiquement au chargement de la page.</div>
     <div class="container-overview">
     
         
-            <div class="description">Ce script initialise une carte Leaflet permettant :
-- La géolocalisation utilisateur
-- La recherche d’un lieu via Nominatim
-- L’affichage de points d’intérêt via l’API Overpass (OpenStreetMap)
-- Le filtrage par catégorie
-- Le réglage du rayon de recherche
-
-Dépendances :
-- Leaflet.js
-- API Overpass
-- API Nominatim</div>
+            <div class="description">This script initializes a Leaflet map providing:
+- User geolocation
+- Location search via Nominatim API
+- POI display via Overpass API (OpenStreetMap)
+- Filtering by category and search radius adjustment</div>
         
 
         
@@ -226,6 +220,602 @@ Dépendances :
     
 
     
+        <h3 class="subsection-title">Requires</h3>
+
+        <ul>
+            <li>module:Leaflet.js</li>
+        
+            <li>module:OverpassAPI</li>
+        
+            <li>module:NominatimAPI</li>
+        </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>map.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Module de gestion de la carte interactive pour la création et l'édition de RoadTrips.
+Architecture : constantes → état → utilitaires → fonctionnalités → init</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="map.js.html">map.js</a>, <a href="map.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+        <h3 class="subsection-title">Requires</h3>
+
+        <ul>
+            <li>module:L</li>
+        
+            <li>module:Swal</li>
+        </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>messagerie.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Handles real-time interaction for the messaging form, including
+AJAX submission, UI auto-resizing, and scrolling.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="messagerie.js.html">messagerie.js</a>, <a href="messagerie.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>modal.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Provides global functions to open, close, and manage roadtrip-related modals.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modal.js.html">modal.js</a>, <a href="modal.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>profil.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Handles image previewing, profile sidebar toggling, and form validation.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="profil.js.html">profil.js</a>, <a href="profil.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>publicRoad.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Handles the downloading of GPX and PDF files for public roadtrips without leaving the page.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="publicRoad.js.html">publicRoad.js</a>, <a href="publicRoad.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>viewRoadtrip.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Handles the display of roadtrip routes on Leaflet maps, including:
+- Drawing routes with numbered markers
+- Mode of transport selection (car, bike, foot)
+- ETA and duration calculation via OSRM
+- Markdown rendering for descriptions</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="viewRoadtrip.js.html">viewRoadtrip.js</a>, <a href="viewRoadtrip.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+        <h3 class="subsection-title">Requires</h3>
+
+        <ul>
+            <li>module:Leaflet.js</li>
+        
+            <li>module:Leaflet.markercluster</li>
+        
+            <li>module:OSRM</li>
+        
+            <li>module:marked.js</li>
+        
+            <li>module:DOMPurify</li>
+        </ul>
+    
 
     
 
@@ -252,13 +842,13 @@ Dépendances :
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Events</h3><ul><li><a href="global.html#event:DOMContentLoaded">DOMContentLoaded</a></li></ul><h3>Global</h3><ul><li><a href="global.html#appliquerPreferences">appliquerPreferences</a></li><li><a href="global.html#createCustomIcon">createCustomIcon</a></li><li><a href="global.html#enregistrerPreferences">enregistrerPreferences</a></li><li><a href="global.html#initMap">initMap</a></li><li><a href="global.html#loadPOI">loadPOI</a></li><li><a href="global.html#updateSearchPosition">updateSearchPosition</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Events</h3><ul><li><a href="global.html#event:DOMContentLoaded">DOMContentLoaded</a></li></ul><h3>Global</h3><ul><li><a href="global.html#REGIONS_CONFIG">REGIONS_CONFIG</a></li><li><a href="global.html#ROUTING_SERVERS">ROUTING_SERVERS</a></li><li><a href="global.html#TRANSPORT_STRATEGIES">TRANSPORT_STRATEGIES</a></li><li><a href="global.html#addTime">addTime</a></li><li><a href="global.html#appConfig">appConfig</a></li><li><a href="global.html#applyPreferences">applyPreferences</a></li><li><a href="global.html#calculateAllSegments">calculateAllSegments</a></li><li><a href="global.html#checkToggleGlobalMap">checkToggleGlobalMap</a></li><li><a href="global.html#closeAllRoadtripModals">closeAllRoadtripModals</a></li><li><a href="global.html#closeRoadtripModal">closeRoadtripModal</a></li><li><a href="global.html#colorsPalette">colorsPalette</a></li><li><a href="global.html#createCustomIcon">createCustomIcon</a></li><li><a href="global.html#createNumberedMarker">createNumberedMarker</a></li><li><a href="global.html#currentCircle">currentCircle</a></li><li><a href="global.html#currentCoords">currentCoords</a></li><li><a href="global.html#defaultCoords">defaultCoords</a></li><li><a href="global.html#downloadExportPack">downloadExportPack</a></li><li><a href="global.html#downloadFile">downloadFile</a></li><li><a href="global.html#drawRoute">drawRoute</a></li><li><a href="global.html#durationToSeconds">durationToSeconds</a></li><li><a href="global.html#getTrajetData">getTrajetData</a></li><li><a href="global.html#handleGenerateAI">handleGenerateAI</a></li><li><a href="global.html#handleSaveRoadtrip">handleSaveRoadtrip</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initGlobalMap">initGlobalMap</a></li><li><a href="global.html">initMap</a></li><li><a href="global.html#initStepMap">initStepMap</a></li><li><a href="global.html">loadPOI</a></li><li><a href="global.html#map">map</a></li><li><a href="global.html#openRoadtripModal">openRoadtripModal</a></li><li><a href="global.html#poiFilters">poiFilters</a></li><li><a href="global.html#previewImage">previewImage</a></li><li><a href="global.html#processCardTimes">processCardTimes</a></li><li><a href="global.html#savePreferences">savePreferences</a></li><li><a href="global.html#searchLayer">searchLayer</a></li><li><a href="global.html#searchRadius">searchRadius</a></li><li><a href="global.html#state">state</a></li><li><a href="global.html#toggleSidebar">toggleSidebar</a></li><li><a href="global.html#toggleTrajet">toggleTrajet</a></li><li><a href="global.html#updateRouteSegment">updateRouteSegment</a></li><li><a href="global.html">updateSearchPosition</a></li><li><a href="global.html#viewMapInstances">viewMapInstances</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Mar 04 2026 09:26:31 GMT+0100 (heure normale d’Europe centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Mar 27 2026 16:44:18 GMT+0100 (heure normale d’Europe centrale)
 </footer>
 
 <script> prettyPrint(); </script>

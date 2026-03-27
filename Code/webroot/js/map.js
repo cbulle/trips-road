@@ -1,12 +1,18 @@
 /**
- * map.js — Module de gestion de la carte RoadTrip
+ * @file map.js
+ * @description Module de gestion de la carte interactive pour la création et l'édition de RoadTrips.
  * Architecture : constantes → état → utilitaires → fonctionnalités → init
+ * @requires L (Leaflet)
+ * @requires Swal (SweetAlert2)
  */
 
 // ============================================================
 // 0. CONSTANTES & CONFIGURATION
 // ============================================================
-
+/**
+ * Configuration des régions (Europe et Amérique) pour centrer la carte.
+ * @constant {Object}
+ */
 const REGIONS_CONFIG = {
     'europe': {
         center: [46.5, 2.5],
@@ -21,13 +27,19 @@ const REGIONS_CONFIG = {
         bbox: [-169, 15, -52, 72]
     }
 };
-
+/**
+ * Correspondance entre les modes de transport de l'UI et ceux de l'API OSRM.
+ * @constant {Object<string, string>}
+ */
 const TRANSPORT_STRATEGIES = {
     'Voiture': 'driving',
     'Velo':    'cycling',
     'Marche':  'walking'
 };
-
+/**
+ * URLs de base pour l'API de routage OSRM selon le mode de transport.
+ * @constant {Object<string, string>}
+ */
 const ROUTING_SERVERS = {
     'Voiture': 'https://routing.openstreetmap.de/routed-car',
     'Velo':    'https://routing.openstreetmap.de/routed-bike',
@@ -51,7 +63,20 @@ const FAVORITE_ICON = L.divIcon({
 // ============================================================
 // 1. ÉTAT GLOBAL DU MODULE
 // ============================================================
-
+/**
+ * État global de l'application gérant les données de la carte et du trajet.
+ * @type {Object}
+ * @property {L.Map|null} map - Instance de la carte Leaflet.
+ * @property {string} currentStartCity - Ville de départ.
+ * @property {Array<number>|null} currentStartCoords - Coordonnées [lat, lon] du départ.
+ * @property {Array<Object>} segments - Tableau contenant les étapes du trajet.
+ * @property {Array<L.Polyline>} polylineLayers - Tableau des tracés affichés sur la carte.
+ * @property {Object<string, L.Marker>} markers - Dictionnaire des marqueurs (clé = nom de la ville).
+ * @property {number|null} currentSegmentIndex - Index du segment actuellement édité.
+ * @property {boolean} isCalculating - Indicateur d'état pendant les calculs d'itinéraires.
+ * @property {Array<Object>} userFavorites - Liste des lieux favoris de l'utilisateur.
+ * @property {L.FeatureGroup|null} favoritesLayer - Groupe Leaflet contenant les marqueurs de favoris.
+ */
 const state = {
     map:                 null,
     currentRegion:       'europe',
@@ -512,7 +537,14 @@ async function _ajouterSegmentEntre(startName, startCoords, endName, endCoords, 
         console.error("Erreur fatale lors de l'ajout du segment :", e);
     }
 }
-
+/**
+ * Met à jour un segment de route spécifique sur la carte.
+ * @async
+ * @function updateRouteSegment
+ * @param {number} index - L'index du segment à mettre à jour.
+ * @param {string} mode - Le mode de transport (Voiture, Velo, Marche).
+ * @returns {Promise<void>}
+ */
 async function updateRouteSegment(index, mode, options = {}) {
     const seg = state.segments[index];
     if (!seg) return;
@@ -837,7 +869,12 @@ async function validateNewSegment() {
 // ============================================================
 // 11. SAUVEGARDE DU ROADTRIP
 // ============================================================
-
+/**
+ * Enregistre le roadtrip actuel via une requête POST.
+ * @async
+ * @function handleSaveRoadtrip
+ * @returns {Promise<void>}
+ */
 async function handleSaveRoadtrip(e) {
     if (state.segments.length === 0) {
         alert('Votre RoadTrip est vide ! Ajoutez au moins un trajet.');
@@ -951,7 +988,12 @@ async function handleSaveRoadtrip(e) {
 // ============================================================
 // 12. ASSISTANT IA
 // ============================================================
-
+/**
+ * Gère la génération de trajet via l'IA.
+ * @async
+ * @function handleGenerateAI
+ * @returns {Promise<void>}
+ */
 async function handleGenerateAI() {
     const depart      = document.getElementById('aiDepart').value.trim();
     const destination = document.getElementById('aiDestination').value.trim();
@@ -1188,7 +1230,12 @@ function bindEvents() {
 // ============================================================
 // 15. POINT D'ENTRÉE
 // ============================================================
-
+/**
+ * Point d'entrée principal initialisant la carte, les favoris et les événements.
+ * @async
+ * @function init
+ * @returns {Promise<void>}
+ */
 async function init() {
     initRoadTripMap();
 

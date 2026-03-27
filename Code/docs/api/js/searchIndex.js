@@ -98,32 +98,32 @@ Search.appendIndex(
         },                {
             "fqsen": "\\App\\Controller\\CommentsController",
             "name": "CommentsController",
-            "summary": "Comments\u0020Controller",
+            "summary": "Comments\u0020Controller\nManages\u0020user\u0020reviews\u0020and\u0020comments\u0020on\u0020roadtrips\u0020or\u0020points\u0020of\u0020interest.",
             "url": "classes/App-Controller-CommentsController.html"
         },                {
             "fqsen": "\\App\\Controller\\CommentsController\u003A\u003Aindex\u0028\u0029",
             "name": "index",
-            "summary": "Index\u0020method",
+            "summary": "Index\u0020method\nLists\u0020comments.\u0020Admins\u0020see\u0020all,\u0020regular\u0020users\u0020see\u0020only\u0020theirs.",
             "url": "classes/App-Controller-CommentsController.html#method_index"
         },                {
             "fqsen": "\\App\\Controller\\CommentsController\u003A\u003Aview\u0028\u0029",
             "name": "view",
-            "summary": "View\u0020method",
+            "summary": "View\u0020method\nDisplays\u0020a\u0020specific\u0020comment.",
             "url": "classes/App-Controller-CommentsController.html#method_view"
         },                {
             "fqsen": "\\App\\Controller\\CommentsController\u003A\u003Aadd\u0028\u0029",
             "name": "add",
-            "summary": "Add\u0020method",
+            "summary": "Add\u0020method\nCreates\u0020a\u0020new\u0020comment\u0020and\u0020binds\u0020it\u0020securely\u0020to\u0020the\u0020current\u0020user.",
             "url": "classes/App-Controller-CommentsController.html#method_add"
         },                {
             "fqsen": "\\App\\Controller\\CommentsController\u003A\u003Aedit\u0028\u0029",
             "name": "edit",
-            "summary": "Edit\u0020method",
+            "summary": "Edit\u0020method\nModifies\u0020an\u0020existing\u0020comment\u0020owned\u0020by\u0020the\u0020user.",
             "url": "classes/App-Controller-CommentsController.html#method_edit"
         },                {
             "fqsen": "\\App\\Controller\\CommentsController\u003A\u003Adelete\u0028\u0029",
             "name": "delete",
-            "summary": "Delete\u0020method",
+            "summary": "Delete\u0020method\nDeletes\u0020a\u0020comment\u0020owned\u0020by\u0020the\u0020user.",
             "url": "classes/App-Controller-CommentsController.html#method_delete"
         },                {
             "fqsen": "\\App\\Controller\\ErrorController",
@@ -151,100 +151,140 @@ Search.appendIndex(
             "summary": "afterFilter\u0020callback.",
             "url": "classes/App-Controller-ErrorController.html#method_afterFilter"
         },                {
+            "fqsen": "\\App\\Controller\\FavoritesController",
+            "name": "FavoritesController",
+            "summary": "Favorites\u0020Controller",
+            "url": "classes/App-Controller-FavoritesController.html"
+        },                {
+            "fqsen": "\\App\\Controller\\FavoritesController\u003A\u003Aindex\u0028\u0029",
+            "name": "index",
+            "summary": "Index\u0020method",
+            "url": "classes/App-Controller-FavoritesController.html#method_index"
+        },                {
+            "fqsen": "\\App\\Controller\\FavoritesController\u003A\u003Aview\u0028\u0029",
+            "name": "view",
+            "summary": "View\u0020method",
+            "url": "classes/App-Controller-FavoritesController.html#method_view"
+        },                {
+            "fqsen": "\\App\\Controller\\FavoritesController\u003A\u003Aadd\u0028\u0029",
+            "name": "add",
+            "summary": "Add\u0020method",
+            "url": "classes/App-Controller-FavoritesController.html#method_add"
+        },                {
+            "fqsen": "\\App\\Controller\\FavoritesController\u003A\u003Aedit\u0028\u0029",
+            "name": "edit",
+            "summary": "Edit\u0020method",
+            "url": "classes/App-Controller-FavoritesController.html#method_edit"
+        },                {
+            "fqsen": "\\App\\Controller\\FavoritesController\u003A\u003Adelete\u0028\u0029",
+            "name": "delete",
+            "summary": "Delete\u0020method",
+            "url": "classes/App-Controller-FavoritesController.html#method_delete"
+        },                {
             "fqsen": "\\App\\Controller\\FriendshipsController",
             "name": "FriendshipsController",
-            "summary": "Friendships\u0020Controller",
+            "summary": "Friendships\u0020Controller\nManages\u0020user\u0020connections,\u0020friend\u0020requests,\u0020and\u0020friend\u0020lists.",
             "url": "classes/App-Controller-FriendshipsController.html"
         },                {
             "fqsen": "\\App\\Controller\\FriendshipsController\u003A\u003Aindex\u0028\u0029",
             "name": "index",
-            "summary": "Index\u0020method",
+            "summary": "Index\u0020method\nDisplays\u0020the\u0020friend\u0020list,\u0020pending\u0020requests,\u0020and\u0020user\u0020search\u0020functionality.",
             "url": "classes/App-Controller-FriendshipsController.html#method_index"
         },                {
             "fqsen": "\\App\\Controller\\FriendshipsController\u003A\u003Aview\u0028\u0029",
             "name": "view",
-            "summary": "View\u0020method",
+            "summary": "View\u0020method\nDisplays\u0020details\u0020of\u0020a\u0020specific\u0020friendship.",
             "url": "classes/App-Controller-FriendshipsController.html#method_view"
         },                {
             "fqsen": "\\App\\Controller\\FriendshipsController\u003A\u003Aadd\u0028\u0029",
             "name": "add",
-            "summary": "Add\u0020method",
+            "summary": "Add\u0020method\nSends\u0020a\u0020friend\u0020request\u0020to\u0020another\u0020user.",
             "url": "classes/App-Controller-FriendshipsController.html#method_add"
         },                {
             "fqsen": "\\App\\Controller\\FriendshipsController\u003A\u003Aaccept\u0028\u0029",
             "name": "accept",
-            "summary": "Accept\u0020method",
+            "summary": "Accept\u0020method\nAccepts\u0020a\u0020pending\u0020friend\u0020request.",
             "url": "classes/App-Controller-FriendshipsController.html#method_accept"
         },                {
             "fqsen": "\\App\\Controller\\FriendshipsController\u003A\u003Areject\u0028\u0029",
             "name": "reject",
-            "summary": "Reject\u0020method",
+            "summary": "Reject\u0020method\nRejects\u0020a\u0020pending\u0020friend\u0020request.",
             "url": "classes/App-Controller-FriendshipsController.html#method_reject"
         },                {
             "fqsen": "\\App\\Controller\\FriendshipsController\u003A\u003Adelete\u0028\u0029",
             "name": "delete",
-            "summary": "Delete\u0020method",
+            "summary": "Delete\u0020method\nRemoves\u0020an\u0020existing\u0020friend.",
             "url": "classes/App-Controller-FriendshipsController.html#method_delete"
         },                {
             "fqsen": "\\App\\Controller\\MessagesController",
             "name": "MessagesController",
-            "summary": "Application\u0020Controller",
+            "summary": "Messages\u0020Controller\nHandles\u0020user\u002Dto\u002Duser\u0020private\u0020messaging.",
             "url": "classes/App-Controller-MessagesController.html"
         },                {
             "fqsen": "\\App\\Controller\\MessagesController\u003A\u003Aindex\u0028\u0029",
             "name": "index",
-            "summary": "Index\u0020\u003A\u0020La\u0020r\u00E9cup\u00E9ration\u0020des\u0020conversations\u0020pour\u0020la\u0020sidebar\nest\u0020maintenant\u0020g\u00E9r\u00E9e\u0020par\u0020la\u0020Cell\u0020dans\u0020la\u0020vue.",
+            "summary": "Index\u0020method\nDisplays\u0020the\u0020initial\u0020messaging\u0020interface\u0020\u0028sidebar\u0020handled\u0020by\u0020a\u0020Cell\u0029.",
             "url": "classes/App-Controller-MessagesController.html#method_index"
         },                {
             "fqsen": "\\App\\Controller\\MessagesController\u003A\u003Astart\u0028\u0029",
             "name": "start",
-            "summary": "D\u00E9marrer\u0020une\u0020conversation",
+            "summary": "Start\u0020method\nInitiates\u0020or\u0020verifies\u0020a\u0020conversation\u0020with\u0020a\u0020friend.",
             "url": "classes/App-Controller-MessagesController.html#method_start"
         },                {
             "fqsen": "\\App\\Controller\\MessagesController\u003A\u003Aview\u0028\u0029",
             "name": "view",
-            "summary": "Voir\u0020une\u0020conversation",
+            "summary": "View\u0020method\nDisplays\u0020the\u0020chat\u0020history\u0020with\u0020a\u0020specific\u0020friend.",
             "url": "classes/App-Controller-MessagesController.html#method_view"
         },                {
             "fqsen": "\\App\\Controller\\MessagesController\u003A\u003AsendMessage\u0028\u0029",
             "name": "sendMessage",
-            "summary": "Envoyer\u0020un\u0020message",
+            "summary": "SendMessage\u0020method\nHandles\u0020the\u0020submission\u0020of\u0020a\u0020new\u0020message\u0020via\u0020POST.",
             "url": "classes/App-Controller-MessagesController.html#method_sendMessage"
         },                {
             "fqsen": "\\App\\Controller\\PageLinkController",
             "name": "PageLinkController",
-            "summary": "Application\u0020Controller",
+            "summary": "PageLink\u0020Controller\nHandles\u0020static\u0020pages,\u0020terms,\u0020privacy\u0020policy,\u0020and\u0020contact\/FAQ\u0020forms.",
             "url": "classes/App-Controller-PageLinkController.html"
+        },                {
+            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Ainitialize\u0028\u0029",
+            "name": "initialize",
+            "summary": "Initialization\u0020hook\u0020method.",
+            "url": "classes/App-Controller-PageLinkController.html#method_initialize"
         },                {
             "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Acontact\u0028\u0029",
             "name": "contact",
-            "summary": "",
+            "summary": "Contact\u0020page\u0020and\u0020form\u0020handling.",
             "url": "classes/App-Controller-PageLinkController.html#method_contact"
         },                {
             "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Afaq\u0028\u0029",
             "name": "faq",
-            "summary": "",
+            "summary": "FAQ\u0020page\u0020and\u0020question\u0020form\u0020handling.",
             "url": "classes/App-Controller-PageLinkController.html#method_faq"
         },                {
-            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Acgu\u0028\u0029",
-            "name": "cgu",
-            "summary": "",
-            "url": "classes/App-Controller-PageLinkController.html#method_cgu"
+            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Aterms\u0028\u0029",
+            "name": "terms",
+            "summary": "Terms\u0020of\u0020Service\u0020page\u0020\u0028CGU\u0029.",
+            "url": "classes/App-Controller-PageLinkController.html#method_terms"
         },                {
-            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Aroad_trip\u0028\u0029",
-            "name": "road_trip",
-            "summary": "",
-            "url": "classes/App-Controller-PageLinkController.html#method_road_trip"
+            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Aabout\u0028\u0029",
+            "name": "about",
+            "summary": "About\u0020\/\u0020Road\u0020Trip\u0020info\u0020page.",
+            "url": "classes/App-Controller-PageLinkController.html#method_about"
         },                {
-            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Acookie\u0028\u0029",
-            "name": "cookie",
-            "summary": "",
-            "url": "classes/App-Controller-PageLinkController.html#method_cookie"
+            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Acookies\u0028\u0029",
+            "name": "cookies",
+            "summary": "Cookies\u0020policy\u0020page.",
+            "url": "classes/App-Controller-PageLinkController.html#method_cookies"
         },                {
-            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Apolitique\u0028\u0029",
-            "name": "politique",
-            "summary": "",
-            "url": "classes/App-Controller-PageLinkController.html#method_politique"
+            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003Aprivacy\u0028\u0029",
+            "name": "privacy",
+            "summary": "Privacy\u0020policy\u0020page.",
+            "url": "classes/App-Controller-PageLinkController.html#method_privacy"
+        },                {
+            "fqsen": "\\App\\Controller\\PageLinkController\u003A\u003A_sendEmail\u0028\u0029",
+            "name": "_sendEmail",
+            "summary": "Helper\u0020method\u0020to\u0020send\u0020emails\u0020\u0028Skinny\u0020Controller\u0020approach\u0029.",
+            "url": "classes/App-Controller-PageLinkController.html#method__sendEmail"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController",
             "name": "RoadtripsController",
@@ -258,92 +298,97 @@ Search.appendIndex(
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AbeforeFilter\u0028\u0029",
             "name": "beforeFilter",
-            "summary": "",
+            "summary": "beforeFilter\u0020callback.",
             "url": "classes/App-Controller-RoadtripsController.html#method_beforeFilter"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Aindex\u0028\u0029",
             "name": "index",
-            "summary": "",
+            "summary": "Index\u0020method\nDisplays\u0020public\u0020roadtrips\u0020and\u0020random\u0020featured\u0020roadtrips.",
             "url": "classes/App-Controller-RoadtripsController.html#method_index"
         },                {
-            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AgetLieuxFavoris\u0028\u0029",
-            "name": "getLieuxFavoris",
-            "summary": "",
-            "url": "classes/App-Controller-RoadtripsController.html#method_getLieuxFavoris"
+            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AgetFavoritePlaces\u0028\u0029",
+            "name": "getFavoritePlaces",
+            "summary": "Retrieves\u0020the\u0020connected\u0020user\u0027s\u0020favorite\u0020places\u0020for\u0020the\u0020map.",
+            "url": "classes/App-Controller-RoadtripsController.html#method_getFavoritePlaces"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Aadd\u0028\u0029",
             "name": "add",
-            "summary": "",
+            "summary": "Add\u0020method\nCreates\u0020a\u0020new\u0020roadtrip.",
             "url": "classes/App-Controller-RoadtripsController.html#method_add"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Aedit\u0028\u0029",
             "name": "edit",
-            "summary": "",
+            "summary": "Edit\u0020method\nModifies\u0020an\u0020existing\u0020roadtrip.",
             "url": "classes/App-Controller-RoadtripsController.html#method_edit"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Adelete\u0028\u0029",
             "name": "delete",
-            "summary": "",
+            "summary": "Delete\u0020method",
             "url": "classes/App-Controller-RoadtripsController.html#method_delete"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AmyRoadtrips\u0028\u0029",
             "name": "myRoadtrips",
-            "summary": "",
+            "summary": "Displays\u0020the\u0020connected\u0020user\u0027s\u0020roadtrips.",
             "url": "classes/App-Controller-RoadtripsController.html#method_myRoadtrips"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003ApublicRoadtrips\u0028\u0029",
             "name": "publicRoadtrips",
-            "summary": "",
+            "summary": "Displays\u0020all\u0020public\u0020roadtrips.",
             "url": "classes/App-Controller-RoadtripsController.html#method_publicRoadtrips"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Ashare\u0028\u0029",
             "name": "share",
-            "summary": "",
+            "summary": "Generates\u0020a\u0020sharing\u0020link\u0020for\u0020a\u0020roadtrip.",
             "url": "classes/App-Controller-RoadtripsController.html#method_share"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Aview\u0028\u0029",
             "name": "view",
-            "summary": "",
+            "summary": "View\u0020method\nDisplays\u0020details\u0020of\u0020a\u0020specific\u0020roadtrip.",
             "url": "classes/App-Controller-RoadtripsController.html#method_view"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003A_formatTripsForJs\u0028\u0029",
             "name": "_formatTripsForJs",
-            "summary": "",
+            "summary": "Formats\u0020trips\u0020entities\u0020for\u0020JavaScript\u0020map\u0020rendering.",
             "url": "classes/App-Controller-RoadtripsController.html#method__formatTripsForJs"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003A_getCoordinates\u0028\u0029",
             "name": "_getCoordinates",
-            "summary": "",
+            "summary": "Retrieves\u0020coordinates\u0020for\u0020a\u0020given\u0020city\u0020name\u0020via\u0020DB\u0020cache\u0020or\u0020Nominatim\u0020API.",
             "url": "classes/App-Controller-RoadtripsController.html#method__getCoordinates"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003A_mapJsonToCakeEntities\u0028\u0029",
             "name": "_mapJsonToCakeEntities",
-            "summary": "",
+            "summary": "Maps\u0020raw\u0020JSON\u0020string\u0020from\u0020frontend\u0020to\u0020CakePHP\u0020entity\u0020format.",
             "url": "classes/App-Controller-RoadtripsController.html#method__mapJsonToCakeEntities"
         },                {
-            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Ahistorique\u0028\u0029",
-            "name": "historique",
-            "summary": "",
-            "url": "classes/App-Controller-RoadtripsController.html#method_historique"
+            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003Ahistory\u0028\u0029",
+            "name": "history",
+            "summary": "History\u0020method\nDisplays\u0020the\u0020roadtrips\u0020visited\u0020by\u0020the\u0020user.",
+            "url": "classes/App-Controller-RoadtripsController.html#method_history"
         },                {
-            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AdeleteHistorique\u0028\u0029",
-            "name": "deleteHistorique",
-            "summary": "",
-            "url": "classes/App-Controller-RoadtripsController.html#method_deleteHistorique"
-        },                {
-            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AgenererRoadtripGratuit\u0028\u0029",
-            "name": "genererRoadtripGratuit",
-            "summary": "",
-            "url": "classes/App-Controller-RoadtripsController.html#method_genererRoadtripGratuit"
+            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AdeleteHistory\u0028\u0029",
+            "name": "deleteHistory",
+            "summary": "Deletes\u0020all\u0020history\u0020records\u0020for\u0020the\u0020current\u0020user.",
+            "url": "classes/App-Controller-RoadtripsController.html#method_deleteHistory"
         },                {
             "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AuploadStepImage\u0028\u0029",
             "name": "uploadStepImage",
-            "summary": "",
+            "summary": "Uploads\u0020an\u0020image\u0020for\u0020a\u0020sub\u002Dstep\u0020via\u0020AJAX.",
             "url": "classes/App-Controller-RoadtripsController.html#method_uploadStepImage"
+        },                {
+            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AexportPdf\u0028\u0029",
+            "name": "exportPdf",
+            "summary": "Exports\u0020a\u0020roadtrip\u0020as\u0020a\u0020PDF\u0020file.",
+            "url": "classes/App-Controller-RoadtripsController.html#method_exportPdf"
+        },                {
+            "fqsen": "\\App\\Controller\\RoadtripsController\u003A\u003AexportGpx\u0028\u0029",
+            "name": "exportGpx",
+            "summary": "Exports\u0020a\u0020roadtrip\u0020as\u0020a\u0020GPX\u0020file.",
+            "url": "classes/App-Controller-RoadtripsController.html#method_exportGpx"
         },                {
             "fqsen": "\\App\\Controller\\UsersController",
             "name": "UsersController",
-            "summary": "Application\u0020Controller",
+            "summary": "Users\u0020Controller",
             "url": "classes/App-Controller-UsersController.html"
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003Ainitialize\u0028\u0029",
@@ -353,43 +398,53 @@ Search.appendIndex(
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003AbeforeFilter\u0028\u0029",
             "name": "beforeFilter",
-            "summary": "",
+            "summary": "beforeFilter\u0020callback.",
             "url": "classes/App-Controller-UsersController.html#method_beforeFilter"
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003Alogin\u0028\u0029",
             "name": "login",
-            "summary": "",
+            "summary": "Login\u0020method\nHandles\u0020user\u0020authentication.",
             "url": "classes/App-Controller-UsersController.html#method_login"
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003AloginGoogle\u0028\u0029",
             "name": "loginGoogle",
-            "summary": "",
+            "summary": "Initiates\u0020Google\u0020OAuth2\u0020login\u0020flow.",
             "url": "classes/App-Controller-UsersController.html#method_loginGoogle"
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003AcallbackGoogle\u0028\u0029",
             "name": "callbackGoogle",
-            "summary": "",
+            "summary": "Handles\u0020the\u0020callback\u0020from\u0020Google\u0020OAuth2.",
             "url": "classes/App-Controller-UsersController.html#method_callbackGoogle"
-        },                {
-            "fqsen": "\\App\\Controller\\UsersController\u003A\u003Alogout\u0028\u0029",
-            "name": "logout",
-            "summary": "",
-            "url": "classes/App-Controller-UsersController.html#method_logout"
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003Aadd\u0028\u0029",
             "name": "add",
-            "summary": "",
+            "summary": "Add\u0020method\nRegisters\u0020a\u0020new\u0020user.",
             "url": "classes/App-Controller-UsersController.html#method_add"
+        },                {
+            "fqsen": "\\App\\Controller\\UsersController\u003A\u003Alogout\u0028\u0029",
+            "name": "logout",
+            "summary": "Logout\u0020method\nLogs\u0020the\u0020user\u0020out.",
+            "url": "classes/App-Controller-UsersController.html#method_logout"
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003Aprofile\u0028\u0029",
             "name": "profile",
-            "summary": "",
+            "summary": "Profile\u0020method\nDisplays\u0020and\u0020updates\u0020the\u0020connected\u0020user\u0027s\u0020profile.",
             "url": "classes/App-Controller-UsersController.html#method_profile"
         },                {
             "fqsen": "\\App\\Controller\\UsersController\u003A\u003Aaccessibility\u0028\u0029",
             "name": "accessibility",
-            "summary": "",
+            "summary": "Accessibility\u0020method\nManages\u0020user\u0020accessibility\u0020preferences\u0020via\u0020cookies.",
             "url": "classes/App-Controller-UsersController.html#method_accessibility"
+        },                {
+            "fqsen": "\\App\\Controller\\UsersController\u003A\u003AforgotPassword\u0028\u0029",
+            "name": "forgotPassword",
+            "summary": "",
+            "url": "classes/App-Controller-UsersController.html#method_forgotPassword"
+        },                {
+            "fqsen": "\\App\\Controller\\UsersController\u003A\u003AresetPassword\u0028\u0029",
+            "name": "resetPassword",
+            "summary": "",
+            "url": "classes/App-Controller-UsersController.html#method_resetPassword"
         },                {
             "fqsen": "\\App\\Model\\Entity\\Comment",
             "name": "Comment",
@@ -468,12 +523,12 @@ Search.appendIndex(
         },                {
             "fqsen": "\\App\\Model\\Entity\\Message\u003A\u003A_setBody\u0028\u0029",
             "name": "_setBody",
-            "summary": "Mutateur\u0020\u003A\u0020Chiffre\u0020le\u0020message\u0020avant\u0020la\u0020sauvegarde",
+            "summary": "",
             "url": "classes/App-Model-Entity-Message.html#method__setBody"
         },                {
             "fqsen": "\\App\\Model\\Entity\\Message\u003A\u003A_getContent\u0028\u0029",
             "name": "_getContent",
-            "summary": "D\u00C9CHIFFREMENT\u0020\u003A\u0020G\u00E8re\u0020la\u0020ressource\u0020BLOB\u0020et\u0020d\u00E9chiffre\u0020pour\u0020l\u0027affichage",
+            "summary": "",
             "url": "classes/App-Model-Entity-Message.html#method__getContent"
         },                {
             "fqsen": "\\App\\Model\\Entity\\Message\u003A\u003A\u0024_virtual",
@@ -520,6 +575,16 @@ Search.appendIndex(
             "name": "Roadtrip",
             "summary": "Roadtrip\u0020Entity",
             "url": "classes/App-Model-Entity-Roadtrip.html"
+        },                {
+            "fqsen": "\\App\\Model\\Entity\\Roadtrip\u003A\u003A_getCoverImage\u0028\u0029",
+            "name": "_getCoverImage",
+            "summary": "Calculate\u0020and\u0020return\u0020the\u0020url\u0020of\u0020the\u0020cover\u0020image",
+            "url": "classes/App-Model-Entity-Roadtrip.html#method__getCoverImage"
+        },                {
+            "fqsen": "\\App\\Model\\Entity\\Roadtrip\u003A\u003A_getIsCompleted\u0028\u0029",
+            "name": "_getIsCompleted",
+            "summary": "Check\u0020if\u0020the\u0020roadtrip\u0020is\u0020over.",
+            "url": "classes/App-Model-Entity-Roadtrip.html#method__getIsCompleted"
         },                {
             "fqsen": "\\App\\Model\\Entity\\Roadtrip\u003A\u003A\u0024_accessible",
             "name": "_accessible",
@@ -581,6 +646,16 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/App-Model-Entity-User.html#method__setPassword"
         },                {
+            "fqsen": "\\App\\Model\\Entity\\User\u003A\u003A_getFullName\u0028\u0029",
+            "name": "_getFullName",
+            "summary": "Return\u0020the\u0020full\u0020name\u0020of\u0020the\u0020user",
+            "url": "classes/App-Model-Entity-User.html#method__getFullName"
+        },                {
+            "fqsen": "\\App\\Model\\Entity\\User\u003A\u003A_getAvatarUrl\u0028\u0029",
+            "name": "_getAvatarUrl",
+            "summary": "Return\u0020the\u0020url\u0020of\u0020the\u0020user\u0027s\u0020profile\u0020picture",
+            "url": "classes/App-Model-Entity-User.html#method__getAvatarUrl"
+        },                {
             "fqsen": "\\App\\Model\\Entity\\User\u003A\u003A\u0024_accessible",
             "name": "_accessible",
             "summary": "Fields\u0020that\u0020can\u0020be\u0020mass\u0020assigned\u0020using\u0020newEntity\u0028\u0029\u0020or\u0020patchEntity\u0028\u0029.",
@@ -590,6 +665,11 @@ Search.appendIndex(
             "name": "_hidden",
             "summary": "Fields\u0020that\u0020are\u0020excluded\u0020from\u0020JSON\u0020versions\u0020of\u0020the\u0020entity.",
             "url": "classes/App-Model-Entity-User.html#property__hidden"
+        },                {
+            "fqsen": "\\App\\Model\\Entity\\User\u003A\u003A\u0024_virtual",
+            "name": "_virtual",
+            "summary": "",
+            "url": "classes/App-Model-Entity-User.html#property__virtual"
         },                {
             "fqsen": "\\App\\Model\\Table\\CommentsTable",
             "name": "CommentsTable",
@@ -831,6 +911,11 @@ Search.appendIndex(
             "summary": "Returns\u0020a\u0020rules\u0020checker\u0020object\u0020that\u0020will\u0020be\u0020used\u0020for\u0020validating\napplication\u0020integrity.",
             "url": "classes/App-Model-Table-RoadtripsTable.html#method_buildRules"
         },                {
+            "fqsen": "\\App\\Model\\Table\\RoadtripsTable\u003A\u003AbeforeSave\u0028\u0029",
+            "name": "beforeSave",
+            "summary": "CallBack\u0020beforeSave\nG\u00E8re\u0020l\u0027upload\u0020de\u0020l\u0027image\u0020de\u0020couverture\u0020avant\u0020la\u0020sauvegarde\u0020en\u0020base.",
+            "url": "classes/App-Model-Table-RoadtripsTable.html#method_beforeSave"
+        },                {
             "fqsen": "\\App\\Model\\Table\\SharedRoadtripsTable",
             "name": "SharedRoadtripsTable",
             "summary": "SharedRoadtrips\u0020Model",
@@ -921,6 +1006,11 @@ Search.appendIndex(
             "summary": "Initialize\u0020method",
             "url": "classes/App-Model-Table-UsersTable.html#method_initialize"
         },                {
+            "fqsen": "\\App\\Model\\Table\\UsersTable\u003A\u003AbeforeSave\u0028\u0029",
+            "name": "beforeSave",
+            "summary": "CallBack\u0020beforeSave\nHandles\u0020the\u0020profile\u0020picture\u0020upload\u0020before\u0020saving\u0020the\u0020user\u0020to\u0020the\u0020database.",
+            "url": "classes/App-Model-Table-UsersTable.html#method_beforeSave"
+        },                {
             "fqsen": "\\App\\Model\\Table\\UsersTable\u003A\u003AvalidationDefault\u0028\u0029",
             "name": "validationDefault",
             "summary": "Default\u0020validation\u0020rules.",
@@ -958,13 +1048,18 @@ Search.appendIndex(
         },                {
             "fqsen": "\\App\\View\\Cell\\MessageCell",
             "name": "MessageCell",
-            "summary": "",
+            "summary": "Message\u0020cell",
             "url": "classes/App-View-Cell-MessageCell.html"
         },                {
             "fqsen": "\\App\\View\\Cell\\MessageCell\u003A\u003Adisplay\u0028\u0029",
             "name": "display",
-            "summary": "",
+            "summary": "Default\u0020display\u0020method.",
             "url": "classes/App-View-Cell-MessageCell.html#method_display"
+        },                {
+            "fqsen": "\\App\\View\\Cell\\MessageCell\u003A\u003A\u0024_validCellOptions",
+            "name": "_validCellOptions",
+            "summary": "List\u0020of\u0020valid\u0020options\u0020that\u0020can\u0020be\u0020passed\u0020into\u0020this\ncell\u0027s\u0020constructor.",
+            "url": "classes/App-View-Cell-MessageCell.html#property__validCellOptions"
         },                {
             "fqsen": "\\",
             "name": "\\",

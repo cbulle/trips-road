@@ -133,7 +133,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">16</span>
+    <span class="phpdocumentor-element-found-in__line">18</span>
 
     </aside>
 
@@ -182,14 +182,17 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_add">add()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Add method
+Creates a new roadtrip.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_beforeFilter">beforeFilter()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: void    </span>
 </dt>
+<dd>beforeFilter callback.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-AppController.html#method_beforeRender">beforeRender()</a>
@@ -200,44 +203,61 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_delete">delete()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
+<dd>Delete method</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a class="" href="classes/App-Controller-RoadtripsController.html#method_deleteHistorique">deleteHistorique()</a>
+    <a class="" href="classes/App-Controller-RoadtripsController.html#method_deleteHistory">deleteHistory()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
+<dd>Deletes all history records for the current user.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_edit">edit()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Edit method
+Modifies an existing roadtrip.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a class="" href="classes/App-Controller-RoadtripsController.html#method_genererRoadtripGratuit">genererRoadtripGratuit()</a>
+    <a class="" href="classes/App-Controller-RoadtripsController.html#method_exportGpx">exportGpx()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
+<dd>Exports a roadtrip as a GPX file.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a class="" href="classes/App-Controller-RoadtripsController.html#method_getLieuxFavoris">getLieuxFavoris()</a>
+    <a class="" href="classes/App-Controller-RoadtripsController.html#method_exportPdf">exportPdf()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
+<dd>Exports a roadtrip as a PDF file.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a class="" href="classes/App-Controller-RoadtripsController.html#method_historique">historique()</a>
+    <a class="" href="classes/App-Controller-RoadtripsController.html#method_getFavoritePlaces">getFavoritePlaces()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>    </span>
 </dt>
+<dd>Retrieves the connected user&#039;s favorite places for the map.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/App-Controller-RoadtripsController.html#method_history">history()</a>
+    <span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
+</dt>
+<dd>History method
+Displays the roadtrips visited by the user.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_index">index()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Index method
+Displays public roadtrips and random featured roadtrips.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_initialize">initialize()</a>
@@ -249,50 +269,59 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_myRoadtrips">myRoadtrips()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Displays the connected user&#039;s roadtrips.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_publicRoadtrips">publicRoadtrips()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Displays all public roadtrips.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_share">share()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
+<dd>Generates a sharing link for a roadtrip.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_uploadStepImage">uploadStepImage()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>    </span>
 </dt>
+<dd>Uploads an image for a sub-step via AJAX.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method_view">view()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>View method
+Displays details of a specific roadtrip.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -protected">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method__getCoordinates">_getCoordinates()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: array&lt;string|int, mixed&gt;|null    </span>
 </dt>
+<dd>Retrieves coordinates for a given city name via DB cache or Nominatim API.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method__formatTripsForJs">_formatTripsForJs()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: array&lt;string|int, mixed&gt;    </span>
 </dt>
+<dd>Formats trips entities for JavaScript map rendering.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a class="" href="classes/App-Controller-RoadtripsController.html#method__mapJsonToCakeEntities">_mapJsonToCakeEntities()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: array&lt;string|int, mixed&gt;    </span>
 </dt>
+<dd>Maps raw JSON string from frontend to CakePHP entity format.</dd>
 
     </dl>
 
@@ -366,14 +395,16 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">111</span>
+    <span class="phpdocumentor-element-found-in__line">142</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Add method
+Creates a new roadtrip.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">add</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">add</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -384,7 +415,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects on successful add, renders view otherwise.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -400,19 +439,22 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">23</span>
+    <span class="phpdocumentor-element-found-in__line">37</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">beforeFilter callback.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">beforeFilter</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type"><abbr title="\Cake\Event\EventInterface">EventInterface</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$event</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">beforeFilter</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type"><abbr title="\Cake\Event\EventInterface">EventInterface</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$event</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
-    
+        <section class="phpdocumentor-description"><p>Allows unauthenticated users to access specific actions.</p>
+</section>
+
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
@@ -420,7 +462,9 @@
                 : <span class="phpdocumentor-argument-list__argument__type"><abbr title="\Cake\Event\EventInterface">EventInterface</abbr></span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>An Event instance</p>
+</section>
+
             </dd>
             </dl>
 
@@ -488,14 +532,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">302</span>
+    <span class="phpdocumentor-element-found-in__line">313</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Delete method</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">delete</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">delete</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -505,10 +550,12 @@
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$id</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
                  = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>Roadtrip id.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -516,7 +563,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects to myRoadtrips.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -524,22 +579,23 @@
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_deleteHistorique">
-        deleteHistorique()
-        <a href="classes/App-Controller-RoadtripsController.html#method_deleteHistorique" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_deleteHistory">
+        deleteHistory()
+        <a href="classes/App-Controller-RoadtripsController.html#method_deleteHistory" class="headerlink"><i class="fas fa-link"></i></a>
 
     </h4>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">676</span>
+    <span class="phpdocumentor-element-found-in__line">730</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Deletes all history records for the current user.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">deleteHistorique</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">deleteHistory</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -550,7 +606,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects to history.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -566,14 +630,16 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">203</span>
+    <span class="phpdocumentor-element-found-in__line">223</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Edit method
+Modifies an existing roadtrip.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">edit</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">edit</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -583,10 +649,12 @@
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$id</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
                  = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>Roadtrip id.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -594,7 +662,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects on successful edit, renders view otherwise.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -602,22 +678,125 @@
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_genererRoadtripGratuit">
-        genererRoadtripGratuit()
-        <a href="classes/App-Controller-RoadtripsController.html#method_genererRoadtripGratuit" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_exportGpx">
+        exportGpx()
+        <a href="classes/App-Controller-RoadtripsController.html#method_exportGpx" class="headerlink"><i class="fas fa-link"></i></a>
 
     </h4>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">690</span>
+    <span class="phpdocumentor-element-found-in__line">866</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Exports a roadtrip as a GPX file.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">genererRoadtripGratuit</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">exportGpx</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$id</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Roadtrip id.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_exportPdf">
+        exportPdf()
+        <a href="classes/App-Controller-RoadtripsController.html#method_exportPdf" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">808</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Exports a roadtrip as a PDF file.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">exportPdf</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$id</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Roadtrip id.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getFavoritePlaces">
+        getFavoritePlaces()
+        <a href="classes/App-Controller-RoadtripsController.html#method_getFavoritePlaces" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">101</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves the connected user&#039;s favorite places for the map.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">getFavoritePlaces</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr></span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -628,7 +807,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr></span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>JSON response containing favorite places</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -636,22 +823,24 @@
             -public
                                                         "
 >
-    <h4 class="phpdocumentor-element__name" id="method_getLieuxFavoris">
-        getLieuxFavoris()
-        <a href="classes/App-Controller-RoadtripsController.html#method_getLieuxFavoris" class="headerlink"><i class="fas fa-link"></i></a>
+    <h4 class="phpdocumentor-element__name" id="method_history">
+        history()
+        <a href="classes/App-Controller-RoadtripsController.html#method_history" class="headerlink"><i class="fas fa-link"></i></a>
 
     </h4>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">76</span>
+    <span class="phpdocumentor-element-found-in__line">702</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">History method
+Displays the roadtrips visited by the user.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">getLieuxFavoris</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">history</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -662,41 +851,15 @@
 
         
     
-    
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
-                                                        "
->
-    <h4 class="phpdocumentor-element__name" id="method_historique">
-        historique()
-        <a href="classes/App-Controller-RoadtripsController.html#method_historique" class="headerlink"><i class="fas fa-link"></i></a>
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Renders view</p>
+</section>
 
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">652</span>
+            </section>
 
-    </aside>
-
-    
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">historique</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
-
-    <div class="phpdocumentor-label-line">
-        </div>
-    
-    
-    
-    
-
-        
-    
-    
 </article>
                     <article
         class="phpdocumentor-element
@@ -712,14 +875,16 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">29</span>
+    <span class="phpdocumentor-element-found-in__line">49</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Index method
+Displays public roadtrips and random featured roadtrips.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">index</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">index</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -730,7 +895,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Renders view</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -746,7 +919,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">18</span>
+    <span class="phpdocumentor-element-found-in__line">25</span>
 
     </aside>
 
@@ -759,10 +932,7 @@
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Use this method to add common initialization code like loading components.</p>
-<p>e.g. <code class="prettyprint">$this-&gt;loadComponent('FormProtection');</code></p>
-</section>
-
+    
     
     
 
@@ -784,14 +954,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">322</span>
+    <span class="phpdocumentor-element-found-in__line">341</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Displays the connected user&#039;s roadtrips.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">myRoadtrips</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">myRoadtrips</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -802,7 +973,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Renders view</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -818,14 +997,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">345</span>
+    <span class="phpdocumentor-element-found-in__line">367</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Displays all public roadtrips.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">publicRoadtrips</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">publicRoadtrips</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -836,7 +1016,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Renders view</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -852,14 +1040,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">391</span>
+    <span class="phpdocumentor-element-found-in__line">419</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Generates a sharing link for a roadtrip.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">share</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">share</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -869,10 +1058,12 @@
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$id</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
                  = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>Roadtrip id.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -880,7 +1071,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects back to myRoadtrips with share url.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -896,14 +1095,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">750</span>
+    <span class="phpdocumentor-element-found-in__line">749</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Uploads an image for a sub-step via AJAX.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">uploadStepImage</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">uploadStepImage</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr></span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -914,7 +1114,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr></span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>JSON response with the image URL.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -930,14 +1138,16 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">402</span>
+    <span class="phpdocumentor-element-found-in__line">436</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">View method
+Displays details of a specific roadtrip.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">view</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">view</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$id</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -947,10 +1157,12 @@
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$id</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
                  = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>Roadtrip id.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -958,7 +1170,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Renders view</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -974,14 +1194,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">560</span>
+    <span class="phpdocumentor-element-found-in__line">600</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Retrieves coordinates for a given city name via DB cache or Nominatim API.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">protected</span>
-                    <span class="phpdocumentor-signature__name">_getCoordinates</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$nomVille</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$table</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">_getCoordinates</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$cityName</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type"><abbr title="\Cake\ORM\Table">Table</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$table</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -990,18 +1211,22 @@
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-argument-list__argument__name">$nomVille</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                <span class="phpdocumentor-argument-list__argument__name">$cityName</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>The name of the city.</p>
+</section>
+
             </dd>
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$table</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type"><abbr title="\Cake\ORM\Table">Table</abbr></span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>The GeocodedPlaces table instance.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -1009,7 +1234,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Array with 'lat' and 'lon', or null if not found.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -1025,14 +1258,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">507</span>
+    <span class="phpdocumentor-element-found-in__line">544</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Formats trips entities for JavaScript map rendering.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">private</span>
-                    <span class="phpdocumentor-signature__name">_formatTripsForJs</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$trips</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">_formatTripsForJs</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">iterable&lt;string|int, mixed&gt;&nbsp;</span><span class="phpdocumentor-signature__argument__name">$trips</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -1042,10 +1276,12 @@
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$trips</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type">iterable&lt;string|int, mixed&gt;</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>The trips to format.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -1053,7 +1289,11 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span>
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -1069,14 +1309,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/RoadtripsController.php"><a href="files/src-controller-roadtripscontroller.html"><abbr title="src/Controller/RoadtripsController.php">RoadtripsController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">616</span>
+    <span class="phpdocumentor-element-found-in__line">659</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Maps raw JSON string from frontend to CakePHP entity format.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">private</span>
-                    <span class="phpdocumentor-signature__name">_mapJsonToCakeEntities</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$jsonString</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">_mapJsonToCakeEntities</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$jsonString</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -1086,10 +1327,12 @@
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$jsonString</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>The JSON string representing trips.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -1097,7 +1340,15 @@
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;string|int, mixed&gt;</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Array formatted for CakePHP entities.</p>
+</section>
+
+            </section>
+
 </article>
             </section>
 
@@ -1225,11 +1476,12 @@
                                             <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_beforeFilter">beforeFilter()</a></li>
                                             <li class=""><a href="classes/App-Controller-AppController.html#method_beforeRender">beforeRender()</a></li>
                                             <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_delete">delete()</a></li>
-                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_deleteHistorique">deleteHistorique()</a></li>
+                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_deleteHistory">deleteHistory()</a></li>
                                             <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_edit">edit()</a></li>
-                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_genererRoadtripGratuit">genererRoadtripGratuit()</a></li>
-                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_getLieuxFavoris">getLieuxFavoris()</a></li>
-                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_historique">historique()</a></li>
+                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_exportGpx">exportGpx()</a></li>
+                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_exportPdf">exportPdf()</a></li>
+                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_getFavoritePlaces">getFavoritePlaces()</a></li>
+                                            <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_history">history()</a></li>
                                             <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_index">index()</a></li>
                                             <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_initialize">initialize()</a></li>
                                             <li class=""><a href="classes/App-Controller-RoadtripsController.html#method_myRoadtrips">myRoadtrips()</a></li>

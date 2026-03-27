@@ -342,6 +342,12 @@
 </dt>
 <dd>Fields that are excluded from JSON versions of the entity.</dd>
 
+            <dt class="phpdocumentor-table-of-contents__entry -property -protected">
+    <a class="" href="classes/App-Model-Entity-User.html#property__virtual">$_virtual</a>
+    <span>
+                        &nbsp;: array&lt;string|int, mixed&gt;            </span>
+</dt>
+
     </dl>
 
 <h4 id="toc-methods">
@@ -350,6 +356,20 @@
 
 </h4>
 <dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -method -protected">
+    <a class="" href="classes/App-Model-Entity-User.html#method__getAvatarUrl">_getAvatarUrl()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Return the url of the user&#039;s profile picture</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -protected">
+    <a class="" href="classes/App-Model-Entity-User.html#method__getFullName">_getFullName()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Return the full name of the user</dd>
+
             <dt class="phpdocumentor-table-of-contents__entry -method -protected">
     <a class="" href="classes/App-Model-Entity-User.html#method__setPassword">_setPassword()</a>
     <span>
@@ -1396,7 +1416,7 @@
         <span class="phpdocumentor-signature__visibility">protected</span>
             <span class="phpdocumentor-signature__type">array&lt;string, bool&gt;</span>
     <span class="phpdocumentor-signature__name">$_accessible</span>
-     = <span class="phpdocumentor-signature__default-value">[&#039;last_name&#039; =&gt; true, &#039;first_name&#039; =&gt; true, &#039;email&#039; =&gt; true, &#039;password&#039; =&gt; true, &#039;address&#039; =&gt; true, &#039;zipcode&#039; =&gt; true, &#039;city&#039; =&gt; true, &#039;phone&#039; =&gt; true, &#039;birth_date&#039; =&gt; true, &#039;profile_picture&#039; =&gt; true, &#039;public_key&#039; =&gt; true, &#039;session_id&#039; =&gt; true, &#039;username&#039; =&gt; true, &#039;reset_token_hash&#039; =&gt; true, &#039;reset_expires_at&#039; =&gt; true, &#039;google_id&#039; =&gt; true, &#039;created&#039; =&gt; true, &#039;notification_preference&#039; =&gt; true, &#039;comments&#039; =&gt; true, &#039;favorite_places&#039; =&gt; true, &#039;favorites&#039; =&gt; true, &#039;friends&#039; =&gt; true, &#039;histories&#039; =&gt; true, &#039;points_of_interests&#039; =&gt; true, &#039;roadtrips&#039; =&gt; true, &#039;user_tokens&#039; =&gt; true]</span></code>
+     = <span class="phpdocumentor-signature__default-value">[&#039;last_name&#039; =&gt; true, &#039;first_name&#039; =&gt; true, &#039;email&#039; =&gt; true, &#039;password&#039; =&gt; true, &#039;address&#039; =&gt; true, &#039;zipcode&#039; =&gt; true, &#039;city&#039; =&gt; true, &#039;phone&#039; =&gt; true, &#039;birth_date&#039; =&gt; true, &#039;profile_picture&#039; =&gt; true, &#039;public_key&#039; =&gt; true, &#039;session_id&#039; =&gt; true, &#039;username&#039; =&gt; true, &#039;reset_token_hash&#039; =&gt; true, &#039;reset_expires_at&#039; =&gt; true, &#039;google_id&#039; =&gt; true, &#039;created&#039; =&gt; true, &#039;notification_preference&#039; =&gt; true, &#039;comments&#039; =&gt; true, &#039;favorite_places&#039; =&gt; true, &#039;favorites&#039; =&gt; true, &#039;friends&#039; =&gt; true, &#039;histories&#039; =&gt; true, &#039;points_of_interests&#039; =&gt; true, &#039;roadtrips&#039; =&gt; true, &#039;user_tokens&#039; =&gt; true, &#039;profile_picture_file&#039; =&gt; true]</span></code>
 
         <section class="phpdocumentor-description"><p>Note that when '<em>' is set to true, this allows all unspecified fields to
 be mass assigned. For security purposes, it is advised to set '</em>' to false
@@ -1427,7 +1447,7 @@ be mass assigned. For security purposes, it is advised to set '</em>' to false
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Model/Entity/User.php"><a href="files/src-model-entity-user.html"><abbr title="src/Model/Entity/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">86</span>
+    <span class="phpdocumentor-element-found-in__line">87</span>
 
     </aside>
 
@@ -1439,6 +1459,43 @@ be mass assigned. For security purposes, it is advised to set '</em>' to false
             <span class="phpdocumentor-signature__type">array&lt;string|int, string&gt;</span>
     <span class="phpdocumentor-signature__name">$_hidden</span>
      = <span class="phpdocumentor-signature__default-value">[&#039;password&#039;]</span></code>
+
+    
+    
+    
+
+        
+        
+
+</article>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -protected
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property__virtual">
+        $_virtual
+        <a href="classes/App-Model-Entity-User.html#property__virtual" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Model/Entity/User.php"><a href="files/src-model-entity-user.html"><abbr title="src/Model/Entity/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">91</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">protected</span>
+            <span class="phpdocumentor-signature__type">array&lt;string|int, mixed&gt;</span>
+    <span class="phpdocumentor-signature__name">$_virtual</span>
+     = <span class="phpdocumentor-signature__default-value">[&#039;full_name&#039;, &#039;avatar_url&#039;]</span></code>
 
     
     
@@ -1462,6 +1519,84 @@ be mass assigned. For security purposes, it is advised to set '</em>' to false
             -protected
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method__getAvatarUrl">
+        _getAvatarUrl()
+        <a href="classes/App-Model-Entity-User.html#method__getAvatarUrl" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Model/Entity/User.php"><a href="files/src-model-entity-user.html"><abbr title="src/Model/Entity/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">112</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Return the url of the user&#039;s profile picture</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">protected</span>
+                    <span class="phpdocumentor-signature__name">_getAvatarUrl</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -protected
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method__getFullName">
+        _getFullName()
+        <a href="classes/App-Model-Entity-User.html#method__getFullName" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Model/Entity/User.php"><a href="files/src-model-entity-user.html"><abbr title="src/Model/Entity/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">104</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Return the full name of the user</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">protected</span>
+                    <span class="phpdocumentor-signature__name">_getFullName</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -protected
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method__setPassword">
         _setPassword()
         <a href="classes/App-Model-Entity-User.html#method__setPassword" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1470,7 +1605,7 @@ be mass assigned. For security purposes, it is advised to set '</em>' to false
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Model/Entity/User.php"><a href="files/src-model-entity-user.html"><abbr title="src/Model/Entity/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">90</span>
+    <span class="phpdocumentor-element-found-in__line">93</span>
 
     </aside>
 
@@ -1644,12 +1779,15 @@ be mass assigned. For security purposes, it is advised to set '</em>' to false
                                                     <li class=""><a href="classes/App-Model-Entity-User.html#property_zipcode">$zipcode</a></li>
                                                     <li class=""><a href="classes/App-Model-Entity-User.html#property__accessible">$_accessible</a></li>
                                                     <li class=""><a href="classes/App-Model-Entity-User.html#property__hidden">$_hidden</a></li>
+                                                    <li class=""><a href="classes/App-Model-Entity-User.html#property__virtual">$_virtual</a></li>
                                             </ul>
                 </li>
             
                         <li class="phpdocumentor-on-this-page-section__title">Methods</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
+                                            <li class=""><a href="classes/App-Model-Entity-User.html#method__getAvatarUrl">_getAvatarUrl()</a></li>
+                                            <li class=""><a href="classes/App-Model-Entity-User.html#method__getFullName">_getFullName()</a></li>
                                             <li class=""><a href="classes/App-Model-Entity-User.html#method__setPassword">_setPassword()</a></li>
                                     </ul>
             </li>

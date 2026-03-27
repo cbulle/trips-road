@@ -133,16 +133,13 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">12</span>
+    <span class="phpdocumentor-element-found-in__line">20</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Application Controller</p>
+            <p class="phpdocumentor-summary">Users Controller</p>
 
 
-    <section class="phpdocumentor-description"><p>Add your application-wide methods in the class below, your controllers
-will inherit them.</p>
-</section>
 
 
 
@@ -162,6 +159,19 @@ will inherit them.</p>
 
 
 
+<h4 id="toc-properties">
+    Properties
+    <a href="classes/App-Controller-UsersController.html#toc-properties" class="headerlink"><i class="fas fa-link"></i></a>
+
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -property -public">
+    <a class="" href="classes/App-Controller-UsersController.html#property_Users">$Users</a>
+    <span>
+                        &nbsp;: <a href="classes/App-Model-Table-UsersTable.html"><abbr title="\App\Model\Table\UsersTable">UsersTable</abbr></a>            </span>
+</dt>
+
+    </dl>
 
 <h4 id="toc-methods">
     Methods
@@ -172,20 +182,25 @@ will inherit them.</p>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_accessibility">accessibility()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Accessibility method
+Manages user accessibility preferences via cookies.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_add">add()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Add method
+Registers a new user.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_beforeFilter">beforeFilter()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: void    </span>
 </dt>
+<dd>beforeFilter callback.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-AppController.html#method_beforeRender">beforeRender()</a>
@@ -195,6 +210,13 @@ will inherit them.</p>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_callbackGoogle">callbackGoogle()</a>
+    <span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
+</dt>
+<dd>Handles the callback from Google OAuth2.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/App-Controller-UsersController.html#method_forgotPassword">forgotPassword()</a>
     <span>
                                 &nbsp;: mixed    </span>
 </dt>
@@ -209,23 +231,36 @@ will inherit them.</p>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_login">login()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
+<dd>Login method
+Handles user authentication.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_loginGoogle">loginGoogle()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
+<dd>Initiates Google OAuth2 login flow.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_logout">logout()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
+<dd>Logout method
+Logs the user out.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-UsersController.html#method_profile">profile()</a>
+    <span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
+</dt>
+<dd>Profile method
+Displays and updates the connected user&#039;s profile.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/App-Controller-UsersController.html#method_resetPassword">resetPassword()</a>
     <span>
                                 &nbsp;: mixed    </span>
 </dt>
@@ -237,6 +272,50 @@ will inherit them.</p>
         
 
         
+    <section class="phpdocumentor-properties">
+        <h3 class="phpdocumentor-elements__header" id="properties">
+            Properties
+            <a href="classes/App-Controller-UsersController.html#properties" class="headerlink"><i class="fas fa-link"></i></a>
+
+        </h3>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -public
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property_Users">
+        $Users
+        <a href="classes/App-Controller-UsersController.html#property_Users" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">0</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__type"><a href="classes/App-Model-Table-UsersTable.html"><abbr title="\App\Model\Table\UsersTable">UsersTable</abbr></a></span>
+    <span class="phpdocumentor-signature__name">$Users</span>
+    </code>
+
+    
+    
+    
+
+        
+        
+
+</article>
+            </section>
 
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
@@ -258,14 +337,16 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">186</span>
+    <span class="phpdocumentor-element-found-in__line">249</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Accessibility method
+Manages user accessibility preferences via cookies.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">accessibility</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">accessibility</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -276,7 +357,15 @@ will inherit them.</p>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Renders view</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -292,14 +381,16 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">125</span>
+    <span class="phpdocumentor-element-found-in__line">164</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Add method
+Registers a new user.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">add</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">add</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -310,7 +401,15 @@ will inherit them.</p>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects on successful add, renders view otherwise.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -326,19 +425,22 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">20</span>
+    <span class="phpdocumentor-element-found-in__line">40</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">beforeFilter callback.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">beforeFilter</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type"><abbr title="\Cake\Event\EventInterface">EventInterface</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$event</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">beforeFilter</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type"><abbr title="\Cake\Event\EventInterface">EventInterface</abbr>&nbsp;</span><span class="phpdocumentor-signature__argument__name">$event</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
-    
+        <section class="phpdocumentor-description"><p>Allows unauthenticated users to access specific actions.</p>
+</section>
+
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
@@ -346,7 +448,9 @@ will inherit them.</p>
                 : <span class="phpdocumentor-argument-list__argument__type"><abbr title="\Cake\Event\EventInterface">EventInterface</abbr></span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>An Event instance</p>
+</section>
+
             </dd>
             </dl>
 
@@ -414,14 +518,57 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">55</span>
+    <span class="phpdocumentor-element-found-in__line">91</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Handles the callback from Google OAuth2.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">callbackGoogle</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+    
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects to home on success, or login on failure.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_forgotPassword">
+        forgotPassword()
+        <a href="classes/App-Controller-UsersController.html#method_forgotPassword" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">285</span>
 
     </aside>
 
     
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">callbackGoogle</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">forgotPassword</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -448,7 +595,7 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">14</span>
+    <span class="phpdocumentor-element-found-in__line">27</span>
 
     </aside>
 
@@ -461,10 +608,7 @@ will inherit them.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Use this method to add common initialization code like loading components.</p>
-<p>e.g. <code class="prettyprint">$this-&gt;loadComponent('FormProtection');</code></p>
-</section>
-
+    
     
     
 
@@ -486,14 +630,16 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">26</span>
+    <span class="phpdocumentor-element-found-in__line">52</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Login method
+Handles user authentication.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">login</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">login</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -504,7 +650,15 @@ will inherit them.</p>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects on successful login, renders view otherwise.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -520,14 +674,15 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">38</span>
+    <span class="phpdocumentor-element-found-in__line">69</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Initiates Google OAuth2 login flow.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">loginGoogle</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">loginGoogle</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -538,7 +693,15 @@ will inherit them.</p>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects to Google authentication page.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -554,14 +717,16 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">118</span>
+    <span class="phpdocumentor-element-found-in__line">199</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Logout method
+Logs the user out.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">logout</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">logout</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -572,7 +737,15 @@ will inherit them.</p>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects to login.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -588,20 +761,74 @@ will inherit them.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">156</span>
+    <span class="phpdocumentor-element-found-in__line">214</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Profile method
+Displays and updates the connected user&#039;s profile.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">profile</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">profile</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
     
     
     
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects on successful edit, renders view otherwise.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_resetPassword">
+        resetPassword()
+        <a href="classes/App-Controller-UsersController.html#method_resetPassword" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/UsersController.php"><a href="files/src-controller-userscontroller.html"><abbr title="src/Controller/UsersController.php">UsersController.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">309</span>
+
+    </aside>
+
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">resetPassword</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$token</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$token</span>
+                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+            </dl>
+
     
 
         
@@ -715,10 +942,17 @@ will inherit them.</p>
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                                                                <li><a href="classes/App-Controller-UsersController.html#toc-methods">Methods</a></li>
+                                                            <li><a href="classes/App-Controller-UsersController.html#toc-properties">Properties</a></li>
+                                                            <li><a href="classes/App-Controller-UsersController.html#toc-methods">Methods</a></li>
                                     </ul>
             </li>
             
+                            <li class="phpdocumentor-on-this-page-section__title">Properties</li>
+                <li>
+                    <ul class="phpdocumentor-list -clean">
+                                                    <li class=""><a href="classes/App-Controller-UsersController.html#property_Users">$Users</a></li>
+                                            </ul>
+                </li>
             
                         <li class="phpdocumentor-on-this-page-section__title">Methods</li>
             <li>
@@ -728,11 +962,13 @@ will inherit them.</p>
                                             <li class=""><a href="classes/App-Controller-UsersController.html#method_beforeFilter">beforeFilter()</a></li>
                                             <li class=""><a href="classes/App-Controller-AppController.html#method_beforeRender">beforeRender()</a></li>
                                             <li class=""><a href="classes/App-Controller-UsersController.html#method_callbackGoogle">callbackGoogle()</a></li>
+                                            <li class=""><a href="classes/App-Controller-UsersController.html#method_forgotPassword">forgotPassword()</a></li>
                                             <li class=""><a href="classes/App-Controller-UsersController.html#method_initialize">initialize()</a></li>
                                             <li class=""><a href="classes/App-Controller-UsersController.html#method_login">login()</a></li>
                                             <li class=""><a href="classes/App-Controller-UsersController.html#method_loginGoogle">loginGoogle()</a></li>
                                             <li class=""><a href="classes/App-Controller-UsersController.html#method_logout">logout()</a></li>
                                             <li class=""><a href="classes/App-Controller-UsersController.html#method_profile">profile()</a></li>
+                                            <li class=""><a href="classes/App-Controller-UsersController.html#method_resetPassword">resetPassword()</a></li>
                                     </ul>
             </li>
                     </ul>

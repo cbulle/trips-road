@@ -133,16 +133,14 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/MessagesController.php"><a href="files/src-controller-messagescontroller.html"><abbr title="src/Controller/MessagesController.php">MessagesController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">7</span>
+    <span class="phpdocumentor-element-found-in__line">15</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Application Controller</p>
+            <p class="phpdocumentor-summary">Messages Controller
+Handles user-to-user private messaging.</p>
 
 
-    <section class="phpdocumentor-description"><p>Add your application-wide methods in the class below, your controllers
-will inherit them.</p>
-</section>
 
 
 
@@ -162,6 +160,19 @@ will inherit them.</p>
 
 
 
+<h4 id="toc-properties">
+    Properties
+    <a href="classes/App-Controller-MessagesController.html#toc-properties" class="headerlink"><i class="fas fa-link"></i></a>
+
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -property -public">
+    <a class="" href="classes/App-Controller-MessagesController.html#property_Messages">$Messages</a>
+    <span>
+                        &nbsp;: <a href="classes/App-Model-Table-MessagesTable.html"><abbr title="\App\Model\Table\MessagesTable">MessagesTable</abbr></a>            </span>
+</dt>
+
+    </dl>
 
 <h4 id="toc-methods">
     Methods
@@ -178,10 +189,10 @@ will inherit them.</p>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-MessagesController.html#method_index">index()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: void    </span>
 </dt>
-<dd>Index : La récupération des conversations pour la sidebar
-est maintenant gérée par la Cell dans la vue.</dd>
+<dd>Index method
+Displays the initial messaging interface (sidebar handled by a Cell).</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-AppController.html#method_initialize">initialize()</a>
@@ -193,23 +204,26 @@ est maintenant gérée par la Cell dans la vue.</dd>
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-MessagesController.html#method_sendMessage">sendMessage()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
-<dd>Envoyer un message</dd>
+<dd>SendMessage method
+Handles the submission of a new message via POST.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-MessagesController.html#method_start">start()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null    </span>
 </dt>
-<dd>Démarrer une conversation</dd>
+<dd>Start method
+Initiates or verifies a conversation with a friend.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-Controller-MessagesController.html#method_view">view()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: <abbr title="\Cake\Http\Response">Response</abbr>|null|void    </span>
 </dt>
-<dd>Voir une conversation</dd>
+<dd>View method
+Displays the chat history with a specific friend.</dd>
 
     </dl>
 
@@ -218,6 +232,50 @@ est maintenant gérée par la Cell dans la vue.</dd>
         
 
         
+    <section class="phpdocumentor-properties">
+        <h3 class="phpdocumentor-elements__header" id="properties">
+            Properties
+            <a href="classes/App-Controller-MessagesController.html#properties" class="headerlink"><i class="fas fa-link"></i></a>
+
+        </h3>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -public
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property_Messages">
+        $Messages
+        <a href="classes/App-Controller-MessagesController.html#property_Messages" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/MessagesController.php"><a href="files/src-controller-messagescontroller.html"><abbr title="src/Controller/MessagesController.php">MessagesController.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">0</span>
+
+    </aside>
+
+    
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__type"><a href="classes/App-Model-Table-MessagesTable.html"><abbr title="\App\Model\Table\MessagesTable">MessagesTable</abbr></a></span>
+    <span class="phpdocumentor-signature__name">$Messages</span>
+    </code>
+
+    
+    
+    
+
+        
+        
+
+</article>
+            </section>
 
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
@@ -283,16 +341,16 @@ est maintenant gérée par la Cell dans la vue.</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/MessagesController.php"><a href="files/src-controller-messagescontroller.html"><abbr title="src/Controller/MessagesController.php">MessagesController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">13</span>
+    <span class="phpdocumentor-element-found-in__line">23</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Index : La récupération des conversations pour la sidebar
-est maintenant gérée par la Cell dans la vue.</p>
+        <p class="phpdocumentor-summary">Index method
+Displays the initial messaging interface (sidebar handled by a Cell).</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">index</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">index</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -357,15 +415,16 @@ est maintenant gérée par la Cell dans la vue.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/MessagesController.php"><a href="files/src-controller-messagescontroller.html"><abbr title="src/Controller/MessagesController.php">MessagesController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">96</span>
+    <span class="phpdocumentor-element-found-in__line">112</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Envoyer un message</p>
+        <p class="phpdocumentor-summary">SendMessage method
+Handles the submission of a new message via POST.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">sendMessage</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">sendMessage</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -376,7 +435,15 @@ est maintenant gérée par la Cell dans la vue.</p>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects back to the conversation view.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -392,15 +459,16 @@ est maintenant gérée par la Cell dans la vue.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/MessagesController.php"><a href="files/src-controller-messagescontroller.html"><abbr title="src/Controller/MessagesController.php">MessagesController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">25</span>
+    <span class="phpdocumentor-element-found-in__line">38</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Démarrer une conversation</p>
+        <p class="phpdocumentor-summary">Start method
+Initiates or verifies a conversation with a friend.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">start</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$amiId</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">start</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$friendId</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -409,19 +477,44 @@ est maintenant gérée par la Cell dans la vue.</p>
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-argument-list__argument__name">$amiId</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                <span class="phpdocumentor-argument-list__argument__name">$friendId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
                  = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>The ID of the friend to chat with.</p>
+</section>
+
             </dd>
             </dl>
 
     
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/App-Controller-MessagesController.html#method_start#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><abbr title="\Cake\Http\Exception\ForbiddenException">ForbiddenException</abbr></span>
+                                                            
+                                             
+                                    </dd>
+                                            </dl>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Redirects to the conversation view.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -437,15 +530,16 @@ est maintenant gérée par la Cell dans la vue.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/Controller/MessagesController.php"><a href="files/src-controller-messagescontroller.html"><abbr title="src/Controller/MessagesController.php">MessagesController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">55</span>
+    <span class="phpdocumentor-element-found-in__line">73</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Voir une conversation</p>
+        <p class="phpdocumentor-summary">View method
+Displays the chat history with a specific friend.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">view</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$amiId</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">view</span><span>(</span><span class="phpdocumentor-signature__argument"><span>[</span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$friendId</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -454,11 +548,13 @@ est maintenant gérée par la Cell dans la vue.</p>
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-argument-list__argument__name">$amiId</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                <span class="phpdocumentor-argument-list__argument__name">$friendId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
                  = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>The ID of the friend.</p>
+</section>
+
             </dd>
             </dl>
 
@@ -466,7 +562,15 @@ est maintenant gérée par la Cell dans la vue.</p>
 
         
     
-    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type"><abbr title="\Cake\Http\Response">Response</abbr>|null|void</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Renders view or redirects if no ID.</p>
+</section>
+
+            </section>
+
 </article>
             </section>
 
@@ -575,10 +679,17 @@ est maintenant gérée par la Cell dans la vue.</p>
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                                                                <li><a href="classes/App-Controller-MessagesController.html#toc-methods">Methods</a></li>
+                                                            <li><a href="classes/App-Controller-MessagesController.html#toc-properties">Properties</a></li>
+                                                            <li><a href="classes/App-Controller-MessagesController.html#toc-methods">Methods</a></li>
                                     </ul>
             </li>
             
+                            <li class="phpdocumentor-on-this-page-section__title">Properties</li>
+                <li>
+                    <ul class="phpdocumentor-list -clean">
+                                                    <li class=""><a href="classes/App-Controller-MessagesController.html#property_Messages">$Messages</a></li>
+                                            </ul>
+                </li>
             
                         <li class="phpdocumentor-on-this-page-section__title">Methods</li>
             <li>

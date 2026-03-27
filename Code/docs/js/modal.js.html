@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modal.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modal.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Modal management system
+ * @description Provides global functions to open, close, and manage roadtrip-related modals.
+ */
+
+/**
+ * Opens a specific roadtrip modal by ID.
+ * Disables body scrolling.
+ * @function openRoadtripModal
+ * @param {string} id - The DOM ID of the modal to open
+ */
+window.openRoadtripModal = function (id) {
+    var el = document.getElementById(id);
+    if (!el) {
+        console.warn('[modals.js] openRoadtripModal : element not found → #' + id);
+        return;
+    }
+    el.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+};
+
+/**
+ * Closes a specific roadtrip modal by ID.
+ * Restores body scrolling if no other modals are open.
+ * @function closeRoadtripModal
+ * @param {string} id - The DOM ID of the modal to close
+ */
+window.closeRoadtripModal = function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.display = 'none';
+
+    var anyOpen = document.querySelectorAll('.custom-modal[style*="display: block"]');
+    if (anyOpen.length === 0) {
+        document.body.style.overflow = '';
+    }
+};
+
+/**
+ * Closes all active modals and restores body scrolling.
+ * @function closeAllRoadtripModals
+ */
+window.closeAllRoadtripModals = function () {
+    document.querySelectorAll('.custom-modal').forEach(function (m) {
+        m.style.display = 'none';
+    });
+    document.body.style.overflow = '';
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+    /**
+     * Closes modals when the Escape key is pressed.
+     */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            window.closeAllRoadtripModals();
+        }
+    });
+
+    /**
+     * Closes modals when clicking outside the content (on the backdrop).
+     */
+    document.querySelectorAll('.custom-modal').forEach(function (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                window.closeRoadtripModal(modal.id);
+            }
+        });
+    });
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Events</h3><ul><li><a href="global.html#event:DOMContentLoaded">DOMContentLoaded</a></li></ul><h3>Global</h3><ul><li><a href="global.html#REGIONS_CONFIG">REGIONS_CONFIG</a></li><li><a href="global.html#ROUTING_SERVERS">ROUTING_SERVERS</a></li><li><a href="global.html#TRANSPORT_STRATEGIES">TRANSPORT_STRATEGIES</a></li><li><a href="global.html#addTime">addTime</a></li><li><a href="global.html#appConfig">appConfig</a></li><li><a href="global.html#applyPreferences">applyPreferences</a></li><li><a href="global.html#calculateAllSegments">calculateAllSegments</a></li><li><a href="global.html#checkToggleGlobalMap">checkToggleGlobalMap</a></li><li><a href="global.html#closeAllRoadtripModals">closeAllRoadtripModals</a></li><li><a href="global.html#closeRoadtripModal">closeRoadtripModal</a></li><li><a href="global.html#colorsPalette">colorsPalette</a></li><li><a href="global.html#createCustomIcon">createCustomIcon</a></li><li><a href="global.html#createNumberedMarker">createNumberedMarker</a></li><li><a href="global.html#currentCircle">currentCircle</a></li><li><a href="global.html#currentCoords">currentCoords</a></li><li><a href="global.html#defaultCoords">defaultCoords</a></li><li><a href="global.html#downloadExportPack">downloadExportPack</a></li><li><a href="global.html#downloadFile">downloadFile</a></li><li><a href="global.html#drawRoute">drawRoute</a></li><li><a href="global.html#durationToSeconds">durationToSeconds</a></li><li><a href="global.html#getTrajetData">getTrajetData</a></li><li><a href="global.html#handleGenerateAI">handleGenerateAI</a></li><li><a href="global.html#handleSaveRoadtrip">handleSaveRoadtrip</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initGlobalMap">initGlobalMap</a></li><li><a href="global.html">initMap</a></li><li><a href="global.html#initStepMap">initStepMap</a></li><li><a href="global.html">loadPOI</a></li><li><a href="global.html#map">map</a></li><li><a href="global.html#openRoadtripModal">openRoadtripModal</a></li><li><a href="global.html#poiFilters">poiFilters</a></li><li><a href="global.html#previewImage">previewImage</a></li><li><a href="global.html#processCardTimes">processCardTimes</a></li><li><a href="global.html#savePreferences">savePreferences</a></li><li><a href="global.html#searchLayer">searchLayer</a></li><li><a href="global.html#searchRadius">searchRadius</a></li><li><a href="global.html#state">state</a></li><li><a href="global.html#toggleSidebar">toggleSidebar</a></li><li><a href="global.html#toggleTrajet">toggleTrajet</a></li><li><a href="global.html#updateRouteSegment">updateRouteSegment</a></li><li><a href="global.html">updateSearchPosition</a></li><li><a href="global.html#viewMapInstances">viewMapInstances</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Mar 27 2026 16:44:17 GMT+0100 (heure normale d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

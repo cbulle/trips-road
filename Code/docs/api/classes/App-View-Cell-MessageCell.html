@@ -134,11 +134,12 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/View/Cell/MessageCell.php"><a href="files/src-view-cell-messagecell.html"><abbr title="src/View/Cell/MessageCell.php">MessageCell.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">6</span>
+    <span class="phpdocumentor-element-found-in__line">11</span>
 
     </aside>
 
-        
+            <p class="phpdocumentor-summary">Message cell</p>
+
 
 
 
@@ -159,6 +160,21 @@
 
 
 
+<h4 id="toc-properties">
+    Properties
+    <a href="classes/App-View-Cell-MessageCell.html#toc-properties" class="headerlink"><i class="fas fa-link"></i></a>
+
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -property -protected">
+    <a class="" href="classes/App-View-Cell-MessageCell.html#property__validCellOptions">$_validCellOptions</a>
+    <span>
+                        &nbsp;: array&lt;string, mixed&gt;            </span>
+</dt>
+<dd>List of valid options that can be passed into this
+cell&#039;s constructor.</dd>
+
+    </dl>
 
 <h4 id="toc-methods">
     Methods
@@ -169,8 +185,9 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/App-View-Cell-MessageCell.html#method_display">display()</a>
     <span>
-                                &nbsp;: mixed    </span>
+                                &nbsp;: void    </span>
 </dt>
+<dd>Default display method.</dd>
 
     </dl>
 
@@ -179,6 +196,52 @@
         
 
         
+    <section class="phpdocumentor-properties">
+        <h3 class="phpdocumentor-elements__header" id="properties">
+            Properties
+            <a href="classes/App-View-Cell-MessageCell.html#properties" class="headerlink"><i class="fas fa-link"></i></a>
+
+        </h3>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -protected
+                                                                    "
+>
+    <h4 class="phpdocumentor-element__name" id="property__validCellOptions">
+        $_validCellOptions
+        <a href="classes/App-View-Cell-MessageCell.html#property__validCellOptions" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="src/View/Cell/MessageCell.php"><a href="files/src-view-cell-messagecell.html"><abbr title="src/View/Cell/MessageCell.php">MessageCell.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">19</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">List of valid options that can be passed into this
+cell&#039;s constructor.</p>
+
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">protected</span>
+            <span class="phpdocumentor-signature__type">array&lt;string, mixed&gt;</span>
+    <span class="phpdocumentor-signature__name">$_validCellOptions</span>
+     = <span class="phpdocumentor-signature__default-value">[]</span></code>
+
+    
+    
+    
+
+        
+        
+
+</article>
+            </section>
 
             <section class="phpdocumentor-methods">
         <h3 class="phpdocumentor-elements__header" id="methods">
@@ -200,14 +263,15 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="src/View/Cell/MessageCell.php"><a href="files/src-view-cell-messagecell.html"><abbr title="src/View/Cell/MessageCell.php">MessageCell.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">8</span>
+    <span class="phpdocumentor-element-found-in__line">28</span>
 
     </aside>
 
-    
+        <p class="phpdocumentor-summary">Default display method.</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-                    <span class="phpdocumentor-signature__name">display</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">mixed&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">mixed</span></code>
+                    <span class="phpdocumentor-signature__name">display</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userId</span></span><span class="phpdocumentor-signature__argument"><span>[</span><span>, </span><span class="phpdocumentor-signature__argument__type">int|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$activeFriendId</span><span> = </span><span class="phpdocumentor-signature__argument__default-value">null</span><span> ]</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -217,10 +281,21 @@
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
                 <span class="phpdocumentor-argument-list__argument__name">$userId</span>
-                : <span class="phpdocumentor-argument-list__argument__type">mixed</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                
+                    <section class="phpdocumentor-description"><p>The current logged in user</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$activeFriendId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int|null</span>
+                 = <span class="phpdocumentor-argument-list__argument__default-value">null</span>            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The friend currently being chatted with</p>
+</section>
+
             </dd>
             </dl>
 
@@ -337,10 +412,17 @@
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                                                                <li><a href="classes/App-View-Cell-MessageCell.html#toc-methods">Methods</a></li>
+                                                            <li><a href="classes/App-View-Cell-MessageCell.html#toc-properties">Properties</a></li>
+                                                            <li><a href="classes/App-View-Cell-MessageCell.html#toc-methods">Methods</a></li>
                                     </ul>
             </li>
             
+                            <li class="phpdocumentor-on-this-page-section__title">Properties</li>
+                <li>
+                    <ul class="phpdocumentor-list -clean">
+                                                    <li class=""><a href="classes/App-View-Cell-MessageCell.html#property__validCellOptions">$_validCellOptions</a></li>
+                                            </ul>
+                </li>
             
                         <li class="phpdocumentor-on-this-page-section__title">Methods</li>
             <li>

@@ -27,48 +27,33 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @file Gestion des préférences d’accessibilité
+ * @file Accessibility preferences management
  * @description
- * Ce script gère les préférences d’accessibilité utilisateur :
- * - Thème sombre / clair
- * - Mode malvoyant (taille/contraste adapté)
- * - Filtres pour différents types de daltonisme
- * 
- * Les préférences sont sauvegardées dans le localStorage
- * et réappliquées automatiquement au chargement de la page.
+ * This script handles user accessibility preferences:
+ * - Dark / Light theme
+ * - Visually impaired mode (adapted size/contrast)
+ * - Filters for different types of color blindness
+ *
+ * Preferences are stored in localStorage and automatically
+ * reapplied when the page loads.
  */
 
 /**
- * Applique les préférences enregistrées dans le localStorage.
- *
- * Cette fonction :
- * - Récupère les paramètres sauvegardés
- * - Met à jour les classes CSS du document
- * - Synchronise l’état des champs du formulaire
- *
- * @function appliquerPreferences
+ * Applies saved preferences from localStorage to the document.
+ * @function applyPreferences
  * @returns {void}
  */
-function appliquerPreferences() {
-
-    /** @type {string|null} */
+function applyPreferences() {
     const savedTheme = localStorage.getItem("theme");
-
-    /** @type {string|null} */
     const savedMalvoyant = localStorage.getItem("Police");
-
-    /** @type {string|null} */
     const savedDaltonienType = localStorage.getItem("typeDaltonien");
 
-    /** @type {HTMLInputElement|null} */
     const checkboxSombre = document.getElementById("checkboxSombre");
-
-    /** @type {HTMLInputElement|null} */
     const checkboxMalvoyant = document.getElementById("checkboxMalvoyant");
 
     /* =========================
-       Gestion du thème sombre
-    ========================== */
+           Dark Theme Management
+        ========================== */
     if (savedTheme === "dark") {
         document.documentElement.classList.add("dark", "SombreBtn");
         if (checkboxSombre) checkboxSombre.checked = true;
@@ -78,8 +63,8 @@ function appliquerPreferences() {
     }
 
     /* =========================
-       Gestion du mode malvoyant
-    ========================== */
+           Visually Impaired Mode
+        ========================== */
     if (savedMalvoyant === "malvoyant") {
         document.documentElement.classList.add("malvoyant", "MalvoyantBtn");
         if (checkboxMalvoyant) checkboxMalvoyant.checked = true;
@@ -89,10 +74,8 @@ function appliquerPreferences() {
     }
 
     /* =========================
-       Gestion du daltonisme
-    ========================== */
-
-    // Supprime toutes les classes existantes
+           Color Blindness Management
+        ========================== */
     document.documentElement.classList.remove(
         "daltonien",
         "protanopia",
@@ -101,49 +84,30 @@ function appliquerPreferences() {
     );
 
     if (savedDaltonienType &amp;&amp; savedDaltonienType !== "aucun") {
-
         document.documentElement.classList.add("daltonien", savedDaltonienType);
-
-        /** @type {HTMLInputElement|null} */
-        const radioToCheck = document.querySelector(
-            `input[name="daltonism-type"][value="${savedDaltonienType}"]`
-        );
-
+        const radioToCheck = document.querySelector(`input[name="daltonism-type"][value="${savedDaltonienType}"]`);
         if (radioToCheck) radioToCheck.checked = true;
-
     } else {
-
-        /** @type {HTMLInputElement|null} */
-        const radioAucun = document.querySelector(
-            'input[name="daltonism-type"][value="aucun"]'
-        );
-
+        const radioAucun = document.querySelector('input[name="daltonism-type"][value="aucun"]');
         if (radioAucun) radioAucun.checked = true;
     }
 }
 
 /**
- * Enregistre les préférences utilisateur lors de la soumission du formulaire.
- *
- * @function enregistrerPreferences
- * @param {SubmitEvent} event - Événement déclenché lors de la soumission
+ * Saves user preferences to localStorage when the form is submitted.
+ * @function savePreferences
+ * @param {SubmitEvent} event - The form submission event
  * @returns {void}
  */
-function enregistrerPreferences(event) {
+function savePreferences(event) {
 
-    /** @type {HTMLInputElement|null} */
+
     const checkboxSombre = document.getElementById("checkboxSombre");
-
-    /** @type {HTMLInputElement|null} */
     const checkboxMalvoyant = document.getElementById("checkboxMalvoyant");
-
-    /** @type {HTMLInputElement|null} */
-    const radioDaltonien = document.querySelector(
-        'input[name="daltonism-type"]:checked'
-    );
+    const radioDaltonien = document.querySelector('input[name="daltonism-type"]:checked');
 
     /* =========================
-       Sauvegarde du thème
+       Theme Save
     ========================== */
     if (checkboxSombre &amp;&amp; checkboxSombre.checked) {
         localStorage.setItem("theme", "dark");
@@ -152,7 +116,7 @@ function enregistrerPreferences(event) {
     }
 
     /* =========================
-       Sauvegarde du mode malvoyant
+       Visually Impaired Save
     ========================== */
     if (checkboxMalvoyant &amp;&amp; checkboxMalvoyant.checked) {
         localStorage.setItem("Police", "malvoyant");
@@ -161,32 +125,34 @@ function enregistrerPreferences(event) {
     }
 
     /* =========================
-       Sauvegarde du type de daltonisme
+      Color Blindness Type Save
     ========================== */
     if (radioDaltonien &amp;&amp; radioDaltonien.value) {
         localStorage.setItem("typeDaltonien", radioDaltonien.value);
     } else {
         localStorage.removeItem("typeDaltonien");
     }
+
+    applyPreferences();
 }
 
 /**
- * Initialise le script lorsque le DOM est entièrement chargé.
- *
+ * Initializes the script when the DOM is fully loaded.
  * @event DOMContentLoaded
  */
 document.addEventListener("DOMContentLoaded", () => {
+    applyPreferences();
 
-    // Application immédiate des préférences sauvegardées
-    appliquerPreferences();
-
-    /** @type {HTMLFormElement|null} */
-    const form = document.getElementById("AccessForm");
+    const form = document.getElementById("accessForm");
 
     if (form) {
-        form.addEventListener("submit", enregistrerPreferences);
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            savePreferences(event);
+        });
     }
-});</code></pre>
+});
+</code></pre>
         </article>
     </section>
 
@@ -196,13 +162,13 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Events</h3><ul><li><a href="global.html#event:DOMContentLoaded">DOMContentLoaded</a></li></ul><h3>Global</h3><ul><li><a href="global.html#appliquerPreferences">appliquerPreferences</a></li><li><a href="global.html#createCustomIcon">createCustomIcon</a></li><li><a href="global.html#enregistrerPreferences">enregistrerPreferences</a></li><li><a href="global.html#initMap">initMap</a></li><li><a href="global.html#loadPOI">loadPOI</a></li><li><a href="global.html#updateSearchPosition">updateSearchPosition</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Events</h3><ul><li><a href="global.html#event:DOMContentLoaded">DOMContentLoaded</a></li></ul><h3>Global</h3><ul><li><a href="global.html#REGIONS_CONFIG">REGIONS_CONFIG</a></li><li><a href="global.html#ROUTING_SERVERS">ROUTING_SERVERS</a></li><li><a href="global.html#TRANSPORT_STRATEGIES">TRANSPORT_STRATEGIES</a></li><li><a href="global.html#addTime">addTime</a></li><li><a href="global.html#appConfig">appConfig</a></li><li><a href="global.html#applyPreferences">applyPreferences</a></li><li><a href="global.html#calculateAllSegments">calculateAllSegments</a></li><li><a href="global.html#checkToggleGlobalMap">checkToggleGlobalMap</a></li><li><a href="global.html#closeAllRoadtripModals">closeAllRoadtripModals</a></li><li><a href="global.html#closeRoadtripModal">closeRoadtripModal</a></li><li><a href="global.html#colorsPalette">colorsPalette</a></li><li><a href="global.html#createCustomIcon">createCustomIcon</a></li><li><a href="global.html#createNumberedMarker">createNumberedMarker</a></li><li><a href="global.html#currentCircle">currentCircle</a></li><li><a href="global.html#currentCoords">currentCoords</a></li><li><a href="global.html#defaultCoords">defaultCoords</a></li><li><a href="global.html#downloadExportPack">downloadExportPack</a></li><li><a href="global.html#downloadFile">downloadFile</a></li><li><a href="global.html#drawRoute">drawRoute</a></li><li><a href="global.html#durationToSeconds">durationToSeconds</a></li><li><a href="global.html#getTrajetData">getTrajetData</a></li><li><a href="global.html#handleGenerateAI">handleGenerateAI</a></li><li><a href="global.html#handleSaveRoadtrip">handleSaveRoadtrip</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initGlobalMap">initGlobalMap</a></li><li><a href="global.html">initMap</a></li><li><a href="global.html#initStepMap">initStepMap</a></li><li><a href="global.html">loadPOI</a></li><li><a href="global.html#map">map</a></li><li><a href="global.html#openRoadtripModal">openRoadtripModal</a></li><li><a href="global.html#poiFilters">poiFilters</a></li><li><a href="global.html#previewImage">previewImage</a></li><li><a href="global.html#processCardTimes">processCardTimes</a></li><li><a href="global.html#savePreferences">savePreferences</a></li><li><a href="global.html#searchLayer">searchLayer</a></li><li><a href="global.html#searchRadius">searchRadius</a></li><li><a href="global.html#state">state</a></li><li><a href="global.html#toggleSidebar">toggleSidebar</a></li><li><a href="global.html#toggleTrajet">toggleTrajet</a></li><li><a href="global.html#updateRouteSegment">updateRouteSegment</a></li><li><a href="global.html">updateSearchPosition</a></li><li><a href="global.html#viewMapInstances">viewMapInstances</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Mar 04 2026 09:26:31 GMT+0100 (heure normale d’Europe centrale)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Mar 27 2026 16:44:17 GMT+0100 (heure normale d’Europe centrale)
 </footer>
 
 <script> prettyPrint(); </script>
