@@ -248,21 +248,20 @@ function createNumberedMarker(map, point, number, color, popupText, offset, clus
  * @param {string|number} id - Trip ID
  */
 window.toggleTrajet = function(id) {
-    const content = document.getElementById('sous-etapes-' + id);
+    const content = document.getElementById('sub-steps-' + id);
     const card = document.getElementById('card-' + id);
-
     const mapGlobal = document.getElementById('map-global');
 
     if (!content || !card) return;
 
-    const isHidden = (content.style.display === 'none' || content.style.display === '');
+    const isHidden = content.classList.contains('d-none');
 
     if (!isHidden) {
-        content.style.display = 'none';
+        content.classList.add('d-none');
         card.classList.remove('active');
         checkToggleGlobalMap();
     } else {
-        content.style.display = 'block';
+        content.classList.remove('d-none');
         card.classList.add('active');
 
         if(mapGlobal) mapGlobal.style.display = 'none';
@@ -270,6 +269,7 @@ window.toggleTrajet = function(id) {
         setTimeout(() => { initStepMap(id); }, 100);
     }
 };
+
 /**
  * Checks if any trip cards are active and toggles the global map accordingly.
  * @function checkToggleGlobalMap
@@ -451,5 +451,16 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             el.innerHTML = '';
         }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.js-trip-toggle').forEach(function(header) {
+
+        header.addEventListener('click', function() {
+            const tripId = this.getAttribute('data-trip-id');
+            window.toggleTrajet(tripId);
+        });
+
     });
 });

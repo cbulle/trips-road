@@ -2,154 +2,76 @@
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Roadtrip $roadtrip
- * @var bool $modeEdition
- * @var array $existingTrajets
+ * @var bool $isEditMode
+ * @var array $existingTrips
  * @var string $userDefaultCity
  */
 
-$this->assign('title', $modeEdition ? 'Modifier le RoadTrip' : 'Création de RoadTrip');
+$this->assign('title', $isEditMode ? 'Modifier le RoadTrip' : 'Création de RoadTrip');
 $this->assign('mainClass', '');
 ?>
 
 <script>
     const USER_DEFAULT_CITY = "<?= h($userDefaultCity) ?>";
-    const MODE_EDITION = <?= json_encode($modeEdition) ?>;
-    const URL_GET_FAVORIS = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'getLieuxFavoris']) ?>";
+    const MODE_EDITION = <?= json_encode($isEditMode) ?>;
+    const URL_GET_FAVORIS = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'getFavoritePlaces']) ?>";
     const UPLOAD_IMAGE_URL = "<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'uploadStepImage']) ?>";
 
     const EXISTING_ROADTRIP = <?= json_encode([
         'id' => $roadtrip->id,
         'titre' => $roadtrip->title,
         'description' => $roadtrip->description,
-        'statut' => $roadtrip->status ?? 'brouillon',
+        'statut' => $roadtrip->status ?? 'draft',
         'visibilite' => $roadtrip->visibility,
         'photo' => $roadtrip->photo_url
     ]) ?>;
 
-    const EXISTING_TRAJETS = <?= json_encode($existingTrajets) ?>;
+    const EXISTING_TRAJETS = <?= json_encode($existingTrips) ?>;
 
-    const SAVE_URL = "<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $modeEdition ? $roadtrip->id : null]) ?>";
+    const SAVE_URL = "<?= $this->Url->build(['action' => $isEditMode ? 'edit' : 'add', $isEditMode ? $roadtrip->id : null]) ?>";
     const CSRF_TOKEN = "<?= $this->request->getAttribute('csrfToken') ?>";
 </script>
 
-<h1 class="TitreRT"><?= $modeEdition ? "Modifier mon RoadTrip" : "Créer un RoadTrip" ?></h1>
+<h1 class="roadtrip-main-title"><?= $isEditMode ? "Modifier mon RoadTrip" : "Créer un RoadTrip" ?></h1>
 
 <div class="main-container">
     <div class="sidebar">
-
-<!--        <div id="aiAssistantContainer" class="ai-container">-->
-<!--            <h3 class="ai-header">✨ Assistant IA</h3>-->
-<!--            <p class="ai-desc">Laissez l'IA pré-remplir votre voyage !</p>-->
-<!---->
-<!--            <input type="text" id="aiDepart" class="ai-input" placeholder="Départ (ex: Paris)">-->
-<!--            <input type="text" id="aiDestination" class="ai-input" placeholder="Destination (ex: Rome)">-->
-<!---->
-<!--            <div class="ai-row">-->
-<!--                <input type="text" id="aiDuree" class="ai-input" style="width: 50%;" placeholder="Durée (ex: 7j)">-->
-<!--                <input type="text" id="aiTheme" class="ai-input" style="width: 50%;" placeholder="Thème (ex: Nature)">-->
-<!--            </div>-->
-<!---->
-<!--            <button type="button" id="btnGenerateAI" class="ai-btn">-->
-<!--                🚀 Générer des idées-->
-<!--            </button>-->
-<!---->
-<!--            <div id="aiLoading">⏳ L'IA réfléchit...</div>-->
-<!--        </div>-->
-<!---->
-<!--        <div id="aiResultBox" class="ai-result-box">-->
-<!--            <h4 style="margin-top:0; color: var(--bleu_fonce); font-size:1em;">📍 Suggestions d'étapes :</h4>-->
-<!--            <div id="aiResultContent" class="ai-result-content"></div>-->
-<!---->
-<!--            <div style="background: var(--white); color: var(--bleu_fonce_ecriture); padding: 8px; border-radius: 4px; font-size: 0.8em; margin-bottom: 10px; border: 1px solid var(--bleu_clair);">-->
-<!--                💡 <strong>Conseil :</strong> Utilisez le bouton <em>"+ Ajouter un trajet"</em> ci-dessous pour créer ces étapes sur la carte.-->
-<!--            </div>-->
-<!---->
-<!--            <button type="button" class="ai-close-btn" onclick="document.getElementById('aiResultBox').style.display='none'">Fermer</button>-->
-<!--        </div>-->
         <div class="search-container">
-        <div class="region-selector-container" >
-            <label for="regionSelect">🌍 Zone de recherche :</label>
-            <small style="color: #666; font-size: 0.8em; margin-top: 5px; display: block;">Centre la carte et filtre les villes suggérées.</small>
-            <select id="regionSelect">
-                <option value="europe" <?= (isset($roadtrip->place) && $roadtrip->place === 'europe') ? 'selected' : '' ?>>Europe</option>
-                <option value="america" <?= (isset($roadtrip->place) && $roadtrip->place === 'america') ? 'selected' : '' ?>>Amérique du Nord (USA, Canada, Mexique)</option>
-            </select>
-
-        <div id="legend" style="display: block;">
-            <h3>Itinéraire :</h3>
-            <ul id="legendList" style="list-style:none; padding:0;"></ul>
-            <div id="newBlockForm" class="hidden"></div>
-        </div>
-        </div>
-
-        <div id="actionsContainer" style="margin-top:10px;">
-            <button type="button" id="btnAddSegment" style="width:100%;">+ Ajouter un trajet</button>
-        </div>
-
-        <hr>
-        </div>
-        <div id="saveContainer">
-            <h3>Sauvegarde & Paramètres</h3>
-
-            <input type="text" id="roadtripTitle" placeholder="Titre du RoadTrip"
-                   value="<?= h($roadtrip->title) ?>"
-                   style="width:100%;box-sizing:border-box;margin-bottom:6px;">
-
-            <textarea id="roadtripDescription" placeholder="Description (optionnelle)"
-                      style="width:100%;box-sizing:border-box;margin-bottom:6px;"><?= h($roadtrip->description) ?></textarea>
-
-            <div class="status-selector-container">
-                <label for="roadtripStatut" style="font-weight:bold;">Avancement du projet :</label>
-                <select id="roadtripStatut" style="width:100%; margin-bottom:10px;">
-                    <option
-                        value="draft" <?= (isset($roadtrip->status) && $roadtrip->status == 'brouillon') ? 'selected' : '' ?>>
-                        📝 En cours de création (Brouillon)
-                    </option>
-                    <option
-                        value="completed" <?= (isset($roadtrip->status) && $roadtrip->status == 'termine') ? 'selected' : '' ?>>
-                        ✅ Projet terminé
-                    </option>
+            <div class="region-selector-container">
+                <label for="regionSelect">🌍 Zone de recherche :</label>
+                <small class="help-text-small">Centre la carte et filtre les villes suggérées.</small>
+                <select id="regionSelect" class="full-width-input margin-bottom">
+                    <option value="europe" <?= (isset($roadtrip->place) && $roadtrip->place === 'europe') ? 'selected' : '' ?>>Europe</option>
+                    <option value="america" <?= (isset($roadtrip->place) && $roadtrip->place === 'america') ? 'selected' : '' ?>>Amérique du Nord (USA, Canada, Mexique)</option>
                 </select>
             </div>
 
-            <label for="roadtripVisibilite" style="font-weight:bold;">Qui peut voir ce RoadTrip ?</label>
-            <select id="roadtripVisibilite" style="width:100%;box-sizing:border-box;margin-bottom:6px;">
-                <option value="private" <?= ($roadtrip->visibility == 'prive') ? 'selected' : '' ?>>🔒 Privé (Moi seul)
-                </option>
-                <option value="friends" <?= ($roadtrip->visibility == 'amis') ? 'selected' : '' ?>>👥 Amis</option>
-                <option value="public" <?= ($roadtrip->visibility == 'public') ? 'selected' : '' ?>>🌍 Public (Tout le
-                    monde)
-                </option>
-            </select>
-            <small style="display:block; margin-bottom:10px; color:#666;">
-                * Vous pouvez partager un brouillon en mode "Amis" ou "Public".
-            </small>
+            <div id="legend" class="block-display">
+                <h3>Itinéraire :</h3>
+                <ul id="legendList" class="no-bullets padding-zero"></ul>
+                <div id="newBlockForm" class="hidden"></div>
+            </div>
 
-            <label>Couverture du Road Trip :</label>
-            <?php if ($modeEdition && !empty($roadtrip->photo_url)): ?>
-                <div style="margin-bottom:5px;">
-                    <?= $this->Html->image('roadtrips/' . $roadtrip->photo_url, ['style' => 'width:100px; height:auto; border-radius:5px;']) ?>
-                    <br><small>Image actuelle</small>
-                </div>
-            <?php endif; ?>
-            <input type="file" id="roadtripPhoto" accept="image/*">
+            <div id="actionsContainer" class="margin-top-small">
+                <button type="button" id="btnAddSegment" class="full-width-btn">+ Ajouter un trajet</button>
+            </div>
 
-            <button id="saveRoadtrip" type="button"
-                    data-id="<?= $modeEdition ? $roadtrip->id : '' ?>"
-                    data-url="<?= $this->Url->build(['action' => $modeEdition ? 'edit' : 'add', $modeEdition ? $roadtrip->id : null]) ?>">
-                <?= $modeEdition ? "Mettre à jour" : "Sauvegarder" ?>
+            <hr>
+
+            <button type="button" id="triggerSaveModal" onclick="openRoadtripModal('modalSaveRoadtrip')">
+                <i class="material-icons" style="vertical-align: middle;">save</i> <?= $isEditMode ? "Paramètres & Mise à jour" : "Paramètres & Sauvegarde" ?>
             </button>
         </div>
     </div>
 
-    <div class="segment-form-container" id="segmentFormContainer" style="display:none;">
+    <div class="segment-form-container hidden" id="segmentFormContainer">
         <span id="closeSegmentForm" class="close-segment-btn" title="Fermer">✖</span>
         <h3 id="segmentTitle">Planifier les étapes</h3>
         <div id="subEtapesContainer"></div>
 
         <div class="subEtape-buttons">
-            <button id="addSubEtape">+ Ajouter une sous-étape</button>
-            <button id="saveSegment">Valider les sous-étapes</button>
+            <button type="button" id="addSubEtape">+ Ajouter une sous-étape</button>
+            <button type="button" id="saveSegment">Valider les sous-étapes</button>
         </div>
     </div>
 
@@ -169,8 +91,7 @@ $this->assign('mainClass', '');
                 <button type="button" class="transport-btn" data-mode="Marche" title="À Pied">🚶</button>
             </div>
             <button type="button" class="settings-btn" title="Options de trajet">⚙️</button>
-            <button class="toggleSousEtapes legend-toggle-btn">▼</button>
-
+            <button type="button" class="toggleSousEtapes legend-toggle-btn">▼</button>
             <button type="button" class="remove-segment-btn" title="Supprimer ce trajet">✖</button>
         </div>
 
@@ -181,7 +102,7 @@ $this->assign('mainClass', '');
             <input type="time" class="legend-time-input" value="08:00" required>
         </div>
 
-        <div class="route-preferences" style="display: none;">
+        <div class="route-preferences hidden">
             <label class="pref-item">
                 <input type="checkbox" class="pref-checkbox" data-pref="exclude-tolls">
                 <span>Sans péages</span>
@@ -192,8 +113,8 @@ $this->assign('mainClass', '');
             </label>
         </div>
 
-        <button class="modifierSousEtapes">Ajouter/Modifier Sous-étapes</button>
-        <ul class="sousEtapesList" style="display:block;"></ul>
+        <button type="button" class="modifierSousEtapes">Ajouter/Modifier Sous-étapes</button>
+        <ul class="sousEtapesList block-display"></ul>
     </li>
 </template>
 
@@ -203,13 +124,104 @@ $this->assign('mainClass', '');
 
         <div class="subEtapeEditorContainer"></div>
 
-        <label style="font-size:0.8em; font-weight:bold;">Temps passé sur place (estimation)</label>
+        <label class="small-bold-label">Temps passé sur place (estimation)</label>
         <input type="time" class="subEtapeHeure" required>
 
-        <button class="removeSubEtapeBtn sub-etape-remove-btn">✖</button>
+        <button type="button" class="removeSubEtapeBtn sub-etape-remove-btn">✖</button>
     </div>
 </template>
 
 <div id="imageModal" class="image-modal">
-    <img id="imageModalContent" class="image-modal-content" src="" alt="photo en grand">
+    <?= $this->Html->image('', ['id' => 'imageModalContent', 'class' => 'image-modal-content', 'alt' => 'Photo agrandie']) ?>
+</div>
+
+<div id="modalSaveRoadtrip" class="custom-modal">
+    <div class="modal-content" style="max-width: 500px; padding: 0; background: transparent; box-shadow: none;">
+
+        <div class="sidebar" style="width: 100%; max-width: 100%;">
+            <div id="saveContainer" style="margin: 0; border: 2px solid var(--bleu_clair); max-height: 85vh; overflow-y: auto; scrollbar-width: thin;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px;">
+                    <h3 style="margin: 0; border: none; padding: 0;">Sauvegarde & Paramètres</h3>
+                    <button type="button" onclick="closeRoadtripModal('modalSaveRoadtrip')" style="background: transparent; border: none; color: var(--beige); font-size: 28px; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+
+                <?= $this->Form->create($roadtrip, ['type' => 'file', 'id' => 'roadtripForm']) ?>
+
+                <?= $this->Form->control('title', [
+                    'id' => 'roadtripTitle',
+                    'placeholder' => 'Titre du RoadTrip',
+                    'label' => false,
+                    'class' => 'full-width-input margin-bottom'
+                ]) ?>
+
+                <?= $this->Form->control('description', [
+                    'id' => 'roadtripDescription',
+                    'type' => 'textarea',
+                    'placeholder' => 'Description (optionnelle)',
+                    'label' => false,
+                    'class' => 'full-width-input margin-bottom'
+                ]) ?>
+
+                <div class="status-selector-container margin-bottom">
+                    <?= $this->Form->control('status', [
+                        'id' => 'roadtripStatut',
+                        'type' => 'select',
+                        'label' => ['text' => 'Avancement du projet :', 'class' => 'bold-label'],
+                        'class' => 'full-width-input',
+                        'options' => [
+                            'draft' => '📝 En cours de création (Brouillon)',
+                            'completed' => '✅ Projet terminé'
+                        ],
+                        'default' => $roadtrip->status ?? 'draft'
+                    ]) ?>
+                </div>
+
+                <div class="visibility-selector-container margin-bottom">
+                    <?= $this->Form->control('visibility', [
+                        'id' => 'roadtripVisibilite',
+                        'type' => 'select',
+                        'label' => ['text' => 'Qui peut voir ce RoadTrip ?', 'class' => 'bold-label'],
+                        'class' => 'full-width-input',
+                        'options' => [
+                            'private' => '🔒 Privé (Moi seul)',
+                            'friends' => '👥 Amis',
+                            'public' => '🌍 Public (Tout le monde)'
+                        ],
+                        'default' => $roadtrip->visibility ?? 'private'
+                    ]) ?>
+                    <small class="help-text">
+                        * Vous pouvez partager un brouillon en mode "Amis" ou "Public".
+                    </small>
+                </div>
+
+                <div class="image-upload-container margin-bottom">
+                    <label class="bold-label">Couverture du Road Trip :</label>
+                    <?php if ($isEditMode && !empty($roadtrip->photo_url)): ?>
+                        <div class="current-image-wrapper">
+                            <?= $this->Html->image('roadtrips/' . $roadtrip->photo_url, ['class' => 'preview-thumbnail', 'alt' => 'Couverture actuelle']) ?>
+                            <br><small>Image actuelle</small>
+                        </div>
+                    <?php endif; ?>
+
+                    <?= $this->Form->control('photo_cover', [
+                        'type' => 'file',
+                        'id' => 'roadtripPhoto',
+                        'accept' => 'image/*',
+                        'label' => false
+                    ]) ?>
+                </div>
+
+                <?= $this->Form->hidden('trajets', ['id' => 'trajetsJsonData']) ?>
+
+                <?= $this->Form->button($isEditMode ? "Confirmer la mise à jour" : "Confirmer la sauvegarde", [
+                    'type' => 'button',
+                    'id' => 'saveRoadtrip',
+                    'class' => 'submit-btn full-width-btn margin-top-small'
+                ]) ?>
+
+                <?= $this->Form->end() ?>
+            </div>
+        </div>
+    </div>
 </div>

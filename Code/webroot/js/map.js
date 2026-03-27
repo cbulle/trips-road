@@ -150,7 +150,7 @@ function showToast(message) {
 // 4. CARTE : INITIALISATION
 // ============================================================
 
-function initMap() {
+function initRoadTripMap() {
     const regionSelectEl = document.getElementById('regionSelect');
     state.currentRegion = regionSelectEl ? regionSelectEl.value : 'europe';
 
@@ -1190,7 +1190,7 @@ function bindEvents() {
 // ============================================================
 
 async function init() {
-    initMap();
+    initRoadTripMap();
 
     await fetchUserFavorites();
     loadMapFavorites();

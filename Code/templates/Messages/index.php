@@ -1,42 +1,20 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var array $enriched
  * @var int $userId
  */
+$this->assign('title', 'Messagerie');
 ?>
-
 
 <main class="main-index">
     <div class="messagerie-container">
-        <div class="conversations-list">
+        <div class="conversations-list mobile-full">
             <h2>Mes messages</h2>
-
-            <?php if (empty($enriched)): ?>
-                <p class="no-conversations">Aucune conversation</p>
-            <?php else: ?>
-                <?php foreach ($enriched as $conv): ?>
-                    <a href="<?= $this->Url->build(['action' => 'view', $conv->id]) ?>"
-                       class="conversation-item">
-                        <div class="conv-header">
-                                <span class="conv-name">
-                                    <?= h($conv->ami->prenom . ' ' . $conv->ami->nom) ?>
-                                </span>
-                            <?php if ($conv->unread_count > 0): ?>
-                                <span class="badge-unread"><?= $conv->unread_count ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <p class="conv-preview">
-                            <?= h(mb_substr($conv->last_message, 0, 50)) ?>
-                        </p>
-                    </a>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <?= $this->cell('Message', [$userId]) ?>
         </div>
-
-        <div class="chat-area">
+        <div class="chat-area mobile-hidden">
             <div class="no-chat-selected">
-                <i class="material-icons">chat_bubble</i>
+                <i class="material-icons" id="chat_icon">chat_bubble</i>
                 <p>Sélectionnez une conversation</p>
             </div>
         </div>

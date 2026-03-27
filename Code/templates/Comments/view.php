@@ -2,12 +2,11 @@
 $this->assign('mainClass', 'comment-view-page');
 
 /**
- * Page affichant les détails complets d'un commentaire spécifique.
+ * View displaying the full details of a specific comment.
  *
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Comment $comment L'entité du commentaire à afficher
+ * @var \App\Model\Entity\Comment $comment The comment entity to display
  */
-
 ?>
 
 <div class="comment-view-container">
@@ -31,13 +30,11 @@ $this->assign('mainClass', 'comment-view-page');
 
             <div class="meta-infos-grid">
                 <div class="info-box">
-                    <?php
-                    // On récupère l'utilisateur depuis l'entité $comment
-                    $user = $comment->user;
-                    ?>
+                    <?php $user = $comment->user; ?>
 
-                    <?php if (!empty($comment->user->profile_picture)): ?>
-                        <img src="<?= $this->Url->build('/uploads/pp/' . h($comment->user->profile_picture)) ?>" class="ami-photo">                    <?php else: ?>
+                    <?php if (!empty($user->profile_picture)): ?>
+                        <?= $this->Html->image('/uploads/pp/' . h($user->profile_picture), ['class' => 'ami-photo', 'alt' => 'Avatar']) ?>
+                    <?php else: ?>
                         <div class="ami-placeholder">
                             <?= strtoupper(substr($user->first_name ?? 'A', 0, 1)) ?>
                         </div>

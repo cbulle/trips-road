@@ -1,19 +1,19 @@
 :root {
-    --bleu_clair : #39B2A5;
-    --bleu_fonce : #0B667D;
-    --bleu_fonce_ecriture : #0b0b0b;
-    --beige : #F2E9D6;
-    --beige_fonce : #E0C58B;
-    --orange : #FF7F50;
+    --bleu_clair: #39B2A5;
+    --bleu_fonce: #0B667D;
+    --bleu_fonce_ecriture: #0b0b0b;
+    --beige: #F2E9D6;
+    --beige_fonce: #E0C58B;
+    --orange: #FF7F50;
     --orange_sombre: #FF7F50;
     --orange_malvoyant: #FF7F50;
     --vert_btn: #2E8B57;
-    --vert : #2E8B57 ;
+    --vert: #2E8B57;
     --gris_fonce: #22292b;
     --gris_clair: #8b8a8a;
     --noir: #000000;
     --white: #FFFFFF;
-    --rouge: #BF092F ;
+    --rouge: #BF092F;
     --beige_visu: #F2E9D6;
 }
 
@@ -30,7 +30,7 @@ html.dark {
     --beige_fonce: #16476A;
     --bleu_fonce_ecriture: rgb(238, 238, 238);
     --beige_visu: #40a79c;
-    --noir : #FFFFFF;
+    --noir: #FFFFFF;
     color: black;
 }
 
@@ -105,18 +105,17 @@ html.MalvoyantBtn {
 }
 
 
-
 /* ==============================
   STYLE GLOBAL
 ============================== */
-*, ::before, ::after{
-    text-decoration: none ;
+*, ::before, ::after {
+    text-decoration: none;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-main{
+main {
     flex: 1;
 }
 
@@ -138,12 +137,12 @@ body {
 }
 
 
-h1{
+h1 {
     color: var(--orange);
     text-align: center;
 }
 
-button, input, select, textarea, label{
+button, input, select, textarea, label {
     font-size: 20px;
 }
 
@@ -163,7 +162,6 @@ input::placeholder {
 }
 
 
-
 .dark .leaflet-tile {
     filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
@@ -171,6 +169,7 @@ input::placeholder {
 .leaflet-tile {
     transition: filter 0.5s ease-in-out;
 }
+
 /*===================================
           Photo-Profil
 =====================================*/
@@ -182,21 +181,20 @@ input::placeholder {
 }
 
 .profil-photo {
-    position: relative ;
+    position: relative;
     width: 70px;
     height: 70px;
     border-radius: 50%;
     overflow: hidden;
     object-fit: cover;
     border: 2px solid var(--beige_visu);
-    bottom: 80px ;
+    bottom: 80px;
 }
 
 
-
-.pp_logout{
-    position : relative ;
-    right : 32px ;
+.pp_logout {
+    position: relative;
+    right: 32px;
 }
 
 /* ==============================
@@ -229,6 +227,7 @@ input::placeholder {
     background: #3498db;
     color: white;
 }
+
 .btn-view:hover {
     background: #217dbb;
 }
@@ -238,9 +237,11 @@ input::placeholder {
     background: #f1c40f;
     color: black;
 }
+
 .btn-edit svg path {
     stroke: black;
 }
+
 .btn-edit:hover {
     background: #d4ac0d;
 }
@@ -250,15 +251,17 @@ input::placeholder {
     background-color: #e74c3c;
     color: white;
 }
+
 .btn-delete svg path {
     stroke: white;
 }
+
 .btn-delete:hover {
     background: #c0392b;
 }
 
-.roadtrip-vu{
-    padding : 50px;
+.roadtrip-vu {
+    padding: 50px;
 }
 
 .roadtrip-header {
@@ -268,7 +271,7 @@ input::placeholder {
     border-radius: 8px;
 }
 
-.trajet-info h2{
+.trajet-info h2 {
     text-align: left;
 }
 
@@ -319,7 +322,7 @@ input::placeholder {
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-left: 4px solid var(--orange);
 }
 
@@ -390,14 +393,14 @@ input::placeholder {
 .card-vu {
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     overflow: visible; /* Changé de hidden à visible pour permettre le sticky */
     transition: box-shadow 0.3s;
 }
 
 .card-vu:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .trajet-header {
@@ -420,7 +423,7 @@ input::placeholder {
     flex: 1;
 }
 
-.trajet-info h2{
+.trajet-info h2 {
     text-align: left;
 }
 
@@ -471,7 +474,7 @@ input::placeholder {
     padding: 15px;
     margin-bottom: 15px;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-left: 4px solid var(--orange);
 }
 
@@ -534,8 +537,12 @@ input::placeholder {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .no-sous-etapes {
@@ -549,12 +556,12 @@ input::placeholder {
 /* ==============================
   CARTE LEAFLET
 ============================== */
-.map-container, #map{
+.map-container, #map {
     flex: 1;
     width: 100%;
     height: 875px;
     border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .map-container {
@@ -570,12 +577,14 @@ input::placeholder {
     height: auto;
     border-radius: 6px;
     margin-top: 5px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s ease;
     cursor: zoom-in;
 }
 
-.sousetape-photo:hover { transform: scale(1.03); }
+.sousetape-photo:hover {
+    transform: scale(1.03);
+}
 
 
 .segment-header {
@@ -765,6 +774,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     margin-bottom: 5px;
     line-height: 1.4;
 }
+
 .sous-etape-card table {
     width: 100%;
     border-collapse: collapse;
@@ -810,12 +820,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     align-items: center;
     margin-bottom: 5px;
 }
+
 .etape-input {
     flex: 1;
     width: 100%;
     padding: 10px;
     border-radius: 15px;
 }
+
 .btn-remove-etape {
     background: none;
     border: none;
@@ -831,10 +843,12 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     max-height: 50px;
     margin-left: 5px;
 }
+
 .legend-sub-item-content {
     display: flex;
     align-items: center;
 }
+
 .legend-sub-text {
     flex-grow: 1;
 }
@@ -857,7 +871,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     height: 450px;
     border-radius: 15px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     z-index: 1;
     transition: opacity 0.3s ease, max-height 0.3s ease;
     overflow: hidden;
@@ -883,8 +897,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .trajet-header {
@@ -900,6 +920,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 .toggle-icon {
     transition: transform 0.3s ease;
 }
+
 .card-vu.active .toggle-icon {
     transform: rotate(180deg);
 }
@@ -988,12 +1009,12 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .photos-container img:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Style pour la description des sous-etapes */
@@ -1088,8 +1109,12 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 .segment-info .segment-distance,
@@ -1118,7 +1143,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     font-weight: bold;
     font-size: 14px;
     border: 2px solid white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
     position: relative;
     z-index: 100;
 }
@@ -1128,11 +1153,13 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     margin-top: -10px !important;
     z-index: 110 !important;
 }
+
 .marker-offset-right {
     margin-left: 18px !important;
     margin-top: 10px !important;
     z-index: 100 !important;
 }
+
 /* ==============================
    STYLES POUR LES HORAIRES
 ============================== */
@@ -1197,8 +1224,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 
 /* Animation pour le chargement */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .horaire-calcule:not(.horaire-loader) {
@@ -1214,7 +1247,7 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     color: white;
     padding: 15px 25px;
     border-radius: 50px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     font-size: 0.95rem;
     font-weight: 500;
     display: flex;
@@ -1231,8 +1264,14 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 }
 
 @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .status-badge {
@@ -1243,11 +1282,13 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
     font-weight: bold;
     margin-bottom: 10px;
 }
+
 .status-termine {
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
 }
+
 .status-brouillon {
     background-color: #fff3cd;
     color: #856404;
@@ -1308,4 +1349,43 @@ STYLES DES ELEMENTS DE L'EDITEUR DE TEXTE POUR LES SOUS-ETAPES
 #map-global {
     background-color: #ddd;
     z-index: 1;
+}
+
+.flex-header-tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.icon-align-middle {
+    vertical-align: middle;
+    font-size: 18px;
+}
+
+.btn-danger-custom {
+    background: #e74c3c;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.text-center-empty {
+    text-align: center;
+    margin-top: 50px;
+    color: #666;
+}
+
+.btn-padded {
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+.badge-dark {
+    background-color: #34495e;
+    color: #fff;
 }

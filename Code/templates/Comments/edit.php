@@ -1,15 +1,14 @@
 <?php
 $this->assign('mainClass', 'comment-edit-page');
+
 /**
- * Page contenant le formulaire de modification d'un commentaire existant.
+ * Page containing the form to modify an existing comment.
  *
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Comment $comment Le commentaire en cours de modification
- * @var \Cake\Collection\CollectionInterface|string[] $users Liste des utilisateurs
- * @var \Cake\Collection\CollectionInterface|string[] $roadtrips Liste des roadtrips
- * @var \Cake\Collection\CollectionInterface|string[] $pointsOfInterests Liste des points d'intérêt
+ * @var \App\Model\Entity\Comment $comment The comment being modified
+ * @var \Cake\Collection\CollectionInterface|string[] $roadtrips List of roadtrips
+ * @var \Cake\Collection\CollectionInterface|string[] $pointsOfInterests List of points of interest
  */
-
 ?>
 
 <div class="comment-edit-container">
@@ -21,10 +20,6 @@ $this->assign('mainClass', 'comment-edit-page');
 
         <div class="card-body">
             <?= $this->Form->create($comment, ['class' => 'custom-form']) ?>
-
-            <div style="display: none;">
-                <?= $this->Form->control('user_id', ['options' => $users]) ?>
-            </div>
 
             <div class="form-row">
                 <div class="form-group">

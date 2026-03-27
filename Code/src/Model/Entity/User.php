@@ -76,6 +76,7 @@ class User extends Entity
         'points_of_interests' => true,
         'roadtrips' => true,
         'user_tokens' => true,
+        'profile_picture_file' => true,
     ];
 
     /**
@@ -87,9 +88,38 @@ class User extends Entity
         'password',
     ];
 
+    protected array $_virtual = ['full_name', 'avatar_url'];
+
     protected function _setPassword(string $password)
     {
         $hasher = new DefaultPasswordHasher();
         return $hasher->hash($password);
+    }
+
+
+    /**
+     * Return the full name of the user
+     * @return string
+     */
+    protected function _getFullName(): string
+    {
+        return trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''));
+    }
+
+    /**
+     * Return the url of the user's profile picture
+     */
+    protected function _getAvatarUrl(): string
+    {
+        $defaultImage = '/img/User.png';
+        $fileName = $this->profile_picture;
+
+        if (!empty($fileName)) {
+            $physicalPath = WWW_ROOT . 'uploads' . DS . 'pp' . DS . $fileName;
+            if (file_exists($physicalPath)) {
+                return '/uploads/pp/' . $fileName;
+            }
+        }
+        return $defaultImage;
     }
 }

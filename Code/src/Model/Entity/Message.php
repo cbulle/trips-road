@@ -6,6 +6,7 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 use Cake\Utility\Security;
 use Cake\Core\Configure;
+
 /**
  * Message Entity
  *
@@ -27,6 +28,7 @@ use Cake\Core\Configure;
 class Message extends Entity
 {
     protected array $_virtual = ['content'];
+
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -36,17 +38,10 @@ class Message extends Entity
      *
      * @var array<string, bool>
      */
-
     protected array $_accessible = [
         '*' => true,
         'id' => false,
     ];
-
-
-
-    /**
-     * Mutateur : Chiffre le message avant la sauvegarde
-     */
 
     protected function _setBody(?string $value): ?string
     {
@@ -55,13 +50,17 @@ class Message extends Entity
         }
 
         $key = Configure::read('Security.messageKey');
+        if (empty($key)) {
+            return $value;
+        }
 
-        return Security::encrypt($value, $key);
+        try {
+            return Security::encrypt($value, $key);
+        } catch (\Exception $e) {
+            return $value;
+        }
     }
 
-    /**
-     * DÉCHIFFREMENT : Gère la ressource BLOB et déchiffre pour l'affichage
-     */
     protected function _getContent()
     {
         $value = $this->body;
@@ -75,17 +74,22 @@ class Message extends Entity
         }
 
         $key = Configure::read('Security.messageKey');
+        if (empty($key)) {
+            return $value;
+        }
 
-        $decrypted = Security::decrypt($value, $key);
-
-        if ($decrypted !== false && $decrypted !== null) {
-            return $decrypted;
+        try {
+            $decrypted = Security::decrypt($value, $key);
+            if ($decrypted !== false && $decrypted !== null) {
+                return $decrypted;
+            }
+        } catch (\Exception $e) {
         }
 
         if (mb_check_encoding($value, 'UTF-8')) {
             return $value;
         }
 
-        return '🔒 [Erreur de déchiffrement]';
+        return '🔒 [Message illisible]';
     }
 }

@@ -7,6 +7,9 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\EventInterface;
+use Cake\Datasource\EntityInterface;
+use ArrayObject;
 
 /**
  * Roadtrips Model
@@ -77,6 +80,41 @@ class RoadtripsTable extends Table
             'targetForeignKey' => 'points_of_interest_id',
             'joinTable' => 'points_of_interests_roadtrips',
         ]);
+    }
+
+    /**
+     * CallBack beforeSave
+     * Gère l'upload de l'image de couverture avant la sauvegarde en base.
+     *
+     * @param \Cake\Event\EventInterface $event
+     * @param \Cake\Datasource\EntityInterface $entity
+     * @param \ArrayObject $options
+     * @return void
+     */
+    public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void
+    {
+        $photo = $entity->get('photo_cover');
+
+        if ($photo instanceof \Laminas\Diactoros\UploadedFile && $photo->getError() === UPLOAD_ERR_OK) {
+
+            $ext = pathinfo($photo->getClientFilename(), PATHINFO_EXTENSION);
+            $newName = 'rt_' . uniqid() . '.' . $ext;
+
+            $dirPath = WWW_ROOT . 'uploads' . DS . 'roadtrips';
+            $destination = $dirPath . DS . $newName;
+
+            if (!file_exists($dirPath)) {
+                mkdir($dirPath, 0777, true);
+            }
+
+            try {
+                $photo->moveTo($destination);
+
+                $entity->set('photo_url', $newName);
+            } catch (\Exception $e) {
+                \Cake\Log\Log::error("Erreur lors de l'upload de l'image du roadtrip : " . $e->getMessage());
+            }
+        }
     }
 
     /**

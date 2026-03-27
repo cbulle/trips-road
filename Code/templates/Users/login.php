@@ -6,7 +6,7 @@
         <div class="in_form">
             <div class="toggle-box">
                 <button class="toggle-btn active" disabled>Se connecter</button>
-                <a href="<?= $this->Url->build(['action' => 'add']) ?>" class="toggle-btn">S'inscrire</a>
+                <?= $this->Html->link('S\'inscrire', ['action' => 'add'], ['class' => 'toggle-btn']) ?>
             </div>
 
             <?= $this->Form->create(null, ['class' => 'form-box', 'id' => 'loginForm']) ?>
@@ -16,16 +16,17 @@
             <?= $this->Form->control('password', ['label' => 'Mot de passe', 'required' => true]) ?>
 
             <label>
-                <input type="checkbox" name="remember_me" value="1"> Se souvenir de moi
+                <?= $this->Form->checkbox('remember_me', ['value' => '1']) ?> Se souvenir de moi
             </label>
 
             <div class="forgot-password">
                 <?= $this->Html->link('Mot de passe oublié ?', ['action' => 'forgotPassword']) ?>
             </div>
 
-            <button type="submit">Se connecter</button>
+            <?= $this->Form->button('Se connecter', ['type' => 'submit']) ?>
             <?= $this->Form->end() ?>
         </div>
+
         <div style="margin-top: 20px; text-align: center;">
             <p>Ou connectez-vous avec :</p>
             <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'loginGoogle']) ?>" class="btn-google">
@@ -33,23 +34,5 @@
                 Continuer avec Google
             </a>
         </div>
-
-        <style>
-            .btn-google {
-                display: inline-block;
-                background: white;
-                color: #444;
-                border: 1px solid #ddd;
-                padding: 10px 20px;
-                border-radius: 5px;
-                text-decoration: none;
-                font-weight: bold;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                transition: background 0.3s;
-            }
-            .btn-google:hover {
-                background: #f1f1f1;
-            }
-        </style>
     </div>
 </div>

@@ -117,6 +117,152 @@ function createCustomIcon(emoji, color) {
     });
 }
 
+/**
+ * Initializes the map and layers.
+ * Sets up geolocation and click listeners.
+ * @inner
+ * @function initMap
+ */
+function initMap() {
+    const mapContainer = document.getElementById('userMapIndex');
+    if (!mapContainer) return;
+
+    map = L.map('userMapIndex').setView(currentCoords, 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19
+    }).addTo(map);
+
+    searchLayer = L.layerGroup().addTo(map);
+    poiLayer = L.layerGroup().addTo(map);
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            pos => updateSearchPosition(pos.coords.latitude, pos.coords.longitude, 13),
+            () => updateSearchPosition(currentCoords[0], currentCoords[1], 6)
+        );
+    } else {
+        updateSearchPosition(currentCoords[0], currentCoords[1], 6);
+    }
+
+    map.on('click', e => updateSearchPosition(e.latlng.lat, e.latlng.lng));
+
+    setTimeout(() => { map.invalidateSize(); }, 200);
+}
+
+/**
+ * Updates the central marker position and search circle radius.
+ * @inner
+ * @function updateSearchPosition
+ * @param {number} lat - Latitude
+ * @param {number} lng - Longitude
+ * @param {number|null} [zoom=null] - Optional zoom level
+ */
+function updateSearchPosition(lat, lng, zoom = null) {
+    currentCoords = [lat, lng];
+    if(searchLayer) searchLayer.clearLayers();
+
+    const userIcon = L.divIcon({
+        html: '<div style="font-size:30px; margin-top:-20px; text-align:center;">📍</div>',
+        className: 'custom-pin',
+        iconSize: [30, 42],
+        iconAnchor: [15, 20]
+    });
+
+    L.marker([lat, lng], { icon: userIcon }).addTo(searchLayer);
+
+    currentCircle = L.circle([lat, lng], {
+        color: '#3498db',
+        fillColor: '#3498db',
+        fillOpacity: 0.15,
+        radius: searchRadius
+    }).addTo(searchLayer);
+
+    if (zoom && map) map.setView([lat, lng], zoom);
+
+    const categorySelect = document.getElementById('categorySelect');
+    if (categorySelect && categorySelect.value) {
+        loadPOI(categorySelect.value);
+    }
+}
+
+/**
+ * Calls the Overpass API to load POIs based on the selected category.
+ * @async
+ * @inner
+ * @function loadPOI
+ * @param {string} filterType - The category key from poiFilters
+ */
+async function loadPOI(filterType) {
+    if(!poiLayer) return;
+    poiLayer.clearLayers();
+    document.body.style.cursor = 'wait';
+
+    const filter = poiFilters[filterType];
+    const clearFilterBtn = document.getElementById('clearFilterBtn');
+
+    if (!filter) {
+        document.body.style.cursor = 'default';
+        return;
+    }
+
+    const query = filter.query
+        .replace(/{lat}/g, currentCoords[0])
+        .replace(/{lon}/g, currentCoords[1])
+        .replace(/{radius}/g, searchRadius);
+
+    const overpassUrl = 'https://overpass-api.de/api/interpreter';
+    const overpassQuery = `[out:json][timeout:25];(${query});out body;`;
+
+    try {
+        const response = await fetch(overpassUrl, { method: 'POST', body: overpassQuery });
+        const data = await response.json();
+
+        if (data.elements.length > 0) {
+            if (clearFilterBtn) clearFilterBtn.style.display = 'block';
+            data.elements.forEach(element => {
+                if (element.lat && element.lon) {
+                    const icon = createCustomIcon(filter.icon, filter.color);
+                    L.marker([element.lat, element.lon], { icon: icon })
+                        .addTo(poiLayer)
+                        .bindPopup(`<b>${filter.icon} ${element.tags.name || 'Sans nom'}</b>`);
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Erreur API Overpass :", error);
+    } finally {
+        document.body.style.cursor = 'default';
+    }
+}
+
+async function searchLocation(query, searchResultsContainer, searchInputElement) {
+    if (query.length <= 2) {
+        searchResultsContainer.innerHTML = '';
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        searchResultsContainer.innerHTML = '';
+        data.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item.display_name;
+            li.addEventListener('click', () => {
+                updateSearchPosition(parseFloat(item.lat), parseFloat(item.lon), 14);
+                searchResultsContainer.innerHTML = '';
+                searchInputElement.value = '';
+            });
+            searchResultsContainer.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Erreur API Nominatim :", error);
+    }
+}
+
 /* ======================================================
    INITIALIZATION AND DOM LOGIC
    ====================================================== */
@@ -129,118 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const radiusSlider = document.getElementById('radiusSlider');
     const radiusValueSpan = document.getElementById('radiusValue');
 
-    if (!document.getElementById('userMapIndex')) return;
-
-    /**
-     * Initializes the map and layers.
-     * Sets up geolocation and click listeners.
-     * @inner
-     * @function initMap
-     */
-    function initMap() {
-        map = L.map('userMapIndex').setView(currentCoords, 6);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap',
-            maxZoom: 19
-        }).addTo(map);
-
-        searchLayer = L.layerGroup().addTo(map);
-        poiLayer = L.layerGroup().addTo(map);
-
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                pos => updateSearchPosition(pos.coords.latitude, pos.coords.longitude, 13),
-                () => updateSearchPosition(currentCoords[0], currentCoords[1], 6)
-            );
-        } else {
-            updateSearchPosition(currentCoords[0], currentCoords[1], 6);
-        }
-
-        map.on('click', e => updateSearchPosition(e.latlng.lat, e.latlng.lng));
-
-        setTimeout(() => { map.invalidateSize(); }, 200);
-    }
-
-    /**
-     * Updates the central marker position and search circle radius.
-     * @inner
-     * @function updateSearchPosition
-     * @param {number} lat - Latitude
-     * @param {number} lng - Longitude
-     * @param {number|null} [zoom=null] - Optional zoom level
-     */
-    function updateSearchPosition(lat, lng, zoom = null) {
-        currentCoords = [lat, lng];
-        searchLayer.clearLayers();
-
-        const userIcon = L.divIcon({
-            html: '<div style="font-size:30px; margin-top:-20px; text-align:center;">📍</div>',
-            className: 'custom-pin',
-            iconSize: [30, 42],
-            iconAnchor: [15, 20]
-        });
-
-        L.marker([lat, lng], { icon: userIcon }).addTo(searchLayer);
-
-        currentCircle = L.circle([lat, lng], {
-            color: '#3498db',
-            fillColor: '#3498db',
-            fillOpacity: 0.15,
-            radius: searchRadius
-        }).addTo(searchLayer);
-
-        if (zoom) map.setView([lat, lng], zoom);
-        if (categorySelect && categorySelect.value) loadPOI(categorySelect.value);
-    }
-
-    /**
-     * Calls the Overpass API to load POIs based on the selected category.
-     * @async
-     * @inner
-     * @function loadPOI
-     * @param {string} filterType - The category key from poiFilters
-     */
-    async function loadPOI(filterType) {
-        poiLayer.clearLayers();
-        document.body.style.cursor = 'wait';
-
-        const filter = poiFilters[filterType];
-        if (!filter) {
-            document.body.style.cursor = 'default';
-            return;
-        }
-
-        const query = filter.query
-            .replace(/{lat}/g, currentCoords[0])
-            .replace(/{lon}/g, currentCoords[1])
-            .replace(/{radius}/g, searchRadius);
-
-        const overpassUrl = 'https://overpass-api.de/api/interpreter';
-        const overpassQuery = `[out:json][timeout:25];(${query});out body;`;
-
-        try {
-            const response = await fetch(overpassUrl, { method: 'POST', body: overpassQuery });
-            const data = await response.json();
-            document.body.style.cursor = 'default';
-
-            if (data.elements.length > 0) {
-                if (clearFilterBtn) clearFilterBtn.style.display = 'block';
-                data.elements.forEach(element => {
-                    if (element.lat && element.lon) {
-                        const icon = createCustomIcon(filter.icon, filter.color);
-                        L.marker([element.lat, element.lon], { icon: icon })
-                            .addTo(poiLayer)
-                            .bindPopup(`<b>${filter.icon} ${element.tags.name || 'Sans nom'}</b>`);
-                    }
-                });
-            }
-        } catch (error) {
-            console.error("Erreur Overpass :", error);
-            document.body.style.cursor = 'default';
-        }
-    }
-
+    initMap();
 
     if (radiusSlider) {
         radiusSlider.addEventListener('input', function() {
@@ -251,21 +286,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         radiusSlider.addEventListener('change', function() {
-            if (categorySelect && categorySelect.value) loadPOI(categorySelect.value);
+            if (categorySelect && categorySelect.value) {
+                loadPOI(categorySelect.value);
+            }
         });
     }
 
-
     if (categorySelect) {
         categorySelect.addEventListener('change', function() {
-            if (this.value) loadPOI(this.value);
-            else {
+            if (this.value) {
+                loadPOI(this.value);
+            } else {
                 poiLayer.clearLayers();
                 if (clearFilterBtn) clearFilterBtn.style.display = 'none';
             }
         });
     }
-
 
     if (clearFilterBtn) {
         clearFilterBtn.addEventListener('click', function() {
@@ -275,29 +311,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    if (searchInput) {
+    if (searchInput && searchResults) {
         searchInput.addEventListener('input', function() {
             const query = this.value.trim();
-            if (query.length > 2) {
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        searchResults.innerHTML = '';
-                        data.forEach(item => {
-                            const li = document.createElement('li');
-                            li.textContent = item.display_name;
-                            li.addEventListener('click', () => {
-                                updateSearchPosition(parseFloat(item.lat), parseFloat(item.lon), 14);
-                                searchResults.innerHTML = '';
-                                searchInput.value = '';
-                            });
-                            searchResults.appendChild(li);
-                        });
-                    });
-            } else { searchResults.innerHTML = ''; }
+            searchLocation(query, searchResults, searchInput);
         });
     }
-
-
-    initMap();
 });

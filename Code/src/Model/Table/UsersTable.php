@@ -7,6 +7,9 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\EventInterface;
+use Cake\Datasource\EntityInterface;
+use ArrayObject;
 
 /**
  * Users Model
@@ -82,6 +85,40 @@ class UsersTable extends Table
         $this->hasMany('UserTokens', [
             'foreignKey' => 'user_id',
         ]);
+    }
+
+    /**
+     * CallBack beforeSave
+     * Handles the profile picture upload before saving the user to the database.
+     *
+     * @param \Cake\Event\EventInterface $event
+     * @param \Cake\Datasource\EntityInterface $entity
+     * @param \ArrayObject $options
+     * @return void
+     */
+    public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void
+    {
+        $photo = $entity->get('profile_picture_file');
+
+        if ($photo instanceof \Laminas\Diactoros\UploadedFile && $photo->getError() === UPLOAD_ERR_OK) {
+
+            $ext = pathinfo($photo->getClientFilename(), PATHINFO_EXTENSION);
+            $newName = 'pp_' . uniqid() . '.' . $ext;
+
+            $dirPath = WWW_ROOT . 'uploads' . DS . 'pp';
+            $destination = $dirPath . DS . $newName;
+
+            if (!file_exists($dirPath)) {
+                mkdir($dirPath, 0777, true);
+            }
+
+            try {
+                $photo->moveTo($destination);
+                $entity->set('profile_picture', $newName);
+            } catch (\Exception $e) {
+                \Cake\Log\Log::error("Error uploading profile picture: " . $e->getMessage());
+            }
+        }
     }
 
     /**

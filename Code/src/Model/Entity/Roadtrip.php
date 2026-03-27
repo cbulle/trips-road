@@ -52,5 +52,33 @@ class Roadtrip extends Entity
         'trips' => true,
         'points_of_interests' => true,
         'place' => true,
+        'photo_cover' => true,
     ];
+
+    /**
+     * Calculate and return the url of the cover image
+     * @return string
+     */
+    protected function _getCoverImage(): string
+    {
+        $defaultImage = '/img/imgBase.png';
+        $photoName = $this->photo_url ?? $this->photo ?? $this->photo_cover ?? null;
+
+        if (!empty($photoName)) {
+            $physicalPath = WWW_ROOT . 'uploads' . DS . 'roadtrips' . DS . $photoName;
+            if (file_exists($physicalPath)) {
+                return '/uploads/roadtrips/' . $photoName;
+            }
+        }
+        return $defaultImage;
+    }
+
+    /**
+     * Check if the roadtrip is over.
+     * @return bool
+     */
+    protected function _getIsCompleted(): bool
+    {
+        return ($this->status === 'completed' || $this->status === 'termine');
+    }
 }

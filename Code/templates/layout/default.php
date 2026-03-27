@@ -44,18 +44,21 @@
         'accessibilite',
         'creationRT',
         'favoris',
+        'flash',
         'footer',
         'form',
         'header',
         'index',
         'messagerie',
         'messaging-realtime',
+        'myComments',
         'page_link',
+        'pdfStyle',
         'profil',
         'roadTrip',
         'style',
         'view',
-        'myComments',
+
     ]) ?>
 
     <?= $this->fetch('meta') ?>
@@ -165,7 +168,7 @@ $currentUser = $this->request->getAttribute('identity');
                 <li><?= $this->Html->link('Commentaires', ['controller' => 'Comments', 'action' => 'index']) ?></li>
                 <li><?= $this->Html->link('Mon Compte', ['controller' => 'Users', 'action' => 'profile']) ?></li>
                 <li><?= $this->Html->link('Favoris', ['controller' => 'Favorites', 'action' => 'index']) ?></li>
-                <li><?= $this->Html->link('Historique', ['controller' => 'Roadtrips', 'action' => 'historique']) ?></li>
+                <li><?= $this->Html->link('Historique', ['controller' => 'Roadtrips', 'action' => 'history']) ?></li>
                 <li><?= $this->Html->link('Aide / FAQ', ['controller' => 'PageLink', 'action' => 'faq']) ?></li>
                 <li><?= $this->Html->link('A propos / Contact', ['controller' => 'PageLink', 'action' => 'contact']) ?></li>
                 <li><?= $this->Html->link('Déconnexion', ['controller' => 'Users', 'action' => 'logout']) ?></li>
@@ -205,11 +208,11 @@ $mainClass = $this->fetch('mainClass', 'main-index');
         </div>
         <ul class="footer-links">
             <li><?= $this->Html->link('Contact', ['controller' => 'PageLink', 'action' => 'contact'], ['class' => 'un']) ?></li>
-            <li><?= $this->Html->link('CGU', ['controller' => 'PageLink', 'action' => 'cgu'], ['class' => 'deux']) ?></li>
-            <li><?= $this->Html->link('Politique de confidentialité', ['controller' => 'PageLink', 'action' => 'politique'], ['class' => 'trois']) ?></li>
+            <li><?= $this->Html->link('CGU', ['controller' => 'PageLink', 'action' => 'terms'], ['class' => 'deux']) ?></li>
+            <li><?= $this->Html->link('Politique de confidentialité', ['controller' => 'PageLink', 'action' => 'privacy'], ['class' => 'trois']) ?></li>
             <li><?= $this->Html->link('FAQ', ['controller' => 'PageLink', 'action' => 'faq'], ['class' => 'quatre']) ?></li>
             <li><?= $this->Html->link('Road-Trip', ['controller' => 'Roadtrips', 'action' => 'index'], ['class' => 'cinq']) ?></li>
-            <li><?= $this->Html->link('Gestion des cookies', ['controller' => 'PageLink', 'action' => 'cookie'], ['class' => 'six']) ?></li>
+            <li><?= $this->Html->link('Gestion des cookies', ['controller' => 'PageLink', 'action' => 'cookies'], ['class' => 'six']) ?></li>
         </ul>
     </div>
 </footer>
@@ -223,7 +226,6 @@ $mainClass = $this->fetch('mainClass', 'main-index');
 <?= $this->Html->script([
     'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js',
     'https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js',
-    'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js' // Note : tu charges Leaflet en double (v1.9.4 en haut et v1.7.1 ici) !
 ]) ?>
 
 <?= $this->Html->script('https://code.jquery.com/jquery-3.6.0.min.js') ?>
@@ -249,7 +251,7 @@ $mainClass = $this->fetch('mainClass', 'main-index');
 <?php endif; ?>
 
 <?= $this->Html->script('index', ['block' => true]) ?>
-x
+
 <?= $this->Html->script([
     'index',
     'map',

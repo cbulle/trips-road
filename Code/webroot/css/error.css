@@ -1,0 +1,87 @@
+/* ======================================================
+   PAGES D'ERREUR (400 / 500)
+====================================================== */
+
+body.error-layout {
+    background-color: var(--beige);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+.error-container {
+    background-color: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(11, 102, 125, 0.15);
+    padding: 40px 30px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    border-top: 6px solid var(--rouge);
+    margin: 0 auto;
+}
+
+.dark .error-container {
+    background: linear-gradient(135deg, var(--bleu_fonce), var(--bleu_clair));
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.error-icon {
+    margin-bottom: 20px;
+}
+
+.error-container h2 {
+    color: var(--rouge);
+    font-size: 2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.dark .error-container h2 {
+    color: var(--orange);
+}
+
+.error-container p.error {
+    color: var(--bleu_fonce_ecriture);
+    font-size: 1rem;
+    background: rgba(191, 9, 47, 0.08);
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid var(--rouge);
+    margin-bottom: 30px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.dark .error-container p.error {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+}
+
+.error-container p.error strong {
+    color: var(--rouge);
+}
+
+.btn-back-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--orange);
+    color: var(--white) !important;
+    padding: 12px 25px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 127, 80, 0.4);
+}
+
+.btn-back-home:hover {
+    background-color: var(--vert);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 139, 87, 0.6);
+}

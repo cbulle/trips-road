@@ -4,7 +4,7 @@
  * AJAX submission, UI auto-resizing, and scrolling.
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     /** @type {HTMLFormElement} */
     const messageForm = document.getElementById('messageForm');
     /** @type {HTMLTextAreaElement} */
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
          * Event listener for message submission.
          * Sends data via POST and reloads on success.
          */
-        messageForm.addEventListener('submit', async function(e) {
+        messageForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const messageText = messageInput.value.trim();
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * Auto-expands the textarea height based on content.
      */
     if (messageInput) {
-        messageInput.addEventListener('input', function() {
+        messageInput.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
@@ -67,5 +67,26 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     if (messagesContainer) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const chatInput = document.getElementById('chat-input');
+
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+
+                if (this.value.trim() !== '') {
+                    this.closest('form').submit();
+                }
+            }
+        });
+
+        const container = document.getElementById('messagesContainer');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
     }
 });

@@ -1,0 +1,53 @@
+.message {
+    padding: 15px 25px;
+    margin: 0 auto 20px auto;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: center;
+    max-width: 600px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    animation: slideDownFade 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    position: relative;
+    z-index: 1000;
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.hidden {
+    display: none !important;
+}
+
+.message.success {
+    background-color: var(--vert_btn);
+    color: var(--white);
+    border-left: 6px solid #1e5c3a;
+}
+
+.message.error {
+    background-color: var(--rouge);
+    color: var(--white);
+    border-left: 6px solid #8b0622;
+}
+
+.message.warning,
+.message.info {
+    background-color: var(--orange);
+    color: var(--white);
+    border-left: 6px solid #cc6640;
+}
+
+.dark .message {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}

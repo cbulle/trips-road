@@ -2,15 +2,13 @@
 $this->assign('mainClass', 'comment-edit-page');
 
 /**
- * Page contenant le formulaire de création d'un nouveau commentaire.
+ * Page containing the form to create a new comment.
  *
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Comment $comment Nouvelle entité commentaire vide
- * @var \Cake\Collection\CollectionInterface|string[] $users Liste des utilisateurs (pour le select)
- * @var \Cake\Collection\CollectionInterface|string[] $roadtrips Liste des roadtrips
- * @var \Cake\Collection\CollectionInterface|string[] $pointsOfInterests Liste des points d'intérêt
+ * @var \App\Model\Entity\Comment $comment New empty comment entity
+ * @var \Cake\Collection\CollectionInterface|string[] $roadtrips List of roadtrips
+ * @var \Cake\Collection\CollectionInterface|string[] $pointsOfInterests List of points of interest
  */
-
 ?>
 
 <div class="comment-edit-container">
@@ -22,10 +20,6 @@ $this->assign('mainClass', 'comment-edit-page');
 
         <div class="card-body">
             <?= $this->Form->create($comment, ['class' => 'custom-form']) ?>
-
-            <div style="display: none;">
-                <?= $this->Form->control('user_id', ['options' => $users ?? []]) ?>
-            </div>
 
             <div class="form-row">
                 <div class="form-group">

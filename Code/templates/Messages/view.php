@@ -1,111 +1,81 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var object $ami
- * @var array $messages
+ * @var iterable<\App\Model\Entity\Message> $messages
+ * @var \App\Model\Entity\User $friend
+ * @var \App\Model\Entity\User $user
  * @var int $userId
- * @var int $amiId
- * @var array $enriched
+ * @var int $friendId
  */
+$this->assign('title', 'Discussion avec ' . h($friend->first_name));
+$this->assign('mainClass', 'main-index');
 ?>
 
-
-<main class="main-index">
-    <div class="messagerie-container">
-        <div class="conversations-list">
-            <h2>Mes messages</h2>
-
-            <?php if (empty($enriched)): ?>
-                <p class="no-conversations">Aucune conversation</p>
-            <?php else: ?>
-                <?php foreach ($enriched as $conv): ?>
-                    <a href="<?= $this->Url->build(['action' => 'view', $conv->id]) ?>"
-                       class="conversation-item">
-                        <div class="conv-header">
-                                <span class="conv-name">
-                                    <?= h($conv->ami->prenom . ' ' . $conv->ami->nom) ?>
-                                </span>
-                            <?php if ($conv->unread_count > 0): ?>
-                                <span class="badge-unread"><?= $conv->unread_count ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <p class="conv-preview">
-                            <?= h(mb_substr($conv->last_message, 0, 50)) ?>
-                        </p>
-                    </a>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-        <div class="chat-area">
-
-            <?php if (!empty($ami)): ?>
-
-                <div class="chat-header">
-                    <div class="chat-user-info">
-                        <?php if (!empty($ami->profile_picture)): ?>
-                            <img src="/uploads/pp/<?= h($ami->profile_picture) ?>">
-                        <?php else: ?>
-                            <div class="avatar-placeholder">
-                                <?= strtoupper(substr($ami->prenom, 0, 1)) ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <span><?= h($ami->prenom . ' ' . $ami->nom) ?></span>
-                    </div>
-                </div>
-
-                <div class="messages-container" id="messagesContainer">
-                    <?php foreach ($messages as $msg): ?>
-                        <div class="message <?= ($msg->sender_id == $userId) ? 'sent' : 'received' ?>">
-
-                            <?php if ($msg->sender_id != $userId): ?>
-                                <div class="message-avatar">
-                                    <?php if (!empty($ami->profile_picture)): ?>
-                                        <img src="/uploads/pp/<?= h($ami->profile_picture) ?>">
-                                    <?php else: ?>
-                                        <div class="avatar-placeholder-small">
-                                            <?= strtoupper(substr($ami->prenom, 0, 1)) ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <div class="message-content">
-                                <p><?= nl2br(h($msg->content)) ?></p>
-                                <span class="message-time">
-                                    <?= $msg->created->format('H:i') ?>
-                                </span>
-                            </div>
-
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <?= $this->Form->create(null, [
-                'url' => ['controller' => 'Messages', 'action' => 'sendMessage'], // On force l'action ici
-                'class' => 'message-form'
-            ]) ?>
-                <?= $this->Form->hidden('ami_id', ['value' => $amiId]) ?>
-                <?= $this->Form->control('body', [
-                'type' => 'textarea',
-                'label' => false,
-                'placeholder' => 'Écrivez votre message...',
-                'required' => true
-            ]) ?>
-                <button type="submit">
-                    <i class="material-icons">send</i>
-                </button>
-                <?= $this->Form->end() ?>
-
-            <?php else: ?>
-
-                <div class="no-chat-selected">
-                    <i class="material-icons" id="chat_icon">chat_bubble</i>
-                    <p class="aaaa">Sélectionnez une conversation</p>
-                </div>
-
-            <?php endif; ?>
-
-        </div>
+<div class="messagerie-container">
+    <div class="conversations-list mobile-hidden">
+        <h2>Mes messages</h2>
+        <?= $this->cell('Message', [$userId, $friendId]) ?>
     </div>
-</main>
+
+    <div class="chat-area mobile-full">
+        <?php if (!empty($friend)): ?>
+            <div class="chat-header">
+                <div class="chat-user-info">
+                    <?php if (!empty($friend->profile_picture)): ?>
+                        <img src="/uploads/pp/<?= h($friend->profile_picture) ?>" alt="Avatar">
+                    <?php else: ?>
+                        <div class="avatar-placeholder"><?= strtoupper(substr($friend->first_name, 0, 1)) ?></div>
+                    <?php endif; ?>
+                    <span><?= h($friend->first_name . ' ' . $friend->last_name) ?></span>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <?php foreach ($messages as $msg): ?>
+                    <div class="chat-bulle <?= ($msg->sender_id == $userId) ? 'sent' : 'received' ?>">
+
+                        <div class="chat-avatar">
+                            <?php if ($msg->sender_id == $userId): ?>
+                                <?php if (!empty($user->profile_picture)): ?>
+                                    <img src="/uploads/pp/<?= h($user->profile_picture) ?>" alt="Mon Avatar">
+                                <?php else: ?>
+                                    <div class="avatar-placeholder-small" style="background: var(--bleu_fonce);"><?= strtoupper(substr($user->first_name ?? 'M', 0, 1)) ?></div>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <?php if (!empty($friend->profile_picture)): ?>
+                                    <img src="/uploads/pp/<?= h($friend->profile_picture) ?>" alt="Avatar">
+                                <?php else: ?>
+                                    <div class="avatar-placeholder-small"><?= strtoupper(substr($friend->first_name, 0, 1)) ?></div>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="chat-content">
+                            <p><?= nl2br(h($msg->content)) ?></p>
+                            <span class="chat-time"><?= $msg->created->format('H:i') ?></span>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <?= $this->Form->create(null, ['url' => ['action' => 'sendMessage'], 'class' => 'message-form']) ?>
+
+            <?= $this->Form->hidden('friend_id', ['value' => $friendId]) ?>
+
+            <?= $this->Form->control('body', [
+            'type' => 'textarea',
+            'id' => 'chat-input',
+            'label' => false,
+            'placeholder' => 'Écrivez votre message...',
+            'required' => true,
+            'templates' => [
+                'inputContainer' => '{{content}}'
+            ]
+        ]) ?>
+
+            <button type="submit" title="Envoyer"><i class="material-icons">send</i></button>
+
+            <?= $this->Form->end() ?>
+        <?php endif; ?>
+    </div>
+</div>

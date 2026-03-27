@@ -8,21 +8,47 @@ use Cake\Http\Cookie\Cookie;
 use Cake\I18n\FrozenTime;
 use League\OAuth2\Client\Provider\Google;
 use Cake\Core\Configure;
+use Cake\Mailer\Mailer;
+use Cake\Utility\Security;
+use Cake\Routing\Router;
 
+/**
+ * Users Controller
+ *
+ * @property \App\Model\Table\UsersTable $Users
+ */
 class UsersController extends AppController
 {
+    /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
     public function initialize(): void
     {
         parent::initialize();
         $this->loadComponent('Authentication.Authentication');
     }
 
+    /**
+     * beforeFilter callback.
+     * Allows unauthenticated users to access specific actions.
+     *
+     * @param \Cake\Event\EventInterface $event An Event instance
+     * @return void
+     */
     public function beforeFilter(EventInterface $event)
     {
         parent::beforeFilter($event);
         $this->Authentication->addUnauthenticatedActions(['login', 'add', 'accessibility', 'loginGoogle', 'callbackGoogle']);
     }
 
+    /**
+     * Login method
+     * Handles user authentication.
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful login, renders view otherwise.
+     */
     public function login()
     {
         $result = $this->Authentication->getResult();
@@ -31,10 +57,15 @@ class UsersController extends AppController
             return $this->redirect($target);
         }
         if ($this->request->is('post')) {
-            $this->Flash->error('Identifiant ou mot de passe incorrect');
+            $this->Flash->error(__('Identifiant ou mot de passe incorrect'));
         }
     }
 
+    /**
+     * Initiates Google OAuth2 login flow.
+     *
+     * @return \Cake\Http\Response|null Redirects to Google authentication page.
+     */
     public function loginGoogle()
     {
         $provider = new Google([
@@ -52,121 +83,148 @@ class UsersController extends AppController
         return $this->redirect($authUrl);
     }
 
+    /**
+     * Handles the callback from Google OAuth2.
+     *
+     * @return \Cake\Http\Response|null Redirects to home on success, or login on failure.
+     */
     public function callbackGoogle()
     {
-        $session = $this->request->getSession();
-        $code = $this->request->getQuery('code');
-        $state = $this->request->getQuery('state');
+        $provider = new Google([
+            'clientId' => Configure::read('Google.clientId'),
+            'clientSecret' => Configure::read('Google.clientSecret'),
+            'redirectUri' => Configure::read('Google.redirectUri'),
+        ]);
 
-        if (empty($code) || empty($state) || $state !== $session->read('oauth2state')) {
+        $session = $this->request->getSession();
+        $state = $this->request->getQuery('state');
+        $savedState = $session->read('oauth2state');
+
+        if (empty($state) || ($state !== $savedState)) {
             $session->delete('oauth2state');
-            $this->Flash->error('Erreur de sécurité ou annulation.');
+            $this->Flash->error(__('État OAuth invalide.'));
             return $this->redirect(['action' => 'login']);
         }
 
         try {
-            $provider = new Google([
-                'clientId' => Configure::read('Google.clientId'),
-                'clientSecret' => Configure::read('Google.clientSecret'),
-                'redirectUri' => Configure::read('Google.redirectUri'),
+            $token = $provider->getAccessToken('authorization_code', [
+                'code' => $this->request->getQuery('code')
             ]);
 
-            $accessToken = $provider->getAccessToken('authorization_code', [
-                'code' => $code
-            ]);
+            $googleUser = $provider->getResourceOwner($token);
 
-            $googleUser = $provider->getResourceOwner($accessToken);
             $email = $googleUser->getEmail();
-            $socialId = $googleUser->getId();
             $name = $googleUser->getName();
+            $socialId = $googleUser->getId();
+            $firstName = $googleUser->getFirstName() ?: 'Utilisateur';
+            $lastName = $googleUser->getLastName() ?: 'Google';
 
             $user = $this->Users->find()->where(['email' => $email])->first();
 
-            if ($user) {
+            if (!$user) {
+                $user = $this->Users->newEmptyEntity();
+                $user->email = $email;
+                $user->username = $name . '_' . substr(uniqid(), -4);
+                $user->first_name = $firstName;
+                $user->last_name = $lastName;
+                $user->password = 'Google_' . uniqid() . 'A1!';
+                $user->social_id = $socialId;
+                $user->social_provider = 'google';
+
+                if (!$this->Users->save($user)) {
+                    $this->Flash->error(__('Erreur lors de la création du compte Google.'));
+                    return $this->redirect(['action' => 'login']);
+                }
+            } else {
                 if (empty($user->social_id)) {
                     $user->social_id = $socialId;
                     $user->social_provider = 'google';
                     $this->Users->save($user);
                 }
-            } else {
-                $user = $this->Users->newEmptyEntity();
-                $user->email = $email;
-                $user->username = $name;
-                $user->password = 'SOCIAL_' . uniqid();
-                $user->social_id = $socialId;
-                $user->social_provider = 'google';
-
-                if (!$this->Users->save($user)) {
-                    $this->Flash->error('Erreur lors de la création du compte Google.');
-                    return $this->redirect(['action' => 'login']);
-                }
             }
 
             $this->Authentication->setIdentity($user);
-
             $this->Flash->success('Connexion réussie via Google !');
 
             $target = $this->Authentication->getLoginRedirect() ?? '/';
             return $this->redirect($target);
 
         } catch (\Exception $e) {
-            $this->Flash->error('Erreur Google : ' . $e->getMessage());
+            $this->Flash->error(__('Erreur d\'authentification Google : ') . $e->getMessage());
             return $this->redirect(['action' => 'login']);
         }
     }
 
-    public function logout()
-    {
-        $this->Authentication->logout();
-        $this->Flash->success(__('Vous avez été déconnecté.'));
-        return $this->redirect(['controller' => 'Users', 'action' => 'login']);
-    }
-
+    /**
+     * Add method
+     * Registers a new user.
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     */
     public function add()
     {
-        $days = array_combine(range(1, 31), range(1, 31));
-        $currentYear = date('Y');
-        $years = array_combine(range($currentYear, 1920), range($currentYear, 1920));
-
-        $months = [
-            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
-            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
-            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
-        ];
-
         $user = $this->Users->newEmptyEntity();
         if ($this->request->is('post')) {
             $data = $this->request->getData();
 
-            if (!empty($data['birth_day']) && !empty($data['birth_month']) && !empty($data['birth_year'])) {
-                $birthdate = sprintf('%d-%02d-%02d', $data['birth_year'], $data['birth_month'], $data['birth_day']);
-                $data['date_naissance'] = new FrozenTime($birthdate);
+            $day = $data['birth_day'] ?? null;
+            $month = $data['birth_month'] ?? null;
+            $year = $data['birth_year'] ?? null;
+
+            if (!empty($day) && !empty($month) && !empty($year)) {
+                $data['birth_date'] = FrozenTime::create((int)$year, (int)$month, (int)$day);
             }
 
             $user = $this->Users->patchEntity($user, $data);
+
             if ($this->Users->save($user)) {
-                $this->Flash->success(__('Inscription réussie. Connectez-vous maintenant.'));
+                $this->Flash->success(__('L\'utilisateur a été sauvegardé.'));
                 return $this->redirect(['action' => 'login']);
             }
-            $this->Flash->error(__('Impossible de créer le compte. Vérifiez les erreurs.'));
+            $this->Flash->error(__('L\'utilisateur n\'a pas pu être sauvegardé. Veuillez réessayer.'));
         }
-        $this->set(compact('user', 'days', 'months', 'years'));
+
+        $days = array_combine(range(1, 31), range(1, 31));
+        $years = array_combine(range((int)date('Y'), 1900), range((int)date('Y'), 1900));
+
+        $this->set(compact('user', 'days', 'years'));
     }
 
+    /**
+     * Logout method
+     * Logs the user out.
+     *
+     * @return \Cake\Http\Response|null Redirects to login.
+     */
+    public function logout()
+    {
+        $result = $this->Authentication->getResult();
+        if ($result && $result->isValid()) {
+            $this->Authentication->logout();
+            return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+        }
+    }
+
+    /**
+     * Profile method
+     * Displays and updates the connected user's profile.
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
+     */
     public function profile()
     {
         $userId = $this->request->getAttribute('identity')->getIdentifier();
         $user = $this->Users->get($userId);
 
-        if ($this->request->is(['post', 'put'])) {
+        if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
 
-            $image = $this->request->getData('profile_picture_file');
-            if ($image && $image->getError() === UPLOAD_ERR_OK) {
-                $ext = pathinfo($image->getClientFilename(), PATHINFO_EXTENSION);
-                $newName = 'pp_' . uniqid() . '.' . $ext;
-                $image->moveTo(WWW_ROOT . 'uploads/pp/' . $newName);
-                $data['profile_picture'] = $newName;
+            if (empty($data['password'])) {
+                unset($data['password']);
+                unset($data['confirm_password']);
+            } elseif ($data['password'] !== $data['confirm_password']) {
+                $this->Flash->error(__('Les mots de passe ne correspondent pas.'));
+                return $this->redirect(['controller' => 'Users', 'action' => 'profile']);
             }
 
             $user = $this->Users->patchEntity($user, $data);
@@ -176,13 +234,18 @@ class UsersController extends AppController
                 return $this->redirect(['controller' => 'Users', 'action' => 'profile']);
             } else {
                 $this->Flash->error(__('Erreur lors de la mise à jour.'));
-                return $this->redirect(['controller' => 'Users', 'action' => 'profile']);
             }
         }
 
         $this->set(compact('user'));
     }
 
+    /**
+     * Accessibility method
+     * Manages user accessibility preferences via cookies.
+     *
+     * @return \Cake\Http\Response|null|void Renders view
+     */
     public function accessibility()
     {
         if ($this->request->is('post')) {
@@ -212,6 +275,64 @@ class UsersController extends AppController
             $user = $this->Users->get($userId);
         }
 
+        $isDarkMode = (bool)$this->request->getCookie('modeSombre');
+        $isVisionMode = (bool)$this->request->getCookie('modeMalvoyant');
+        $colorBlindType = $this->request->getCookie('typeDaltonien') ?: 'aucun';
+
+        $this->set(compact('user', 'isDarkMode', 'isVisionMode', 'colorBlindType'));
+    }
+
+    public function forgotPassword()
+    {
+        if ($this->request->is('post')) {
+            $email = $this->request->getData('email');
+            $user = $this->Users->find()->where(['email' => $email])->first();
+
+            if ($user) {
+                $user->token = Security::hash(Security::randomBytes(32), 'sha256', false);
+                $user->token_expiration = new FrozenTime('+1 hour');
+
+                if ($this->Users->save($user)) {
+                    $mailer = new Mailer('default');
+                    $mailer->setTo($user->email)
+                        ->setSubject('Réinitialisation de votre mot de passe')
+                        ->deliver("Cliquez sur ce lien pour réinitialiser votre mot de passe : " .
+                            Router::url(['action' => 'resetPassword', $user->token], true));
+
+                    $this->Flash->success(__('Un email de récupération vous a été envoyé.'));
+                    return $this->redirect(['action' => 'login']);
+                }
+            }
+            $this->Flash->error(__('Aucun compte n\'est associé à cet email.'));
+        }
+    }
+    public function resetPassword($token = null)
+    {
+        if (!$token) {
+            $this->Flash->error(__('Jeton invalide.'));
+            return $this->redirect(['action' => 'login']);
+        }
+
+        $user = $this->Users->find()
+            ->where(['token' => $token, 'token_expiration >' => new FrozenTime()])
+            ->first();
+
+        if (!$user) {
+            $this->Flash->error(__('Le lien a expiré ou est invalide.'));
+            return $this->redirect(['action' => 'login']);
+        }
+
+        if ($this->request->is(['post', 'put'])) {
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $user->token = null;
+            $user->token_expiration = null;
+
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Votre mot de passe a été mis à jour.'));
+                return $this->redirect(['action' => 'login']);
+            }
+            $this->Flash->error(__('Erreur lors de la mise à jour.'));
+        }
         $this->set(compact('user'));
     }
 }

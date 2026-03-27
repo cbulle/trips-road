@@ -896,6 +896,97 @@
     background-color: var(--orange);
 }
 
+/* Classes W3C Helper (Remplacement des styles en ligne) */
+.full-width-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.margin-bottom {
+    margin-bottom: 10px;
+}
+
+.margin-top-small {
+    margin-top: 10px;
+}
+
+.bold-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.small-bold-label {
+    font-size: 0.8em;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.help-text {
+    display: block;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.help-text-small {
+    color: #666;
+    font-size: 0.8em;
+    margin-top: 5px;
+    display: block;
+}
+
+.preview-thumbnail {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.current-image-wrapper {
+    margin-bottom: 5px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.block-display {
+    display: block;
+}
+
+.no-bullets {
+    list-style: none;
+}
+
+.padding-zero {
+    padding: 0;
+}
+
+.full-width-btn {
+    width: 100%;
+}
+
+ #triggerSaveModal {
+     background-color: var(--orange);
+     color: var(--white);
+     font-size: 1.1rem;
+     box-shadow: 0 4px 15px rgba(255, 127, 80, 0.4);
+     margin-top: 10px;
+     padding: 14px 20px;
+     border-radius: 12px;
+     font-weight: 600;
+     border: none;
+     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+     cursor: pointer;
+     width: 100%;
+     box-sizing: border-box;
+ }
+#triggerSaveModal:hover {
+    background-color: var(--vert);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 139, 87, 0.6);
+}
+
 @media (max-width: 1024px) {
     .main-container {
         flex-direction: column;
@@ -936,3 +1027,4 @@
         font-size: 1.5rem;
     }
 }
+

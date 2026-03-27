@@ -1,6 +1,5 @@
 <main>
     <div class="contact-wrapper">
-
         <div class="contact-info">
             <h2>Discutons !</h2>
             <p>Une question sur votre itinéraire ? Un bug à signaler ? Ou simplement envie de dire bonjour ? Notre équipe étudiante est à votre écoute.</p>
@@ -20,10 +19,9 @@
             <h1>Envoyez-nous un message</h1>
 
             <?= $this->Flash->render() ?>
-
             <?= $this->Form->create(null) ?>
 
-            <?= $this->Form->control('nom', [
+            <?= $this->Form->control('name', [
                 'label' => 'Votre Nom',
                 'required' => true,
                 'placeholder' => 'Jean Dupont',
@@ -38,7 +36,7 @@
                 'container' => ['class' => 'form-group']
             ]) ?>
 
-            <?= $this->Form->control('sujet', [
+            <?= $this->Form->control('subject', [
                 'type' => 'select',
                 'label' => 'Sujet',
                 'options' => [
@@ -56,15 +54,12 @@
                 'label' => 'Message',
                 'required' => true,
                 'placeholder' => 'Comment pouvons-nous vous aider ?',
-                'cols' => 50,
+                'rows' => 6,
                 'container' => ['class' => 'form-group']
-
             ]) ?>
 
             <?= $this->Form->button('Envoyer le message', ['type' => 'submit']) ?>
-
             <?= $this->Form->end() ?>
         </div>
-
     </div>
 </main>

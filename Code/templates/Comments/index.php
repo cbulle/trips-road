@@ -2,14 +2,12 @@
 $this->assign('mainClass', 'comments-page');
 
 /**
- * Page affichant la liste des commentaires de l'utilisateur connecté.
+ * View displaying the list of comments for the connected user.
  *
  * @var \App\View\AppView $this
  * @var iterable<\App\Model\Entity\Comment> $comments
  */
 ?>
-
-<h1>Commentaires</h1>
 
 <div class="comments-container">
     <h1 class="page-title">Mes Commentaires</h1>
@@ -18,9 +16,11 @@ $this->assign('mainClass', 'comments-page');
         <div class="empty-state">
             <i class="material-icons">chat_bubble_outline</i>
             <p>Vous n'avez publié aucun commentaire pour le moment.</p>
-            <a href="<?= $this->Url->build(['controller' => 'Roadtrips', 'action' => 'publicRoadtrips']) ?>" class="btn-discover">
-                Découvrir des roadtrips
-            </a>
+            <?= $this->Html->link(
+                'Découvrir des roadtrips',
+                ['controller' => 'Roadtrips', 'action' => 'publicRoadtrips'],
+                ['class' => 'btn-discover']
+            ) ?>
         </div>
     <?php else: ?>
         <div class="comments-grid">
@@ -29,8 +29,8 @@ $this->assign('mainClass', 'comments-page');
                     <div class="comment-header">
                         <div class="comment-author">
                             <?php
-                            $pp = $comment->user->profile_picture ?? $comment->user->avatar ?? null;
-                            $imgSrc = !empty($pp) ? 'uploads/pp/' . h($pp) : 'User.png';
+                            $profilePic = $comment->user->profile_picture ?? $comment->user->avatar ?? null;
+                            $imgSrc = !empty($profilePic) ? 'uploads/pp/' . h($profilePic) : 'User.png';
                             ?>
                             <?= $this->Html->image($imgSrc, ['class' => 'avatar-circle small', 'alt' => 'Photo de profil']) ?>
                             <strong><?= h($comment->user->username ?? 'Anonyme') ?></strong>
