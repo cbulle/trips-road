@@ -234,11 +234,6 @@
     <header class="header">
         <h1><i class="fa-solid fa-map-location-dot"></i> Trips & Roads</h1>
         <p>Developer Documentation Hub for the collaborative trip planning platform.</p>
-        
-        <div class="search-bar">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search documentation, guides, or API references...">
-        </div>
     </header>
 
     <div class="container">
@@ -252,7 +247,6 @@
             <span class="prompt">$</span> <span class="command">composer install</span><br><br>
             <span class="comment"># Set up environment variables and database</span><br>
             <span class="prompt">$</span> <span class="command">cp config/.env.example config/.env</span><br>
-            <span class="prompt">$</span> <span class="command">bin/cake migrations migrate</span><br>
             <span class="prompt">$</span> <span class="command">.bin/cake server</span>
         </div>
 
@@ -281,7 +275,8 @@
                 <div class="card-header">
                     <i class="fa-solid fa-project-diagram"></i>
                     <b>UML Diagrams</b>
-                </div>                <span>Deep dive into the system's Sequence, Class, and State diagrams.</span>
+                </div>                
+                <span>Deep dive into the system's Sequence and Class, diagrams.</span>
             </a>
             <a href="https://iutbg-gitlab.iutbourg.univ-lyon1.fr/sae-but2/2025-26/openstreetmap-bde/road-trip.git" target="_blank" class="card">
                 <div class="card-header">
@@ -305,9 +300,9 @@
         <div class="tech-stack">
             <span class="badge"><i class="fa-brands fa-php"></i> PHP 8.2</span>
             <span class="badge"><i class="fa-solid fa-layer-group"></i> CakePHP 5</span>
-            <span class="badge"><i class="fa-brands fa-js"></i> JavaScript (ES6+)</span>
+            <span class="badge"><i class="fa-brands fa-js"></i> JavaScript</span>
             <span class="badge"><i class="fa-solid fa-database"></i> MySQL / MariaDB</span>
-            <span class="badge"><i class="fa-solid fa-map-location"></i> OpenStreetMap / Leaflet</span>
+            <span class="badge"><i class="fa-solid fa-map-location"></i> OpenStreetMap / Leaflet / Nominatim</span>
         </div>
 
     </div>
